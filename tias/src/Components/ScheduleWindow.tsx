@@ -1,13 +1,21 @@
 import React, { FC } from 'react'
 
 interface Props {
-    width: string
+    
 }
 
-export const ScheduleWindow: FC<Props> = ({width}) => {
+export const ScheduleWindow: FC<Props> = () => {
   return (
-    <div className="column" style={{width: width}}>
-      ScheduleStack
+    <div className="column main">
+      <div className="row">
+        ScheduleLabel
+      </div>
+      <div className="row">
+        ScheduleFilter
+      </div>
+      <div className="row">
+        ScheduleRender
+      </div>
     </div>
   )
 }

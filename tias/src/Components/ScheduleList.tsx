@@ -14,12 +14,17 @@ function getData(): Array<string> {
 
 export const ScheduleList: FC<Props> = ({width}) => {
   return (
-	<div className="column" style={{width: width}}>
-		<h2>Schedules</h2>
-		<hr />
-    	{ getData().map((e, index) => (
-			< ScheduleRow key={index} element={e} />
-		))}
-	</div>
+    <div className="column" style={{width: width}}>
+      <div className="header">
+        <h2 className="slim">Schedules</h2>
+      </div>
+
+      <div className="scrollable">
+        { getData().map((e, index) => (
+          < ScheduleRow key={index} element={e} />
+        ))}
+      </div>
+
+    </div>
   )
 }

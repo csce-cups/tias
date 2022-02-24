@@ -19,7 +19,9 @@ export const EmployeeRow: FC<Props> = ({element}) => {
           •
         </div>
       </div>
-      <hr/>
+      <div className="hr-container">
+        <hr/>
+      </div>
     </>
   )
 }

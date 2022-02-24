@@ -16,7 +16,9 @@ export const ScheduleRow: FC<Props> = ({element}) => {
          {element}
         </div>
       </div>
-      <hr/>
+      <div className="hr-container">
+        <hr/>
+      </div>
     </>
 	)
 }
