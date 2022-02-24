@@ -1,5 +1,7 @@
 import React, { FC } from 'react'
 import { EmployeeRow } from './EmployeeRow'
+import { GenerateButton } from './GenerateButton'
+import { AcceptButton } from './AcceptButton'
 
 interface Props {
 	width: string
@@ -10,9 +12,6 @@ function getData(): Array<string> {
 		"Geralt of Rivia", "Gary Chess", "Sandy Banks", "Sharpness IV", "Star Fox", 
 		"Luigi Smansion", "John Doom", "Suzzie Sunshine", "A", "B", "C", "D", "E"
 	];
-	// return [
-	// 	"Geralt of Rivia"
-	// ];
 }
 
 export const EmployeeList: FC<Props> = ({width}) => {
@@ -28,9 +27,9 @@ export const EmployeeList: FC<Props> = ({width}) => {
       ))}
     </div>
 
-    <div className="column">
-      <div className="button">Generate</div>
-      <div className="button">Accept</div>
+    <div className="column top-border">
+      < GenerateButton />
+      < AcceptButton />
     </div>
 	</div>
   )

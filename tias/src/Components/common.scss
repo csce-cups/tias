@@ -1,4 +1,5 @@
-$green : '#00ff00';
+$green : #00ff00;
+$blue : #0000ff;
 
 .App {
 	flex: 1 1 auto;
@@ -11,7 +12,11 @@ $green : '#00ff00';
 
 .column.main {
 	flex-grow: 1;
-	border: 1px solid;
+	border-left: 1px solid;
+	border-right: 1px solid;
+
+	padding-left: 15px;
+	padding-right: 15px;
 }
 
 .hr-container {
@@ -79,13 +84,34 @@ $green : '#00ff00';
 	padding: 0;
 }
 
-.button {
+.top-border {
+	border-top: 2px solid;
+}
+
+.green {
 	background-color: $green;
-	fill: $green;
+}
+
+.blue {
+	background-color: $blue;
+}
+
+.button {
 	border: 1px solid;
+	margin: 5px;
+
+	text-align: center;
 
 	flex: 1 0 auto;
 
 	height: max(40px, 5vh);
 	padding: 10px;
+}
+
+.render-window {
+	flex: 1 1 auto;
+	border: 1px solid;
+
+	justify-content: center;
+	align-content: center;
 }
