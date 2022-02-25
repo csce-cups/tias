@@ -1,6 +1,10 @@
-$green : #00ff00;
-$blue : #0000ff;
+@use "sass:color";
+
+$green : #79ca42;
+$blue : #33ACE3;
 $accent : #800000;
+$render_background : #d3dbdc;
+$render_divider : #85929C;
 
 .App {
 	display: flex;
@@ -59,6 +63,7 @@ $accent : #800000;
 		padding-right: 5px;
 
 		border-bottom: 2px solid;
+		margin-bottom: 5px;
 	}
 
 	.row.filter {
@@ -68,7 +73,6 @@ $accent : #800000;
 		padding: 0;
 
 		background-color: $accent;
-		
 	}
 
 	.filter.element {
@@ -142,20 +146,72 @@ $accent : #800000;
 }
 
 .button {
-	border: 1px solid;
+	border: 1px solid black;
 	margin: 5px;
 
 	height: 40px;
 	padding: 10px;
+
+	font-weight: bold;
+	font-size: 16px;
 }
 
-.render-window {
+.render-window.container {
 	flex: 1 1 auto;
-	border: 1px solid;
+	position: relative;
 
-	justify-content: center;
-	align-content: center;
+	hr {
+		border-top: 2px dotted $render_divider;
+		height: 7.95%;
+		margin: 0;
+		position: relative;
+	}
+
+	.background {
+		height: 100%;
+		background-color: $render_background;
+		position: relative;
+
+		.overlay {
+			flex: 1 1 auto;
+			width: 100%;
+			height: 100%;
+
+			display: flex;
+			// display: none;
+			justify-content: center;
+			align-content: center;
+			position: absolute;
+		
+			.render-day {
+				flex: 1 1 auto;
+				display: flex;
+				flex-direction: row;
+		
+			
+				border: 1px solid $render_divider;
+				background-color: transparent;
+			}
+		}
+	}
 }
+
+.render-grid {
+	flex: 1 1 auto;
+	background-color: $render_background;
+
+	display: grid;
+	grid-template-columns: repeat(5, 1fr); // 5 days of the week
+
+	border: 2px solid black;
+
+	div {
+		border-style: dotted solid;
+		border-width: 1px;
+		border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
+	}
+}
+
 
 img {
 	max-height: 20px;
