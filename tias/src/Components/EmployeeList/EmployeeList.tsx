@@ -10,7 +10,7 @@ interface Props {
 function getData(): Array<string> {
 	return [
 		"Geralt of Rivia", "Gary Chess", "Sandy Banks", "Sharpness IV", "Star Fox", 
-		"Luigi Smansion", "John Doom", "Suzzie Sunshine", "A", "B", "C", "D", "E"
+		"Luigi Smansion", "John Doom", "Suzzie Sunshine"
 	];
 }
 

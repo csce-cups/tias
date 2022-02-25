@@ -9,6 +9,12 @@ $blue : #0000ff;
 	width: 100vw;
 }
 
+.slim {
+	padding: 0 !important;
+	margin: 0  !important;
+	padding: 0 !important;
+}
+
 .column.main {
 	flex-grow: 1;
 	border-left: 1px solid;
@@ -23,8 +29,18 @@ $blue : #0000ff;
 	padding-right: 10px;
 }
 
+.scrollable::-webkit-scrollbar {
+	display: none;
+}
+
 .scrollable {
-	overflow: scroll;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	flex: 1;
+
+	// Hide the scrollbar
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
 }
 
 .column {
@@ -52,7 +68,6 @@ $blue : #0000ff;
 		padding-top: 5px;
 	
 		.element {
-			padding: 10px;			
 			padding-left: 5px;
 		}
 
@@ -70,14 +85,9 @@ $blue : #0000ff;
 		.right {
 			flex: 1 0 auto;
 			text-align: right;
+			padding-right: 10px;
 		}
 	}
-}
-
-.slim {
-	padding: 0;
-	margin: 0;
-	padding: 0;
 }
 
 .top-border {
