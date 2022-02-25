@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { FC } from 'react'
+
 
 export const SchedulingFilter = () => {
   let filter_subjects = ['ALL', '121', '221', '312', '313', '314', '315'];
