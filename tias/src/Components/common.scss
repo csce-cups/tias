@@ -1,5 +1,6 @@
 $green : #00ff00;
 $blue : #0000ff;
+$accent : #800000;
 
 .App {
 	display: flex;
@@ -60,6 +61,39 @@ $blue : #0000ff;
 		border-bottom: 2px solid;
 	}
 
+	.row.filter {
+		border: 2px solid;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		padding: 0;
+
+		background-color: $accent;
+		
+	}
+
+	.filter.element {
+		color: white;
+		line-height: 20px;
+	}
+
+	.filter.element {
+		background-color: $accent;
+	}
+	
+	.filter.element.center:hover {
+		background-color: darken($accent, 6%);
+	}
+
+	.filter.element.center {
+		border-left: 1px solid white;
+		border-right: 1px solid white;
+	}
+	
+	.filter.element.static {
+		padding-right: 5px;
+		border-right: 1px solid white;
+	}
+
 	.row {
 		display: flex;
 		flex-direction: row;
@@ -80,6 +114,11 @@ $blue : #0000ff;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
+		}
+
+		.center {
+			flex: 1 1 auto;
+			text-align: center;
 		}
 		
 		.right {
