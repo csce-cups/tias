@@ -91,6 +91,7 @@ $render_divider : #85929C;
 	.filter.element.center {
 		border-left: 1px solid white;
 		border-right: 1px solid white;
+		transition: all .1s ease-in-out;
 	}
 	
 	.filter.element.static {
@@ -141,9 +142,18 @@ $render_divider : #85929C;
 	background-color: $green;
 }
 
+.green:hover {
+	background-color: darken($green, 8%)
+}
+
 .blue {
 	background-color: $blue;
 }
+
+.blue:hover {
+	background-color: darken($blue, 8%)
+}
+
 
 .button {
 	border: 1px solid black;
@@ -154,62 +164,55 @@ $render_divider : #85929C;
 
 	font-weight: bold;
 	font-size: 16px;
+
+	transition: all .1s ease-in-out;
 }
 
-.render-window.container {
+.render-container {
 	flex: 1 1 auto;
-	position: relative;
+	display: flex;
 
-	hr {
-		border-top: 2px dotted $render_divider;
-		height: 7.95%;
-		margin: 0;
-		position: relative;
+	position: relative;
+	
+	.render-grid {
+		flex: 1 1 auto;
+		background-color: $render_background;
+	
+		display: grid;
+		grid-template-columns: repeat(5, 1fr); // 5 days of the week
+	
+		border: 2px solid black;
+	
+		div {
+			border-style: dotted solid;
+			border-width: 1px;
+			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
+		}
 	}
 
-	.background {
+	.render-content {
+		flex: 1 1 auto;
+		display: flex;
+		position: absolute;
+
+		width: 100%;
 		height: 100%;
-		background-color: $render_background;
-		position: relative;
 
-		.overlay {
+		.column {
 			flex: 1 1 auto;
-			width: 100%;
-			height: 100%;
-
-			display: flex;
-			// display: none;
-			justify-content: center;
-			align-content: center;
-			position: absolute;
-		
-			.render-day {
-				flex: 1 1 auto;
-				display: flex;
-				flex-direction: row;
-		
-			
-				border: 1px solid $render_divider;
-				background-color: transparent;
-			}
+			border: 1px solid blue;
 		}
 	}
 }
 
-.render-grid {
-	flex: 1 1 auto;
-	background-color: $render_background;
 
-	display: grid;
-	grid-template-columns: repeat(5, 1fr); // 5 days of the week
+.grow-h {
+	transition: all .2s ease-in-out;
+}
 
-	border: 2px solid black;
-
-	div {
-		border-style: dotted solid;
-		border-width: 1px;
-		border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
-	}
+.grow-h:hover {
+	border: 3px solid;
+	transform: scaleX(1.1);
 }
 
 
