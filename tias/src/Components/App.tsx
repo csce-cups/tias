@@ -7,9 +7,9 @@ import './common.scss';
 export const App = () => {
   return (
     <div className="App">
-      < EmployeeList width='25vh' />
+      < EmployeeList />
       < SchedulingWindow />
-      < ScheduleList width='20vh' />
+      < ScheduleList />
     </div>
   );
 }

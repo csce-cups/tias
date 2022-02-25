@@ -4,7 +4,7 @@ import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
 
 interface Props {
-	width: string
+	
 }
 
 function getData(): Array<string> {
@@ -14,14 +14,14 @@ function getData(): Array<string> {
 	];
 }
 
-export const EmployeeList: FC<Props> = ({width}) => {
+export const EmployeeList: FC<Props> = () => {
   return (
-	<div className="column" style={{width: width}}>
+	<div className="column">
     <div className="header">
 		  <h2 className="slim">Employee</h2>
     </div>
 
-    <div className="scrollable" style={{width: width}}>
+    <div className="scrollable">
       { getData().map((e, index) => (
         < EmployeeRow key={index} element={e} />
       ))}

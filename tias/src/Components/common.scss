@@ -2,8 +2,7 @@ $green : #00ff00;
 $blue : #0000ff;
 
 .App {
-	flex: 1 1 auto;
-	display: inline-flex;
+	display: flex;
 	flex-direction: row;
 
 	height: 100vh;
@@ -24,15 +23,16 @@ $blue : #0000ff;
 	padding-right: 10px;
 }
 
+.scrollable {
+	overflow: scroll;
+}
+
 .column {
-	flex: 0 1 auto;
 	display: flex;	
     flex-direction: column;
 
-	.scrollable {
-		overflow: scroll;
-		flex: 1 1 auto;
-	}
+	min-width: 20px;
+
 
 	.header {
 		margin: 0;
@@ -45,19 +45,15 @@ $blue : #0000ff;
 	}
 
 	.row {
-		flex: 0 1 auto;
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
 	
 		padding-top: 5px;
-		// padding-bottom: 10px;
 	
 		.element {
-			// flex-direction: row;
-			// justify-content: center;
-
 			padding: 10px;			
+			padding-left: 5px;
 		}
 
 		.left {
@@ -100,11 +96,7 @@ $blue : #0000ff;
 	border: 1px solid;
 	margin: 5px;
 
-	text-align: center;
-
-	flex: 1 0 auto;
-
-	height: max(40px, 5vh);
+	height: 40px;
 	padding: 10px;
 }
 
@@ -114,4 +106,8 @@ $blue : #0000ff;
 
 	justify-content: center;
 	align-content: center;
+}
+
+img {
+	max-height: 20px;
 }

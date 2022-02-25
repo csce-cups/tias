@@ -9,7 +9,7 @@ export const EmployeeRow: FC<Props> = ({element}) => {
     <>
       <div className="row">
         <div className="element left">
-          []
+          <input type="checkbox"/>
         </div>
         <div className="element label">
          {element}

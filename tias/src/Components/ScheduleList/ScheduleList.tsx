@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { ScheduleRow } from './ScheduleRow'
 
 interface Props {
-	width: string
+	
 }
 
 function getData(): Array<string> {
@@ -12,9 +12,9 @@ function getData(): Array<string> {
 	];
 }
 
-export const ScheduleList: FC<Props> = ({width}) => {
+export const ScheduleList: FC<Props> = () => {
   return (
-    <div className="column" style={{width: width}}>
+    <div className="column">
       <div className="header">
         <h2 className="slim">Schedules</h2>
       </div>
