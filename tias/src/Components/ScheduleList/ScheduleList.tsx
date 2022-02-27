@@ -14,7 +14,7 @@ function getData(): Array<string> {
 
 export const ScheduleList: FC<Props> = () => {
   return (
-    <div className="column">
+    <div className="vstack">
       <div className="header">
         <h2 className="slim">Schedules</h2>
       </div>

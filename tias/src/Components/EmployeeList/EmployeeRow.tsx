@@ -7,7 +7,7 @@ interface Props {
 export const EmployeeRow: FC<Props> = ({element}) => {
   return (
     <>
-      <div className="row">
+      <div className="hstack">
         <div className="element left">
           <input type="checkbox"/>
         </div>

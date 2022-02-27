@@ -13,7 +13,7 @@ interface Props {
 export const ScheduleRow: FC<Props> = ({element}) => {
 	return (
 		<>
-      <div className="row">
+      <div className="hstack">
         <div className="element left">
           <img src={popcorn1} alt="do this later"/>
         </div>

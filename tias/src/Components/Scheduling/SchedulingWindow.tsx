@@ -9,7 +9,7 @@ interface Props {
 
 export const SchedulingWindow: FC<Props> = () => {
   return (
-    <div className="column main">
+    <div className="vstack main">
       < SchedulingHeader />
       < SchedulingRender />
       < SchedulingFilter />

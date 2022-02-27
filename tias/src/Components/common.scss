@@ -20,7 +20,7 @@ $render_divider : #85929C;
 	padding: 0 !important;
 }
 
-.column.main {
+.vstack.main {
 	flex-grow: 1;
 	border-left: 2px solid;
 	border-right: 2px solid;
@@ -48,7 +48,7 @@ $render_divider : #85929C;
 	scrollbar-width: none;  /* Firefox */
 }
 
-.column {
+.vstack {
 	display: flex;	
     flex-direction: column;
 
@@ -66,7 +66,7 @@ $render_divider : #85929C;
 		margin-bottom: 5px;
 	}
 
-	.row.filter {
+	.hstack.filter {
 		border: 2px solid;
 		margin-top: 10px;
 		margin-bottom: 10px;
@@ -100,7 +100,7 @@ $render_divider : #85929C;
 		border-right: 1px solid white;
 	}
 
-	.row {
+	.hstack {
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
@@ -201,12 +201,18 @@ $day_divider_size : 1.5px;
 		
 		width: 100%;
 		height: 100%;
-		
-		.column {
-			flex: 1 1 auto;
-			border-right: $day_divider_size solid $render_divider;
+
+		.day {
 			background-color: $render_background;
+			border-right: $day_divider_size solid $render_divider;
+		}
+		
+		.vstack {
+			flex: 1 1 auto;
 			display: flex;
+
+			position: relative;
+			width: 100%;
 
 			div.divider {
 				flex: 1 1 auto;
@@ -214,10 +220,51 @@ $day_divider_size : 1.5px;
 				border-width: 1px;
 				border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
 			}
+
 		}
+	}
+
+	
+}
+
+.block-container {
+	position: absolute;
+	width: 100%;
+
+	.hstack {
+		padding: 0;
+		position: absolute;
+	}
+
+	.vstack {
+		padding: 0;
+	}
+
+	$block_margin_amount : 2px;
+	.block {
+		flex: 1 1 auto;
+		background-color: blue;
+	
+		margin: 0 $block_margin_amount;
+		width: 100%;
+
+		min-width: 0;
+	
+		border-radius: 3px;
+
+		transition: all .1s ease-in-out;
+	}
+	
+	.block:hover {
+		z-index: 1;
+		box-shadow: 0 0 5px 0;
+		transform: scaleX(1.1);
 	}
 }
 
+.fill {
+	flex: 1 1 auto;
+}
 
 .grow-h {
 	transition: all .2s ease-in-out;
@@ -226,9 +273,9 @@ $day_divider_size : 1.5px;
 .grow-h:hover {
 	z-index: 2;
 	border-radius: 5px;
-	border: $day_divider_size solid $render_divider;
-	box-shadow: 0 0 5px 0;
-	transform: scaleX(1.01);
+	// border: $day_divider_size solid $render_divider;
+	box-shadow: 0 0 10px 0;
+	// transform: scaleX(1.01);
 
 	cursor: pointer;
 }

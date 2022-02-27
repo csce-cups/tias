@@ -16,7 +16,7 @@ function getData(): Array<string> {
 
 export const EmployeeList: FC<Props> = () => {
   return (
-	<div className="column">
+	<div className="vstack">
     <div className="header">
 		  <h2 className="slim">Employee</h2>
     </div>
@@ -27,7 +27,7 @@ export const EmployeeList: FC<Props> = () => {
       ))}
     </div>
 
-    <div className="column top-border">
+    <div className="vstack top-border">
       < GenerateButton />
       < AcceptButton />
     </div>
