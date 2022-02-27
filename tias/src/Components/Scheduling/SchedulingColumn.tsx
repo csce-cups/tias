@@ -97,14 +97,17 @@ const generateBlocks = (data: CourseInstance[]) => {
 
     let outer: any = [];
     let max = data[i];
+    // let max = data.slice(i).reduce((prev, curr) => (d_len(prev) > d_len(curr) ? prev : curr));
     while (i < data.length && data[i].start.getTime() >= max.start.getTime() && data[i].end.getTime() <= max.end.getTime()) {
 
       let inner: any = [];
-      while (i < data.length && d_len(data[i]) < d_len(max)) {
+      while (i < data.length && d_len(data[i]) < d_len(max) 
+        && data[i].start.getTime() >= max.start.getTime() && data[i].end.getTime() <= max.end.getTime()) {
 
         let temp_arr: any = [];
         let temp = data[i];
-        while (i < data.length && data[i].start.getTime() === temp.start.getTime() && data[i].end.getTime() === temp.end.getTime()) {
+        while (i < data.length && data[i].start.getTime() === temp.start.getTime() && data[i].end.getTime() === temp.end.getTime()
+          && data[i].start.getTime() >= max.start.getTime() && data[i].end.getTime() <= max.end.getTime()) {
 
           temp_arr.push(data[i]);
           i++;
@@ -217,17 +220,17 @@ export const SchedulingColumn: FC<Props> = ({end}) => {
     {course: 313, section: 15, start: A2, end: A2_short},
     {course: 313, section: 16, start: B2, end: B2_short},
     {course: 221, section: 17, start: C2, end: C2_short},
-    {course: 314, section: 18, start: A2, end: A2_extralong},
-    {course: 314, section: 19, start: A2, end: A2_short},
-    {course: 314, section: 20, start: C2, end: C2_short},
+    {course: 315, section: 18, start: A2, end: A2_extralong},
+    {course: 315, section: 19, start: A2, end: A2_short},
+    {course: 315, section: 20, start: C2, end: C2_short},
     
     // {course: 121, section: 21, start: A3, end: A3_short},
     // {course: 121, section: 22, start: A3, end: A3_short},
-    // {course: 121, section: 23, start: B3, end: B3_short},
-    // {course: 221, section: 24, start: A3, end: A3_extralong}, // Arrested
-    // {course: 221, section: 25, start: C3, end: C3_short},
-    // {course: 313, section: 26, start: A3, end: A3_extralong},
-    // {course: 314, section: 27, start: A3, end: A3_extralong},
+    {course: 121, section: 23, start: B3, end: B3_short},
+    {course: 221, section: 24, start: A3, end: A3_extralong}, // Arrested
+    {course: 221, section: 25, start: C3, end: C3_short},
+    {course: 313, section: 26, start: A3, end: A3_extralong},
+    {course: 315, section: 27, start: A3, end: A3_extralong},
   ];
 
 
