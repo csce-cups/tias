@@ -20,13 +20,15 @@ interface Props {
   course_instance: CourseInstance
 }
 
-const time_to_height = (start: Date, end: Date) => {
-  const day = 12*60*60*1000; // Represents 100% of the view
-  return (end.getTime() - start.getTime()) / day * 100;
-}
-
 export const SchedulingBlock: FC<Props> = ({course_instance}) => {
   return (
-    <div className="block" style={{backgroundColor: colors.get(course_instance.course)}}>{course_instance.course}-{course_instance.section}</div>
+    <div className="block" style={{backgroundColor: colors.get(course_instance.course)}}>
+      <div className="block-indicator slim">
+        •
+      </div>
+      <div className="block-text">
+        {course_instance.section}
+      </div>
+    </div>
   )
 }

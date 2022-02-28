@@ -243,21 +243,38 @@ $day_divider_size : 1.5px;
 	$block_margin_amount : 2px;
 	.block {
 		flex: 1 1 auto;
-		background-color: blue;
+		display: flex;
+		flex-direction: column;
+		background-color: red;
 	
 		margin: 0 $block_margin_amount;
-		width: 100%;
+		// width: 100%;
 
 		min-width: 0;
 	
 		border-radius: 3px;
 
 		transition: all .1s ease-in-out;
+
+		.block-indicator {
+			flex: 1 1 auto;
+			height: 100%;
+			text-align: center;
+		}
+
+		.block-text {
+			color: white;
+			overflow: hidden;
+			padding-bottom: 5px;
+		}
 	}
 	
 	.block:hover {
-		z-index: 1;
+		// z-index: 1;
 		box-shadow: 0 0 5px 0;
+		// position: absolute;
+		height: 100%;
+		// width: 1000%;
 		transform: scaleX(1.1);
 	}
 }
