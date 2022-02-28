@@ -143,6 +143,7 @@ $render_divider : #85929C;
 	padding-right: 10px;
 }
 
+
 .top-border {
 	border-top: 2px solid;
 }
@@ -313,10 +314,15 @@ $day_divider_size : 1.5px;
 	.element {
 		color: white;
 		line-height: 20px;
-		margin: 5px 10px;
-		font-size: 1.2em;
+		margin: 7px 10px;
+		font-size: 1.1em;
+	}
+
+	.major {
+		font-size: 1.5em;
 	}
 }
+
 
 img {
 	max-height: 20px;
