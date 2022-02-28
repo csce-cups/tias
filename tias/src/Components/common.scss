@@ -1,0 +1,303 @@
+@use "sass:color";
+
+$green : #79ca42;
+$blue : #33ACE3;
+$accent : #800000;
+$render_background : #d3dbdc;
+$render_divider : #85929C;
+
+.App {
+	display: flex;
+	flex-direction: row;
+
+	height: 100vh;
+	width: 100vw;
+}
+
+.slim {
+	padding: 0 !important;
+	margin: 0  !important;
+	padding: 0 !important;
+}
+
+.vstack.main {
+	flex-grow: 1;
+	border-left: 2px solid;
+	border-right: 2px solid;
+
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.hr-container {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.scrollable::-webkit-scrollbar {
+	display: none;
+}
+
+.scrollable {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	flex: 1;
+
+	// Hide the scrollbar
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
+.vstack {
+	display: flex;	
+    flex-direction: column;
+
+	min-width: 20px;
+
+
+	.header {
+		margin: 0;
+		border: 0;
+		padding: 0;
+		padding-left: 5px;
+		padding-right: 5px;
+
+		border-bottom: 2px solid;
+		margin-bottom: 5px;
+	}
+
+	.hstack.filter {
+		border: 2px solid;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		padding: 0;
+
+		background-color: $accent;
+	}
+
+	.filter.element {
+		color: white;
+		line-height: 20px;
+	}
+
+	.filter.element {
+		background-color: $accent;
+	}
+	
+	.filter.element.center:hover {
+		background-color: darken($accent, 6%);
+		cursor: pointer;
+	}
+
+	.filter.element.center {
+		border-left: 1px solid white;
+		border-right: 1px solid white;
+		transition: all .1s ease-in-out;
+	}
+	
+	.filter.element.static {
+		padding-right: 5px;
+		border-right: 1px solid white;
+	}
+
+	.hstack {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+	
+		padding-top: 5px;
+	
+		.element {
+			padding-left: 5px;
+		}
+
+		.left {
+			flex: 0 0 auto;
+		}
+		
+		.label {
+			flex: 0 1 auto;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+
+		.center {
+			flex: 1 1 auto;
+			text-align: center;
+		}
+		
+		.right {
+			flex: 1 0 auto;
+			text-align: right;
+			padding-right: 10px;
+		}
+	}
+}
+
+.top-border {
+	border-top: 2px solid;
+}
+
+.green {
+	background-color: $green;
+}
+
+.green:hover {
+	background-color: darken($green, 8%);
+	cursor: pointer;
+}
+
+.blue {
+	background-color: $blue;
+}
+
+.blue:hover {
+	background-color: darken($blue, 8%);
+	cursor: pointer;
+}
+
+
+.button {
+	border: 1px solid black;
+	margin: 5px;
+
+	height: 40px;
+	padding: 10px;
+
+	font-weight: bold;
+	font-size: 16px;
+
+	transition: all .1s ease-in-out;
+}
+
+$day_divider_size : 1.5px;
+.render-container {
+	flex: 1 1 auto;
+	display: flex;
+	position: relative;
+
+	border: 2px solid black;
+	
+	.render-grid {
+		flex: 1 1 auto;
+		
+		display: grid;
+		grid-template-columns: repeat(5, 1fr); // 5 days of the week
+		
+		
+		div {
+			border-style: dotted solid;
+			border-width: 1px;
+			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
+		}
+	}
+	
+	.render-content {
+		flex: 1 1 auto;
+		display: flex;
+		position: absolute;
+		
+		
+		width: 100%;
+		height: 100%;
+
+		.day {
+			background-color: $render_background;
+			border-right: $day_divider_size solid $render_divider;
+		}
+		
+		.vstack {
+			flex: 1 1 auto;
+			display: flex;
+
+			position: relative;
+			width: 100%;
+
+			div.divider {
+				flex: 1 1 auto;
+				border-style: dotted none;
+				border-width: 1px;
+				border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
+			}
+
+		}
+	}
+
+	
+}
+
+.block-container {
+	position: absolute;
+	width: 100%;
+
+	.hstack {
+		padding: 0;
+		position: absolute;
+	}
+
+	.vstack {
+		padding: 0;
+	}
+
+	$block_margin_amount : 2px;
+	.block {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		background-color: red;
+	
+		margin: 0 $block_margin_amount;
+		// width: 100%;
+
+		min-width: 0;
+	
+		border-radius: 3px;
+
+		transition: all .1s ease-in-out;
+
+		.block-indicator {
+			flex: 1 1 auto;
+			height: 100%;
+			text-align: center;
+		}
+
+		.block-text {
+			color: white;
+			overflow: hidden;
+			padding-bottom: 5px;
+		}
+	}
+	
+	.block:hover {
+		// z-index: 1;
+		box-shadow: 0 0 5px 0;
+		// position: absolute;
+		height: 100%;
+		// width: 1000%;
+		transform: scaleX(1.1);
+	}
+}
+
+.fill {
+	flex: 1 1 auto;
+}
+
+.grow-h {
+	transition: all .2s ease-in-out;
+}
+
+.grow-h:hover {
+	z-index: 2;
+	border-radius: 5px;
+	// border: $day_divider_size solid $render_divider;
+	box-shadow: 0 0 10px 0;
+	// transform: scaleX(1.01);
+
+	cursor: pointer;
+}
+
+
+img {
+	max-height: 20px;
+}
