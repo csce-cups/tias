@@ -314,15 +314,25 @@ $day_divider_size : 1.5px;
 	.element {
 		color: white;
 		line-height: 20px;
-		margin: 7px 10px;
+		margin: 5px 10px;
 		font-size: 1.1em;
+		align-self: baseline;
+		cursor: default;
+
+		transition: all 0.05s ease-in-out;
 	}
 
 	.major {
 		font-size: 1.5em;
+		margin-right: 13px;
+		margin-bottom: 8px;
+	}
+
+	.element:hover {
+		color: darken(white, 20%);
+		cursor: pointer;
 	}
 }
-
 
 img {
 	max-height: 20px;
