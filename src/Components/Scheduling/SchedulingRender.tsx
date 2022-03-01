@@ -307,10 +307,10 @@ export const SchedulingRender = () => {
   return (
     <div className="render-container">
       <div className="render-content">
-        < SchedulingColumn blocks={M_schedule}/>
-        < SchedulingColumn blocks={TH_shcedule}/>
-        < SchedulingColumn blocks={W_schedule}/>
-        < SchedulingColumn blocks={TH_shcedule}/>
+        < SchedulingColumn blocks={M_schedule} />
+        < SchedulingColumn blocks={TH_shcedule} />
+        < SchedulingColumn blocks={W_schedule} />
+        < SchedulingColumn blocks={TH_shcedule} />
         < SchedulingColumn blocks={F_schedule} end={true} />
       </div>
     </div>

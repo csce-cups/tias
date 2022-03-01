@@ -5,6 +5,7 @@ $blue : #33ACE3;
 $accent : #800000;
 $render_background : #d3dbdc;
 $render_divider : #85929C;
+$light : white;
 
 .App {
 	display: flex;
@@ -83,7 +84,7 @@ $render_divider : #85929C;
 	}
 
 	.filter.element {
-		color: white;
+		color: $light;
 		line-height: 20px;
 	}
 
@@ -97,14 +98,14 @@ $render_divider : #85929C;
 	}
 
 	.filter.element.center {
-		border-left: 1px solid white;
-		border-right: 1px solid white;
+		border-left: 1px solid $light;
+		border-right: 1px solid $light;
 		transition: all .1s ease-in-out;
 	}
 	
 	.filter.element.static {
 		padding-right: 5px;
-		border-right: 1px solid white;
+		border-right: 1px solid $light;
 	}
 
 	.hstack {
@@ -188,20 +189,6 @@ $day_divider_size : 1.5px;
 
 	border: 2px solid black;
 	
-	.render-grid {
-		flex: 1 1 auto;
-		
-		display: grid;
-		grid-template-columns: repeat(5, 1fr); // 5 days of the week
-		
-		
-		div {
-			border-style: dotted solid;
-			border-width: 1px;
-			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
-		}
-	}
-	
 	.render-content {
 		flex: 1 1 auto;
 		display: flex;
@@ -272,7 +259,7 @@ $day_divider_size : 1.5px;
 		}
 
 		.block-text {
-			color: white;
+			color: $light;
 			overflow: hidden;
 			padding-bottom: 5px;
 		}
@@ -312,7 +299,7 @@ $day_divider_size : 1.5px;
 	display: flex;
 
 	.element {
-		color: white;
+		color: $light;
 		line-height: 20px;
 		margin: 5px 10px;
 		font-size: 1.1em;
@@ -329,7 +316,7 @@ $day_divider_size : 1.5px;
 	}
 
 	.element:hover {
-		color: darken(white, 20%);
+		color: darken($light, 20%);
 		cursor: pointer;
 	}
 }

@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 
 interface Props {
-	element: string
+	element: string // The body of the list element
 }
 
 export const EmployeeRow: FC<Props> = ({element}) => {

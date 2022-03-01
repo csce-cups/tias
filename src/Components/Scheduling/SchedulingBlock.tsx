@@ -18,12 +18,11 @@ interface CourseInstance { // Results of a join between course, course_section, 
 
 interface Props {
   course_instance: CourseInstance
-  width?: number
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, width}) => {
+export const SchedulingBlock: FC<Props> = ({course_instance}) => {
   return (
-    <div className="block" style={{backgroundColor: colors.get(course_instance.course), width: width}}>
+    <div className="block" style={{backgroundColor: colors.get(course_instance.course)}}>
       <div className="block-indicator slim">
         •
       </div>

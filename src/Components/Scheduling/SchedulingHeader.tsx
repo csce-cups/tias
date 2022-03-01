@@ -6,7 +6,7 @@ export const SchedulingHeader = () => {
 	  <div className="hstack">
 		  <h2 className="slim element">Current Schedule:</h2>
       <h2 className="slim element right">
-        <img src={popcorn1} alt="do this later" className="element right"/>
+        <img src={popcorn1} alt="FIXME" className="element right"/>
         98
       </h2>
     </div>

@@ -3,8 +3,8 @@ import { SchedulingBlock } from './SchedulingBlock';
 
 const numHours = 11;
 interface Props {
-  blocks: any,
-  end? : boolean
+  blocks: any, // The blocks to be displayed for this day of the week
+  end? : boolean // Basic styling prop, the column on the end doesn't get a border on the right
 }
 
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
