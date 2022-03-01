@@ -267,35 +267,35 @@ const W_schedule: any = [
 ];
 
 const F_schedule: any = [
-  // {course: 121, section: 101, start:  MW_A, end: MW_A_extralong},
-  // {course: 121, section: 102, start:  MW_A, end: MW_A_short},
-  // {course: 121, section: 103, start:  MW_A, end: MW_A_short},
-  // {course: 221, section: 104, start:  MW_A, end: MW_A_short},
-  // {course: 221, section: 105, start:  MW_A, end: MW_A_short},
-  // {course: 313, section: 106, start:  MW_A, end: MW_A_short},
-  // {course: 221, section: 107, start:  MW_B, end: MW_B_short},
-  // {course: 313, section: 108, start:  MW_B, end: MW_B_short},
-  // {course: 121, section: 109, start:  MW_C, end: MW_C_short},
-  // {course: 221, section: 110, start: MW_C, end: MW_C_short},
-  // {course: 313, section: 111, start: MW_C, end: MW_C_short},
+  {course: 121, section: 101, start:  MW_A, end: MW_A_extralong},
+  {course: 121, section: 102, start:  MW_A, end: MW_A_short},
+  {course: 121, section: 103, start:  MW_A, end: MW_A_short},
+  {course: 221, section: 104, start:  MW_A, end: MW_A_short},
+  {course: 221, section: 105, start:  MW_A, end: MW_A_short},
+  {course: 313, section: 106, start:  MW_A, end: MW_A_short},
+  {course: 221, section: 107, start:  MW_B, end: MW_B_short},
+  {course: 313, section: 108, start:  MW_B, end: MW_B_short},
+  {course: 121, section: 109, start:  MW_C, end: MW_C_short},
+  {course: 221, section: 110, start: MW_C, end: MW_C_short},
+  {course: 313, section: 111, start: MW_C, end: MW_C_short},
   
-  // {course: 121, section: 112, start: MW_A2, end: MW_A2_extralong}, // Section is incorrect
-  // {course: 121, section: 113, start: MW_A2, end: MW_A2_short},
-  // {course: 221, section: 114, start: MW_A2, end: MW_A2_extralong},
-  // {course: 313, section: 115, start: MW_A2, end: MW_A2_short},
-  // {course: 313, section: 116, start: MW_B2, end: MW_B2_short},
-  // {course: 221, section: 117, start: MW_C2, end: MW_C2_short},
-  // {course: 315, section: 118, start: MW_A2, end: MW_A2_extralong},
-  // {course: 315, section: 119, start: MW_A2, end: MW_A2_short},
-  // {course: 315, section: 120, start: MW_C2, end: MW_C2_short},
+  {course: 121, section: 112, start: MW_A2, end: MW_A2_extralong}, // Section is incorrect
+  {course: 121, section: 113, start: MW_A2, end: MW_A2_short},
+  {course: 221, section: 114, start: MW_A2, end: MW_A2_extralong},
+  {course: 313, section: 115, start: MW_A2, end: MW_A2_short},
+  {course: 313, section: 116, start: MW_B2, end: MW_B2_short},
+  {course: 221, section: 117, start: MW_C2, end: MW_C2_short},
+  {course: 315, section: 118, start: MW_A2, end: MW_A2_extralong},
+  {course: 315, section: 119, start: MW_A2, end: MW_A2_short},
+  {course: 315, section: 120, start: MW_C2, end: MW_C2_short},
   
-  // {course: 121, section: 121, start: MW_A3, end: MW_A3_short},
-  // {course: 121, section: 122, start: MW_A3, end: MW_A3_short},
-  // {course: 121, section: 123, start: MW_B3, end: MW_B3_short},
-  // {course: 221, section: 124, start: MW_A3, end: MW_A3_extralong}, // Arrested
-  // {course: 221, section: 125, start: MW_C3, end: MW_C3_short},
-  // {course: 313, section: 126, start: MW_A3, end: MW_A3_extralong},
-  // {course: 315, section: 127, start: MW_A3, end: MW_A3_extralong},
+  {course: 121, section: 121, start: MW_A3, end: MW_A3_short},
+  {course: 121, section: 122, start: MW_A3, end: MW_A3_short},
+  {course: 121, section: 123, start: MW_B3, end: MW_B3_short},
+  {course: 221, section: 124, start: MW_A3, end: MW_A3_extralong}, // Arrested
+  {course: 221, section: 125, start: MW_C3, end: MW_C3_short},
+  {course: 313, section: 126, start: MW_A3, end: MW_A3_extralong},
+  {course: 315, section: 127, start: MW_A3, end: MW_A3_extralong},
 ]
 
 export const SchedulingRender = () => {

@@ -22,7 +22,7 @@ const time_to_height = (start: Date, end: Date, max: number = numHours*60*60*100
   return (end.getTime() - start.getTime()) / max * 100;
 }
 
-const start_time_to_top = (e: any, start: Date, pstart: Date = new Date(0), parent: number = numHours*60*60*1000) => {
+const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: number = numHours*60*60*1000) => {
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
@@ -31,13 +31,14 @@ const generateBlocks = (data: CourseInstance[]) => {
     // Sort by start time
     if (a.start.getTime() < b.start.getTime()) return -1;
     else if (a.start.getTime() > b.start.getTime()) return 1;
-
-    else if (a.course < b.course) return -1;
-    else if (a.course > b.course) return 1;
     
     // Sort by class length
     else if (d_len(a) > d_len(b)) return -1;
     else if (d_len(a) < d_len(b)) return 1;
+
+    // Sort by course number
+    else if (a.course < b.course) return -1;
+    else if (a.course > b.course) return 1;
 
     // Sort by section number
     else if (a.section < b.section) return -1;
@@ -81,7 +82,7 @@ const generateBlocks = (data: CourseInstance[]) => {
 
   }
 
-  console.log(base);
+  // console.log(base);
   return placeBlocks(base);
 
 }
@@ -90,11 +91,11 @@ const placeBlocks = (blocks: CourseInstance[]) => {
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
     if (Array.isArray(outer)) {
       return (
-        <div className="vstack fill">
+        <div className="vstack">
           { outer.map(row => (
             <div className="hstack block-container" style={{
               height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
-              top: `${start_time_to_top(row[0], row[0].start, parent.start, d_len(parent))}%`
+              top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
               { row.map(c => (
                 < SchedulingBlock course_instance={c} />
@@ -125,7 +126,7 @@ const placeBlocks = (blocks: CourseInstance[]) => {
         <div className="block-container hstack fill" style={{ 
           padding: 0, 
           height: `${time_to_height(set[0].start, set[0].end)}%`,
-          top: `${start_time_to_top(set[0], set[0].start)}%`
+          top: `${start_time_to_top(set[0].start)}%`
         }}>
           { set.map((outer: any) => (
             unravel(outer, maxes[idx])
@@ -137,27 +138,6 @@ const placeBlocks = (blocks: CourseInstance[]) => {
 }
 
 export const SchedulingColumn: FC<Props> = ({blocks, end}) => {
-  
-
-  const shuffle = (array: any) => {
-    let currentIndex = array.length,  randomIndex;
-
-    // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
-  }
-
-  
   let style = {};
   if (end) {
     style = {border: '0'}
@@ -171,7 +151,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end}) => {
   return (
     <div className="vstack grow-h day" style={style}>
       {dividers}
-      { generateBlocks(shuffle(blocks)) }
+      { generateBlocks(blocks) }
     </div>
   )
 }
