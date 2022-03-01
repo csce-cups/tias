@@ -8,10 +8,17 @@ $render_divider : #85929C;
 
 .App {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 
 	height: 100vh;
 	width: 100vw;
+}
+
+.app-body {
+	flex: 1 1 auto;
+    flex-direction: row;
+    display: flex;
+    height: 0;
 }
 
 .slim {
@@ -127,13 +134,15 @@ $render_divider : #85929C;
 			text-align: center;
 		}
 		
-		.right {
-			flex: 1 0 auto;
-			text-align: right;
-			padding-right: 10px;
-		}
 	}
 }
+
+.right {
+	flex: 1 0 auto;
+	text-align: right;
+	padding-right: 10px;
+}
+
 
 .top-border {
 	border-top: 2px solid;
@@ -297,6 +306,33 @@ $day_divider_size : 1.5px;
 	cursor: pointer;
 }
 
+.navbar {
+	border-bottom: 2px solid black;
+	background-color: $accent;
+	display: flex;
+
+	.element {
+		color: white;
+		line-height: 20px;
+		margin: 5px 10px;
+		font-size: 1.1em;
+		align-self: baseline;
+		cursor: default;
+
+		transition: all 0.05s ease-in-out;
+	}
+
+	.major {
+		font-size: 1.5em;
+		margin-right: 13px;
+		margin-bottom: 8px;
+	}
+
+	.element:hover {
+		color: darken(white, 20%);
+		cursor: pointer;
+	}
+}
 
 img {
 	max-height: 20px;
