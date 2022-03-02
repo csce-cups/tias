@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavBar } from './NavBar';
+import { NavBar } from './Misc/NavBar';
 import { EmployeeList } from './EmployeeList/EmployeeList';
 import { ScheduleList } from './ScheduleList/ScheduleList';
 import { SchedulingWindow } from './Scheduling/SchedulingWindow';
