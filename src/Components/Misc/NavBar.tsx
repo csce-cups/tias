@@ -2,7 +2,7 @@ import React from "react";
 import { GoogleButton } from "./GoogleButton"
 
 export const NavBar = () => {
-  return (
+  return ( <>
     <div className="navbar">
       <div className="left element major">TIAS</div>
       <div className="left element">Profile</div>
@@ -11,5 +11,6 @@ export const NavBar = () => {
       <div className="fill element"></div>
       < GoogleButton />
     </div>
+  </>
   );
 };

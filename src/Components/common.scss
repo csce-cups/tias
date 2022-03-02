@@ -6,6 +6,7 @@ $accent : #800000;
 $render_background : #d3dbdc;
 $render_divider : #85929C;
 $light : white;
+$google_bg: white;
 
 .App {
 	display: flex;
@@ -319,6 +320,43 @@ $day_divider_size : 1.5px;
 		color: darken($light, 20%);
 		cursor: pointer;
 	}
+}
+
+
+.google {
+	button {
+		background-color: $google_bg;
+		display: inline-flex;
+		align-items: center;
+		color: rgba(0, 0, 0, 0.54);
+		padding: 0px;
+		border-radius: 2px;
+		border: 1px solid transparent;
+		font-size: 15px;
+		font-weight: 500;
+		font-family: Roboto, sans-serif;
+		opacity: 0.95;
+		height: 100%;
+
+		transition: all 0.1s ease-in-out;
+	}
+	
+	.vstack {
+		margin-right: 10px;
+		// background: rgb(255, 255, 255);
+		padding: 0px 10px;
+		border-radius: 2px;
+	}
+
+	span {
+		padding-right: 10px;
+		font-weight: 500;
+	}	
+}
+
+.google button:hover {
+	background-color: darken($google_bg, 10%);
+	cursor: pointer;
 }
 
 img {
