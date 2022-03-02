@@ -4,16 +4,13 @@ const { Client } = require('pg')
 const fs = require('fs')
 const { parse } = require('csv-parse')
 const { finished } = require('stream/promises');
-const { start } = require('repl');
 
 const client = new Client()
 
 let course_sections = []
 
 const loader = async (query, values) => {
-    await client.connect()
     const res = await client.query(query, values)
-    await client.end()
     return res
 }
 
@@ -34,18 +31,77 @@ const processFile = async (filepath) => {
     return records
 }
 
+const weekday_map = {
+    'M': 'Monday',
+    'T': 'Tuesday',
+    'W': 'Wednesday',
+    'R': 'Thursday',
+    'F': 'Friday',
+    'S': 'Saturday',
+    'U': 'Sunday'
+}
+
+const course_type_map = {
+    'INT': 'Internship',
+    'INS': 'Independent Study',
+    'CMP': 'Competition',
+    'LEC': 'Lecture',
+    'LAB': 'Laboratory',
+    'PRAC': 'Practicum',
+    'CLD': 'Clinic',
+    'REC': 'Recitation',
+    'EXAM': 'Examination',
+    'SEM': 'Seminar',
+    'RES': 'Research',
+    'PRL': 'Private Lesson'
+}
+
+const add_section_meetings = (modifications, weekdays, section_id, start_time, end_time, place, course_type, dbojb, section_number) => {
+    for (let day of weekdays) {
+        modifications.push(new Promise(() => loader(`
+            INSERT INTO section_meeting (section_id, weekday, start_time, end_time, place, meeting_type)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `,
+        [section_id, weekday_map[day], start_time, end_time, place, course_type_map[course_type]])))
+        course_sections.push({course_id: dbojb.course_id, department: dbojb.department, course_number: dbojb.course_number, course_name: dbojb.course_name, section_id: section_id, person_id_professor: null, section_number: section_number, peer_teachable: null, weekday: weekday_map[day], start_time: start_time + ':00', end_time: end_time + ':00', place: place, meeting_type: course_type_map[course_type]})
+    }
+}
+
+const parse_time = (time_str, time_zone_offset) => {
+    let time_colon = time_str.indexOf(':');
+    let time_space = time_str.indexOf(' ', time_colon + 1);
+    let hour = +time_str.substring(0, time_colon);
+    let minute = +time_str.substring(time_colon + 1, time_space);
+    let meridiem = time_str.substring(time_space + 1)
+    if (meridiem === "PM") hour += 12;
+
+    return `${(hour + time_zone_offset) % 24}:${minute}`
+}
+
+const compare_time = (db_time, csv_time) => db_time === csv_time + ':00'
+client.connect().then(() =>
 loader(`
-    SELECT * FROM course
+    SELECT
+        course.course_id, course.department, course.course_number, course.course_name,
+        course_section.section_id, course_section.person_id_professor, course_section.section_number, course_section.peer_teachable,
+        section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, section_meeting.place, section_meeting.meeting_type
+    FROM course
     LEFT OUTER JOIN course_section
-    ON (course.course_id = course_section.course_id)
+        ON (course.course_id = course_section.course_id)
     LEFT OUTER JOIN section_meeting
-    ON (course_section.section_id = section_meeting.section_id)
+        ON (course_section.section_id = section_meeting.section_id)
+    ORDER BY
+        course.department,
+        course.course_number,
+        course_section.section_number,
+        section_meeting.weekday
 `)
     .then(res => course_sections = res.rows)
-    .then(() => console.table(course_sections.slice(0,5)))
+    // .then(() => console.table(course_sections.slice(0,5)))
     .then(() => processFile(`Spring_2022.csv`)
-        .then(records => {console.table(records.slice(0,6)); return records})
-        .then(records => {
+        // .then(records => {console.table(records.slice(0,6)); return records})
+        .then(async records => {
+            console.table(course_sections)
             let modifications = []
             for (let line of records.slice(1)) {
                 const Term = 0
@@ -59,76 +115,95 @@ loader(`
                 const Room = 8
                 const Instructor = 9
 
-                const time_zone = 'CST'
-
-                const weekday_map = {
-                    'M': 'Monday',
-                    'T': 'Tuesday',
-                    'W': 'Wednesday',
-                    'R': 'Thursday',
-                    'F': 'Friday',
-                    'S': 'Saturday',
-                    'U': 'Sunday'
-                }
-
-                const course_type_map = {
-                    'INT': 'Internship',
-                    'INS': 'Independent Study',
-                    'CMP': 'Competition',
-                    'LEC': 'Lecture',
-                    'LAB': 'Laboratory',
-                    'PRAC': 'Practicum',
-                    'CLD': 'Clinic',
-                    'REC': 'Recitation',
-                    'EXAM': 'Examination',
-                    'SEM': 'Seminar',
-                    'RES': 'Research',
-                    'PRL': 'Private Lesson'
-                }
+                const time_zone = -6
 
                 let course_section_first_space = line[CourseSection].indexOf(' ')
                 let course_section_slash = line[CourseSection].indexOf('/')
                 let course_section_second_space = line[CourseSection].indexOf(' ', course_section_first_space + 1)
 
                 let department = line[CourseSection].slice(0, course_section_first_space)
-                let course_number = line[CourseSection].slice(course_section_first_space + 1, course_section_slash);
-                let section_number = line[CourseSection].slice(course_section_slash + 1, course_section_second_space);
+                let course_number = line[CourseSection].slice(course_section_first_space + 1, course_section_slash)
+                let section_number = line[CourseSection].slice(course_section_slash + 1, course_section_second_space)
                 let course_type = line[CourseSection].slice(course_section_second_space + 1)
                 let weekdays = line[DaysMet]
-                let start_time = `${line[StartTime]} ${time_zone}`
-                let end_time = `${line[EndTime]} ${time_zone}`
+                let start_time = `${line[StartTime]}`
+                let end_time = `${line[EndTime]}`
                 let place = line[Room]
+
+                start_time = parse_time(start_time, time_zone)
+                end_time = parse_time(end_time, time_zone)
 
                 let filtered_sections = course_sections.filter((course_section) => department === course_section.department && course_number === course_section.course_number)
                 if (filtered_sections.length === 0) continue;
 
-                let sections = filtered_sections.filter((course_section) => course_section.section_number === section_number && course_section.meeting_type === course_type)
+                console.table(filtered_sections)
+
+                let sections = filtered_sections.filter((course_section) => course_section.section_number === section_number)
+
+                console.table(sections)
 
                 if (sections.length === 0) {
                     // Option 1 - The section does not Exist
-                    let section_id = await loader(`
+                    if (filtered_sections[0].course_id == null) {
+                        console.error(filtered_sections[0]);
+                    }
+                    let section_id = (await loader(`
                         INSERT INTO course_section (course_id, section_number)
                         VALUES ($1, $2)
                         RETURNING section_id
                     `,
-                    [filtered_sections[0].course_id, section_number])
-                    for (let day of weekdays) {
-                        modifications.push(new Promise(() => loader(`
-                            INSERT INTO section_meeting (section_id, weekday, start_time, end_time, place, course_type)
-                            VALUES ($1, $2, $3, $4, $5, $6)
-                        `,
-                        [section_id, weekday_map[day], start_time, end_time, place, course_type_map[course_type]])))
-                    }
+                    [filtered_sections[0].course_id, section_number])).rows[0].section_id
+                    console.log([line, filtered_sections, [filtered_sections[0].course_id, section_number]])
+                    add_section_meetings(modifications, weekdays, section_id, start_time, end_time, place, course_type, filtered_sections[0], section_number)
                 } else {
-                    console.log('Option 2')
-                    let real_sections = sections.filter((course_section) => )
+                    sections = sections.filter((course_section) => course_section.meeting_type === course_type_map[course_type])
                     // Option 2 - The section Exists
-                        // Suboption a - The section is fine
-                        // Suboption b - The section requires an update
+                        // Suboption a - The section meetings are fine
+                        // Suboption b - The section meetings require an update
+                            // Subsuboption i - The section meetings require full reset
+                            // Subsuboption ii - The section meetings require small update
+                    const min_length = Math.min(sections.length, weekdays.length)
+                    if (min_length !== sections.length) {
+                        // Drop all section_meetings that match
+                        // Then add all section_meetings from CSV data
+                        loader(`
+                            DELETE FROM section_meeting
+                            WHERE section_id = $1
+                        `,
+                        [sections[0].section_id])
+                        .then(() => {
+                            add_section_meetings(modifications, weekdays, sections[0].section_id, start_time, end_time, place, course_type, sections[0], sections[0].section_number);
+                        })
+                    } else {
+                        // Check the data entries all match
+                        for (let i = 0; i < min_length; ++i) {
+                            let weekday_match = sections[i].weekday === weekday_map[weekdays[i]]
+                            let start_time_match = compare_time(sections[i].start_time, start_time)
+                            let end_time_match = compare_time(sections[i].end_time, end_time)
+                            let place_match = sections[i].place === place
+                            if (!weekday_match || !start_time_match || !end_time_match || !place_match) {
+                                modifications.push(new Promise(() => loader(`
+                                    UPDATE section_meeting
+                                    SET
+                                        weekday = $1,
+                                        start_time = $2,
+                                        end_time = $3,
+                                        place = $4
+                                    WHERE
+                                        weekday = $5 AND
+                                        start_time = $6 AND
+                                        end_time = $7 AND
+                                        place = $8 AND
+                                `,
+                                [weekday_map[weekdays[i]], start_time, end_time, place, sections[i].weekday, sections[i].start_time, sections[i].end_time, sections[i].place])))
+                            }
+                        }
+                    }
                 }
             }
             return modifications;
         }).then((modifications) => Promise.all(modifications))
+        .then(() => client.end())
+        .catch((err) => console.error(err))
     )
-
-
+).catch((err) => console.error(err))
