@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {FC} from 'react'
 import { SchedulingColumn } from './SchedulingColumn';
 
 const MW_classlength = 50;
@@ -297,8 +297,10 @@ const F_schedule: any = [
   {course: 313, section: 126, start: MW_A3, end: MW_A3_extralong},
   {course: 315, section: 127, start: MW_A3, end: MW_A3_extralong},
 ]
-
-export const SchedulingRender = () => {
+interface Props {
+    filter: Object
+}
+export const SchedulingRender: FC<Props> = ({filter}) => {
   let grid = [];
   for (let i = 0; i < 5*11; i++) {
     grid.push(<div></div>)
@@ -307,11 +309,11 @@ export const SchedulingRender = () => {
   return (
     <div className="render-container">
       <div className="render-content">
-        < SchedulingColumn blocks={M_schedule} />
-        < SchedulingColumn blocks={TH_shcedule} />
-        < SchedulingColumn blocks={W_schedule} />
-        < SchedulingColumn blocks={TH_shcedule} />
-        < SchedulingColumn blocks={F_schedule} end={true} />
+        < SchedulingColumn blocks={M_schedule} filter={filter}/>
+        < SchedulingColumn blocks={TH_shcedule} filter={filter} />
+        < SchedulingColumn blocks={W_schedule} filter={filter}/>
+        < SchedulingColumn blocks={TH_shcedule} filter={filter} />
+        < SchedulingColumn blocks={F_schedule} end={true} filter={filter}/>
       </div>
     </div>
   )

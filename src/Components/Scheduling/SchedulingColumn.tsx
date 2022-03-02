@@ -4,7 +4,8 @@ import { SchedulingBlock } from './SchedulingBlock';
 const numHours = 11;
 interface Props {
   blocks: any, // The blocks to be displayed for this day of the week
-  end? : boolean // Basic styling prop, the column on the end doesn't get a border on the right
+  end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
+  filter: Object
 }
 
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
@@ -26,7 +27,7 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: CourseInstance[]) => {
+const generateBlocks = (data: CourseInstance[], filter:any) => {
   data.sort((a, b) => {
     // Sort by start time
     if (a.start.getTime() < b.start.getTime()) return -1;
@@ -83,11 +84,11 @@ const generateBlocks = (data: CourseInstance[]) => {
   }
 
   // console.log(base);
-  return placeBlocks(base);
+  return placeBlocks(base, filter);
 
 }
   
-const placeBlocks = (blocks: CourseInstance[]) => {
+const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
     if (Array.isArray(outer)) {
       return (
@@ -98,7 +99,7 @@ const placeBlocks = (blocks: CourseInstance[]) => {
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
               { row.map(c => (
-                < SchedulingBlock course_instance={c} />
+                ( filter[c.course] ? < SchedulingBlock course_instance={c} /> : null) //to move into SchedulingBlock for animation
               )) }
             </div>
           ))}
@@ -106,7 +107,7 @@ const placeBlocks = (blocks: CourseInstance[]) => {
       )
     } else {
       return (
-        < SchedulingBlock course_instance={outer} />
+        (filter[outer.course] ? < SchedulingBlock course_instance={outer} /> : null) //to move into SchedulingBlock for animation
       )
     }
   }
@@ -137,7 +138,7 @@ const placeBlocks = (blocks: CourseInstance[]) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
   let style = {};
   if (end) {
     style = {border: '0'}
@@ -151,7 +152,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end}) => {
   return (
     <div className="vstack grow-h day" style={style}>
       {dividers}
-      { generateBlocks(blocks) }
+      { generateBlocks(blocks,filter) }
     </div>
   )
 }
