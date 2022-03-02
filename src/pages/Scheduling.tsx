@@ -7,7 +7,7 @@ import './../Components/common.scss';
 
 export const Scheduling = () => {
   return (
-    <div className="Scheduling">
+    <div className="App">
       <div className="app-body">
       < EmployeeList />
       < SchedulingWindow />
