@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { OuterExpressionKinds } from 'typescript';
 import { SchedulingBlock } from './SchedulingBlock';
 
 const numHours = 11;
@@ -100,7 +101,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
               { row.map(c => (
-                ( filter[c.course] ? < SchedulingBlock course_instance={c} /> : null) //to move into SchedulingBlock for animation
+                < SchedulingBlock course_instance={c} visible={filter[c.course]}/>
               )) }
             </div>
           ))}
@@ -108,7 +109,8 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
       )
     } else {
       return (
-        (filter[outer.course] ? < SchedulingBlock course_instance={outer} /> : null) //to move into SchedulingBlock for animation
+        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} />
+        // (filter[outer.course] ? < SchedulingBlock course_instance={outer} /> : null) //to move into SchedulingBlock for animation
       )
     }
   }
