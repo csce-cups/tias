@@ -299,8 +299,10 @@ const F_schedule: any = [
 ]
 interface Props {
     filter: Object
+    dayFilter: Boolean[]
+    update: (i: Number)=>()=>void //function
 }
-export const SchedulingRender: FC<Props> = ({filter}) => {
+export const SchedulingRender: FC<Props> = ({filter,dayFilter, update}) => {
   let grid = [];
   for (let i = 0; i < 5*11; i++) {
     grid.push(<div></div>)
@@ -309,11 +311,11 @@ export const SchedulingRender: FC<Props> = ({filter}) => {
   return (
     <div className="render-container">
       <div className="render-content">
-        < SchedulingColumn blocks={M_schedule} filter={filter}/>
-        < SchedulingColumn blocks={TH_shcedule} filter={filter} />
-        < SchedulingColumn blocks={W_schedule} filter={filter}/>
-        < SchedulingColumn blocks={TH_shcedule} filter={filter} />
-        < SchedulingColumn blocks={F_schedule} end={true} filter={filter}/>
+        {(dayFilter[0] ? < SchedulingColumn blocks={M_schedule} filter={filter} update={update(0)}/> : null)}
+        {(dayFilter[1] ? < SchedulingColumn blocks={TH_shcedule} filter={filter} update={update(1)}/>: null)}
+        {(dayFilter[2] ? < SchedulingColumn blocks={W_schedule} filter={filter} update={update(2)}/>: null)}
+        {(dayFilter[3] ? < SchedulingColumn blocks={TH_shcedule} filter={filter} update={update(3)}/>: null)}
+        {(dayFilter[4] ?  < SchedulingColumn blocks={F_schedule} end={true} filter={filter} update={update(4)}/>: null)}
       </div>
     </div>
   )
