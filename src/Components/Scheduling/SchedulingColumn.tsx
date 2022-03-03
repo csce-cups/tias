@@ -6,7 +6,6 @@ interface Props {
   blocks: any, // The blocks to be displayed for this day of the week
   end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
   filter: Object
-  update: ()=>void
 }
 
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
@@ -139,7 +138,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end, filter, update}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
   let style = {};
   if (end) {
     style = {border: '0'}
@@ -151,7 +150,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter, update}) => {
   }
 
   return (
-    <div className="vstack grow-h day" style={style} onClick={update}>
+    <div className="vstack grow-h day" style={style}>
       {dividers}
       { generateBlocks(blocks,filter) }
     </div>
