@@ -110,7 +110,6 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     } else {
       return (
         < SchedulingBlock course_instance={outer} visible={filter[outer.course]} />
-        // (filter[outer.course] ? < SchedulingBlock course_instance={outer} /> : null) //to move into SchedulingBlock for animation
       )
     }
   }

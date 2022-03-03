@@ -297,12 +297,14 @@ const F_schedule: any = [
   {course: 313, section: 126, start: MW_A3, end: MW_A3_extralong},
   {course: 315, section: 127, start: MW_A3, end: MW_A3_extralong},
 ]
+
 interface Props {
     filter: Object
     dayFilter: Boolean[]
     update: (i: Number)=>()=>void //function
 }
-export const SchedulingRender: FC<Props> = ({filter,dayFilter, update}) => {
+
+export const SchedulingRender: FC<Props> = ({filter, dayFilter, update}) => {
   let grid = [];
   for (let i = 0; i < 5*11; i++) {
     grid.push(<div></div>)
@@ -315,7 +317,7 @@ export const SchedulingRender: FC<Props> = ({filter,dayFilter, update}) => {
         {(dayFilter[1] ? < SchedulingColumn blocks={TH_shcedule} filter={filter} update={update(1)}/>: null)}
         {(dayFilter[2] ? < SchedulingColumn blocks={W_schedule} filter={filter} update={update(2)}/>: null)}
         {(dayFilter[3] ? < SchedulingColumn blocks={TH_shcedule} filter={filter} update={update(3)}/>: null)}
-        {(dayFilter[4] ?  < SchedulingColumn blocks={F_schedule} end={true} filter={filter} update={update(4)}/>: null)}
+        {(dayFilter[4] ? < SchedulingColumn blocks={F_schedule} filter={filter} update={update(4)} end={true} />: null)}
       </div>
     </div>
   )
