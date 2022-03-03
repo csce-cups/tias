@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import { OuterExpressionKinds } from 'typescript';
 import { SchedulingBlock } from './SchedulingBlock';
 
 const numHours = 11;
