@@ -128,6 +128,7 @@ $light : white;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
+			padding-right: 5px;
 		}
 
 		.center {
@@ -264,14 +265,9 @@ $day_divider_size : 1.5px;
 			padding-bottom: 5px;
 		}
 	}
-	
-	.block:hover {
-		// z-index: 1;
-		box-shadow: 0 0 5px 0;
-		// position: absolute;
-		height: 100%;
-		// width: 1000%;
-		transform: scaleX(1.1);
+
+	.block.deselected {
+		filter: brightness(50%); // To overwrite element.style given by javascript
 	}
 }
 
@@ -320,6 +316,44 @@ $day_divider_size : 1.5px;
 		cursor: pointer;
 	}
 }
+
+
+.dot {
+	width: min(50%, 0.8em);
+	aspect-ratio: 1 / 1;
+	padding: 0;
+	margin: 10px 0 0 0;
+	background-color: $accent;
+	border-radius: 50%;
+	border: 0.15em solid $render_background;
+	display: inline-block;
+
+	transition: all .2s ease-in-out;
+}
+
+.dot.inactive {
+	background-color: transparent;
+	border: 0.15em solid black;
+}
+
+.dot.deemphasized {
+	border: 0.15em solid black;
+	transform: scale(0.3);
+}
+
+.dot.deselected {
+	border: 0.15em solid black;
+	transform: scale(0.3);
+}
+
+.dot.emphasized {
+	transform: scale(1.3);
+}
+
+.dot.selected {
+	transform: scale(1.3);
+}
+
 
 img {
 	max-height: 20px;
