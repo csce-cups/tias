@@ -297,11 +297,9 @@ const F_schedule: any = [
   {course: 313, section: 126, start: MW_A3, end: MW_A3_extralong},
   {course: 315, section: 127, start: MW_A3, end: MW_A3_extralong},
 ]
-
 interface Props {
     filter: Object
 }
-
 export const SchedulingRender: FC<Props> = ({filter}) => {
   let grid = [];
   for (let i = 0; i < 5*11; i++) {
@@ -311,11 +309,11 @@ export const SchedulingRender: FC<Props> = ({filter}) => {
   return (
     <div className="render-container">
       <div className="render-content">
-        < SchedulingColumn blocks={M_schedule} filter={filter}/>
-        < SchedulingColumn blocks={TH_shcedule} filter={filter}/>
-        < SchedulingColumn blocks={W_schedule} filter={filter}/>
-        < SchedulingColumn blocks={TH_shcedule} filter={filter}/>
-        < SchedulingColumn blocks={F_schedule} filter={filter} end={true} />
+        < SchedulingColumn blocks={M_schedule} filter={filter} /> 
+        < SchedulingColumn blocks={TH_shcedule} filter={filter} />
+        < SchedulingColumn blocks={W_schedule} filter={filter} />
+        < SchedulingColumn blocks={TH_shcedule} filter={filter} />
+        < SchedulingColumn blocks={F_schedule} end={true} filter={filter} />
       </div>
     </div>
   )

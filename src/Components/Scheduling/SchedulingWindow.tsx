@@ -17,10 +17,11 @@ export const SchedulingWindow: FC<Props> = () => {
     315: true
   });
   // (filter[course.num] ? <course/> : null)
+
   return (
     <div className="vstack main">
       < SchedulingHeader />
-      < SchedulingRender filter={filter}/>
+      < SchedulingRender filter={filter} />
       < SchedulingFilter filter={filter} setFilter={setFilter}/>
     </div>
   )
