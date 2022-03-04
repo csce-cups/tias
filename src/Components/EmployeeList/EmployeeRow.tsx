@@ -16,7 +16,7 @@ export const EmployeeRow: FC<Props> = ({element}) => {
          {element}
         </div>
         <div className="element right">
-          < Dot styles={{margin: '0', width: '0.7em'}}/>
+          < Dot linkID={Math.floor(Math.random()*20)} styles={{margin: '0', width: '0.7em'}}/> {/* TODO: Random Keys to be replaced */}
         </div>
       </div>
       <div className="hr-container">

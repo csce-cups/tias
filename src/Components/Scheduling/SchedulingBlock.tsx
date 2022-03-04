@@ -25,7 +25,7 @@ export const SchedulingBlock: FC<Props> = ({course_instance}) => {
   return (
     <div className="block" style={{backgroundColor: colors.get(course_instance.course)}}>
       <div className="block-indicator slim">
-        < Dot />
+        < Dot linkID={Math.floor(Math.random()*20)}/> {/* TODO: Random Keys to be replaced */}
       </div>
       <div className="block-text">
         {course_instance.section}

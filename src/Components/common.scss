@@ -265,6 +265,10 @@ $day_divider_size : 1.5px;
 			padding-bottom: 5px;
 		}
 	}
+
+	.block.deselected {
+		filter: brightness(50%); // To overwrite element.style given by javascript
+	}
 }
 
 .fill {
@@ -313,6 +317,7 @@ $day_divider_size : 1.5px;
 	}
 }
 
+
 .dot {
 	width: min(50%, 0.8em);
 	aspect-ratio: 1 / 1;
@@ -323,21 +328,32 @@ $day_divider_size : 1.5px;
 	border: 0.15em solid $render_background;
 	display: inline-block;
 
-	transition: all .1s ease-in-out;
+	transition: all .2s ease-in-out;
 }
 
 .dot.inactive {
-	background-color: $render_background;
-	border: 0.1em solid black;
+	background-color: transparent;
+	border: 0.15em solid black;
 }
 
-.dot:hover {
-	transform: scale(1.2);
+.dot.deemphasized {
+	border: 0.15em solid black;
+	transform: scale(0.3);
 }
 
-.dot.inactive:hover {
-	transform: none;
+.dot.deselected {
+	border: 0.15em solid black;
+	transform: scale(0.3);
 }
+
+.dot.emphasized {
+	transform: scale(1.3);
+}
+
+.dot.selected {
+	transform: scale(1.3);
+}
+
 
 img {
 	max-height: 20px;
