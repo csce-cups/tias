@@ -23,7 +23,6 @@ const modifyBlocks = (id: number, newClass: string, inverted: boolean = false, r
 }
 
 
-
 export const Dot: FC<Props> = ({linkID, styles}) => {
   const [selected, setSelected] = useState(false);
   const ref: any = useRef(null);
