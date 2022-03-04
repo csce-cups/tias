@@ -63,7 +63,7 @@ const course_type_map = {
   PRL: "Private Lesson",
 };
 
-const to_db_time = (time) => time + ":00";
+const to_db_time = time => `${time}:00`;
 
 const update_course_sections = (
   dbobj,
