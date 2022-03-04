@@ -1,4 +1,5 @@
 import React, { FC } from 'react'
+import { Dot } from '../Misc/Dot'
 
 const colors = new Map()
 colors.set(121, '#0086B6');
@@ -24,7 +25,7 @@ export const SchedulingBlock: FC<Props> = ({course_instance}) => {
   return (
     <div className="block" style={{backgroundColor: colors.get(course_instance.course)}}>
       <div className="block-indicator slim">
-        •
+        < Dot />
       </div>
       <div className="block-text">
         {course_instance.section}

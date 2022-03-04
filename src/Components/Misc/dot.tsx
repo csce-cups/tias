@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { FC } from 'react'
 
-export const dot = () => {
+interface Props {
+  styles?: any
+}
+
+export const Dot: FC<Props> = ({styles}) => {
   return (
-	<div>dot</div>
+    <div className="dot" style={styles}/>
   )
 }

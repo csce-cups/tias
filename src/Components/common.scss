@@ -128,6 +128,7 @@ $light : white;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
+			padding-right: 5px;
 		}
 
 		.center {
@@ -264,15 +265,6 @@ $day_divider_size : 1.5px;
 			padding-bottom: 5px;
 		}
 	}
-	
-	.block:hover {
-		// z-index: 1;
-		box-shadow: 0 0 5px 0;
-		// position: absolute;
-		height: 100%;
-		// width: 1000%;
-		transform: scaleX(1.1);
-	}
 }
 
 .fill {
@@ -319,6 +311,32 @@ $day_divider_size : 1.5px;
 		color: darken($light, 20%);
 		cursor: pointer;
 	}
+}
+
+.dot {
+	width: min(50%, 0.8em);
+	aspect-ratio: 1 / 1;
+	padding: 0;
+	margin: 10px 0 0 0;
+	background-color: $accent;
+	border-radius: 50%;
+	border: 0.15em solid $render_background;
+	display: inline-block;
+
+	transition: all .1s ease-in-out;
+}
+
+.dot.inactive {
+	background-color: $render_background;
+	border: 0.1em solid black;
+}
+
+.dot:hover {
+	transform: scale(1.2);
+}
+
+.dot.inactive:hover {
+	transform: none;
 }
 
 img {

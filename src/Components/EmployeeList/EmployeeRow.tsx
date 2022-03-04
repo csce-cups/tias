@@ -1,4 +1,5 @@
 import React, { FC } from 'react'
+import { Dot } from '../Misc/Dot'
 
 interface Props {
 	element: string // The body of the list element
@@ -15,7 +16,7 @@ export const EmployeeRow: FC<Props> = ({element}) => {
          {element}
         </div>
         <div className="element right">
-          •
+          < Dot styles={{margin: '0', width: '0.7em'}}/>
         </div>
       </div>
       <div className="hr-container">
