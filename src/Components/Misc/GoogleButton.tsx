@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 
+const tiasClientID : string = (process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID as string)
+let clientUsername = ""
+
 interface GoogleProps {
   onClick: () => void;
   disabled?: boolean | undefined;
@@ -29,7 +32,8 @@ export const GoogleButton = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
   const googleResponseCallback = (response: any) => {
-    setLoggedIn(!loggedIn);
+    clientUsername = response.Du.VX
+    setLoggedIn(true);
   };
 
   const logoutSuccess = () => {
@@ -40,23 +44,26 @@ export const GoogleButton = () => {
     <>
       { (loggedIn)? 
         <GoogleLogout
-          clientId=""
+          clientId={tiasClientID}
+          buttonText={`Logged in as ${clientUsername}. Click to sign out.`}
           onLogoutSuccess={logoutSuccess}
           onFailure={() => {}}
-          render={renderProps => (
-            <button onClick={renderProps.onClick} disabled={renderProps.disabled}>
-              <u>Sign Out</u>
-            </button>
-          )}
+          // render={renderProps => (
+          //   <button onClick={renderProps.onClick} disabled={renderProps.disabled}>
+          //     <u>Sign Out</u>
+          //   </button>
+          // )}
+
         />
         : 
         <GoogleLogin
-          clientId=""
-          buttonText="Sign in with Google"
+          clientId={tiasClientID}
+          buttonText="Sign in"
           onSuccess={googleResponseCallback}
           onFailure={(a: any) => console.log(a)}
           cookiePolicy={"single_host_origin"}
           isSignedIn={true}
+          hostedDomain="tamu.edu"
           render={renderProps => (
             <div className="vstack google">
               {button(renderProps)}
