@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Palette from '../../assets/colors.json'
+import uuid from '../../uuid'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page
@@ -76,6 +77,7 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
       onMouseOver={emphasizeLinked} 
       onMouseOut={deemphasizeLinked}
       onClick={() => toggleSelect()}
+      data-testid="dot"
     />
   )
 }

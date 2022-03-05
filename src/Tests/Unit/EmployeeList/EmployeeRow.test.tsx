@@ -7,7 +7,7 @@ configure({testIdAttribute: 't-id'});
 
 describe('EmployeeRow', () => {
     let subject: RenderResult;
-    beforeEach(() => subject = render(< EmployeeRow element={"John Doe"} tid={'1'}/>))
+    beforeEach(() => subject = render(< EmployeeRow element={"John Doe"} />))
     
     it('has a checkbox', () => {
         const element = screen.getByRole('checkbox');
@@ -18,9 +18,4 @@ describe('EmployeeRow', () => {
         const text = screen.getByText(/John Doe/i);
         expect(text).toBeInTheDocument();
     });
-
-    it('contains a dot', () => {
-        const dotSelector = {'class': 'dot'}
-        expect(subject.getAllByTestId("1")).toContainEqual(dotSelector);
-    })
 });
