@@ -77,18 +77,18 @@ exports.handler = async (event) => {
     let professorId = event.pathParameters.userId;
     
     await prefetchDBInfo();
-    await queryUserTeachingAssistants(professorId)
-            .then((dbRows) => {
-                console.log('dbRows is', dbRows);
-                
-                const response = {
-                    statusCode: 200,
-                    body: {teachingAssistants: JSON.stringify(dbRows)}
-                };
-                
-                console.log(JSON.stringify(response));
-                
-                return response;
-            })
-            .catch((error) => {console.error(error)});
+    let dbRows = await queryUserTeachingAssistants(professorId);
+    
+    const responseBody = {
+        "teachingAssistants": dbRows
+    };
+
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json" },
+        "body": JSON.stringify(responseBody)
+    };
+
+    return response;
 };
