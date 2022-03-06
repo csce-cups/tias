@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import uuid from '../../uuid';
 import { SchedulingBlock } from './SchedulingBlock';
 
 const numHours = 11;
@@ -90,14 +91,14 @@ const placeBlocks = (blocks: CourseInstance[]) => {
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
     if (Array.isArray(outer)) {
       return (
-        <div className="vstack">
+        <div key={uuid()} className="vstack">
           { outer.map(row => (
-            <div className="hstack block-container" style={{
+            <div key={uuid()} className="hstack block-container" style={{
               height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
               { row.map(c => (
-                < SchedulingBlock course_instance={c} />
+                < SchedulingBlock key={uuid()} course_instance={c} />
               )) }
             </div>
           ))}
@@ -105,7 +106,7 @@ const placeBlocks = (blocks: CourseInstance[]) => {
       )
     } else {
       return (
-        < SchedulingBlock course_instance={outer} />
+        < SchedulingBlock key={uuid()} course_instance={outer} />
       )
     }
   }
@@ -122,7 +123,7 @@ const placeBlocks = (blocks: CourseInstance[]) => {
   return (
     <>
       { blocks.map((set: any, idx: number) => (
-        <div className="block-container hstack fill" style={{ 
+        <div key={uuid()} className="block-container hstack fill" style={{ 
           padding: 0, 
           height: `${time_to_height(set[0].start, set[0].end)}%`,
           top: `${start_time_to_top(set[0].start)}%`
@@ -144,7 +145,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end}) => {
 
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
-    dividers[i] = <div className="divider"></div>;
+    dividers[i] = <div key={uuid()} className="divider"></div>;
   }
 
   return (

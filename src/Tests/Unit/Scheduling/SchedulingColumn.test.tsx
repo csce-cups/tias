@@ -4,6 +4,12 @@ import { SchedulingColumn } from '../../../Components/Scheduling/SchedulingColum
 import BlockFormer from '../../../Components/Scheduling/BlockFormer'
 
 describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
+    it('exists', () => {
+        render(< SchedulingColumn blocks={[
+            {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+        ]} />);
+    });
+    
     describe('Single elements', () => {
         it('displays one short element', () => {
             render(< SchedulingColumn blocks={[
