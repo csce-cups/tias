@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { ScheduleRow } from './ScheduleRow'
 
 interface Props {
-	
+	data?: string[]
 }
 
 function getData(): Array<string> {
@@ -12,7 +12,8 @@ function getData(): Array<string> {
 	];
 }
 
-export const ScheduleList: FC<Props> = () => {
+export const ScheduleList: FC<Props> = ({data}) => {
+  if (data === undefined) data = getData();
   return (
     <div className="vstack">
       <div className="header">
@@ -20,7 +21,7 @@ export const ScheduleList: FC<Props> = () => {
       </div>
 
       <div className="scrollable">
-        { getData().map((e, index) => (
+        { data.map((e, index) => (
           < ScheduleRow key={index} element={e} />
         ))}
       </div>
