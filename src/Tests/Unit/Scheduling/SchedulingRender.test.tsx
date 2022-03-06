@@ -11,6 +11,7 @@ jest.mock("../../../Components/Scheduling/SchedulingColumn", () => {
     }
 })
 
+
 describe('SchedulingRender', () => {
     beforeEach(() => render(< SchedulingRender />));
     
