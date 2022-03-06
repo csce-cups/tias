@@ -81,7 +81,6 @@ const generateBlocks = (data: CourseInstance[]) => {
     base.push(outer);
 
   }
-
   // console.log(base);
   return placeBlocks(base);
 
