@@ -1,10 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from '../../Components/App';
-import { NavBar } from '../../Components/NavBar';
-import { EmployeeList } from '../../Components/EmployeeList/EmployeeList';
-import { SchedulingWindow } from '../../Components/Scheduling/SchedulingWindow';
-import { ScheduleList } from '../../Components/ScheduleList/ScheduleList';
 
 jest.mock("../../Components/NavBar", () => {
     return {
