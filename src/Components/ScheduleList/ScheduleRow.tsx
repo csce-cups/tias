@@ -7,7 +7,7 @@ import popcorn5 from '../../assets/Popcorn_5.png'
 import popcorn6 from '../../assets/Popcorn_6.png'
 
 interface Props {
-	element: string
+	element: string // The body of the list element
 }
 
 export const ScheduleRow: FC<Props> = ({element}) => {
@@ -15,7 +15,7 @@ export const ScheduleRow: FC<Props> = ({element}) => {
 		<>
       <div className="hstack">
         <div className="element left">
-          <img src={popcorn1} alt="do this later"/>
+          <img src={popcorn1} alt="FIXME"/>
         </div>
         <div className="element right">
          {element}
