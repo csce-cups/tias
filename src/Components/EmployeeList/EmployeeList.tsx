@@ -4,7 +4,7 @@ import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
 
 interface Props {
-	
+	data?: string[]
 }
 
 function getData(): Array<string> {
@@ -65,23 +65,24 @@ function getData(): Array<string> {
 	];
 }
 
-export const EmployeeList: FC<Props> = () => {
+export const EmployeeList: FC<Props> = ({data}) => {
+  if (data === undefined) data = getData();
   return (
-	<div className="vstack">
-    <div className="header">
-		  <h2 className="slim">Employee</h2>
-    </div>
+    <div className="vstack">
+      <div className="header">
+        <h2 className="slim">Employee</h2>
+      </div>
 
-    <div className="scrollable">
-      { getData().map((e, index) => (
-        < EmployeeRow key={index} element={e} />
-      ))}
-    </div>
+      <div className="scrollable">
+        { data.map((e, index) => (
+          < EmployeeRow key={index} element={e} />
+        ))}
+      </div>
 
-    <div className="vstack top-border">
-      < GenerateButton />
-      < AcceptButton />
+      <div className="vstack top-border">
+        < GenerateButton />
+        < AcceptButton />
+      </div>
     </div>
-	</div>
   )
 }
