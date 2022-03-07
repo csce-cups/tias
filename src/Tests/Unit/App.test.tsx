@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from '../../Components/App';
 
-jest.mock("../../Components/NavBar", () => {
+jest.mock("../../Components/Misc/NavBar", () => {
     return {
         __esModule: true,
         NavBar: () => {
