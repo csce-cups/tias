@@ -1,15 +1,28 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route}
-    from 'react-router-dom';
-import { NavBar } from '../Components/NavBar';
-import { EmployeeList } from '../Components/EmployeeList/EmployeeList';
-import { ScheduleList } from '../Components/ScheduleList/ScheduleList';
-import { SchedulingWindow } from '../Components/Scheduling/SchedulingWindow';
 import './../Components/common.scss';
 
 export const Profile = () => {
   return (
-    <div className="Profile">
+    <div className="Profile hstack">
+      <div className="vstack" style={{width :"20vw"}}>
+        <div className="scrollable">side bar </div>
+      </div>
+      <div className="vstack main">
+        <div className="hstack"> 
+          <button className="green button">Upload Schedule</button>
+          <div className="left element">Last Updated: </div>
+          <div className="fill element"/>
+          <div className="element">Jan 1, 1970</div>
+        </div>
+        <div className="vstack">
+          <div className="header">
+            Courses
+          </div>
+          <div className="render-container">
+              CSCE 110
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -109,35 +109,38 @@ $google_bg: white;
 		border-right: 1px solid $light;
 	}
 
-	.hstack {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
-	
-		padding-top: 5px;
-	
-		.element {
-			padding-left: 5px;
-		}
+}
+.Profile {
+	flex: 1 1 auto;
+}
+.hstack {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
 
-		.left {
-			flex: 0 0 auto;
-		}
-		
-		.label {
-			flex: 0 1 auto;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			white-space: nowrap;
-			padding-right: 5px;
-		}
+	padding-top: 5px;
 
-		.center {
-			flex: 1 1 auto;
-			text-align: center;
-		}
-		
+	.element {
+		padding-left: 5px;
 	}
+
+	.left {
+		flex: 0 0 auto;
+	}
+	
+	.label {
+		flex: 0 1 auto;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		padding-right: 5px;
+	}
+
+	.center {
+		flex: 1 1 auto;
+		text-align: center;
+	}
+	
 }
 
 .right {
