@@ -1,4 +1,5 @@
 import React, { FC } from 'react'
+import { Dot } from '../Misc/Dot'
 
 interface Props {
 	element: string // The body of the list element
@@ -15,7 +16,7 @@ export const EmployeeRow: FC<Props> = ({element}) => {
          {element}
         </div>
         <div className="element right">
-          •
+          < Dot linkID={Math.floor(Math.random()*20)} styles={{margin: '0', width: '0.7em'}}/> {/* TODO: Random Keys to be replaced */}
         </div>
       </div>
       <div className="hr-container">

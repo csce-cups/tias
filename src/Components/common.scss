@@ -6,6 +6,7 @@ $accent : #800000;
 $render_background : #d3dbdc;
 $render_divider : #85929C;
 $light : white;
+$google_bg: white;
 
 .App {
 	display: flex;
@@ -128,6 +129,7 @@ $light : white;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
+			padding-right: 5px;
 		}
 
 		.center {
@@ -250,7 +252,7 @@ $day_divider_size : 1.5px;
 	
 		border-radius: 3px;
 
-		transition: all .1s ease-in-out;
+		transition: all .2s ease-in-out;
 
 		.block-indicator {
 			flex: 1 1 auto;
@@ -264,14 +266,9 @@ $day_divider_size : 1.5px;
 			padding-bottom: 5px;
 		}
 	}
-	
-	.block:hover {
-		// z-index: 1;
-		box-shadow: 0 0 5px 0;
-		// position: absolute;
-		height: 100%;
-		// width: 1000%;
-		transform: scaleX(1.1);
+
+	.block.deselected {
+		filter: brightness(50%); // To overwrite element.style given by javascript
 	}
 }
 
@@ -319,6 +316,86 @@ $day_divider_size : 1.5px;
 		color: darken($light, 20%);
 		cursor: pointer;
 	}
+}
+
+.google {
+	button {
+		background-color: $google_bg;
+		display: inline-flex;
+		align-items: center;
+		color: rgba(0, 0, 0, 0.54);
+		padding: 0px;
+		border-radius: 2px;
+		border: 1px solid transparent;
+		font-size: 15px;
+		font-weight: 500;
+		font-family: Roboto, sans-serif;
+		opacity: 0.95;
+		height: 100%;
+
+		transition: all 0.1s ease-in-out;
+	}
+	
+	.vstack {
+		margin-right: 10px;
+		// background: rgb(255, 255, 255);
+		padding: 0px 10px;
+		border-radius: 2px;
+	}
+
+	span {
+		padding-right: 10px;
+		font-weight: 500;
+	}	
+}
+
+.google button:hover {
+	background-color: darken($google_bg, 10%);
+	cursor: pointer;
+}
+
+.dot {
+	width: min(50%, 0.8em);
+	aspect-ratio: 1 / 1;
+	padding: 0;
+	margin: 10px 0 0 0;
+	background-color: $accent;
+	border-radius: 50%;
+	border: 0.15em solid $render_background;
+	display: inline-block;
+
+	transition: all .2s ease-in-out;
+}
+
+.dot.inactive {
+	background-color: transparent;
+	border: 0.15em solid black;
+}
+
+.dot.deemphasized {
+	border: 0.15em solid black;
+	transform: scale(0.3);
+}
+
+.dot.deselected {
+	border: 0.15em solid black;
+	transform: scale(0.3);
+}
+
+.dot.emphasized {
+	transform: scale(1.3);
+}
+
+.dot.selected {
+	transform: scale(1.3);
+}
+
+.dot.emphasized:hover {
+	cursor: pointer;
+}
+
+.dot.selected:hover {
+	cursor: pointer;
 }
 
 img {
