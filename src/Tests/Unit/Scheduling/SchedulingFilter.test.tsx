@@ -4,7 +4,7 @@ import { SchedulingFilter } from '../../../Components/Scheduling/SchedulingFilte
 
 
 describe('SchedulingFilter', () => {
-    beforeEach(() => render(< SchedulingFilter />));
+    beforeEach(() => render(< SchedulingFilter filter={{}} setFilter={() => {}}/>));
     
     it('displays courses', () => {
         expect(screen.getByText(/121/)).toBeInTheDocument();
@@ -17,4 +17,6 @@ describe('SchedulingFilter', () => {
 
     it.todo('has has a show all button');
     it.todo('has has a show none button');
+
+    it.todo('filters blocks');
 });

@@ -152,7 +152,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
   return (
     <div className="vstack grow-h day" style={style} >
       {dividers}
-      { generateBlocks(blocks,filter) }
+      { generateBlocks(blocks, filter) }
     </div>
   )
 }

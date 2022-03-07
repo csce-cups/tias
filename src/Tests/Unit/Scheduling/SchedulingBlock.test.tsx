@@ -4,7 +4,7 @@ import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock'
 
 
 describe('SchedulingBlock', () => {
-    beforeEach(() => render(< SchedulingBlock course_instance={
+    beforeEach(() => render(< SchedulingBlock visible={true} course_instance={
         {
             course: 121, 
             section: 101, 
