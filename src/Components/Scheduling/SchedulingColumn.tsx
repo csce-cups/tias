@@ -92,14 +92,17 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
     if (Array.isArray(outer)) {
       return (
-        <div key={uuid()} className="vstack">
+        // Needs a key
+        <div className="vstack">
           { outer.map(row => (
-            <div key={uuid()} className="hstack block-container" style={{
+            // Needs a key
+            <div className="hstack block-container" style={{
               height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
               { row.map(c => (
-                < SchedulingBlock key={uuid()} course_instance={c} visible={filter[c.course]} />
+                // Needs a key
+                < SchedulingBlock course_instance={c} visible={filter[c.course]} />
               )) }
             </div>
           ))}
@@ -107,7 +110,8 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
       )
     } else {
       return (
-        < SchedulingBlock key={uuid()} course_instance={outer} visible={filter[outer.course]} />
+        // Needs a key
+        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} />
       )
     }
   }
@@ -124,7 +128,8 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   return (
     <>
       { blocks.map((set: any, idx: number) => (
-        <div key={uuid()} className="block-container hstack fill" style={{ 
+        // Needs a key
+        <div className="block-container hstack fill" style={{ 
           padding: 0, 
           height: `${time_to_height(set[0].start, set[0].end)}%`,
           top: `${start_time_to_top(set[0].start)}%`
@@ -146,7 +151,8 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
 
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
-    dividers[i] = <div key={uuid()} className="divider"></div>;
+    // Needs a key
+    dividers[i] = <div className="divider"></div>;
   }
 
   return (
