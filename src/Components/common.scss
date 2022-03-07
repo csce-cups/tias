@@ -404,3 +404,37 @@ $day_divider_size : 1.5px;
 img {
 	max-height: 20px;
 }
+
+.profile-picture {
+	max-height: 150px;
+	max-width: 150px;
+	vertical-align: middle;
+	top: 30%;
+	flex: 1 1 auto;
+	margin-left: 23px;	
+	border-left: 2px solid;
+	border-right: 2px solid;
+	border-top: 2px solid;
+	border-bottom: 2px solid;
+}
+
+.peer-teacher-heading {
+	flex: 1 1 auto;
+	position: relative;
+	top: 35%;
+	margin-left: 50px;
+}
+
+.name {
+	flex: 1 1 auto;
+	top: 35%;
+	margin-left: 50px;
+}
+
+
+.class-render-container {
+	flex: 1 1 auto;
+	display: flex;
+	position: relative;
+	border: 2px solid black;
+}
