@@ -390,6 +390,14 @@ $day_divider_size : 1.5px;
 	transform: scale(1.3);
 }
 
+.dot.emphasized:hover {
+	cursor: pointer;
+}
+
+.dot.selected:hover {
+	cursor: pointer;
+}
+
 img {
 	max-height: 20px;
 }
