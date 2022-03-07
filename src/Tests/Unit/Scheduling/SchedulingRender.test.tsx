@@ -13,7 +13,7 @@ jest.mock("../../../Components/Scheduling/SchedulingColumn", () => {
 
 
 describe('SchedulingRender', () => {
-    beforeEach(() => render(< SchedulingRender />));
+    beforeEach(() => render(< SchedulingRender filter={{}} />));
     
     it('renders 5 days', () => {
         expect(screen.getAllByTestId('column').length).toEqual(5);

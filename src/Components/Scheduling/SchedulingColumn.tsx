@@ -5,7 +5,8 @@ import { SchedulingBlock } from './SchedulingBlock';
 const numHours = 11;
 interface Props {
   blocks: any, // The blocks to be displayed for this day of the week
-  end? : boolean // Basic styling prop, the column on the end doesn't get a border on the right
+  end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
+  filter: Object
 }
 
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
@@ -27,7 +28,7 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: CourseInstance[]) => {
+const generateBlocks = (data: CourseInstance[], filter: any) => {
   data.sort((a, b) => {
     // Sort by start time
     if (a.start.getTime() < b.start.getTime()) return -1;
@@ -83,22 +84,25 @@ const generateBlocks = (data: CourseInstance[]) => {
 
   }
   // console.log(base);
-  return placeBlocks(base);
+  return placeBlocks(base, filter);
 
 }
   
-const placeBlocks = (blocks: CourseInstance[]) => {
+const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
     if (Array.isArray(outer)) {
       return (
-        <div key={uuid()} className="vstack">
+        // Needs a key
+        <div className="vstack">
           { outer.map(row => (
-            <div key={uuid()} className="hstack block-container" style={{
+            // Needs a key
+            <div className="hstack block-container" style={{
               height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
               { row.map(c => (
-                < SchedulingBlock key={uuid()} course_instance={c} />
+                // Needs a key
+                < SchedulingBlock course_instance={c} visible={filter[c.course]} />
               )) }
             </div>
           ))}
@@ -106,7 +110,8 @@ const placeBlocks = (blocks: CourseInstance[]) => {
       )
     } else {
       return (
-        < SchedulingBlock key={uuid()} course_instance={outer} />
+        // Needs a key
+        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} />
       )
     }
   }
@@ -123,7 +128,8 @@ const placeBlocks = (blocks: CourseInstance[]) => {
   return (
     <>
       { blocks.map((set: any, idx: number) => (
-        <div key={uuid()} className="block-container hstack fill" style={{ 
+        // Needs a key
+        <div className="block-container hstack fill" style={{ 
           padding: 0, 
           height: `${time_to_height(set[0].start, set[0].end)}%`,
           top: `${start_time_to_top(set[0].start)}%`
@@ -137,7 +143,7 @@ const placeBlocks = (blocks: CourseInstance[]) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
   let style = {};
   if (end) {
     style = {border: '0'}
@@ -145,13 +151,14 @@ export const SchedulingColumn: FC<Props> = ({blocks, end}) => {
 
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
-    dividers[i] = <div key={uuid()} className="divider"></div>;
+    // Needs a key
+    dividers[i] = <div className="divider"></div>;
   }
 
   return (
-    <div className="vstack grow-h day" style={style}>
+    <div className="vstack grow-h day" style={style} >
       {dividers}
-      { generateBlocks(blocks) }
+      { generateBlocks(blocks, filter) }
     </div>
   )
 }
