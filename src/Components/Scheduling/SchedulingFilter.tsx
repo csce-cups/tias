@@ -32,8 +32,6 @@ export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
     }   
   }
 
-  let wrap = (content: string, style?: object) => { return <div key={uuid()} className="center filter element" style={style}>{content}</div>}
-
   const len = filter_subjects.length
 
   for (let i = 0; i < len; i++) {

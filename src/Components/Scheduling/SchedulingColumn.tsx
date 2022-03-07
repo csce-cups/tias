@@ -28,7 +28,7 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: CourseInstance[], filter:any) => {
+const generateBlocks = (data: CourseInstance[], filter: any) => {
   data.sort((a, b) => {
     // Sort by start time
     if (a.start.getTime() < b.start.getTime()) return -1;
