@@ -2,12 +2,12 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Properties;
 
+import db.Availability;
+import db.Course;
 import db.Person;
 import db.Preference;
 import db.Qualification;
 import db.Section;
-import db.Availability;
-import db.Course;
 
 public class Driver {
     static Connection conn;
