@@ -1,12 +1,14 @@
 import React, { FC } from 'react';
-import uuid from '../../uuid';
 import { SchedulingBlock } from './SchedulingBlock';
 
-const numHours = 11;
+let numHours = 11;
+
 interface Props {
   blocks: any, // The blocks to be displayed for this day of the week
   end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
-  filter: Object
+  filter: Object,
+  day: string, // The day of the week
+  hours?: number, // The number of hours in a day
 }
 
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
@@ -29,6 +31,7 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
 }
 
 const generateBlocks = (data: CourseInstance[], filter: any) => {
+  // Data should be sorted by start time, class length, course number, and then by section number
   data.sort((a, b) => {
     // Sort by start time
     if (a.start.getTime() < b.start.getTime()) return -1;
@@ -70,20 +73,20 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
           temp_arr.push(data[i]);
           i++;
         }
-        // console.log("TEMP: ", temp_arr);
+        
         if (temp_arr.length > 0) inner.push(temp_arr);
 
       }
-      // console.log("INNER: ", inner);
+      
       if (inner.length > 0) outer.push(inner);
       else { outer.push(data[i]); i++;}
 
     }
-    // console.log("OUTER: ", outer);
+    
     base.push(outer);
 
   }
-  // console.log(base);
+  
   return placeBlocks(base, filter);
 
 }
@@ -143,11 +146,13 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) => {
   let style = {};
   if (end) {
     style = {border: '0'}
   }
+
+  if (hours !== undefined) numHours = hours;
 
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
@@ -157,8 +162,13 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
 
   return (
     <div className="vstack grow-h day" style={style} >
-      {dividers}
-      { generateBlocks(blocks, filter) }
+      <div className="day-label">
+        <b>{day}</b>
+      </div>
+      <div className="vstack day" style={style} >
+        { dividers }
+        { generateBlocks(blocks, filter) }
+      </div>
     </div>
   )
 }
