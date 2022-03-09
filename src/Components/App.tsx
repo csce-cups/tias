@@ -12,7 +12,7 @@ export const App = () => {
       <div className="app-body">
         < EmployeeList />
         < SchedulingWindow />
-        < ScheduleList />
+        {/* < ScheduleList /> */}
       </div>
     </div>
   );

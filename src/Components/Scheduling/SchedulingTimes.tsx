@@ -21,16 +21,15 @@ export const SchedulingTimes: FC<Props> = ({hours, start}) => {
   let times = [];
   for (let i = 0; i < hours; i++) {
     // Needs a key
-    times[i] = <div className="rt-time">{formatAMPM(start, i)}</div>;
+    times[i] = <div className="divider hover-divider">{formatAMPM(start, i)}</div>;
   }
 
   return (
-    <div className="render-times day">
+    <div className="vstack day" style={{borderTop: '2px solid transparent', width: '4em'}}>
+      <div className="day-label">&nbsp;</div>
       <div className="vstack day">
-      <div style={{height: '1.7em'}}/>
         { times }
       </div>
-      <div style={{height: '0.5em'}}/>
     </div>
   )
 }

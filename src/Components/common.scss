@@ -24,9 +24,9 @@ $google_bg: white;
 }
 
 .slim {
-	padding: 0 !important;
-	margin: 0  !important;
-	padding: 0 !important;
+	padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 .vstack.main {
@@ -197,7 +197,6 @@ $day_divider_size : 1.5px;
 	}
 	
 	.render-times {
-		font-size: 0.8em;
 		color: $render_divider;
 
 		display: flex;
@@ -235,11 +234,19 @@ $day_divider_size : 1.5px;
 		width: 100%;
 
 		div.divider {
+			font-size: 0.8em;
+			color: $render_divider;
 			flex: 1 1 auto;
-			border-style: dotted none;
+			border-style: dotted none none none;
 			border-width: 1px;
 			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
 		}
+
+		// div.hover-divider:hover {
+		// 	position: absolute;
+		// 	z-index: 1;
+		// 	width: 100%;
+		// }
 	}
 }
 
