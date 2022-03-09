@@ -3,10 +3,12 @@ import uuid from '../../uuid';
 import { SchedulingBlock } from './SchedulingBlock';
 
 const numHours = 11;
+
 interface Props {
   blocks: any, // The blocks to be displayed for this day of the week
   end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
-  filter: Object
+  filter: Object,
+  day: string, // The day of the week
 }
 
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
@@ -143,7 +145,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day}) => {
   let style = {};
   if (end) {
     style = {border: '0'}
@@ -157,8 +159,13 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter}) => {
 
   return (
     <div className="vstack grow-h day" style={style} >
-      {dividers}
-      { generateBlocks(blocks, filter) }
+      <div className="day-label">
+        <b>{day}</b>
+      </div>
+      <div className="vstack day" style={style} >
+        { dividers }
+        { generateBlocks(blocks, filter) }
+      </div>
     </div>
   )
 }

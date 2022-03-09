@@ -88,6 +88,7 @@ class BlockFormer {
     }
 
     static samples = {
+        Empty_schedule: [],
         M_schedule: [
             // MONDAYS //
             {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},

@@ -398,6 +398,12 @@ $day_divider_size : 1.5px;
 	cursor: pointer;
 }
 
+.day-label {
+	text-align: center;
+	color: $render_divider;
+	margin: 5px 0px;
+}
+
 img {
 	max-height: 20px;
 }
