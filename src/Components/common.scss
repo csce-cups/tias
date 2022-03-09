@@ -34,7 +34,7 @@ $google_bg: white;
 	border-left: 2px solid;
 	border-right: 2px solid;
 
-	padding-left: 15px;
+	padding-left: 5px;
 	padding-right: 15px;
 }
 
@@ -79,6 +79,7 @@ $google_bg: white;
 		border: 2px solid;
 		margin-top: 10px;
 		margin-bottom: 10px;
+		margin-left: 10px;
 		padding: 0;
 
 		background-color: $accent;
@@ -189,13 +190,33 @@ $day_divider_size : 1.5px;
 	display: flex;
 	position: relative;
 
-	border: 2px solid black;
+	.day-label {
+		text-align: center;
+		color: $render_divider;
+		margin: 5px 0px;
+	}
+	
+	.render-times {
+		font-size: 0.8em;
+		color: $render_divider;
+
+		display: flex;
+		flex-direction: column;
+
+		flex: 1 0 auto;
+
+		margin-right: 3px;
+
+		.rt-time {
+			flex: 1 1 auto;
+		}
+	}
 	
 	.render-content {
 		flex: 1 1 auto;
 		display: flex;
-		position: absolute;
-		
+
+		border: 2px solid black;
 		
 		width: 100%;
 		height: 100%;
@@ -204,25 +225,22 @@ $day_divider_size : 1.5px;
 			background-color: $render_background;
 			border-right: $day_divider_size solid $render_divider;
 		}
-		
-		.vstack {
+	}	
+
+	.vstack {
+		flex: 1 1 auto;
+		display: flex;
+
+		position: relative;
+		width: 100%;
+
+		div.divider {
 			flex: 1 1 auto;
-			display: flex;
-
-			position: relative;
-			width: 100%;
-
-			div.divider {
-				flex: 1 1 auto;
-				border-style: dotted none;
-				border-width: 1px;
-				border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
-			}
-
+			border-style: dotted none;
+			border-width: 1px;
+			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
 		}
 	}
-
-	
 }
 
 .block-container {
@@ -396,12 +414,6 @@ $day_divider_size : 1.5px;
 
 .dot.selected:hover {
 	cursor: pointer;
-}
-
-.day-label {
-	text-align: center;
-	color: $render_divider;
-	margin: 5px 0px;
 }
 
 img {

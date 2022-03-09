@@ -1,5 +1,4 @@
 import React, { FC } from 'react'
-import uuid from '../../uuid';
 import { Dot } from '../Misc/Dot'
 
 const colors = new Map()
