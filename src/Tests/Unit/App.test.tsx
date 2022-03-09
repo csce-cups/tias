@@ -29,15 +29,6 @@ jest.mock("../../Components/Scheduling/SchedulingWindow", () => {
     }
 })
 
-jest.mock("../../Components/ScheduleList/ScheduleList", () => {
-    return {
-        __esModule: true,
-        ScheduleList: () => {
-            return <div data-testid="ScheduleList"/>
-        }
-    }
-})
-
 describe('App', () => {
     beforeEach(() => render(< App />));
     
@@ -52,10 +43,6 @@ describe('App', () => {
     
         it('renders the navbar', () => {
             expect(screen.getByTestId('SchedulingWindow')).toBeInTheDocument();
-        });
-    
-        it('renders the navbar', () => {
-            expect(screen.getByTestId('ScheduleList')).toBeInTheDocument();
         });
     })
 });

@@ -241,12 +241,6 @@ $day_divider_size : 1.5px;
 			border-width: 1px;
 			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
 		}
-
-		// div.hover-divider:hover {
-		// 	position: absolute;
-		// 	z-index: 1;
-		// 	width: 100%;
-		// }
 	}
 }
 
