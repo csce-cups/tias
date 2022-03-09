@@ -9,7 +9,7 @@ interface GoogleProps {
   disabled?: boolean | undefined;
 }
 
-const button = (renderProps: GoogleProps) => {
+const button = (renderProps: GoogleProps, text: string) => {
   return (
     <button onClick={renderProps.onClick} disabled={renderProps.disabled}>
       <div className="vstack">
@@ -23,7 +23,7 @@ const button = (renderProps: GoogleProps) => {
           </g>
         </svg>
       </div>
-      <span>Sign in with Google</span>
+      <span>{text}</span>
     </button>
   )
 }
@@ -48,12 +48,11 @@ export const GoogleButton = () => {
           buttonText={`Logged in as ${clientUsername}. Click to sign out.`}
           onLogoutSuccess={logoutSuccess}
           onFailure={() => {}}
-          // render={renderProps => (
-          //   <button onClick={renderProps.onClick} disabled={renderProps.disabled}>
-          //     <u>Sign Out</u>
-          //   </button>
-          // )}
-
+          render={renderProps => (
+            <div className="vstack google">
+              {button(renderProps, `Logged in as ${clientUsername}. Click to sign out.`)}
+            </div>
+          )}
         />
         : 
         <GoogleLogin
@@ -66,7 +65,7 @@ export const GoogleButton = () => {
           hostedDomain="tamu.edu"
           render={renderProps => (
             <div className="vstack google">
-              {button(renderProps)}
+              {button(renderProps, 'Sign in with Google')}
             </div>
           )}
         />
