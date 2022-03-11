@@ -9,7 +9,7 @@ interface Props {
 
 // Adds or removes a class from dots with or without a certain link ID
 const modifyDots = (id: number, newClass: string, inverted: boolean = false, remove: boolean = false) => {
-  const selector = `div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
+  const selector = `div.hat${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}, div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
   let linked = Array.from(document.querySelectorAll(selector));
   if (remove) linked.forEach(e => e.classList.remove(newClass));
   else linked.forEach(e => e.classList.add(newClass));
@@ -17,7 +17,7 @@ const modifyDots = (id: number, newClass: string, inverted: boolean = false, rem
 
 // Adds or removes a class from blocks containing dots with or without a certain link ID
 const modifyBlocks = (id: number, newClass: string, inverted: boolean = false, remove: boolean = false) => {
-  const selector = `div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
+  const selector = `div.hat${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
   let linked = Array.from(document.querySelectorAll(selector));
   if (remove) linked.forEach(e => e.parentElement?.parentElement?.classList.remove(newClass));
   else linked.forEach(e => e.parentElement?.parentElement?.classList.add(newClass));
@@ -57,10 +57,14 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
 
     if (selected) { // Restores the page to no longer highlight certain dots
       modifyDots(linkID, 'selected', false, true);
+      modifyBlocks(linkID, 'selected', false, true);
+
       modifyDots(linkID, 'deselected', true, true);
       modifyBlocks(linkID, 'deselected', true, true);
     } else { // Shrinks other dots and blocks to allow focus on a particular set of dots
       modifyDots(linkID, 'selected');
+      modifyBlocks(linkID, 'selected');
+
       modifyDots(linkID, 'deselected', true);
       modifyBlocks(linkID, 'deselected', true);
     }
