@@ -395,6 +395,12 @@ $day_divider_size : 1.5px;
 	transition: all .2s ease-in-out;
 }
 
+.hat.selected {
+	height: 0.2em;
+	border-radius: 3px 3px 0 0;
+	border-bottom: 2px solid black;
+}
+
 .hat.emphasized {
 	height: 1em;
 	border-radius: 3px 3px 0 0;
@@ -402,10 +408,9 @@ $day_divider_size : 1.5px;
 }
 
 .hat.selected {
-	height: 1.3em;
-	border-radius: 3px 3px 0 0;
 	border-bottom: 2px solid black;
 }
+
 
 .dot.emphasized {
 	transform: scale(1.3);

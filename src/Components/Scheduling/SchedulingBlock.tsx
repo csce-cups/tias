@@ -40,11 +40,12 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible}) => {
       title={`${course_instance.course}-${course_instance.section}`} 
       style={{backgroundColor: colors.get(course_instance.course), ...isVisible}}
     >
-      <div className="block-indicator slim" style={isContentVisible}>
+      {/* <div className="block-indicator slim" style={isContentVisible}> */}
         < Hat linkID={Math.floor(Math.random()*20)}/> {/* TODO: Random Keys to be replaced }*/}
-      </div>
+      {/* </div> */}
+      <div className="fill"/>
       <div className="block-text" style={isContentVisible}>
-        {course_instance.course}-{course_instance.section}
+        {course_instance.course} {course_instance.section}
       </div>
     </div>
   )

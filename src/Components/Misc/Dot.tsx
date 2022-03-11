@@ -19,8 +19,8 @@ const modifyDots = (id: number, newClass: string, inverted: boolean = false, rem
 const modifyBlocks = (id: number, newClass: string, inverted: boolean = false, remove: boolean = false) => {
   const selector = `div.hat${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
   let linked = Array.from(document.querySelectorAll(selector));
-  if (remove) linked.forEach(e => e.parentElement?.parentElement?.classList.remove(newClass));
-  else linked.forEach(e => e.parentElement?.parentElement?.classList.add(newClass));
+  if (remove) linked.forEach(e => e.parentElement?.classList.remove(newClass));
+  else linked.forEach(e => e.parentElement?.classList.add(newClass));
 }
 
 
