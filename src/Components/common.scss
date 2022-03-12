@@ -272,6 +272,7 @@ $day_divider_size : 1.5px;
 		border-radius: 3px;
 
 		transition: all 0.2s ease-in-out;
+		// transition: position 0.01s ease-in-out 1s;
 
 		.block-indicator {
 			// flex: 1 1 auto;
@@ -293,12 +294,16 @@ $day_divider_size : 1.5px;
 	}
 
 	.block.selected {
-		flex: 1000 0 auto;
+		position: absolute;
+		height: 100%;
+		width: 90%;
+		margin-left: 5%;
+		z-index: 2;
+		
+		box-shadow: 0 0 10px 0;
 	}
 
 	.block.deselected {
-		width: 6px;
-		// flex: 1 1 6px;
 		filter: brightness(50%);
 	}
 }

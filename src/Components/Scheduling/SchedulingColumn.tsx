@@ -90,6 +90,9 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
   return placeBlocks(base, filter);
 
 }
+
+const r = () => Math.floor(Math.random() * 40);
+const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
   
 const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
@@ -105,7 +108,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
             }}>
               { row.map(c => (
                 // Needs a key
-                < SchedulingBlock course_instance={c} visible={filter[c.course]} />
+                < SchedulingBlock course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} />
               )) }
             </div>
           ))}
@@ -114,7 +117,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     } else {
       return (
         // Needs a key
-        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} />
+        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} linkIDs={randIDs()} />
       )
     }
   }

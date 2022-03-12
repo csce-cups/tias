@@ -16,9 +16,27 @@ const modifyDots = (id: number, newClass: string, inverted: boolean = false, rem
 }
 
 // Adds or removes a class from blocks containing dots with or without a certain link ID
-const modifyBlocks = (id: number, newClass: string, inverted: boolean = false, remove: boolean = false) => {
-  const selector = `div.hat${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
-  let linked = Array.from(document.querySelectorAll(selector));
+interface modifyBlocksOptions {
+  inverted?: boolean,
+  remove?: boolean,
+  exclude?: boolean
+}
+const modifyBlocks = (id: number, newClass: string, options: modifyBlocksOptions) => {
+  const { inverted, remove, exclude } = options;
+  const candidates = `div.hat${((inverted === true)? ':not(' : '')}[link-id="${id}"]${((inverted === true)? ')' : '')}`;
+  const exclusions = `div.hat${((inverted !== true)? ':not(' : '')}[link-id="${id}"]${((inverted !== true)? ')' : '')}`;
+  const excluded = Array.from(document.querySelectorAll(exclusions)).map(e => e.parentElement).filter((e, i, s) => s.indexOf(e) === i);
+
+  let linked = Array.from(document.querySelectorAll(candidates))
+  if (exclude === true) linked = linked.filter(e => excluded.indexOf(e.parentElement) === -1);
+
+  console.log({
+    filtered: linked,
+    ex: excluded,
+    candidates: candidates,
+    exclusions: exclusions
+  })
+
   if (remove) linked.forEach(e => e.parentElement?.classList.remove(newClass));
   else linked.forEach(e => e.parentElement?.classList.add(newClass));
 }
@@ -57,16 +75,16 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
 
     if (selected) { // Restores the page to no longer highlight certain dots
       modifyDots(linkID, 'selected', false, true);
-      modifyBlocks(linkID, 'selected', false, true);
+      modifyBlocks(linkID, 'selected', {inverted: false, remove: true});
 
       modifyDots(linkID, 'deselected', true, true);
-      modifyBlocks(linkID, 'deselected', true, true);
+      modifyBlocks(linkID, 'deselected', {inverted: true, remove: true, exclude: true});
     } else { // Shrinks other dots and blocks to allow focus on a particular set of dots
       modifyDots(linkID, 'selected');
-      modifyBlocks(linkID, 'selected');
+      modifyBlocks(linkID, 'selected', {});
 
       modifyDots(linkID, 'deselected', true);
-      modifyBlocks(linkID, 'deselected', true);
+      modifyBlocks(linkID, 'deselected', {inverted: true, exclude: true});
     }
 
     if (forceState === undefined) setSelected(!selected);

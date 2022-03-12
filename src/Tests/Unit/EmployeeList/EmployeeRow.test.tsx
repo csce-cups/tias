@@ -7,7 +7,7 @@ configure({testIdAttribute: 't-id'});
 
 describe('EmployeeRow', () => {
     let subject: RenderResult;
-    beforeEach(() => subject = render(< EmployeeRow element={"John Doe"} />))
+    beforeEach(() => subject = render(< EmployeeRow linkID={1} element={"John Doe"} />))
     
     it('has a checkbox', () => {
         const element = screen.getByRole('checkbox');

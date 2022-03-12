@@ -75,7 +75,7 @@ export const EmployeeList: FC<Props> = ({data}) => {
 
       <div className="scrollable">
         { data.map((e, index) => (
-          < EmployeeRow key={index} element={e} />
+          < EmployeeRow key={index} linkID={index} element={e} />
         ))}
       </div>
 
