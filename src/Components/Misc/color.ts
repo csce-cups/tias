@@ -2,7 +2,7 @@ import hsluv from 'hsluv';
 const colorFromId = (linkID: number) => {
 	const ret = hsluv.hsluvToRgb([
 		linkID*35 % 361,
-		100 - Math.floor(linkID*200 / 361)*31 % 80,
+		100 - Math.floor(linkID*21 / 361)*31 % 80,
 		60 + 10*(linkID*4 % 7 - 3)
 	])
 
