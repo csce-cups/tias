@@ -2,13 +2,14 @@ import React, { FC } from 'react'
 import colorFromId from './color'
 
 interface Props {
-  linkID: number // An id that ties this dot corresponding dots elsewhere on the page
+  linkID: number, // An id that ties this dot corresponding dots elsewhere on the page
+  name?: string, // A name to display in the hat
   styles?: any
 }
 
 
 
-export const Hat: FC<Props> = ({linkID, styles}) => {
+export const Hat: FC<Props> = ({linkID, name, styles}) => {
   const {r, g, b, l} = colorFromId(linkID);
   const colors = {
     backgroundColor: `rgb(${r}, ${g}, ${b})`,
@@ -21,6 +22,6 @@ export const Hat: FC<Props> = ({linkID, styles}) => {
       link-id={linkID} 
       style={{...colors, ...styles}} 
       data-testid="hat"
-    >Text</div>
+    >{name}</div>
   )
 }
