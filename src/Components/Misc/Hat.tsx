@@ -1,17 +1,21 @@
 import React, { FC } from 'react'
-import Palette from '../../assets/colors.json'
+import colorFromId from './color'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page
   styles?: any
 }
 
+
+
 export const Hat: FC<Props> = ({linkID, styles}) => {
+  const {r, g, b, l} = colorFromId(linkID);
+
   return (
     <div 
       className="hat" 
       link-id={linkID} 
-      style={{backgroundColor: Palette.colors[linkID % Palette.colors.length], ...styles}} 
+      style={{backgroundColor: `rgb(${r}, ${g}, ${b})`, color: (l <= 50)? 'white' : 'black', ...styles}} 
       data-testid="hat"
     >
       Text

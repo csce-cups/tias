@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
-import Palette from '../../assets/colors.json'
-import uuid from '../../uuid'
+import colorFromId from './color'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page
@@ -90,12 +89,14 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
     if (forceState === undefined) setSelected(!selected);
   }
 
+  const {r, g, b} = colorFromId(linkID);
+
   return (
     <div 
       ref={ref}
       className="dot" 
       link-id={linkID} 
-      style={{backgroundColor: Palette.colors[linkID % Palette.colors.length], ...styles}} 
+      style={{backgroundColor: `rgb(${r}, ${g}, ${b})`, ...styles}} 
       onMouseOver={emphasizeLinked} 
       onMouseOut={deemphasizeLinked}
       onClick={() => toggleSelect()}
