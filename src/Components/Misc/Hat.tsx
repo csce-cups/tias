@@ -13,6 +13,8 @@ export const Hat: FC<Props> = ({linkID, styles}) => {
       link-id={linkID} 
       style={{backgroundColor: Palette.colors[linkID % Palette.colors.length], ...styles}} 
       data-testid="hat"
-    />
+    >
+      Text
+    </div>
   )
 }
