@@ -147,7 +147,6 @@ $google_bg: white;
 	padding-right: 10px;
 }
 
-
 .top-border {
 	border-top: 2px solid;
 }
@@ -193,7 +192,30 @@ $day_divider_size : 1.5px;
 	.day-label {
 		text-align: center;
 		color: $render_divider;
-		margin: 5px 0px;
+		padding: 5px 0px;
+		position: relative;
+
+		.element {
+			font-weight: bold;
+			transition: all .2s ease-in-out;
+		}
+
+		.left.detailed {
+			position: absolute;
+		}
+
+		.center.detailed {
+			color: red;
+			border-radius: 5px;
+			border: 1px solid red;
+			z-index: 3;
+		}
+
+		.center.detailed:hover {
+			background-color: red;
+			color: $render_background;
+			opacity: 0.4;
+		}
 	}
 	
 	.render-times {
@@ -214,6 +236,7 @@ $day_divider_size : 1.5px;
 	.render-content {
 		flex: 1 1 auto;
 		display: flex;
+		position: relative;
 
 		border: 2px solid black;
 		
@@ -223,6 +246,24 @@ $day_divider_size : 1.5px;
 		.day {
 			background-color: $render_background;
 			border-right: $day_divider_size solid $render_divider;
+		}
+
+		.day.detailed {
+			position: absolute;
+			height: 100%;
+			width: calc(100% - 10px);
+			z-index: 2;
+			margin-left: 5px;
+			border-radius: 5px;
+			box-shadow: 0 0 10px 0;
+		}
+
+		.day.undetailed {
+			filter: brightness(50%);
+		}
+
+		.day.undetailed {
+			filter: brightness(50%);
 		}
 	}	
 
@@ -299,8 +340,8 @@ $day_divider_size : 1.5px;
 	.block.selected {
 		position: absolute;
 		height: 100%;
-		width: 90%;
-		margin-left: 5%;
+		width: calc(100% - 14px);
+		margin-left: 7px;
 		z-index: 2;
 		
 		box-shadow: 0 0 10px 0;
@@ -316,11 +357,15 @@ $day_divider_size : 1.5px;
 }
 
 .grow-h {
+	transition: all .2s cubic-bezier(0.79, 1.38, 0.77, 1.39);
+}
+
+.grow-h:not(.undetailed, .detailed) {
 	transition: all .2s ease-in-out;
 }
 
-.grow-h:hover {
-	z-index: 2;
+.grow-h:hover:not(.undetailed, .detailed) {
+	z-index: 3;
 	border-radius: 5px;
 	// border: $day_divider_size solid $render_divider;
 	box-shadow: 0 0 10px 0;
@@ -403,7 +448,6 @@ $day_divider_size : 1.5px;
 }
 
 .hat {
-	// height: 0;
 	flex: 0 1 0;
 	width: calc(100% - 2px);
 	overflow: hidden;

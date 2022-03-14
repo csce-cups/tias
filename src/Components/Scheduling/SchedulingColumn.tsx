@@ -1,5 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
+import uuid from '../../uuid';
 
 let numHours = 11;
 
@@ -91,10 +92,11 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
 
 }
 
-const r = () => Math.floor(Math.random() * 40);
-const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
-  
+
 const placeBlocks = (blocks: CourseInstance[], filter: any) => {
+  const r = () => Math.floor(Math.random() * 40);
+  const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
+
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
     if (Array.isArray(outer)) {
       return (
@@ -150,24 +152,60 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
 }
 
 export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) => {
+  const [detailed, setDetailed] = useState(false);
+  const id = uuid();
+  if (hours !== undefined) numHours = hours;
+
   let style = {};
   if (end) {
     style = {border: '0'}
   }
 
-  if (hours !== undefined) numHours = hours;
-
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
     // Needs a key
-    dividers[i] = <div className="divider"></div>;
+    dividers[i] = <div className="divider"/>;
+  }
+
+  const select = () => {
+    if (!detailed) {
+      setDetailed(true);
+      modifyColumns(id, 'detailed');
+      modifyColumns(id, 'undetailed', true);
+    }
+  }
+  
+  const deselect = () => {
+    setDetailed(false);
+    modifyColumns(id, 'detailed', false, true);
+    modifyColumns(id, 'undetailed', true, true);
+  }
+
+  const modifyColumns = (id: string, newClass: string, inverted: boolean = false, remove: boolean = false) => {
+    const selector = `div.column${(inverted? ':not(' : '')}[id="${id}"]${(inverted? ')' : '')}`;
+    let linked = Array.from(document.querySelectorAll(selector));
+    if (remove) linked.forEach(e => e.classList.remove(newClass));
+    else linked.forEach(e => e.classList.add(newClass));
   }
 
   return (
-    <div className="vstack grow-h day" style={style} >
-      <div className="day-label">
-        <b>{day}</b>
-      </div>
+    <div className="vstack grow-h day column" style={style} id={id} onClick={select}>
+      { (detailed) ? 
+        <div className="day-label hstack" style={{padding: 0}}>
+          <div className="left element detailed" style={{padding: '5px'}}>
+            Viewing: {day}
+          </div>
+          <div className="center element detailed" style={{padding: '3px'}} onClick={deselect}>
+            Exit
+          </div>
+        </div>
+      : 
+        <div className="day-label hstack">
+          <div className="center element">
+            {day}
+          </div>
+        </div> 
+      }
       <div className="vstack day" style={style} >
         { dividers }
         { generateBlocks(blocks, filter) }
