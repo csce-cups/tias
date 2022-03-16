@@ -139,7 +139,7 @@ const parse_time = (time_str, time_zone_offset) => {
   let hour = +time_str.substring(0, time_colon);
   let minute = +time_str.substring(time_colon + 1, time_space);
   let meridiem = time_str.substring(time_space + 1);
-  if (meridiem === "PM") hour += 12;
+  if ((meridiem === "PM") && (hour !== 12)) hour += 12;
 
   return `${(hour + time_zone_offset) % 24}:${minute}`;
 };
