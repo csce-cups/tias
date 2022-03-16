@@ -17,7 +17,7 @@ export const EmployeeRow: FC<Props> = ({element, linkID}) => {
          {element}
         </div>
         <div className="element right">
-          < Dot linkID={linkID} styles={{margin: '0', width: '0.7em'}}/>
+          < Dot linkID={linkID} />
         </div>
       </div>
       <div className="hr-container">

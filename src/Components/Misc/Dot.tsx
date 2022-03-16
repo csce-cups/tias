@@ -3,7 +3,6 @@ import colorFromId from './color'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page
-  styles?: any
 }
 
 // Adds or removes a class from dots with or without a certain link ID
@@ -19,7 +18,7 @@ const modifyDots = (id: number, newClass: string, inverted: boolean = false, rem
   else linkedDots.forEach(e => e.classList.add(newClass));
 
   if (remove) {
-    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200);
+    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200); // Makes syre 
   } else {
     linkedHats.forEach(e => e.classList.add(newClass));
   }
@@ -31,6 +30,7 @@ interface modifyBlocksOptions {
   remove?: boolean,
   exclude?: boolean
 }
+
 const modifyBlocks = (id: number, newClass: string, options: modifyBlocksOptions) => {
   const { inverted, remove, exclude } = options;
   const candidates = `div.hat${((inverted === true)? ':not(' : '')}[link-id="${id}"]${((inverted === true)? ')' : '')}`;
@@ -40,19 +40,12 @@ const modifyBlocks = (id: number, newClass: string, options: modifyBlocksOptions
   let linked = Array.from(document.querySelectorAll(candidates))
   if (exclude === true) linked = linked.filter(e => excluded.indexOf(e.parentElement?.parentElement) === -1);
 
-  console.log({
-    filtered: linked,
-    ex: excluded,
-    candidates: candidates,
-    exclusions: exclusions
-  })
-
   if (remove) linked.forEach(e => e.parentElement?.parentElement?.classList.remove(newClass));
   else linked.forEach(e => e.parentElement?.parentElement?.classList.add(newClass));
 }
 
 
-export const Dot: FC<Props> = ({linkID, styles}) => {
+export const Dot: FC<Props> = ({linkID}) => {
   const [selected, setSelected] = useState(false);
   const ref: any = useRef(null);
   
@@ -68,7 +61,7 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
     return () => {
       document.removeEventListener('click', handleClickOutside, true);
     };
-  }, [ selected, ref ]);
+  });
 
   const emphasizeLinked = () => {
     modifyDots(linkID, 'emphasized'); // Give all dots with the same link ID the selected property
@@ -81,15 +74,16 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
   }
 
   const toggleSelect = (forceState?: boolean) => {
-    if (forceState !== undefined) setSelected(forceState);
-
-    if (selected) { // Restores the page to no longer highlight certain dots
+    if (selected) {
+      // Restores the page to no longer highlight certain dots
       modifyDots(linkID, 'selected', false, true);
       modifyBlocks(linkID, 'selected', {inverted: false, remove: true});
 
       modifyDots(linkID, 'deselected', true, true);
       modifyBlocks(linkID, 'deselected', {inverted: true, remove: true, exclude: true});
-    } else { // Shrinks other dots and blocks to allow focus on a particular set of dots
+
+    } else {
+      // Shrinks other dots and blocks to allow focus on a particular set of dots
       modifyDots(linkID, 'selected');
       modifyBlocks(linkID, 'selected', {});
 
@@ -107,7 +101,7 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
       ref={ref}
       className="dot" 
       link-id={linkID} 
-      style={{backgroundColor: `rgb(${r}, ${g}, ${b})`, ...styles}} 
+      style={{backgroundColor: `rgb(${r}, ${g}, ${b})`}} 
       onMouseOver={emphasizeLinked} 
       onMouseOut={deemphasizeLinked}
       onClick={() => toggleSelect()}

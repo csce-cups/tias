@@ -1,12 +1,6 @@
 import React, { FC } from 'react'
 import colorFromId from './color'
 
-interface Props {
-  linkID: number, // An id that ties this dot corresponding dots elsewhere on the page
-  name?: string, // A name to display in the hat
-  styles?: any
-}
-
 function getData(): Array<string> {
 	return [
 		"Geralt of Rivia",
@@ -65,7 +59,12 @@ function getData(): Array<string> {
 	];
 }
 
-export const Hat: FC<Props> = ({linkID, name, styles}) => {
+interface Props {
+  linkID: number, // An id that ties this dot corresponding dots elsewhere on the page
+  name?: string, // A name to display in the hat
+}
+
+export const Hat: FC<Props> = ({linkID, name}) => {
   const {r, g, b, l} = colorFromId(linkID);
   const colors = {
     backgroundColor: `rgb(${r}, ${g}, ${b})`,
@@ -77,7 +76,7 @@ export const Hat: FC<Props> = ({linkID, name, styles}) => {
       className="hat" 
       link-id={linkID} 
       title={getData()[linkID]}
-      style={{...colors, ...styles}} 
+      style={colors} 
       data-testid="hat"
     >{getData()[linkID]}</div>
   )

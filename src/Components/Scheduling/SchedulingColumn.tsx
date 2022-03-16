@@ -6,7 +6,6 @@ let numHours = 11;
 
 interface Props {
   blocks: any, // The blocks to be displayed for this day of the week
-  end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
   filter: Object,
   day: string, // The day of the week
   hours?: number, // The number of hours in a day
@@ -151,15 +150,10 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   const [detailed, setDetailed] = useState(false);
   const id = uuid();
   if (hours !== undefined) numHours = hours;
-
-  let style = {};
-  if (end) {
-    style = {border: '0'}
-  }
 
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
@@ -189,7 +183,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) =
   }
 
   return (
-    <div className="vstack grow-h day column" style={style} id={id} onClick={select}>
+    <div className="vstack grow-h day column" id={id} onClick={select}>
       { (detailed) ? 
         <div className="day-label hstack" style={{padding: 0}}>
           <div className="left element detailed" style={{padding: '5px'}}>
@@ -206,7 +200,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) =
           </div>
         </div> 
       }
-      <div className="vstack day" style={style} >
+      <div className="vstack day" >
         { dividers }
         { generateBlocks(blocks, filter) }
       </div>
