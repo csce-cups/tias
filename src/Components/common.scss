@@ -447,30 +447,65 @@ $day_divider_size : 1.5px;
 	transition: all .2s ease-in-out;
 }
 
+
 .hat {
-	flex: 0 1 0;
-	width: calc(100% - 2px);
-	overflow: hidden;
+	flex: 1 1 auto;
 	padding-left: 2px;
+	display: none;
+	text-overflow: ellipsis;
+
+	transition: all 0.2s ease-in-out;
+}
+
+
+.hat.selected, .hat.emphasized, .column.detailed .hat {
+	flex: 1 1 0;
+	display: inline-block;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.column.detailed .hat {
+	border-left: 1px solid $light;
+	border-right: 1px solid $light;
+}
+
+.column.detailed .hat:first-child {
+	border-left: none;
+}
+
+.column.detailed .hat:last-child {
+	border-right: none;
+}
+
+.column.detailed .hat:hover, .column.detailed .hat.emphasized {
+	flex: 10000 0 auto;
+}
+
+.hat-container {
+	flex: 0 1 0;
+	width: 100%;
+	overflow: hidden;
 	font-size: 0.9em;
+
+	display: flex;
 
 	transition: all .2s ease-in-out;
 }
 
-.hat.selected {
-	height: 0.2em;
+.hat-container.selected {
+	flex: 0 0 0.2em;
 	border-radius: 3px 3px 0 0;
 	border-bottom: 2px solid black;
 }
 
-.hat.emphasized {
+.hat-container.emphasized, .column.detailed .hat-container {
 	flex: 0 0 1.2em;
-	// height: 1.2em;
 	border-radius: 3px 3px 0 0;
 	border-bottom: 2px solid white;
 }
 
-.hat.selected {
+.hat-container.selected {
 	border-bottom: 2px solid black;
 }
 

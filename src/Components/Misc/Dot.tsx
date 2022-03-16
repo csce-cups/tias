@@ -8,10 +8,21 @@ interface Props {
 
 // Adds or removes a class from dots with or without a certain link ID
 const modifyDots = (id: number, newClass: string, inverted: boolean = false, remove: boolean = false) => {
-  const selector = `div.hat${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}, div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
-  let linked = Array.from(document.querySelectorAll(selector));
-  if (remove) linked.forEach(e => e.classList.remove(newClass));
-  else linked.forEach(e => e.classList.add(newClass));
+  const hats = `div.hat${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
+  let linkedHats = Array.from(document.querySelectorAll(hats));
+  if (remove) linkedHats.forEach(e => e.parentElement?.classList.remove(newClass));
+  else linkedHats.forEach(e => e.parentElement?.classList.add(newClass));
+  
+  const dots = `div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
+  let linkedDots = Array.from(document.querySelectorAll(dots));
+  if (remove) linkedDots.forEach(e => e.classList.remove(newClass));
+  else linkedDots.forEach(e => e.classList.add(newClass));
+
+  if (remove) {
+    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200);
+  } else {
+    linkedHats.forEach(e => e.classList.add(newClass));
+  }
 }
 
 // Adds or removes a class from blocks containing dots with or without a certain link ID
@@ -24,10 +35,10 @@ const modifyBlocks = (id: number, newClass: string, options: modifyBlocksOptions
   const { inverted, remove, exclude } = options;
   const candidates = `div.hat${((inverted === true)? ':not(' : '')}[link-id="${id}"]${((inverted === true)? ')' : '')}`;
   const exclusions = `div.hat${((inverted !== true)? ':not(' : '')}[link-id="${id}"]${((inverted !== true)? ')' : '')}`;
-  const excluded = Array.from(document.querySelectorAll(exclusions)).map(e => e.parentElement).filter((e, i, s) => s.indexOf(e) === i);
+  const excluded = Array.from(document.querySelectorAll(exclusions)).map(e => e.parentElement?.parentElement).filter((e, i, s) => s.indexOf(e) === i);
 
   let linked = Array.from(document.querySelectorAll(candidates))
-  if (exclude === true) linked = linked.filter(e => excluded.indexOf(e.parentElement) === -1);
+  if (exclude === true) linked = linked.filter(e => excluded.indexOf(e.parentElement?.parentElement) === -1);
 
   console.log({
     filtered: linked,
@@ -36,8 +47,8 @@ const modifyBlocks = (id: number, newClass: string, options: modifyBlocksOptions
     exclusions: exclusions
   })
 
-  if (remove) linked.forEach(e => e.parentElement?.classList.remove(newClass));
-  else linked.forEach(e => e.parentElement?.classList.add(newClass));
+  if (remove) linked.forEach(e => e.parentElement?.parentElement?.classList.remove(newClass));
+  else linked.forEach(e => e.parentElement?.parentElement?.classList.add(newClass));
 }
 
 

@@ -40,7 +40,9 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs}) 
       title={`${course_instance.course}-${course_instance.section}`} 
       style={{backgroundColor: colors.get(course_instance.course), ...isVisible}}
     >
-      {linkIDs.map(id => (< Hat linkID={id}/>))}
+      <div className="hat-container">
+        {linkIDs.map(id => (< Hat linkID={id} />))}
+      </div>
       <div className="fill"/>
       <div className="block-text" style={isContentVisible}>
         {course_instance.course} {course_instance.section}
