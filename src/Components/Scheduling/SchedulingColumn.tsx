@@ -97,7 +97,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance, spacerSz: string) => {
-    if (Array.isArray(outer)) {
+    if (Array.isArray(outer)) { // Creates a subview for the smaller elements
       return (
         // Needs a key
         <div className="vstack absolute">
@@ -124,6 +124,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     }
   }
 
+  // Find the largest block for each set of blocks
   let maxes: any = [];
   blocks.forEach((set: any) => {
     maxes.push(set.reduce((p: any, e: any) => {
@@ -158,12 +159,9 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     for (let j = 0; j < count; j++) {
       spacers[spacers.length - 1].push(<div className="block spacer"/>)
     }
+
+    // Pre-calculate how large the spacer should be in subviews
     spacerLens.push(100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1)));
-    console.log({
-      set: set.length,
-      sp: spacers[spacers.length - 1].length,
-      calc: 100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1))
-    })
   })
 
   return (

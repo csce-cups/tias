@@ -13,7 +13,6 @@ interface Props {
 }
 
 export const SchedulingRender: FC<Props> = ({filter}) => {
-  console.log(start);
   return (
     <div className="render-container">
       < SchedulingTimes hours={hours} start={start}/>
