@@ -96,17 +96,18 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   const r = () => Math.floor(Math.random() * 40);
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
-  const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
+  const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance, spacerSz: string) => {
     if (Array.isArray(outer)) {
       return (
         // Needs a key
-        <div className="vstack">
+        <div className="vstack absolute">
           { outer.map(row => (
             // Needs a key
             <div className="hstack block-container" style={{
               height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
+              <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
               { row.map(c => (
                 // Needs a key
                 < SchedulingBlock course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} />
@@ -131,6 +132,39 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
       else return d_len(p) > d_len(e) ? p : e;
     }))
   })
+  
+  let spacers: any = [];
+  let spacerLens: any = [];
+  blocks.forEach((set: any) => {
+
+    // Calculate how many spacers to add to the end of the top level block list
+    let count = 0;
+    set.forEach((subset: any) => {
+      let maxCount = 0;
+      if (Array.isArray(subset)) {
+        subset.forEach((block: any) => {
+          if (Array.isArray(block)) {
+            maxCount = Math.max(maxCount, block.length);
+          } else {
+            maxCount = Math.max(maxCount, 1);
+          }
+        })
+      }
+      count = Math.max(maxCount, count);
+    });
+    
+    // Add the spacers to the block list
+    spacers.push([]);
+    for (let j = 0; j < count; j++) {
+      spacers[spacers.length - 1].push(<div className="block spacer"/>)
+    }
+    spacerLens.push(100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1)));
+    console.log({
+      set: set.length,
+      sp: spacers[spacers.length - 1].length,
+      calc: 100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1))
+    })
+  })
 
   return (
     <>
@@ -142,8 +176,9 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
           top: `${start_time_to_top(set[0].start)}%`
         }}>
           { set.map((outer: any) => (
-            unravel(outer, maxes[idx])
+            unravel(outer, maxes[idx], `${spacerLens[idx]}%`)
           ))}
+          { spacers[idx] }
         </div>
       ))}
     </>

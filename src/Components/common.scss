@@ -283,6 +283,11 @@ $day_divider_size : 1.5px;
 			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
 		}
 	}
+
+	.absolute {
+		position: absolute;
+		height: 100%;
+	}
 }
 
 .render-container:last-child {
@@ -315,6 +320,7 @@ $day_divider_size : 1.5px;
 		min-width: 0;
 	
 		border-radius: 3px;
+		z-index: 1;
 
 		transition: all 0.2s ease-in-out;
 		// transition: position 0.01s ease-in-out 1s;
@@ -341,6 +347,12 @@ $day_divider_size : 1.5px;
 		}
 	}
 
+	.block.spacer {
+		height: 0;
+		visibility: hidden;
+		margin-right: 0;
+	}
+
 	.block.selected {
 		position: absolute;
 		height: 100%;
@@ -353,6 +365,11 @@ $day_divider_size : 1.5px;
 
 	.block.deselected {
 		filter: brightness(50%);
+	}
+
+	.block.invisible {
+		visibility: hidden;
+		max-height: 0;
 	}
 }
 
