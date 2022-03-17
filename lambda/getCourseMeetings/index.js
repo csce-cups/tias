@@ -25,6 +25,8 @@ exports.handler = async (event) => {
             prevSliceIndex = i;
         }
     }
+	
+	responseBody[dbRows[dbRows.length - 1].weekday] = dbRows.slice(prevSliceIndex, dbRows.length);
     
     const response = {
         "isBase64Encoded": false,
