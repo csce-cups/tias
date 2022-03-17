@@ -133,8 +133,6 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     }))
   })
   
-  console.log(blocks);
-
   let spacers: any = [];
   let spacerLens: any = [];
   blocks.forEach((set: any) => {
@@ -151,8 +149,6 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
             maxCount = Math.max(maxCount, 1);
           }
         })
-      } else {
-        maxCount = 1;
       }
       count = Math.max(maxCount, count);
     });
@@ -163,8 +159,12 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
       spacers[spacers.length - 1].push(<div className="block spacer"/>)
     }
     spacerLens.push(100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1)));
+    console.log({
+      set: set.length,
+      sp: spacers[spacers.length - 1].length,
+      calc: 100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1))
+    })
   })
-
 
   return (
     <>
