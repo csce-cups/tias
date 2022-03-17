@@ -3,14 +3,6 @@ import CourseBlock from './CourseBlock';
 
 let numHours = 11;
 
-interface Props {
-  blocks: any, // The blocks to be displayed for this day of the week
-  end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
-  filter: Object,
-  day: string, // The day of the week
-  hours?: number, // The number of hours in a day
-}
-
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
   course: number,   // Course_Number from Course
   section: number,  // Section_Number from Course_Section
@@ -19,6 +11,15 @@ interface CourseInstance { // Results of a join between course, course_section, 
   sections: Array<number>
   // If the API returns more information from this I can add them to the interface here
 }
+interface Props {
+  blocks: any, // The blocks to be displayed for this day of the week
+  end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
+  filter: Object,
+  day: string, // The day of the week
+  hours?: number, // The number of hours in a day
+  select: any
+}
+
 
 // Breaks for 3 different lengths in a block
 const d_len = (e: CourseInstance | {course: number, section: number, start: Date, end: Date}) => { return e.end.getTime() - e.start.getTime(); }
@@ -31,7 +32,7 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: CourseInstance[], filter: any) => {
+const generateBlocks = (data: CourseInstance[], filter: any,select: any) => {
   // Data should be sorted by start time, class length, course number, and then by section number
   data.sort((a, b) => {
     // Sort by start time
@@ -88,11 +89,11 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
 
   }
   
-  return placeBlocks(base, filter);
+  return placeBlocks(base, filter, select);
 
 }
   
-const placeBlocks = (blocks: CourseInstance[], filter: any) => {
+const placeBlocks = (blocks: CourseInstance[], filter: any, select: any) => {
   const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
     if (Array.isArray(outer)) {
       return (
@@ -106,7 +107,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
             }}>
               { row.map(c => (
                 // Needs a key
-                < CourseBlock course_instance={c} visible={filter[c.course]} />
+                < CourseBlock course_instance={c} visible={filter[c.course]} select={select}/>
               )) }
             </div>
           ))}
@@ -115,7 +116,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     } else {
       return (
         // Needs a key
-        < CourseBlock course_instance={outer} visible={filter[outer.course]} />
+        < CourseBlock course_instance={outer} visible={filter[outer.course]} select={select}/>
       )
     }
   }
@@ -147,7 +148,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours,select}) => {
   let style = {};
   if (end) {
     style = {border: '0'}
@@ -168,7 +169,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) =
       </div>
       <div className="vstack day" style={style} >
         { dividers }
-        { generateBlocks(blocks, filter) }
+        { generateBlocks(blocks, filter,select) }
       </div>
     </div>
   )

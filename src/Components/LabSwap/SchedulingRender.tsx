@@ -7,14 +7,20 @@ const hours = 11;
 // const start = new Date(12*24*60*60*1000);
 let start = new Date(0);
 start.setHours(8);
-
+interface CourseInstance { // Results of a join between course, course_section, and section_meetings
+  course: number,   // Course_Number from Course
+  section: number,  // Section_Number from Course_Section
+  start: Date,      // Start_Time from Section_Meeting
+  end: Date         // End_Time from Section_Meeting 
+  sections: Array<number>
+  // If the API returns more information from this I can add them to the interface here
+}
 interface Props {
   filter: any, //int -> bool
-  setRequests: SetStateAction<any>,
-  setOffers:  SetStateAction<any>
+  select: any
 }
 
-export const SchedulingRender: FC<Props> = ({filter, setRequests, setOffers}) => {
+export const SchedulingRender: FC<Props> = ({filter, select}) => {
   console.log(start);
   const cmp = (course1:any, course2:any) => {
     return course1.course===course2.course && course1.start===course2.start&&course1.end===course2.end;
@@ -33,7 +39,6 @@ export const SchedulingRender: FC<Props> = ({filter, setRequests, setOffers}) =>
         filtered[fidx].sections.push(courses[cidx].section)
         cidx++;
       }
-      
     }
     return filtered
   }
@@ -42,11 +47,11 @@ export const SchedulingRender: FC<Props> = ({filter, setRequests, setOffers}) =>
     <div className="render-container">
       < SchedulingTimes hours={hours} start={start}/>
       <div className="render-content">
-        < SchedulingColumn hours={hours} day={'Monday'} blocks={filterValid(BlockFormer.samples.M_schedule)} filter={filter} />
-        < SchedulingColumn hours={hours} day={'Tuesday'} blocks={filterValid(BlockFormer.samples.TH_shcedule)} filter={filter} />
-        < SchedulingColumn hours={hours} day={'Wednesday'} blocks={filterValid(BlockFormer.samples.W_schedule)} filter={filter} />
-        < SchedulingColumn hours={hours} day={'Thursday'} blocks={filterValid(BlockFormer.samples.TH_shcedule)} filter={filter} />
-        < SchedulingColumn hours={hours} day={'Friday'} blocks={filterValid(BlockFormer.samples.F_schedule)} filter={filter} end={true} />
+        < SchedulingColumn hours={hours} day={'Monday'} blocks={filterValid(BlockFormer.samples.M_schedule)} filter={filter} select={select}/>
+        < SchedulingColumn hours={hours} day={'Tuesday'} blocks={filterValid(BlockFormer.samples.TH_shcedule)} filter={filter} select={select}/>
+        < SchedulingColumn hours={hours} day={'Wednesday'} blocks={filterValid(BlockFormer.samples.W_schedule)} filter={filter} select={select}/>
+        < SchedulingColumn hours={hours} day={'Thursday'} blocks={filterValid(BlockFormer.samples.TH_shcedule)} filter={filter} select={select}/>
+        < SchedulingColumn hours={hours} day={'Friday'} blocks={filterValid(BlockFormer.samples.F_schedule)} filter={filter} end={true} select={select}/>
       </div>
     </div>
   )

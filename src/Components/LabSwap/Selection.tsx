@@ -1,30 +1,34 @@
 import React, { FC } from 'react'
 interface Props{
-    sections: Array<any>
+    sections: any
     title: String
 }
 const Selection: FC<Props> = ({title, sections}) => {
   //maybe make a colored box display depending on 
-  return (
+  let data=(
     <div>
+      <p>Section Data Goes Here</p>
+    </div>
+  );
+  if(sections.valid){
+
+    data=(<div>
+    <p>
+      Course: {sections.course}
+    </p>
+    <p>
+      Section: {sections.section}
+    </p>
+    {/* <p>
+      Meeting Time: {sections.start}-{sections.end}
+    </p> */}
+    <hr/>
+  </div>)
+  }
+  return (
+    <div style={{paddingLeft:"15px"}}>
         <h1>{title}</h1>
-        {sections.map((v,i)=>(
-            <div>
-              <div>
-                Course: {v.course}
-              </div>
-              <div>
-                Section: {v.section}
-              </div>
-              <div>
-                Days: {v.days}
-              </div>
-              <div>
-                Meeting Time: {v.start}-{v.end}
-              </div>
-              <hr/>
-            </div>
-        ))}
+        <div>{data}</div>
     </div>
   )
 }

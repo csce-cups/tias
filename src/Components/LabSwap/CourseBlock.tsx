@@ -18,9 +18,10 @@ colors.set(314, 'white');
 colors.set(315, '#009489');
 interface Props {
   course_instance: CourseInstance,
-  visible: boolean
+  visible: boolean,
+  select: any
 }
-const CourseBlock: FC<Props> = ({course_instance, visible}) => {
+const CourseBlock: FC<Props> = ({course_instance, visible, select}) => {
   //need onclick to store selection in parent class
   const [section, setSection] = useState<String>("")
   const isVisible = {
@@ -33,13 +34,27 @@ const CourseBlock: FC<Props> = ({course_instance, visible}) => {
     ...isVisible,
     display: visible? undefined : 'none'
   }
+  const isFill = {
+    width: visible? undefined : 0,
+    flex: visible? "auto" : '0 0 auto',
+    margin: visible? undefined : 0,
+    display: visible? undefined : 'none'
+  }
+  const [open, setOpen]=useState(false);
   return (
     <FormControl className="block" title={`${course_instance.course}-${course_instance.section}`} 
-    style={{backgroundColor: colors.get(course_instance.course), ...isVisible}}>
-      <InputLabel id="MW9313">{course_instance.course}</InputLabel>
-      <Select label="313" labelId="MW9313" value={section}  onChange={(v)=>{setSection(""+v.target.value)}}>
-        <MenuItem value=""><em>None</em></MenuItem>
-        {course_instance.sections.map((v,i)=><MenuItem value={v} key={i} >{course_instance.course}-{v}</MenuItem>)}
+    style={{backgroundColor: colors.get(course_instance.course), ...isVisible}}
+    onClick={()=>setOpen(!open)}
+    >
+      <InputLabel id={`${course_instance.course}${course_instance.start}${course_instance.end}`} style={{alignContent:"center", ...isContentVisible}}>{course_instance.course}</InputLabel>
+      <Select 
+        labelId={`${course_instance.course}${course_instance.start}${course_instance.end}`} value={section}  
+        onChange={(v)=>select(course_instance,v.target.value)}
+        style={{display: (open || section!==''? undefined:"none")}}
+        open={open}
+      >
+        <MenuItem value="" ><em>None</em></MenuItem>
+        {course_instance.sections.map((v,i)=><MenuItem value={v} key={i}>{v}</MenuItem>)}
       </Select>
     </FormControl>
   )
