@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
-import colorFromId from './color'
+import colorFromId from '../../modules/color'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page

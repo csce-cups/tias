@@ -1,7 +1,7 @@
 import React, {FC} from 'react'
 import { SchedulingColumn } from './SchedulingColumn';
 import { SchedulingTimes } from './SchedulingTimes';
-import BlockFormer from './BlockFormer';
+import BlockFormer from '../../modules/BlockFormer';
 
 const hours = 11;
 // const start = new Date(12*24*60*60*1000);

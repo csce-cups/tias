@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import colorFromId from './color'
+import colorFromId from '../../modules/color'
 
 function getData(): Array<string> {
 	return [
