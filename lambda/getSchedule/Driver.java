@@ -40,8 +40,14 @@ public class Driver {
             courses.forEach((key, value) -> {
                 System.out.println(key + "\t" + value);
             });
-            getPeople(new int[]{3, 5});
+            // TODO: Get list of Person IDs programmatically
+            // getPeople(new int[]{3, 5});
+            getPeople();
             people.forEach((key, value) -> {
+                System.out.println(key + "\t" + value);
+            });
+            getSections();
+            sections.forEach((key, value) -> {
                 System.out.println(key + "\t" + value);
             });
         } catch (SQLException e) {
@@ -137,6 +143,66 @@ public class Driver {
         }
 
         rs = st.executeQuery();
+
+        while (rs.next())
+        {
+            String grade = rs.getString("grade");
+            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), grade != null ? grade.charAt(0) : null));
+        }
+
+        rs.close();
+        st.close();
+    }
+
+    static String constructPersonQuery(String table) {
+        StringBuilder sb = new StringBuilder()
+            .append("SELECT *")
+            .append("FROM ")
+            .append(table);
+            return sb.toString();
+    }
+
+    static void getPeople() throws SQLException {
+        System.out.println(constructPersonQuery("person"));
+        Statement st = conn.createStatement();
+
+        ResultSet rs = st.executeQuery(constructPersonQuery("person"));
+
+        while (rs.next())
+        {
+            people.put(rs.getInt("person_id"), new Person(rs.getString("first_name"), rs.getString("last_name"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
+        }
+
+        rs.close();
+        st.close();
+
+        st = conn.createStatement();
+
+        rs = st.executeQuery(constructPersonQuery("person_availability"));
+
+        while (rs.next())
+        {
+            people.get(rs.getInt("person_id")).addAvailability(new Availability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
+        }
+
+        rs.close();
+        st.close();
+
+        st = conn.createStatement();
+
+        rs = st.executeQuery(constructPersonQuery("section_assignment_preference"));
+
+        while (rs.next())
+        {
+            people.get(rs.getInt("person_id")).addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
+        }
+
+        rs.close();
+        st.close();
+
+        st = conn.createStatement();
+
+        rs = st.executeQuery(constructPersonQuery("qualification"));
 
         while (rs.next())
         {
