@@ -2,9 +2,10 @@ import React, { FC } from 'react'
 import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
+import { APIPerson } from '../../modules/API'
 
 interface Props {
-	data?: string[]
+	data: APIPerson[] | string[]
 }
 
 function getData(): Array<string> {
@@ -66,7 +67,6 @@ function getData(): Array<string> {
 }
 
 export const EmployeeList: FC<Props> = ({data}) => {
-  if (data === undefined) data = getData();
   return (
     <div className="vstack">
       <div className="header">
@@ -74,8 +74,10 @@ export const EmployeeList: FC<Props> = ({data}) => {
       </div>
 
       <div className="scrollable">
-        { data.map((e, index) => (
-          < EmployeeRow key={index} linkID={index} element={e} />
+        { data.map((e: APIPerson | string, index: number) => (
+          (typeof e === 'string')? 
+            < EmployeeRow key={index} linkID={index} element={e} />
+          : < EmployeeRow key={index} linkID={e.person_id} element={`${e.first_name} ${e.last_name}`} />
         ))}
       </div>
 
