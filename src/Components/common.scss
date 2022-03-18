@@ -548,6 +548,15 @@ $day_divider_size : 1.5px;
 	transform: scale(0.3);
 }
 
+div.loading {
+	height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	color: $render_divider;
+	font-size: 1.4em;
+}
+
 img {
 	max-height: 20px;
 }

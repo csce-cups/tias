@@ -3,7 +3,7 @@ import { NavBar } from './Misc/NavBar';
 import { EmployeeList } from './EmployeeList/EmployeeList';
 import { SchedulingWindow } from './Scheduling/SchedulingWindow';
 import './common.scss';
-import API, { APIPTListResponse, APIPerson } from '../modules/API';
+import API, { APIPTListResponse, APIPerson } from '../modules/APIDummy';
 
 export const App = () => {
   const [employees, setEmployees] = useState([] as APIPerson[]);
