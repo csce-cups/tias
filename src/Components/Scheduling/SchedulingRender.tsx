@@ -11,19 +11,18 @@ start.setHours(8);
 
 interface Props {
   filter: Object //int -> bool
-  APIData: Store
 }
 
-export const SchedulingRender: FC<Props> = ({APIData, filter}) => {
+export const SchedulingRender: FC<Props> = ({filter}) => {
   return (
     <div className="render-container">
       < SchedulingTimes hours={hours} start={start}/>
       <div className="render-content">
-        < SchedulingColumn APIData={APIData} hours={hours} day={'Monday'} blocks={BlockFormer.samples.M_schedule} filter={filter} />
-        < SchedulingColumn APIData={APIData} hours={hours} day={'Tuesday'} blocks={BlockFormer.samples.TH_shcedule} filter={filter} />
-        < SchedulingColumn APIData={APIData} hours={hours} day={'Wednesday'} blocks={BlockFormer.samples.W_schedule} filter={filter} />
-        < SchedulingColumn APIData={APIData} hours={hours} day={'Thursday'} blocks={BlockFormer.samples.TH_shcedule} filter={filter} />
-        < SchedulingColumn APIData={APIData} hours={hours} day={'Friday'} blocks={BlockFormer.samples.F_schedule} filter={filter} />
+        < SchedulingColumn hours={hours} day={'Monday'} blocks={BlockFormer.samples.M_schedule} filter={filter} />
+        < SchedulingColumn hours={hours} day={'Tuesday'} blocks={BlockFormer.samples.TH_shcedule} filter={filter} />
+        < SchedulingColumn hours={hours} day={'Wednesday'} blocks={BlockFormer.samples.W_schedule} filter={filter} />
+        < SchedulingColumn hours={hours} day={'Thursday'} blocks={BlockFormer.samples.TH_shcedule} filter={filter} />
+        < SchedulingColumn hours={hours} day={'Friday'} blocks={BlockFormer.samples.F_schedule} filter={filter} />
       </div>
     </div>
   )

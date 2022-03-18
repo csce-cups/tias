@@ -2,32 +2,37 @@ import React, { FC } from 'react'
 import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
-import { APIPerson } from '../../modules/API'
-import { Store } from 'state-pool'
+import API, { APIPerson } from '../../modules/API'
+import { contexts } from '../APIContext'
 
 interface Props {
-  APIData: Store
+  
 }
 
-export const EmployeeList: FC<Props> = ({APIData}) => {
-  const [data]: [APIPerson[] | string[], ...any] = APIData.useState("employees");
+export const EmployeeList: FC<Props> = () => {
   return (
     <div className="vstack">
       <div className="header">
         <h2 className="slim">Employee</h2>
       </div>
 
-      {(data.length > 0)?
-        <div className="scrollable">
-          {data.map((e: APIPerson | string, index: number) => (
-            (typeof e === 'string')? 
-              < EmployeeRow key={index} linkID={index} element={e} />
-            : < EmployeeRow key={index} linkID={e.person_id} element={`${e.first_name} ${e.last_name}`} />
-          ))}
-        </div>
+      < contexts.employees.Consumer >
+        {employees => (
+          <>
+            {(employees.length > 0)?
+              <div className="scrollable">
+                {employees.map((e: APIPerson | string, index: number) => (
+                  (typeof e === 'string')? 
+                  < EmployeeRow key={index} linkID={index} element={e} />
+                  : < EmployeeRow key={index} linkID={e.person_id} element={`${e.first_name} ${e.last_name}`} />
+                  ))}
+              </div>
 
-      : <div className="loading">Loading...</div>
-      }
+            : <div className="loading">Loading...</div>
+            }
+          </>
+        )}
+      </contexts.employees.Consumer>
 
       <div className="vstack top-border">
         < GenerateButton />

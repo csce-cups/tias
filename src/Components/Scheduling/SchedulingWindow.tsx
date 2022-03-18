@@ -1,14 +1,13 @@
 import React, { FC, useState } from 'react'
-import { Store } from 'state-pool'
 import { SchedulingHeader } from './SchedulingHeader'
 import { SchedulingRender } from './SchedulingRender'
 import { SchedulingFilter } from './SchedulingFilter'
 
 interface Props {
-  APIData: Store
+  
 }
 
-export const SchedulingWindow: FC<Props> = ({APIData}) => {
+export const SchedulingWindow: FC<Props> = () => {
   const [filter, setFilter] = useState({
     121: true,
     221: true,
@@ -21,7 +20,7 @@ export const SchedulingWindow: FC<Props> = ({APIData}) => {
   return (
     <div className="vstack main">
       < SchedulingHeader />
-      < SchedulingRender APIData={APIData} filter={filter} />
+      < SchedulingRender filter={filter} />
       < SchedulingFilter filter={filter} setFilter={setFilter}/>
     </div>
   )
