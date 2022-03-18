@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
+import { Store } from 'state-pool'
 
 let numHours = 11;
 
@@ -9,6 +10,7 @@ interface Props {
   filter: Object,
   day: string, // The day of the week
   hours?: number, // The number of hours in a day
+  APIData: Store
 }
 
 interface CourseInstance { // Results of a join between course, course_section, and section_meetings
@@ -30,7 +32,7 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: CourseInstance[], filter: any) => {
+const generateBlocks = (data: CourseInstance[], filter: any, APIData: Store) => {
   // Data should be sorted by start time, class length, course number, and then by section number
   data.sort((a, b) => {
     // Sort by start time
@@ -87,12 +89,12 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
 
   }
   
-  return placeBlocks(base, filter);
+  return placeBlocks(base, filter, APIData);
 
 }
 
 
-const placeBlocks = (blocks: CourseInstance[], filter: any) => {
+const placeBlocks = (blocks: CourseInstance[], filter: any, APIData: Store) => {
   const r = () => Math.floor(Math.random() * 40);
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
@@ -110,7 +112,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
               <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
               { row.map(c => (
                 // Needs a key
-                < SchedulingBlock course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} />
+                < SchedulingBlock APIData={APIData} course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} />
               )) }
             </div>
           ))}
@@ -119,7 +121,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     } else {
       return (
         // Needs a key
-        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} linkIDs={randIDs()} />
+        < SchedulingBlock APIData={APIData} course_instance={outer} visible={filter[outer.course]} linkIDs={randIDs()} />
       )
     }
   }
@@ -183,7 +185,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours, APIData}) => {
   const [detailed, setDetailed] = useState(false);
   const id = uuid();
   if (hours !== undefined) numHours = hours;
@@ -235,7 +237,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
       }
       <div className="vstack day" >
         { dividers }
-        { generateBlocks(blocks, filter) }
+        { generateBlocks(blocks, filter, APIData) }
       </div>
     </div>
   )

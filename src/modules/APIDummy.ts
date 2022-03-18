@@ -1,12 +1,17 @@
-export type APIPerson = string
+export interface APIPerson {
+	person_id: number
+	first_name: string
+	last_name: string
+}
 
 export interface APIPTListResponse {
-	users: string[]
+	users: APIPerson[]
 }
 
 class API {
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?userType=peer-teacher
 	static fetchPTList = async (): Promise<APIPTListResponse> => {
+		console.log(new Error().stack);
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
 				resolve({
@@ -64,7 +69,7 @@ class API {
 						"Spike the Cowboy",
 						"Guard the Reserve",
 						"Hero Sandwich"
-					]
+					].map((e, i) => ({person_id: i, first_name: e.substring(0, e.indexOf(' ')), last_name: e.substring(e.indexOf(' '))}))
 				})
 			}, 1000)
 		})

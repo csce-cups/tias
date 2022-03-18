@@ -13,7 +13,7 @@ jest.mock('../../../Components/EmployeeList/EmployeeRow', () => {
 
 describe('EmployeeList', () => {
     const folks = ["Abby Apple", "Bob Banana", "Charles Cherry"];
-    beforeEach(() => render(< EmployeeList data={folks}/>));
+    // beforeEach(() => render(< EmployeeList data={folks}/>));
 
     it('has a generate button', () => {
         const element = screen.getByRole('button', {name: /generate/i});
