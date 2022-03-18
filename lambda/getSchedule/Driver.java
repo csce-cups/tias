@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import db.Availability;
 import db.Course;
+import db.Meeting;
 import db.Person;
 import db.Preference;
 import db.Qualification;
@@ -56,7 +57,7 @@ public class Driver {
 
     static void getCourses() throws SQLException {
         Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("SELECT course_id, department, course_number, course_name FROM course");
+        ResultSet rs = st.executeQuery("SELECT * FROM course");
         while (rs.next())
         {
             courses.put(rs.getInt("course_id"), new Course(rs.getString("department"), rs.getString("course_number"), rs.getString("course_name")));
@@ -148,6 +149,22 @@ public class Driver {
     }
 
     static void getSections() throws SQLException {
-        // TODO
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM course_section");
+        while (rs.next())
+        {
+            sections.put(rs.getInt("section_id"), new Section(rs.getInt("course_id"), rs.getString("section_number"), rs.getInt("capacity_peer_teachers"), rs.getInt("capacity_teaching_assistants")));
+        }
+        rs.close();
+        st.close();
+
+        st = conn.createStatement();
+        rs = st.executeQuery("SELECT * FROM section_meeting");
+        while (rs.next())
+        {
+            sections.get(rs.getInt("section_id")).addMeeting(new Meeting(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time"), rs.getString("place"), rs.getString("meeting_type")));
+        }
+        rs.close();
+        st.close();
     }
 }
