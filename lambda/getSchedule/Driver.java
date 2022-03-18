@@ -1,5 +1,7 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 import java.util.Properties;
 
 import db.Availability;
@@ -16,6 +18,7 @@ public class Driver {
     static HashMap<Integer, Person> people;
     static HashMap<Integer, Course> courses;
     static HashMap<Integer, Section> sections;
+    static HashMap<Integer /* section id */, ArrayList<Integer> /* person id */> schedule;
 
     public static void main(String[] args) {
         // https://jdbc.postgresql.org/documentation/head/index.html
@@ -50,6 +53,8 @@ public class Driver {
             sections.forEach((key, value) -> {
                 System.out.println(key + "\t" + value);
             });
+
+            schedulePeopleToSections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -219,7 +224,7 @@ public class Driver {
         ResultSet rs = st.executeQuery("SELECT * FROM course_section");
         while (rs.next())
         {
-            sections.put(rs.getInt("section_id"), new Section(rs.getInt("course_id"), rs.getString("section_number"), rs.getInt("capacity_peer_teachers"), rs.getInt("capacity_teaching_assistants")));
+            sections.put(rs.getInt("section_id"), new Section(rs.getInt("section_id"), rs.getInt("course_id"), rs.getString("section_number"), rs.getInt("capacity_peer_teachers"), rs.getInt("capacity_teaching_assistants")));
         }
         rs.close();
         st.close();
@@ -232,5 +237,19 @@ public class Driver {
         }
         rs.close();
         st.close();
+    }
+
+    static void schedulePeopleToSections() {
+        people.forEach((person_id, person) -> {
+            person.computeAvailabilityScore(sections.values());
+        });
+
+        PriorityQueue<Person> queue = new PriorityQueue<>(people.values());
+
+        while (!queue.isEmpty()) {
+            Person frontPerson = queue.remove();
+
+            // TODO: Greedily go through frontPerson's preferences and assign them to a lab, decrease that lab's count of people available.
+        }
     }
 }
