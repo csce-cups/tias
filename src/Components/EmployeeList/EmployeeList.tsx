@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
-import API, { APIPerson } from '../../modules/API'
+import { APIPerson } from '../../modules/API'
 import { contexts } from '../APIContext'
 
 interface Props {
@@ -18,19 +18,14 @@ export const EmployeeList: FC<Props> = () => {
 
       < contexts.employees.Consumer >
         {employees => (
-          <>
-            {(employees.length > 0)?
+            (employees.length > 0)?
               <div className="scrollable">
-                {employees.map((e: APIPerson | string, index: number) => (
-                  (typeof e === 'string')? 
-                  < EmployeeRow key={index} linkID={index} element={e} />
-                  : < EmployeeRow key={index} linkID={e.person_id} element={`${e.first_name} ${e.last_name}`} />
-                  ))}
+                {employees.map((e: APIPerson, index: number) => (
+                  < EmployeeRow key={index} linkID={e.person_id} element={`${e.first_name} ${e.last_name}`} />
+                ))}
               </div>
 
             : <div className="loading">Loading...</div>
-            }
-          </>
         )}
       </contexts.employees.Consumer>
 

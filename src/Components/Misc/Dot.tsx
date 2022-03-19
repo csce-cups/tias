@@ -18,7 +18,7 @@ const modifyDots = (id: number, newClass: string, inverted: boolean = false, rem
   else linkedDots.forEach(e => e.classList.add(newClass));
 
   if (remove) {
-    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200); // Makes syre 
+    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200); // Makes sure hat is hidden before unrendering 
   } else {
     linkedHats.forEach(e => e.classList.add(newClass));
   }

@@ -1,5 +1,4 @@
 import React, {FC} from 'react'
-import { Store } from 'state-pool'
 import { SchedulingColumn } from './SchedulingColumn';
 import { SchedulingTimes } from './SchedulingTimes';
 import BlockFormer from '../../modules/BlockFormer';

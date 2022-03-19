@@ -1,6 +1,5 @@
 import React, { FC } from 'react'
 import { Hat } from '../Misc/Hat';
-import API from '../../modules/API'
 
 const colors = new Map()
 colors.set(121, '#0086B6');

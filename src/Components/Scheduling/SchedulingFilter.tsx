@@ -1,5 +1,4 @@
 import React, { FC } from 'react'
-import uuid from '../../uuid';
 
 interface Props {
   filter: any//object int:bool
