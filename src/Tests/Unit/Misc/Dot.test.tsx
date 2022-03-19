@@ -146,18 +146,7 @@ describe('Dot', () => {
             dots.forEach(e => {
                 expect(e.className.split(' ').includes('deselected')).toEqual(false);
                 expect(e.className.split(' ').includes('selected')).toEqual(false);
-            })
-            userEvent.click(dots[0]);
-            dots.forEach(e => {
-                expect(e.className.split(' ').includes((e.getAttribute('link-id') === subjectID.toString())? 'selected' : 'deselected')).toEqual(true);
-            })
-
-            userEvent.click(document.body);
-
-            dots.forEach(e => {
-                expect(e.className.split(' ').includes('deselected')).toEqual(false);
-                expect(e.className.split(' ').includes('selected')).toEqual(false);
-            })
+            });
         });
     })
     

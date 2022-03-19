@@ -1,5 +1,6 @@
-import React from 'react';
-import { screen } from '@testing-library/react';
+import React, { createContext } from 'react';
+import { render, screen } from '@testing-library/react';
+import { EmployeeList } from '../../../Components/EmployeeList/EmployeeList';
 
 jest.mock('../../../Components/EmployeeList/EmployeeRow', () => {
     return {
@@ -12,24 +13,34 @@ jest.mock('../../../Components/EmployeeList/EmployeeRow', () => {
 
 describe('EmployeeList', () => {
     const folks = ["Abby Apple", "Bob Banana", "Charles Cherry"];
-    // beforeEach(() => render(< EmployeeList data={folks}/>));
+    const renderSubject = () => {
+        render(< EmployeeList />)
+    }
 
     it('has a generate button', () => {
+        renderSubject();
+
         const element = screen.getByRole('button', {name: /generate/i});
         expect(element).toBeInTheDocument();
     });
 
     it('has an accept button', () => {
+        renderSubject();
+
         const element = screen.getByRole('button', {name: /accept/i});
         expect(element).toBeInTheDocument();
     });
 
     it('has a top label', () => {
+        renderSubject();
+
         const element = screen.getByText('Employee');
         expect(element).toBeInTheDocument();
     });
 
     it('displays the data it was given', () => {
+        renderSubject();
+
         folks.forEach(e => {
             const name = screen.getByTestId(e);
             expect(name).toBeInTheDocument();
@@ -37,6 +48,8 @@ describe('EmployeeList', () => {
     });
 
     it('does not display data it wasn\'t given', () => {
+        renderSubject();
+
         ['Danny Durian', 'Elena Eggplant'].forEach(name => {
             screen.findByTestId(name).then(e => {
                 expect(e).toBe({});

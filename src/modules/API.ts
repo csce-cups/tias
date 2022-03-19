@@ -26,10 +26,9 @@ class API {
 		}
 	}
 
-	static fetchAllDummy = () => {
-		console.log("FETCH ALL CALLED");
+	static fetchAllDummy = (args?: {employees?: APIPerson[]}) => {
 		return {
-			employees: API.fetchPTListDummy()
+			employees: API.fetchPTListDummy(args?.employees)
 		}
 	}
 
@@ -41,10 +40,10 @@ class API {
 	}
 
 
-	private static fetchPTListDummy = async (): Promise<APIPerson[]> => {
+	private static fetchPTListDummy = async (response?: APIPerson[]): Promise<APIPerson[]> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
-				resolve([
+				resolve(response || [
 						"Geralt of Rivia",
 						"Gary Chess", 
 						"Sandy Banks", 
