@@ -1,7 +1,6 @@
 import React, { FC, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
-import { isJSDocNonNullableType, readJsonConfigFile } from 'typescript';
 
 let numHours = 11;
 

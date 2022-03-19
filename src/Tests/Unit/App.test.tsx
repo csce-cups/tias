@@ -30,18 +30,22 @@ jest.mock("../../Components/Scheduling/SchedulingWindow", () => {
 })
 
 describe('App', () => {
-    beforeEach(() => render(< App />));
-    
     describe('scheduling page', () => {
         it('renders the navbar', () => {
+            render(< App />);
+
             expect(screen.getByTestId('NavBar')).toBeInTheDocument();
         });
     
-        it('renders the navbar', () => {
+        it('renders the employee list', () => {
+            render(< App />);
+
             expect(screen.getByTestId('EmployeeList')).toBeInTheDocument();
         });
     
-        it('renders the navbar', () => {
+        it('renders the scheduling window', () => {
+            render(< App />);
+
             expect(screen.getByTestId('SchedulingWindow')).toBeInTheDocument();
         });
     })

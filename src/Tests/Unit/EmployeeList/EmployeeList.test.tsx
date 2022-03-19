@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, RenderResult, screen } from '@testing-library/react';
-import { EmployeeList } from '../../../Components/EmployeeList/EmployeeList';
+import { screen } from '@testing-library/react';
 
 jest.mock('../../../Components/EmployeeList/EmployeeRow', () => {
     return {
