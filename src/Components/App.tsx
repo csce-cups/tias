@@ -10,7 +10,7 @@ export const App = () => {
     <div className="App">
       < NavBar />
       <div className="app-body">
-        < APIContext >
+        < APIContext test={true}>
           < EmployeeList />
           < SchedulingWindow />
         </APIContext>

@@ -3,18 +3,19 @@ import API, { APIPerson } from '../modules/API'
 
 interface Props {
 	children: ReactNode,
-  args?: any
+  args?: any,
+  test?: boolean
 }
 
 export const contexts = {
   employees: createContext([] as APIPerson[])
 }
 
-export const APIContext: FC<Props> = ({children, args}) => {
+export const APIContext: FC<Props> = ({children, args, test}) => {
   const [employees, setEmployees] = useState([] as APIPerson[])
 
   useEffect(() => {
-    const APIPromises = API.fetchAllDummy({employees: args?.employees});
+    const APIPromises = (test)? API.fetchAllDummy() : API.fetchAll();
     APIPromises.employees.then((resp) => {
       setEmployees(resp);
     })
