@@ -35,13 +35,13 @@ export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
 
   for (let i = 0; i < len; i++) {
     // Enabled filters are shown in black (monitored by filter[parseInt(filter_subjects[i])])
-    filter_elements[i] = <div onClick={update(filter_subjects[i])} className="center filter element" style={{ 
+    filter_elements[i] = <div onClick={update(filter_subjects[i])} className="center filter element" key={`filter-${filter_subjects[i]}`} style={{ 
       textDecoration: filter[parseInt(filter_subjects[i])]? undefined : 'line-through'
     }}>{filter_subjects[i]}</div>
   }
 
   // The last element is the toggle  
-  filter_elements.push(<div onClick={update(showAll)} className="center filter element" style={{ 
+  filter_elements.push(<div onClick={update(showAll)} className="center filter element" key={`filter-showall`} style={{ 
     borderRight: 0,
     flex: 'none',
     padding: '0 5px'

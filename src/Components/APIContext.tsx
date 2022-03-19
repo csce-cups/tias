@@ -13,7 +13,7 @@ export const APIContext: FC<Props> = ({children}) => {
   const [employees, setEmployees] = useState([] as APIPerson[])
 
   useEffect(() => {
-    const APIPromises = API.fetchAll();
+    const APIPromises = API.fetchAllDummy();
     APIPromises.employees.then((resp) => {
       setEmployees(resp);
     })

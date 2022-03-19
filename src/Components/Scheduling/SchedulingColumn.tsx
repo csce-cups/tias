@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
+import { isJSDocNonNullableType, readJsonConfigFile } from 'typescript';
 
 let numHours = 11;
 
@@ -100,17 +101,17 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     if (Array.isArray(outer)) { // Creates a subview for the smaller elements
       return (
         // Needs a key
-        <div className="vstack absolute">
-          { outer.map(row => (
+        <div className="vstack absolute" key={`deep-unravel-outer-${JSON.stringify(outer)}`}>
+          { outer.map((row: CourseInstance[]) => (
             // Needs a key
-            <div className="hstack block-container" style={{
+            <div className="hstack block-container" key={`deep-unravel-row-${JSON.stringify(row)}`} style={{
               height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
               <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
               { row.map(c => (
                 // Needs a key
-                < SchedulingBlock course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} />
+                < SchedulingBlock course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} key={`deep-unravel-block-${JSON.stringify(c)}`}/>
               )) }
             </div>
           ))}
@@ -119,7 +120,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     } else {
       return (
         // Needs a key
-        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} linkIDs={randIDs()} />
+        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} linkIDs={randIDs()} key={`shallow-unravel-${JSON.stringify(outer)}`}/>
       )
     }
   }
@@ -157,7 +158,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     // Add the spacers to the block list
     spacers.push([]);
     for (let j = 0; j < count; j++) {
-      spacers[spacers.length - 1].push(<div className="block spacer"/>)
+      spacers[spacers.length - 1].push(<div className="block spacer" key={`spacer-${j}`}/>)
     }
 
     // Pre-calculate how large the spacer should be in subviews
@@ -168,7 +169,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     <>
       { blocks.map((set: any, idx: number) => (
         // Needs a key
-        <div className="block-container hstack fill" style={{ 
+        <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(set)}`} style={{ 
           padding: 0, 
           height: `${time_to_height(set[0].start, set[0].end)}%`,
           top: `${start_time_to_top(set[0].start)}%`
@@ -191,7 +192,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
     // Needs a key
-    dividers[i] = <div className="divider"/>;
+    dividers[i] = <div className="divider" key={`divider-${i}`}/>;
   }
 
   const select = () => {
