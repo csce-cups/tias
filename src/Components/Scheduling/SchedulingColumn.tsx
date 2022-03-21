@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
+import uuid from '../../uuid';
 
 let numHours = 11;
 
 interface Props {
   blocks: any, // The blocks to be displayed for this day of the week
-  end? : boolean, // Basic styling prop, the column on the end doesn't get a border on the right
   filter: Object,
   day: string, // The day of the week
   hours?: number, // The number of hours in a day
@@ -90,22 +90,27 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
   return placeBlocks(base, filter);
 
 }
-  
+
+
 const placeBlocks = (blocks: CourseInstance[], filter: any) => {
-  const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance) => {
-    if (Array.isArray(outer)) {
+  const r = () => Math.floor(Math.random() * 40);
+  const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
+
+  const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance, spacerSz: string) => {
+    if (Array.isArray(outer)) { // Creates a subview for the smaller elements
       return (
         // Needs a key
-        <div className="vstack">
+        <div className="vstack absolute">
           { outer.map(row => (
             // Needs a key
             <div className="hstack block-container" style={{
               height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
               top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
             }}>
+              <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
               { row.map(c => (
                 // Needs a key
-                < SchedulingBlock course_instance={c} visible={filter[c.course]} />
+                < SchedulingBlock course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} />
               )) }
             </div>
           ))}
@@ -114,11 +119,12 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     } else {
       return (
         // Needs a key
-        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} />
+        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} linkIDs={randIDs()} />
       )
     }
   }
 
+  // Find the largest block for each set of blocks
   let maxes: any = [];
   blocks.forEach((set: any) => {
     maxes.push(set.reduce((p: any, e: any) => {
@@ -126,6 +132,36 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
       else if (Array.isArray(p)) { return e; }
       else return d_len(p) > d_len(e) ? p : e;
     }))
+  })
+  
+  let spacers: any = [];
+  let spacerLens: any = [];
+  blocks.forEach((set: any) => {
+
+    // Calculate how many spacers to add to the end of the top level block list
+    let count = 0;
+    set.forEach((subset: any) => {
+      let maxCount = 0;
+      if (Array.isArray(subset)) {
+        subset.forEach((block: any) => {
+          if (Array.isArray(block)) {
+            maxCount = Math.max(maxCount, block.length);
+          } else {
+            maxCount = Math.max(maxCount, 1);
+          }
+        })
+      }
+      count = Math.max(maxCount, count);
+    });
+    
+    // Add the spacers to the block list
+    spacers.push([]);
+    for (let j = 0; j < count; j++) {
+      spacers[spacers.length - 1].push(<div className="block spacer"/>)
+    }
+
+    // Pre-calculate how large the spacer should be in subviews
+    spacerLens.push(100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1)));
   })
 
   return (
@@ -138,34 +174,66 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
           top: `${start_time_to_top(set[0].start)}%`
         }}>
           { set.map((outer: any) => (
-            unravel(outer, maxes[idx])
+            unravel(outer, maxes[idx], `${spacerLens[idx]}%`)
           ))}
+          { spacers[idx] }
         </div>
       ))}
     </>
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, end, filter, day, hours}) => {
-  let style = {};
-  if (end) {
-    style = {border: '0'}
-  }
-
+export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
+  const [detailed, setDetailed] = useState(false);
+  const id = uuid();
   if (hours !== undefined) numHours = hours;
 
   let dividers = [];
   for (let i = 0; i < numHours; i++) {
     // Needs a key
-    dividers[i] = <div className="divider"></div>;
+    dividers[i] = <div className="divider"/>;
+  }
+
+  const select = () => {
+    if (!detailed) {
+      setDetailed(true);
+      modifyColumns(id, 'detailed');
+      modifyColumns(id, 'undetailed', true);
+    }
+  }
+  
+  const deselect = () => {
+    setDetailed(false);
+    modifyColumns(id, 'detailed', false, true);
+    modifyColumns(id, 'undetailed', true, true);
+  }
+
+  const modifyColumns = (id: string, newClass: string, inverted: boolean = false, remove: boolean = false) => {
+    const selector = `div.column${(inverted? ':not(' : '')}[id="${id}"]${(inverted? ')' : '')}`;
+    let linked = Array.from(document.querySelectorAll(selector));
+    if (remove) linked.forEach(e => e.classList.remove(newClass));
+    else linked.forEach(e => e.classList.add(newClass));
   }
 
   return (
-    <div className="vstack grow-h day" style={style} >
-      <div className="day-label">
-        <b>{day}</b>
-      </div>
-      <div className="vstack day" style={style} >
+    <div className="vstack grow-h day column" id={id} onClick={select}>
+      { (detailed) ? 
+        <div className="day-label hstack" style={{padding: 0}}>
+          <div className="left element detailed" style={{padding: '5px'}}>
+            Viewing: {day}
+          </div>
+          <div className="center element detailed" style={{padding: '3px'}} onClick={deselect}>
+            Exit
+          </div>
+        </div>
+      : 
+        <div className="day-label hstack">
+          <div className="center element">
+            {day}
+          </div>
+        </div> 
+      }
+      <div className="vstack day" >
         { dividers }
         { generateBlocks(blocks, filter) }
       </div>

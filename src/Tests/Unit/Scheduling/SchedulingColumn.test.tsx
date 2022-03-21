@@ -29,7 +29,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
             expect(element).toBeInTheDocument();
         });
         
-        it('displays one short element', () => {
+        it('displays one long element', () => {
             render(< SchedulingColumn day={'Mon'} filter={{121: true}} blocks={[
                 {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
             ]}/>)

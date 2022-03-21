@@ -89,6 +89,16 @@ class BlockFormer {
 
     static samples = {
         Empty_schedule: [],
+        Test_schedule: [
+            {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+            {course: 121, section: 106, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+            {course: 121, section: 106, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+            
+            {course: 221, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+            {course: 313, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+
+            {course: 315, section: 104, start: BlockFormer.starts.MW_B, end: BlockFormer.setTimes.MW_B_short},
+        ],
         M_schedule: [
             // MONDAYS //
             {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},

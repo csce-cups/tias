@@ -1,11 +1,5 @@
 import React, { FC } from 'react'
-import { EmployeeRow } from './EmployeeRow'
-import { GenerateButton } from './GenerateButton'
-import { AcceptButton } from './AcceptButton'
-
-interface Props {
-	data?: string[]
-}
+import colorFromId from './color'
 
 function getData(): Array<string> {
 	return [
@@ -65,24 +59,25 @@ function getData(): Array<string> {
 	];
 }
 
-export const EmployeeList: FC<Props> = ({data}) => {
-  if (data === undefined) data = getData();
+interface Props {
+  linkID: number, // An id that ties this dot corresponding dots elsewhere on the page
+  name?: string, // A name to display in the hat
+}
+
+export const Hat: FC<Props> = ({linkID, name}) => {
+  const {r, g, b, l} = colorFromId(linkID);
+  const colors = {
+    backgroundColor: `rgb(${r}, ${g}, ${b})`,
+    color: (l <= 50)? 'white' : 'black'
+  }
+
   return (
-    <div className="vstack">
-      <div className="header">
-        <h2 className="slim">Employee</h2>
-      </div>
-
-      <div className="scrollable">
-        { data.map((e, index) => (
-          < EmployeeRow key={index} linkID={index} element={e} />
-        ))}
-      </div>
-
-      <div className="vstack top-border">
-        < GenerateButton />
-        < AcceptButton />
-      </div>
-    </div>
+    <div 
+      className="hat" 
+      link-id={linkID} 
+      title={getData()[linkID]}
+      style={colors} 
+      data-testid="hat"
+    >{getData()[linkID]}</div>
   )
 }

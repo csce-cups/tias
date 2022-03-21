@@ -11,7 +11,7 @@ describe('SchedulingBlock', () => {
             start:  new Date(0), 
             end: new Date(1000*60*50) // 50 minutes long
         }
-    }/>));
+    } linkIDs={[]}/>));
 
     it('displays the course', () => {
         const element = screen.getByText(/121/);

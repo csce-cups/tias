@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Dot } from '../Misc/Dot'
+import { Hat } from '../Misc/Hat';
 
 const colors = new Map()
 colors.set(121, '#0086B6');
@@ -19,10 +19,11 @@ interface CourseInstance { // Results of a join between course, course_section, 
 
 interface Props {
   course_instance: CourseInstance,
-  visible: boolean
+  visible: boolean,
+  linkIDs: number[]
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, visible}) => {
+export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs}) => {
   const isVisible = {
     width: visible? undefined : 0,
     flex: visible? undefined : '0 0 auto',
@@ -39,11 +40,12 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible}) => {
       title={`${course_instance.course}-${course_instance.section}`} 
       style={{backgroundColor: colors.get(course_instance.course), ...isVisible}}
     >
-      <div className="block-indicator slim" style={isContentVisible}>
-        < Dot linkID={Math.floor(Math.random()*20)}/> {/* TODO: Random Keys to be replaced }*/}
+      <div className="hat-container">
+        {linkIDs.map(id => (< Hat linkID={id} />))}
       </div>
+      <div className="fill"/>
       <div className="block-text" style={isContentVisible}>
-        {course_instance.course}-{course_instance.section}
+        {course_instance.course} {course_instance.section}
       </div>
     </div>
   )
