@@ -9,14 +9,14 @@ export const Profile = () => {
   return (
     <div className="Profile hstack">
       <div className="vstack" style={{width :"20vw"}}>
-        <div className="peer-teacher-heading">
+        <div className="name">
           Peer Teacher
         </div>
         <div className="hstack">
           <img src={rick} className="profile-picture"/>
-          <div className="name">
-            Rick Astley
-          </div>
+        </div>
+        <div className="name">
+          Rick Astley
         </div>
       </div>
       <div className="vstack main">
