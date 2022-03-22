@@ -41,6 +41,11 @@ export const Profile = () => {
           <GradeSelectorRow element="CSCE 313" color="red"/>
           <GradeSelectorRow element="CSCE 315" color="red"/>
           <GradeSelectorRow element="CSCE 411" color="red"/>
+          <div className="hstack" style={{margin : "15px"}}>
+            <div className="element right">
+              <button className="green button">Save Preferences</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
