@@ -9,12 +9,18 @@ public class Section {
     int capacityPTs;
     int capacityTAs;
     ArrayList<Meeting> meetings;
+
+    int currentPTs;
+    int currentTAs;
     
     public Section(int courseId, String sectionNumber, int capacityPTs, int capacityTAs) {
         this.courseId = courseId;
         this.sectionNumber = sectionNumber;
         this.capacityPTs = capacityPTs;
         this.capacityTAs = capacityTAs;
+
+        currentPTs = 0;
+        currentTAs = 0;
     }
 
     public int getCourseId() {
@@ -31,6 +37,22 @@ public class Section {
 
     public int getCapacityTAs() {
         return capacityTAs;
+    }
+
+    public int getAssignedPTs() {
+        return capacityPTs;
+    }
+
+    public void addAssignedPTs() {
+        ++capacityPTs;
+    }
+
+    public int getAssignedTAs() {
+        return capacityTAs;
+    }
+
+    public void addAssignedTAs() {
+        ++capacityTAs;
     }
 
     public ArrayList<Meeting> getMeetings() {
