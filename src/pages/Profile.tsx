@@ -9,7 +9,7 @@ export const Profile = () => {
   return (
     <div className="Profile hstack">
       <div className="vstack" style={{width :"20vw"}}>
-        <div className="name">
+        <div className="name2">
           Peer Teacher
         </div>
         <div className="hstack">
