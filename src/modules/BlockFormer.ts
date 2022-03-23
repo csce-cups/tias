@@ -88,6 +88,17 @@ class BlockFormer {
     }
 
     static samples = {
+        Empty_schedule: [],
+        Test_schedule: [
+            {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+            {course: 121, section: 106, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+            {course: 121, section: 106, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+            
+            {course: 221, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+            {course: 313, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+
+            {course: 315, section: 104, start: BlockFormer.starts.MW_B, end: BlockFormer.setTimes.MW_B_short},
+        ],
         M_schedule: [
             // MONDAYS //
             {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
@@ -147,7 +158,10 @@ class BlockFormer {
             {course: 221, section: 109, start: BlockFormer.starts.MW_C3, end: BlockFormer.setTimes.MW_C3_short},
             {course: 313, section: 109, start: BlockFormer.starts.MW_C3, end: BlockFormer.setTimes.MW_C3_short},
             {course: 313, section: 109, start: BlockFormer.starts.MW_C3, end: BlockFormer.setTimes.MW_C3_short},
-        ],
+        ].map((e, i) => {
+            e.section = 100 + i;
+            return e;
+        }),
         
         TH_shcedule: [
             {course: 121, section: 101, start: BlockFormer.starts.TH_A, end: BlockFormer.setTimes.TH_A_short},
@@ -181,7 +195,10 @@ class BlockFormer {
             {course: 221, section: 105, start: BlockFormer.starts.TH_C2, end: BlockFormer.setTimes.TH_C2_short},
             
             {course: 121, section: 106, start: BlockFormer.starts.TH_A3, end: BlockFormer.setTimes.TH_A3_short},
-        ],
+        ].map((e, i) => {
+            e.section = 100 + i;
+            return e;
+        }),
         
         W_schedule: [
             {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
@@ -273,7 +290,10 @@ class BlockFormer {
             {course: 221, section: 108, start: BlockFormer.starts.MW_C3, end: BlockFormer.setTimes.MW_C3_short},
             {course: 313, section: 108, start: BlockFormer.starts.MW_C3, end: BlockFormer.setTimes.MW_C3_short},
             {course: 315, section: 108, start: BlockFormer.starts.MW_C3, end: BlockFormer.setTimes.MW_C3_short},
-        ],
+        ].map((e, i) => {
+            e.section = 100 + i;
+            return e;
+        }),
         
         F_schedule: [
             {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
@@ -305,7 +325,10 @@ class BlockFormer {
             {course: 221, section: 125, start: BlockFormer.starts.MW_C3, end: BlockFormer.setTimes.MW_C3_short},
             {course: 313, section: 126, start: BlockFormer.starts.MW_A3, end: BlockFormer.setTimes.MW_A3_extralong},
             {course: 315, section: 127, start: BlockFormer.starts.MW_A3, end: BlockFormer.setTimes.MW_A3_extralong},
-        ]
+        ].map((e, i) => {
+            e.section = 100 + i;
+            return e;
+        }),
     }
 }
 

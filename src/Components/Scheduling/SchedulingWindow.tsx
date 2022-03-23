@@ -4,7 +4,7 @@ import { SchedulingRender } from './SchedulingRender'
 import { SchedulingFilter } from './SchedulingFilter'
 
 interface Props {
-    
+  
 }
 
 export const SchedulingWindow: FC<Props> = () => {
@@ -16,7 +16,6 @@ export const SchedulingWindow: FC<Props> = () => {
     313: true,
     315: true
   });
-  // (filter[course.num] ? <course/> : null)
 
   return (
     <div className="vstack main">
