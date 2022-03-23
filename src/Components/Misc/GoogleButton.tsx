@@ -32,6 +32,35 @@ export const GoogleButton = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
   const googleResponseCallback = (response: any) => {
+    // Acquire the Google sign-in token.
+    let id_token = response.getAuthResponse().id_token;
+    // Obtain basic user info from the user's Google profile.
+    let userBasicInfo = response.getBasicProfile();
+
+    // Construct the request body to call
+    // the API. All basic information is needed
+    // to automatically generate a user if the 
+    // user has not signed into the system before.
+    let requestBody = 
+    {
+      token: id_token,
+      firstName: userBasicInfo.getGivenName(),
+      lastName: userBasicInfo.getFamilyName(),
+      // email: userBasicInfo.getEmail()
+      profilePhoto: userBasicInfo.getImageUrl(),
+      isPeerTeacher: false,
+      isTeachingAssistant: false,
+      isProfessor: false,
+      isAdmin: false    
+    };
+
+    // Establish a TIAS session.
+    fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/session', {
+      method: 'POST',
+      body: JSON.stringify(requestBody)
+    }).then(sessionResponse => sessionResponse.json())
+      .then(responseData => document.cookie = `tias_user_id=${responseData.id}`);
+
     clientUsername = response.Du.VX
     setLoggedIn(true);
   };
