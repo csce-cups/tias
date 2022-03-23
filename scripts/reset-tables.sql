@@ -67,7 +67,7 @@ DROP TABLE IF EXISTS qualification CASCADE;
 CREATE TABLE qualification (
 	person_id INTEGER REFERENCES person(person_id),
 	course_id INTEGER REFERENCES course(course_id),
-	grade CHAR NOT NULL DEFAULT 'X',
+	qualified BOOLEAN,
 	PRIMARY KEY(person_id, course_id)
 );
 
