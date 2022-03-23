@@ -55,7 +55,7 @@ export const Profile = () => {
             </div>
           </div>
             <div className="element right">
-              <button className="green button">Save Preferences</button>
+              <button className="green button">Save Qualifications</button>
             </div>
           </div>
         </div>
