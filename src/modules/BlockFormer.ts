@@ -112,7 +112,7 @@ class BlockFormer {
         Test_schedule: [
             BlockFormer.generateBlock(121, 101, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
             BlockFormer.generateBlock(121, 106, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
-            BlockFormer.generateBlock(121, 106, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
+            BlockFormer.generateBlock(121, 107, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
 
             BlockFormer.generateBlock(221, 102, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, "none", "nowhere"),
             BlockFormer.generateBlock(313, 103, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, "none", "nowhere"),

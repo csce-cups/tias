@@ -63,20 +63,21 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
   let i = 0;
   let iter = 0;
   const maxIter = 1e5;
-  while (i < data.length && iter++ < maxIter) {
+  const safe = () => i < data.length && iter++ < maxIter;
+  while (safe()) {
 
     let outer: any = [];
     let max = data[i];
-    while (i < data.length && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime() && iter++ < maxIter) {
+    while (safe() && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
 
       let inner: any = [];
-      while (i < data.length && d_len(data[i]) < d_len(max) 
-        && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime() && iter++ < maxIter) {
+      while (safe() && d_len(data[i]) < d_len(max) 
+        && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
 
         let temp_arr: any = [];
         let temp = data[i];
-        while (i < data.length && data[i].start_time.getTime() === temp.start_time.getTime() && data[i].end_time.getTime() === temp.end_time.getTime()
-          && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime() && iter++ < maxIter) {
+        while (safe() && data[i].start_time.getTime() === temp.start_time.getTime() && data[i].end_time.getTime() === temp.end_time.getTime()
+          && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
 
           temp_arr.push(data[i]);
           i++;
@@ -114,19 +115,17 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
   const unravel = (outer: APICourseBlock | APICourseBlock[][], parent: APICourseBlock, spacerSz: string) => {
+    console.log({outer: outer});
     if (Array.isArray(outer)) { // Creates a subview for the smaller elements
       return (
-        // Needs a key
         <div className="vstack absolute" key={`deep-unravel-outer-${JSON.stringify(outer)}`}>
           { outer.map((row: APICourseBlock[]) => (
-            // Needs a key
             <div className="hstack block-container" key={`deep-unravel-row-${JSON.stringify(row)}`} style={{
               height: `${time_to_height(row[0].start_time, row[0].end_time, d_len(parent))}%`,
               top: `${start_time_to_top(row[0].start_time, parent.start_time, d_len(parent))}%`
             }}>
               <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
               { row.map(c => (
-                // Needs a key
                 < SchedulingBlock course_instance={c} visible={filter[c.course_number]} linkIDs={randIDs()} key={`deep-unravel-block-${JSON.stringify(c)}`}/>
               )) }
             </div>
@@ -135,7 +134,6 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
       )
     } else {
       return (
-        // Needs a key
         < SchedulingBlock course_instance={outer} visible={filter[outer.course_number]} linkIDs={randIDs()} key={`shallow-unravel-${JSON.stringify(outer)}`}/>
       )
     }
@@ -180,7 +178,6 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
     // Pre-calculate how large the spacer should be in subviews
     spacerLens.push(100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1)));
   })
-
 
   return (
     <>

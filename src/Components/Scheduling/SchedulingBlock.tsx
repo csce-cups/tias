@@ -17,6 +17,7 @@ interface Props {
 }
 
 export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs}) => {
+  console.log({render: course_instance});
   const isVisible = {
     width: visible? undefined : 0,
     flex: visible? undefined : '0 0 auto',
