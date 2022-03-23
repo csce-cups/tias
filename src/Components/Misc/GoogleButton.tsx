@@ -55,11 +55,12 @@ export const GoogleButton = () => {
     };
 
     // Establish a TIAS session.
-    let sessionResponse = fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/session', {
+    fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/session', {
       method: 'POST',
       body: JSON.stringify(requestBody)
-    });
-    
+    }).then(sessionResponse => sessionResponse.json())
+      .then(responseData => document.cookie = `tias_user_id=${responseData.id}`);
+
     clientUsername = response.Du.VX
     setLoggedIn(true);
   };
