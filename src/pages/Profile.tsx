@@ -42,6 +42,18 @@ export const Profile = () => {
           <GradeSelectorRow element="CSCE 315" color="red"/>
           <GradeSelectorRow element="CSCE 411" color="red"/>
           <div className="hstack" style={{margin : "15px"}}>
+            <div className="element">
+              Preferred Number of Lab Sections:&nbsp;&nbsp;  
+            </div>
+            <div className="dropdown">
+            <button className="dropbtn">       &#9660;</button>
+            <div className="dropdown-content">
+              <a href="#">4</a>
+              <a href="#">3</a>
+              <a href="#">2</a>
+              <a href="#">1</a>
+            </div>
+          </div>
             <div className="element right">
               <button className="green button">Save Preferences</button>
             </div>
