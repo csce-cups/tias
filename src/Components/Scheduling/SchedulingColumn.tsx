@@ -220,9 +220,11 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     <div className="vstack grow-h day column" id={id} onClick={select}>
       { (detailed) ? 
         <div className="day-label hstack exit" style={{padding: 0}}>
-          <div className="exit left element detailed hstack">
-            <img src={back_arrow}/>
-            EXIT
+          <div className="exit left element detailed hstack" onClick={deselect}>
+            <div className="vstack" style={{justifyContent: 'center'}}>
+              <img className="back-arrow" src={back_arrow} alt=""/>
+            </div>
+            <div className="exit-text">BACK</div>
           </div>
           <div className="center element detailed" style={{padding: '3px'}} onClick={deselect}>
             {day}
