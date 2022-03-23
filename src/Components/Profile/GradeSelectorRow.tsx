@@ -27,12 +27,10 @@ export const GradeSelectorRow : FC<Props> = ({element, color}) => {
       <div className="fill element"/>
       <div className="element">
       <div className="dropdown">
-        <button className="dropbtn">Preferences &#9660;</button>
+        <button className="dropbtn">Qualification &#9660;</button>
         <div className="dropdown-content">
-          <a href="#">Want to Teach</a>
-          <a href="#">Indifferent</a>
-          <a href="#">Rather Not Teach</a>
-          <a href="#">Can't Teach</a>
+          <a href="#">Qualified to Teach</a>
+          <a href="#">Not Qualified to Teach</a>
         </div>
       </div>
       </div>
