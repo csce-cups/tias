@@ -83,7 +83,6 @@ const update_course_sections = (
     section_id: section_id,
     person_id_professor: null,
     section_number: section_number,
-    peer_teachable: null,
     weekday: weekday_map[weekday],
     start_time: to_db_time(start_time),
     end_time: to_db_time(end_time),
@@ -153,7 +152,7 @@ client
       `
         SELECT
           course.course_id, course.department, course.course_number, course.course_name,
-          course_section.section_id, course_section.person_id_professor, course_section.section_number, course_section.peer_teachable,
+          course_section.section_id, course_section.person_id_professor, course_section.section_number,
           section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, section_meeting.place, section_meeting.meeting_type
         FROM course
         LEFT OUTER JOIN course_section
@@ -212,6 +211,8 @@ client
           let end_time = `${line[EndTime]}`;
           let place = line[Room];
 
+          let instructor = line[Instructor];
+
           start_time = parse_time(start_time, time_zone);
           end_time = parse_time(end_time, time_zone);
 
@@ -234,11 +235,11 @@ client
             let section_id = (
               await loader(
                 `
-                  INSERT INTO course_section (course_id, section_number)
-                  VALUES ($1, $2)
+                  INSERT INTO course_section (course_id, section_number, placeholder_professor_name)
+                  VALUES ($1, $2, $3)
                   RETURNING section_id
                 `,
-                [filtered_sections[0].course_id, section_number]
+                [filtered_sections[0].course_id, section_number, instructor]
               )
             ).rows[0].section_id;
             add_section_meetings(
