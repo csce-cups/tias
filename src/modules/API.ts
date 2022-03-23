@@ -1,4 +1,5 @@
 import axios from 'axios'
+import BlockFormer from './BlockFormer'
 
 export interface APIPerson {
 	person_id: number
@@ -11,24 +12,70 @@ export interface APIPerson {
 	professor: boolean
 }
 
+
 export interface APIPTListResponse {
 	users: APIPerson[]
 }
 
+export interface APICourseBlock {
+	department: string
+	course_number: number
+	section_number: number
+	start_time: Date
+	end_time: Date
+	weekday: string
+	place: string
+}
+
+export interface APICourseBlockWeek {
+	Monday: APICourseBlock[]
+	Tuesday: APICourseBlock[]
+	Wednesday: APICourseBlock[]
+	Thursday: APICourseBlock[]
+	Friday: APICourseBlock[]
+}
+
+interface raw_APICourseBlock {
+	department: string
+	course_number: string
+	section_number: string
+	start_time: string
+	end_time: string
+	weekday: string
+	place: string
+}
+
+interface raw_APICourseBlockWeek {
+	Monday: raw_APICourseBlock[]
+	Tuesday: raw_APICourseBlock[]
+	Wednesday: raw_APICourseBlock[]
+	Thursday: raw_APICourseBlock[]
+	Friday: raw_APICourseBlock[]
+}
+
+
 export interface APIContents {
 	employees: APIPerson[]
+	blocks: APICourseBlockWeek
+}
+
+export interface APIReturn {
+	employees: Promise<APIPerson[]>
+	blocks: Promise<APICourseBlockWeek>
 }
 
 class API {
-	static fetchAll = () => {
+	static fetchAll = (): APIReturn => {
 		return {
-			employees: API.fetchPTList()
+			employees: API.fetchPTList(),
+			blocks: API.fetchCourseBlocks()
 		}
 	}
 
-	static fetchAllDummy = (args?: {employees?: APIPerson[]}) => {
+	static fetchAllDummy = (args?: {employees?: APIPerson[]}): APIReturn => {
 		return {
-			employees: API.fetchPTListDummy(args?.employees)
+			employees: API.fetchPTListDummy(args?.employees),
+			blocks: API.fetchCourseBlocksDummy()
 		}
 	}
 
@@ -39,6 +86,31 @@ class API {
 			.catch(err => console.log(err));
 	}
 
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings
+	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
+		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
+			.then(({data}) => {
+				let dataStrict: raw_APICourseBlockWeek = data;
+				const convert = (input: raw_APICourseBlock[]): APICourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
+					department: e.department,
+					course_number: parseInt(e.course_number),
+					section_number: parseInt(e.section_number),
+					start_time: new Date(e.start_time),
+					end_time: new Date(e.end_time),
+					weekday: e.weekday,
+					place: e.place
+				})))
+
+				return ({
+					Monday: convert(dataStrict.Monday),
+					Tuesday: convert(dataStrict.Tuesday),
+					Wednesday: convert(dataStrict.Wednesday),
+					Thursday: convert(dataStrict.Thursday),
+					Friday: convert(dataStrict.Friday)
+				} as any)
+			})
+			.catch(err => console.log(err));
+	}
 
 	private static fetchPTListDummy = async (response?: APIPerson[]): Promise<APIPerson[]> => {
 		return new Promise((resolve, _) => {
@@ -109,6 +181,20 @@ class API {
 					})
 				))
 			}, 1000)
+		})
+	}
+
+	private static fetchCourseBlocksDummy = async (): Promise<APICourseBlockWeek> => {
+		return new Promise((resolve, _) => {
+			setTimeout(() => {
+				resolve({
+					Monday: BlockFormer.samples.M_schedule,
+					Tuesday: BlockFormer.samples.TH_schedule,
+					Wednesday: BlockFormer.samples.W_schedule,
+					Thursday: BlockFormer.samples.TH_schedule,
+					Friday: BlockFormer.samples.F_schedule
+				})
+			}, 1000);
 		})
 	}
 }

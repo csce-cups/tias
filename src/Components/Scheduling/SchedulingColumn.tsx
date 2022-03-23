@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
+import { APICourseBlock } from '../../modules/API'
 
 let numHours = 11;
 
@@ -11,16 +12,8 @@ interface Props {
   hours?: number, // The number of hours in a day
 }
 
-interface CourseInstance { // Results of a join between course, course_section, and section_meetings
-  course: number,   // Course_Number from Course
-  section: number,  // Section_Number from Course_Section
-  start: Date,      // Start_Time from Section_Meeting
-  end: Date         // End_Time from Section_Meeting 
-  // If the API returns more information from this I can add them to the interface here
-}
-
 // Breaks for 3 different lengths in a block
-const d_len = (e: CourseInstance | {course: number, section: number, start: Date, end: Date}) => { return e.end.getTime() - e.start.getTime(); }
+const d_len = (e: APICourseBlock) => { return e.end_time.getTime() - e.start_time.getTime(); }
 
 const time_to_height = (start: Date, end: Date, max: number = numHours*60*60*1000) => {
   return (end.getTime() - start.getTime()) / max * 100;
@@ -30,24 +23,24 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: CourseInstance[], filter: any) => {
+const generateBlocks = (data: APICourseBlock[], filter: any) => {
   // Data should be sorted by start time, class length, course number, and then by section number
   data.sort((a, b) => {
     // Sort by start time
-    if (a.start.getTime() < b.start.getTime()) return -1;
-    else if (a.start.getTime() > b.start.getTime()) return 1;
+    if (a.start_time.getTime() < b.start_time.getTime()) return -1;
+    else if (a.start_time.getTime() > b.start_time.getTime()) return 1;
     
     // Sort by class length
     else if (d_len(a) > d_len(b)) return -1;
     else if (d_len(a) < d_len(b)) return 1;
 
     // Sort by course number
-    else if (a.course < b.course) return -1;
-    else if (a.course > b.course) return 1;
+    else if (a.course_number < b.course_number) return -1;
+    else if (a.course_number > b.course_number) return 1;
 
     // Sort by section number
-    else if (a.section < b.section) return -1;
-    else if (a.section > b.section) return 1;
+    else if (a.section_number < b.section_number) return -1;
+    else if (a.section_number > b.section_number) return 1;
     
     // They're equal
     else return 0;
@@ -59,16 +52,16 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
 
     let outer: any = [];
     let max = data[i];
-    while (i < data.length && data[i].start.getTime() >= max.start.getTime() && data[i].end.getTime() <= max.end.getTime()) {
+    while (i < data.length && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
 
       let inner: any = [];
       while (i < data.length && d_len(data[i]) < d_len(max) 
-        && data[i].start.getTime() >= max.start.getTime() && data[i].end.getTime() <= max.end.getTime()) {
+        && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
 
         let temp_arr: any = [];
         let temp = data[i];
-        while (i < data.length && data[i].start.getTime() === temp.start.getTime() && data[i].end.getTime() === temp.end.getTime()
-          && data[i].start.getTime() >= max.start.getTime() && data[i].end.getTime() <= max.end.getTime()) {
+        while (i < data.length && data[i].start_time.getTime() === temp.start_time.getTime() && data[i].end_time.getTime() === temp.end_time.getTime()
+          && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
 
           temp_arr.push(data[i]);
           i++;
@@ -92,25 +85,25 @@ const generateBlocks = (data: CourseInstance[], filter: any) => {
 }
 
 
-const placeBlocks = (blocks: CourseInstance[], filter: any) => {
+const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
   const r = () => Math.floor(Math.random() * 40);
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
-  const unravel = (outer: CourseInstance | CourseInstance[][], parent: CourseInstance, spacerSz: string) => {
+  const unravel = (outer: APICourseBlock | APICourseBlock[][], parent: APICourseBlock, spacerSz: string) => {
     if (Array.isArray(outer)) { // Creates a subview for the smaller elements
       return (
         // Needs a key
         <div className="vstack absolute" key={`deep-unravel-outer-${JSON.stringify(outer)}`}>
-          { outer.map((row: CourseInstance[]) => (
+          { outer.map((row: APICourseBlock[]) => (
             // Needs a key
             <div className="hstack block-container" key={`deep-unravel-row-${JSON.stringify(row)}`} style={{
-              height: `${time_to_height(row[0].start, row[0].end, d_len(parent))}%`,
-              top: `${start_time_to_top(row[0].start, parent.start, d_len(parent))}%`
+              height: `${time_to_height(row[0].start_time, row[0].end_time, d_len(parent))}%`,
+              top: `${start_time_to_top(row[0].start_time, parent.start_time, d_len(parent))}%`
             }}>
               <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
               { row.map(c => (
                 // Needs a key
-                < SchedulingBlock course_instance={c} visible={filter[c.course]} linkIDs={randIDs()} key={`deep-unravel-block-${JSON.stringify(c)}`}/>
+                < SchedulingBlock course_instance={c} visible={filter[c.course_number]} linkIDs={randIDs()} key={`deep-unravel-block-${JSON.stringify(c)}`}/>
               )) }
             </div>
           ))}
@@ -119,7 +112,7 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
     } else {
       return (
         // Needs a key
-        < SchedulingBlock course_instance={outer} visible={filter[outer.course]} linkIDs={randIDs()} key={`shallow-unravel-${JSON.stringify(outer)}`}/>
+        < SchedulingBlock course_instance={outer} visible={filter[outer.course_number]} linkIDs={randIDs()} key={`shallow-unravel-${JSON.stringify(outer)}`}/>
       )
     }
   }
@@ -170,8 +163,8 @@ const placeBlocks = (blocks: CourseInstance[], filter: any) => {
         // Needs a key
         <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(set)}`} style={{ 
           padding: 0, 
-          height: `${time_to_height(set[0].start, set[0].end)}%`,
-          top: `${start_time_to_top(set[0].start)}%`
+          height: `${time_to_height(set[0].start_time, set[0].end_time)}%`,
+          top: `${start_time_to_top(set[0].start_time)}%`
         }}>
           { set.map((outer: any) => (
             unravel(outer, maxes[idx], `${spacerLens[idx]}%`)
