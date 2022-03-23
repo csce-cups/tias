@@ -141,7 +141,7 @@ const parse_time = (time_str, time_zone_offset) => {
   let hour = +time_str.substring(0, time_colon);
   let minute = +time_str.substring(time_colon + 1, time_space);
   let meridiem = time_str.substring(time_space + 1);
-  if (meridiem === "PM") hour += 12;
+  if ((meridiem === "PM") && (hour !== 12)) hour += 12;
 
   return `${(hour + time_zone_offset) % 24}:${minute}`;
 };
@@ -214,6 +214,8 @@ client
           let end_time = `${line[EndTime]}`;
           let place = line[Room];
 
+          let instructor = line[Instructor];
+
           start_time = parse_time(start_time, time_zone);
           end_time = parse_time(end_time, time_zone);
 
@@ -236,11 +238,11 @@ client
             let section_id = (
               await loader(
                 `
-                  INSERT INTO course_section (course_id, section_number)
-                  VALUES ($1, $2)
+                  INSERT INTO course_section (course_id, section_number, placeholder_professor_name)
+                  VALUES ($1, $2, $3)
                   RETURNING section_id
                 `,
-                [filtered_sections[0].course_id, section_number]
+                [filtered_sections[0].course_id, section_number, instructor]
               )
             ).rows[0].section_id;
             add_section_meetings(
