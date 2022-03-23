@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
-import colorFromId from './color'
+import colorFromId from '../../modules/color'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page
@@ -18,7 +18,7 @@ const modifyDots = (id: number, newClass: string, inverted: boolean = false, rem
   else linkedDots.forEach(e => e.classList.add(newClass));
 
   if (remove) {
-    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200); // Makes syre 
+    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200); // Makes sure hat is hidden before unrendering 
   } else {
     linkedHats.forEach(e => e.classList.add(newClass));
   }

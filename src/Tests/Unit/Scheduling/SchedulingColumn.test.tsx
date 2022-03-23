@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { SchedulingColumn } from '../../../Components/Scheduling/SchedulingColumn';
-import BlockFormer from '../../../Components/Scheduling/BlockFormer'
+import BlockFormer from '../../../modules/BlockFormer'
 
 describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
     it('exists', () => {

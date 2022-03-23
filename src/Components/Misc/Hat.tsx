@@ -1,70 +1,19 @@
 import React, { FC } from 'react'
-import colorFromId from './color'
-
-function getData(): Array<string> {
-	return [
-		"Geralt of Rivia",
-    "Gary Chess", 
-    "Sandy Banks", 
-    "King Gerold III",
-    "Sharpness IV", 
-    "Zelda DeLegendof",
-    "Star Fox", 
-		"Luigi Smansion", 
-    "John Doom", 
-    "Spongebob Squarepants",
-    "Crash Bandishoot",
-    "Suzzie Sunshine",
-    "Mr. Generic",
-    "Honda Accord",
-    "K.K. Slider",
-    "Gee Wilikers",
-    "Mario Galaxy",
-    "Ms. Generic",
-    "Bubble Bass",
-    "Sandy Cheeks",
-    "Patrick",
-    "Samus Errands",
-    "Timmy Twix",
-    "Marvin M&M",
-    "Bikeal Roads",
-    "Spicy Peppers",
-    "Quintin QWERTY",
-    "Asmorald ASDF",
-    "Timmothy Tingle",
-    "Kimmothy Kartz",
-    "Zimmothy Zions",
-    "Phoenix Wright",
-    "Mia Fey",
-    "Miles Edgeworth",
-    "Maya Fey",
-    "Pearl Fey",
-    "Dick Gumshoe",
-    "Franziska von Karma",
-    "Ema Skye",
-    "The Judge",
-    "Apollo Justice",
-    "Trucy Wright",
-    "Athena Cykes",
-    "Ryunosuke Naruhodo",
-    "Susato Mikotoba",
-    "Herlock Sholmes",
-    "Iris Wilson",
-    "Barok van Zieks",
-    "Tetsutetsu Tetsutetsu",
-    "Bobaboba Bobaboba",
-    "Spike the Cowboy",
-    "Guard the Reserve",
-    "Hero Sandwich"
-	];
-}
+import colorFromId from '../../modules/color'
+import { contexts } from '../APIContext'
+import { APIPerson } from '../../modules/API'
 
 interface Props {
   linkID: number, // An id that ties this dot corresponding dots elsewhere on the page
-  name?: string, // A name to display in the hat
 }
 
-export const Hat: FC<Props> = ({linkID, name}) => {
+export const Hat: FC<Props> = ({linkID}) => {
+  
+  const getName = (employees: APIPerson[]) => {
+    const target = employees.find(e => e.person_id === linkID);
+    return (target !== undefined)? `${target?.first_name} ${target?.last_name}` : ''
+  }
+
   const {r, g, b, l} = colorFromId(linkID);
   const colors = {
     backgroundColor: `rgb(${r}, ${g}, ${b})`,
@@ -72,12 +21,17 @@ export const Hat: FC<Props> = ({linkID, name}) => {
   }
 
   return (
-    <div 
-      className="hat" 
-      link-id={linkID} 
-      title={getData()[linkID]}
-      style={colors} 
-      data-testid="hat"
-    >{getData()[linkID]}</div>
+    < contexts.employees.Consumer >
+      {(employees) => (
+        <div 
+          className="hat" 
+          link-id={linkID} 
+          title={getName(employees)}
+          style={colors} 
+          data-testid="hat"
+          >{getName(employees)}
+        </div>
+      )}
+    </contexts.employees.Consumer>
   )
 }
