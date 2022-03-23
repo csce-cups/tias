@@ -1,6 +1,6 @@
 import { APICourseBlock } from './API'
 
-
+const start = 1000*60*60*10;
 class BlockFormer {
     static MW_classlength = 50;
     static TH_classlength = 75;
@@ -15,37 +15,31 @@ class BlockFormer {
         weekday: day,
         place: place
     })
-
-    static getStart = () => {
-        let MW_A = new Date(0);
-        MW_A.setHours(8);
-        return MW_A;
-    }
     
     static starts = {        
-        MW_A:  new Date(0),
-        MW_B:  new Date(1000*60*1*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
-        MW_C:  new Date(1000*60*2*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_A:  new Date(-start),
+        MW_B:  new Date(-start + 1000*60*1*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_C:  new Date(-start + 1000*60*2*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
         
-        MW_A2: new Date(1000*60*3*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
-        MW_B2: new Date(1000*60*4*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
-        MW_C2: new Date(1000*60*5*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_A2: new Date(-start + 1000*60*3*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_B2: new Date(-start + 1000*60*4*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_C2: new Date(-start + 1000*60*5*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
         
-        MW_A3: new Date(1000*60*6*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
-        MW_B3: new Date(1000*60*7*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
-        MW_C3: new Date(1000*60*8*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_A3: new Date(-start + 1000*60*6*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_B3: new Date(-start + 1000*60*7*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
+        MW_C3: new Date(-start + 1000*60*8*(BlockFormer.MW_classlength+BlockFormer.breaklength)),
 
-        TH_A:  new Date(0),
-        TH_B:  new Date(1000*60*1*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
-        TH_C:  new Date(1000*60*2*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_A:  new Date(-start),
+        TH_B:  new Date(-start + 1000*60*1*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_C:  new Date(-start + 1000*60*2*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
         
-        TH_A2: new Date(1000*60*3*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
-        TH_B2: new Date(1000*60*4*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
-        TH_C2: new Date(1000*60*5*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_A2: new Date(-start + 1000*60*3*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_B2: new Date(-start + 1000*60*4*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_C2: new Date(-start + 1000*60*5*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
         
-        TH_A3: new Date(1000*60*6*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
-        TH_B3: new Date(1000*60*7*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
-        TH_C3: new Date(1000*60*8*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_A3: new Date(-start + 1000*60*6*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_B3: new Date(-start + 1000*60*7*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
+        TH_C3: new Date(-start + 1000*60*8*(BlockFormer.TH_classlength+BlockFormer.breaklength)),
     }
 
     static setTimes = {
