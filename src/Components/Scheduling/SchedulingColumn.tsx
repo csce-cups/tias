@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
+import back_arrow from '../../assets/back_arrow_icon.svg'
 
 let numHours = 11;
 
@@ -218,12 +219,13 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   return (
     <div className="vstack grow-h day column" id={id} onClick={select}>
       { (detailed) ? 
-        <div className="day-label hstack" style={{padding: 0}}>
-          <div className="left element detailed" style={{padding: '5px'}}>
-            Viewing: {day}
+        <div className="day-label hstack exit" style={{padding: 0}}>
+          <div className="exit left element detailed hstack">
+            <img src={back_arrow}/>
+            EXIT
           </div>
           <div className="center element detailed" style={{padding: '3px'}} onClick={deselect}>
-            Exit
+            {day}
           </div>
         </div>
       : 
