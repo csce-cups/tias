@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { SchedulingColumn } from '../../../Components/Scheduling/SchedulingColumn';
-import BlockFormer from '../../../Components/Scheduling/BlockFormer'
+import BlockFormer from '../../../modules/BlockFormer'
 
 describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
     it('exists', () => {
@@ -29,7 +29,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
             expect(element).toBeInTheDocument();
         });
         
-        it('displays one short element', () => {
+        it('displays one long element', () => {
             render(< SchedulingColumn day={'Mon'} filter={{121: true}} blocks={[
                 {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
             ]}/>)
