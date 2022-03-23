@@ -5,9 +5,9 @@ import { APICourseBlock } from '../../modules/API';
 const colors = new Map()
 colors.set(121, '#0086B6');
 colors.set(221, '#434F6F');
-colors.set(312, 'white');
+colors.set(312, 'red');
 colors.set(313, '#405AB9');
-colors.set(314, 'white');
+colors.set(314, 'green');
 colors.set(315, '#009489');
 
 interface Props {

@@ -15,6 +15,12 @@ class BlockFormer {
         weekday: day,
         place: place
     })
+
+    static getStart = () => {
+        let MW_A = new Date(0);
+        MW_A.setHours(8);
+        return MW_A;
+    }
     
     static starts = {        
         MW_A:  new Date(0),

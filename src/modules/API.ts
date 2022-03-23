@@ -1,7 +1,7 @@
 import axios from 'axios'
 import BlockFormer from './BlockFormer'
 
-const timezone_offset = +6;
+const timezone_offset = 6;
 
 export interface APIPerson {
 	person_id: number
@@ -97,6 +97,7 @@ class API {
 					let d = new Date(0);
 					d.setHours(timezone_offset + parseInt(datestring.substring(0, 2))); // First two digits are the hours
 					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
+					console.log({str: datestring, date: d});
 					return d;
 				}
 				const convert = (input: raw_APICourseBlock[]): APICourseBlock[] => (input.map((e: raw_APICourseBlock) => ({

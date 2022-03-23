@@ -5,7 +5,7 @@ import BlockFormer from '../../modules/BlockFormer';
 import { contexts } from '../APIContext';
 import { APICourseBlockWeek } from '../../modules/API';
 
-const hours = 11;
+const hours = 12;
 // const start = new Date(12*24*60*60*1000);
 let start = new Date(0);
 start.setHours(8);

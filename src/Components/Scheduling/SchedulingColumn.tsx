@@ -3,7 +3,9 @@ import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
 
-let numHours = 11;
+let numHours = 13;
+let startTime = new Date(0);
+startTime.setHours(8);
 
 interface Props {
   blocks?: any, // The blocks to be displayed for this day of the week
@@ -19,7 +21,7 @@ const time_to_height = (start: Date, end: Date, max: number = numHours*60*60*100
   return (end.getTime() - start.getTime()) / max * 100;
 }
 
-const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: number = numHours*60*60*1000) => {
+const start_time_to_top = (start: Date, pstart: Date = startTime, parent: number = numHours*60*60*1000) => {
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
