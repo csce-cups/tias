@@ -248,6 +248,26 @@ $day_divider_size : 1.5px;
 			border-right: $day_divider_size solid $render_divider;
 		}
 
+		.day-error {
+			color: red;
+			font-weight: bold;
+
+			display: flex;
+			flex: 1 1 auto;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.day-loading {
+			color: $render_divider;
+			font-weight: bold;
+
+			display: flex;
+			flex: 1 1 auto;
+			justify-content: center;
+			align-items: center;
+		}
+
 		.day.detailed {
 			position: absolute;
 			height: 100%;

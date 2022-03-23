@@ -9,12 +9,12 @@ interface Props {
 
 export const contexts = {
   employees: createContext([] as APIPerson[]),
-  blocks: createContext({Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: []} as APICourseBlockWeek)
+  blocks: createContext({Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as APICourseBlockWeek)
 }
 
 export const APIContext: FC<Props> = ({children, args, test}) => {
   const [employees, setEmployees] = useState([] as APIPerson[]);
-  const [blocks, setBlocks] = useState({Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: []} as APICourseBlockWeek);
+  const [blocks, setBlocks] = useState({Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as APICourseBlockWeek);
 
   useEffect(() => {
     const APIPromises = (test)? API.fetchAllDummy() : API.fetchAll();
@@ -23,7 +23,6 @@ export const APIContext: FC<Props> = ({children, args, test}) => {
     });
 
     APIPromises.blocks.then((resp) => {
-      console.log(resp);
       setBlocks(resp);
     });
 

@@ -6,7 +6,7 @@ import { APICourseBlock } from '../../modules/API'
 let numHours = 11;
 
 interface Props {
-  blocks: any, // The blocks to be displayed for this day of the week
+  blocks?: any, // The blocks to be displayed for this day of the week
   filter: Object,
   day: string, // The day of the week
   hours?: number, // The number of hours in a day
@@ -23,7 +23,17 @@ const start_time_to_top = (start: Date, pstart: Date = new Date(0), parent: numb
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: APICourseBlock[], filter: any) => {
+const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
+  // If no data, do nothing
+  
+  if (data === null) {
+    return (
+      <div className="vstack absolute">
+        <div className="day-loading">Loading...</div>
+      </div>
+    )
+  }
+  
   // Data should be sorted by start time, class length, course number, and then by section number
   data.sort((a, b) => {
     // Sort by start time
@@ -46,22 +56,25 @@ const generateBlocks = (data: APICourseBlock[], filter: any) => {
     else return 0;
   });
 
+
   let base: any = [];
   let i = 0;
-  while (i < data.length) {
+  let iter = 0;
+  const maxIter = 1e5;
+  while (i < data.length && iter++ < maxIter) {
 
     let outer: any = [];
     let max = data[i];
-    while (i < data.length && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
+    while (i < data.length && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime() && iter++ < maxIter) {
 
       let inner: any = [];
       while (i < data.length && d_len(data[i]) < d_len(max) 
-        && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
+        && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime() && iter++ < maxIter) {
 
         let temp_arr: any = [];
         let temp = data[i];
         while (i < data.length && data[i].start_time.getTime() === temp.start_time.getTime() && data[i].end_time.getTime() === temp.end_time.getTime()
-          && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
+          && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime() && iter++ < maxIter) {
 
           temp_arr.push(data[i]);
           i++;
@@ -78,6 +91,15 @@ const generateBlocks = (data: APICourseBlock[], filter: any) => {
     
     base.push(outer);
 
+  }
+
+  if (maxIter <= iter) {
+    console.error("ERROR in generateBlocks: data packer exceeded the maximum number of iterations with the following data", data);
+    return (
+      <div className="vstack absolute">
+        <div className="day-error">A rendering error occurred</div>
+      </div>
+    )
   }
   
   return placeBlocks(base, filter);
@@ -156,6 +178,7 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
     // Pre-calculate how large the spacer should be in subviews
     spacerLens.push(100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1)));
   })
+
 
   return (
     <>

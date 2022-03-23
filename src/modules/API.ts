@@ -28,11 +28,11 @@ export interface APICourseBlock {
 }
 
 export interface APICourseBlockWeek {
-	Monday: APICourseBlock[]
-	Tuesday: APICourseBlock[]
-	Wednesday: APICourseBlock[]
-	Thursday: APICourseBlock[]
-	Friday: APICourseBlock[]
+	Monday: APICourseBlock[] | null
+	Tuesday: APICourseBlock[] | null
+	Wednesday: APICourseBlock[] | null
+	Thursday: APICourseBlock[] | null
+	Friday: APICourseBlock[] | null
 }
 
 interface raw_APICourseBlock {
@@ -91,12 +91,18 @@ class API {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
 			.then(({data}) => {
 				let dataStrict: raw_APICourseBlockWeek = data;
+				const createDate = (datestring: string): Date => {
+					let d = new Date(0);
+					d.setHours(parseInt(datestring.substring(0, 2))); // First two digits are the hours
+					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
+					return d;
+				}
 				const convert = (input: raw_APICourseBlock[]): APICourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
 					department: e.department,
 					course_number: parseInt(e.course_number),
 					section_number: parseInt(e.section_number),
-					start_time: new Date(e.start_time),
-					end_time: new Date(e.end_time),
+					start_time: createDate(e.start_time),
+					end_time: createDate(e.end_time),
 					weekday: e.weekday,
 					place: e.place
 				})))
@@ -194,7 +200,7 @@ class API {
 					Thursday: BlockFormer.samples.TH_schedule,
 					Friday: BlockFormer.samples.F_schedule
 				})
-			}, 1000);
+			}, 1500);
 		})
 	}
 }
