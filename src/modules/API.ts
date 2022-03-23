@@ -92,12 +92,12 @@ class API {
 	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
 			.then(({data}) => {
+				console.log(JSON.stringify(data));
 				let dataStrict: raw_APICourseBlockWeek = data;
 				const createDate = (datestring: string): Date => {
 					let d = new Date(0);
 					d.setHours(timezone_offset + parseInt(datestring.substring(0, 2))); // First two digits are the hours
 					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
-					console.log({str: datestring, date: d});
 					return d;
 				}
 				const convert = (input: raw_APICourseBlock[]): APICourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
@@ -197,8 +197,8 @@ class API {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve({
-					Monday: BlockFormer.samples.M_schedule,
-					Tuesday: BlockFormer.samples.TH_schedule,
+					Monday: BlockFormer.samples.Test_schedule2,
+					Tuesday: BlockFormer.samples.Test_schedule,
 					Wednesday: BlockFormer.samples.W_schedule,
 					Thursday: BlockFormer.samples.TH_schedule,
 					Friday: BlockFormer.samples.F_schedule
