@@ -19,7 +19,8 @@ export const APIContext: FC<Props> = ({children, args, test}) => {
     APIPromises.employees.then((resp) => {
       setEmployees(resp);
     })
-  }, [])
+    // eslint-disable-next-line
+  }, []); // The empty array is so that this effect is ran only on render and not on "test" update.
 
   return (
 	  < contexts.employees.Provider value={employees} >

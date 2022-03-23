@@ -32,9 +32,9 @@ class API {
 		}
 	}
 
-	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?userType=peer-teacher
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher
 	private static fetchPTList = async (): Promise<APIPerson[]> => {
-		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?userType=peer-teacher")
+		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
 			.then(({data}) => data.users)
 			.catch(err => console.log(err));
 	}
