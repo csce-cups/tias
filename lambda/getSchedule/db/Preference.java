@@ -1,24 +1,43 @@
 package db;
 
-public class Preference {
+public class Preference implements Comparable<Preference> {
+    public enum DBPreference { CANT_DO, PREFER_NOT_TO_DO, INDIFFERENT, PREFER_TO_DO }
+
     int sectionId;
-    String preference;
+    DBPreference preference;
 
     public Preference(int sectionId, String preference) {
         this.sectionId = sectionId;
-        this.preference = preference;
+        if (preference.equals("Can't Do")) {
+            this.preference = DBPreference.CANT_DO;
+        } else if (preference.equals("Prefer Not To Do")) {
+            this.preference = DBPreference.PREFER_NOT_TO_DO;
+        } else if (preference.equals("Indifferent")) {
+            this.preference = DBPreference.INDIFFERENT;
+        } else if (preference.equals("Prefer To Do")) {
+            this.preference = DBPreference.PREFER_TO_DO;
+        }
     }
 
     public int getSectionId() {
         return sectionId;
     }
     
-    public String getPreference() {
+    public DBPreference getPreference() {
         return preference;
+    }
+
+    public boolean isPreferable() {
+        return preference.compareTo(DBPreference.PREFER_NOT_TO_DO) > 0;
     }
     
     @Override
     public String toString() {
         return "Preference [preference=" + preference + ", sectionId=" + sectionId + "]";
+    }
+
+    @Override
+    public int compareTo(Preference o) {
+        return preference.ordinal() - o.preference.ordinal();
     }
 }

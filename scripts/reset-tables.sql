@@ -18,9 +18,11 @@ DROP TABLE IF EXISTS person CASCADE;
 CREATE TABLE person (
 	person_id SERIAL PRIMARY KEY,
 	google_token_sub VARCHAR NOT NULL,
+	email VARCHAR NOT NULL,
 	first_name VARCHAR NOT NULL,
 	last_name VARCHAR NOT NULL,
 	profile_photo_url VARCHAR NOT NULL,
+	desired_number_assignments INTEGER NOT NULL DEFAULT 8,
 	peer_teacher BOOLEAN,
 	teaching_assistant BOOLEAN,
 	administrator BOOLEAN,

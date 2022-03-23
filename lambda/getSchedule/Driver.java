@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Properties;
 
@@ -24,8 +25,8 @@ public class Driver {
         // https://jdbc.postgresql.org/documentation/head/index.html
         String url = "jdbc:postgresql://tias-db-instance.crx9tdpnvcfm.us-east-1.rds.amazonaws.com/tias_db"; // TODO: Set values in Parameter Store
         Properties props = new Properties();
-        props.setProperty("user","cupsaws"); // TODO: Set values in Parameter Store
-        props.setProperty("password","bemyguestputmypasswordtothetest1423!"); // TODO: Set values in Parameter Store
+        props.setProperty("user","username"); // TODO: Set values in Parameter Store
+        props.setProperty("password","secret"); // TODO: Set values in Parameter Store
         try {
             conn = DriverManager.getConnection(url, props);
         } catch (Exception e) {
@@ -103,7 +104,7 @@ public class Driver {
 
         while (rs.next())
         {
-            people.put(rs.getInt("person_id"), new Person(rs.getString("first_name"), rs.getString("last_name"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
+            people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
         }
 
         rs.close();
@@ -175,7 +176,7 @@ public class Driver {
 
         while (rs.next())
         {
-            people.put(rs.getInt("person_id"), new Person(rs.getString("first_name"), rs.getString("last_name"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
+            people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
         }
 
         rs.close();
@@ -224,7 +225,7 @@ public class Driver {
         ResultSet rs = st.executeQuery("SELECT * FROM course_section");
         while (rs.next())
         {
-            sections.put(rs.getInt("section_id"), new Section(rs.getInt("section_id"), rs.getInt("course_id"), rs.getString("section_number"), rs.getInt("capacity_peer_teachers"), rs.getInt("capacity_teaching_assistants")));
+            sections.put(rs.getInt("section_id"), new Section(rs.getInt("course_id"), rs.getString("section_number"), rs.getInt("capacity_peer_teachers"), rs.getInt("capacity_teaching_assistants")));
         }
         rs.close();
         st.close();
@@ -241,7 +242,7 @@ public class Driver {
 
     static void schedulePeopleToSections() {
         people.forEach((person_id, person) -> {
-            person.computeAvailabilityScore(sections.values());
+            person.computeAvailabilityScore(sections);
         });
 
         PriorityQueue<Person> queue = new PriorityQueue<>(people.values());
@@ -249,7 +250,52 @@ public class Driver {
         while (!queue.isEmpty()) {
             Person frontPerson = queue.remove();
 
-            // TODO: Greedily go through frontPerson's preferences and assign them to a lab, decrease that lab's count of people available.
+            HashSet<Integer> notPreferredSections = new HashSet<>();
+            notPreferredSections.addAll(sections.keySet());
+
+            // Schedule what you prefer or marked indifferent
+            for (Preference preference : frontPerson.getPreferences()) {
+                if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
+                notPreferredSections.remove(preference.getSectionId());
+                if (preference.isPreferable()) {
+                    Section section = sections.get(preference.getSectionId());
+                    if (section.getAssignedPTs() < section.getCapacityPTs()) {
+                        section.addAssignedPTs();
+                        frontPerson.addCurrentAssignment();
+                        schedule.putIfAbsent(preference.getSectionId(), new ArrayList<>());
+                        schedule.get(preference.getSectionId()).add(frontPerson.getPersonId());
+                    }
+                }
+            }
+
+            // Schedule what you didn't mark at all
+            if (frontPerson.getCurrentAssignments() < frontPerson.getDesiredNumberAssignments()) {
+                for (int sectionId : notPreferredSections) {
+                    if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
+                    Section section = sections.get(sectionId);
+                    if (section.getAssignedPTs() < section.getCapacityPTs()) {
+                        section.addAssignedPTs();
+                        frontPerson.addCurrentAssignment();
+                        schedule.putIfAbsent(sectionId, new ArrayList<>());
+                        schedule.get(sectionId).add(frontPerson.getPersonId());
+                    }
+                }
+            }
+
+            // Schedule what you marked as not preferred
+            for (Preference preference : frontPerson.getPreferences()) {
+                if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments() || preference.getPreference() == Preference.DBPreference.CANT_DO) break;
+                if (preference.isPreferable()) continue;
+                Section section = sections.get(preference.getSectionId());
+                if (section.getAssignedPTs() < section.getCapacityPTs()) {
+                    section.addAssignedPTs();
+                    frontPerson.addCurrentAssignment();
+                    schedule.putIfAbsent(preference.getSectionId(), new ArrayList<>());
+                    schedule.get(preference.getSectionId()).add(frontPerson.getPersonId());
+                }
+            }
+
+            // At this stage you are either satisfied or you cannot be fully satisfied because there aren't enough available, qualified labs that you can do that fulfill the number of desired labs. This is an extremely unlikely occurrence.
         }
     }
 }

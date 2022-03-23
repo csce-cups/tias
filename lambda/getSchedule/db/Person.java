@@ -4,21 +4,30 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Person implements Comparable<Person> {
-    String firstName, lastName;
+    int personId;
+
+    String email, firstName, lastName;
+    int desiredNumberAssignments;
     boolean peerTeacher, teachingAssistant, administrator, professor;
     ArrayList<Availability> availabilities;
     ArrayList<Preference> preferences;
     ArrayList<Qualification> qualifications;
 
-    ArrayList<Section> availableSections;
+    ArrayList<Integer> availableSections;
     float availabilityScore;
 
-    public Person(String firstName, String lastName, boolean peerTeacher, boolean teachingAssistant,
+    int currentAssignments;
+
+    public Person(int personId, String email, String firstName, String lastName, int desiredNumberAssignments, boolean peerTeacher, boolean teachingAssistant,
             boolean administrator, boolean professor) {
+        this.personId = personId;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.desiredNumberAssignments = desiredNumberAssignments;
         this.peerTeacher = peerTeacher;
         this.teachingAssistant = teachingAssistant;
         this.administrator = administrator;
@@ -29,6 +38,15 @@ public class Person implements Comparable<Person> {
 
         availableSections = new ArrayList<>();
         availabilityScore = 0.f;
+        currentAssignments = 0;
+    }
+
+    public int getPersonId() {
+        return personId;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getFirstName() {
@@ -38,6 +56,11 @@ public class Person implements Comparable<Person> {
     public String getLastName() {
         return lastName;
     }
+
+    public int getDesiredNumberAssignments() {
+        return desiredNumberAssignments;
+    }
+
 
     public boolean isPeerTeacher() {
         return peerTeacher;
@@ -69,6 +92,7 @@ public class Person implements Comparable<Person> {
 
     public void addPreference(Preference preference) {
         preferences.add(preference);
+        Collections.sort(preferences, Collections.reverseOrder());
     }
 
     public ArrayList<Qualification> getQualifications() {
@@ -83,8 +107,8 @@ public class Person implements Comparable<Person> {
         return availabilityScore;
     }
 
-    public ArrayList<Section> getAvailabileSections() {
-        return (ArrayList<Section>) Collections.unmodifiableList(availableSections);
+    public ArrayList<Integer> getAvailabileSections() {
+        return (ArrayList<Integer>) Collections.unmodifiableList(availableSections);
     }
 
     static boolean gradeQualifies(char grade) {
@@ -92,6 +116,14 @@ public class Person implements Comparable<Person> {
             case 'A': return true;
             default: return false;
         }
+    }
+
+    public int getCurrentAssignments() {
+        return currentAssignments;
+    }
+    
+    public int addCurrentAssignment() {
+        return currentAssignments;
     }
 
     /**
@@ -104,18 +136,20 @@ public class Person implements Comparable<Person> {
      * 
      * @param sections Iterable collection of sections
      */
-    public void computeAvailabilityScore(Collection<Section> sections) {
-        int number_available = 0;
-        int number_qualified = 0;
-        for (Section section : sections) {
+    public void computeAvailabilityScore(HashMap<Integer, Section> sections) {
+        // This is because we use a Java Lambda and Java does not support Closures
+        final Integer[] data = new Integer[2];
+        data[0] = 0; // Number Qualified
+        data[1] = 0; // Number Available
+        sections.forEach((sectionId, section) -> {
             char grade = '\0';
             for (Qualification qualification : qualifications) {
                 if (section.getCourseId() == qualification.getCourseId()) {
                     grade = qualification.getGrade();
                 }
             }
-            if (!gradeQualifies(grade)) continue;
-            number_qualified++;
+            if (!gradeQualifies(grade)) return;
+            data[0]++;
             boolean available = true;
             for (Meeting meeting : section.getMeetings()) {
                 if (!meeting.getMeetingType().equals("Laboratory")) continue;
@@ -126,11 +160,13 @@ public class Person implements Comparable<Person> {
                 }
             }
             if (available) {
-                availableSections.add(section);
-                number_available++;
+                availableSections.add(sectionId);
+                data[1]++;
             }
-        }
-        availabilityScore = (float)number_available / number_qualified;
+        });
+        // availabilityScore = (float)data[1]; // Simple
+        // availabilityScore = (float)data[1] / data[0]; // Normalized
+        availabilityScore = (float)data[1] / data[0] - preferences.size() / 1000.f; // Favor students that mark more preferences
     }
 
     @Override
