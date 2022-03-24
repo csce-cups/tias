@@ -269,6 +269,7 @@ public class Driver {
             }
 
             // Schedule what you didn't mark at all
+            // FIXME: Ensure student is available for the section before adding
             if (frontPerson.getCurrentAssignments() < frontPerson.getDesiredNumberAssignments()) {
                 for (int sectionId : notPreferredSections) {
                     if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
