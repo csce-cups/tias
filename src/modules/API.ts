@@ -2,6 +2,7 @@ import axios from 'axios'
 
 export interface APIPerson {
 	person_id: number
+	email: string
 	first_name: string
 	last_name: string
 	profile_photo_url: string
@@ -99,6 +100,7 @@ class API {
 						"Hero Sandwich"
 					].map((e, i) => ({
 						person_id: i, 
+						email: "",
 						first_name: e.substring(0, e.indexOf(' ')), 
 						last_name: e.substring(e.indexOf(' ')),
 						profile_photo_url: "",
