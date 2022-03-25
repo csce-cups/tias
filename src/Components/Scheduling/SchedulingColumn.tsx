@@ -81,17 +81,6 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
     const endsDuring = (i: number) => blocks[i].end_time <= region_end && blocks[i].end_time > region_start;
     const isDuring = (i: number) => blocks[i].start_time < region_start && blocks[i].end_time > region_end;
     for (let i = arr_start; i <= arr_end; i++) {
-      // console.log({
-      //   blk: blocks[i],
-      //   region_start: `${region_start.getHours()}:${region_start.getMinutes()}`,
-      //   region_end: `${region_end.getHours()}:${region_end.getMinutes()}`,
-      // })
-      // console.log({
-      //   startsDuring: startsDuring(i),
-      //   endsDuring: endsDuring(i),
-      //   isDuring: isDuring(i)
-      // })
-      // console.log('=====')
       if (endsDuring(i) || startsDuring(i) || isDuring(i)) {
         if (i < loc) collisions_left.push(i);       // Found block is on the left of the target
         else if (i > loc) collisions_right.push(i); // Found block is on the right of the target
@@ -99,10 +88,26 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
     }
     return {collisions_left, collisions_right};
   }
-  const renderSpacers = (collisions: number[], key: string) => {
+  const renderSpacers = (target: RenderCourseBlock, collisions: number[], key: string) => {
+    const doesCollide = (line: Date, block: APICourseBlock) => block.start_time <= line && block.end_time > line;
+    const findLineCollisions = (line: Date) => {
+      let found: number[] = [];
+      collisions.forEach((e: number) => {
+        if (doesCollide(line, blocks[e])) found.push(e);
+      })
+      return found;
+    }
+
+    let maxes = [findLineCollisions(target.start_time)]; // Parallel arrays of collisions
+    collisions.forEach((e: number) => {
+      const possible_max = findLineCollisions(blocks[e].start_time);
+      if (possible_max.length > maxes[0].length) maxes = [possible_max];
+      else if (possible_max.length === maxes[0].length) maxes.push(possible_max);
+    }) 
+
     return (
-      collisions.map((collision: number, idx: number) => (
-        < SchedulingBlock spacer={true} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`${key}-${idx}`}/>
+      maxes[0].map((_, idx: number) => (
+        < SchedulingBlock spacer={true} visible={maxes.some(e => filter[blocks[e[idx]].course_number])} linkIDs={[]} key={`${key}-${idx}`}/>
       ))
     )
   }
@@ -116,9 +121,11 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
           height: `${time_to_height(block.start_time, block.end_time)}%`,
           top: `${start_time_to_top(block.start_time)}%`
         }}>
-          { renderSpacers(preparedBlock.collisions_left, 'left-spacer')}
+          { preparedBlock.collisions_left.map((collision: number, idx: number) => (
+            < SchedulingBlock spacer={true} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
+          ))}
           < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} key={`block-${JSON.stringify(block)}`}/>
-          { renderSpacers(preparedBlock.collisions_right, 'right-spacer')}
+          { renderSpacers(preparedBlock, preparedBlock.collisions_right, 'right-spacer')}
         </div>
       )
     })
