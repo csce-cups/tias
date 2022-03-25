@@ -2,7 +2,7 @@ import { APICourseBlock } from './API'
 
 const start = 1000 * 60 * 60 * 10;
 const timezone_offset = 6;
-const createDate = (datestring: string): Date => {
+export const createDate = (datestring: string): Date => {
     let d = new Date(0);
     d.setHours(timezone_offset + parseInt(datestring.substring(0, 2))); // First two digits are the hours
     d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
@@ -156,6 +156,16 @@ class BlockFormer {
             { department: "CSCE", course_number: 222, section_number: 599, start_time: createDate("07:50:00"), end_time: createDate("08:40:00"), weekday: "Friday", place: "ONLINE ONLINE" },
             { department: "CSCE", course_number: 222, section_number: 502, start_time: createDate("09:00:00"), end_time: createDate("09:50:00"), weekday: "Friday", place: "ZACH 350" },
             { department: "CSCE", course_number: 313, section_number: 599, start_time: createDate("09:00:00"), end_time: createDate("10:40:00"), weekday: "Friday", place: "ZACH 590" }
+        ],
+        Test_schedule3: [
+            // BlockFormer.generateBlock(121, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
+            // BlockFormer.generateBlock(221, 101, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
+            // BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, "none", "nowhere"),
+            // BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_B, BlockFormer.setTimes.MW_B_short, "none", "nowhere"),
+            // BlockFormer.generateBlock(313, 100, BlockFormer.starts.MW_B, BlockFormer.setTimes.MW_B_short, "none", "nowhere"),
+            BlockFormer.generateBlock(121, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
+            BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, "none", "nowhere"),
+            BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_B, BlockFormer.setTimes.MW_B_short, "none", "nowhere"),
         ],
         M_schedule: [
             // MONDAYS //

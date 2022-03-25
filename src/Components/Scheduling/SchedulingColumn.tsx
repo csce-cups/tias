@@ -7,6 +7,11 @@ let numHours = 13;
 let startTime = new Date(0);
 startTime.setHours(8);
 
+interface RenderCourseBlock extends APICourseBlock {
+  collisions_left: number
+  collisions_right: number
+}
+
 interface Props {
   blocks?: any, // The blocks to be displayed for this day of the week
   filter: Object,
@@ -27,7 +32,6 @@ const start_time_to_top = (start: Date, pstart: Date = startTime, parent: number
 
 const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
   // If no data, do nothing
-  
   if (data === null) {
     return (
       <div className="vstack absolute">
@@ -35,6 +39,8 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
       </div>
     )
   }
+
+  if (data.length === 0) return <></>;
   
   // Data should be sorted by start time, class length, course number, and then by section number
   data.sort((a, b) => {
@@ -66,110 +72,51 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
   const r = () => Math.floor(Math.random() * 40);
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
-  // const unravel = (outer: APICourseBlock | APICourseBlock[][], parent: APICourseBlock, spacerSz: string) => {
-  //   if (Array.isArray(outer)) { // Creates a subview for the smaller elements
-  //     return (
-  //       <div className="vstack absolute" key={`deep-unravel-outer-${JSON.stringify(outer)}`}>
-  //         { outer.map((row: APICourseBlock[]) => (
-  //           <div className="hstack block-container" key={`deep-unravel-row-${JSON.stringify(row)}`} style={{
-  //             height: `${time_to_height(row[0].start_time, row[0].end_time, d_len(parent))}%`,
-  //             top: `${start_time_to_top(row[0].start_time, parent.start_time, d_len(parent))}%`
-  //           }}>
-  //             <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
-  //             { row.map(c => (
-  //               < SchedulingBlock course_instance={c} visible={filter[c.course_number]} linkIDs={randIDs()} key={`deep-unravel-block-${JSON.stringify(c)}`}/>
-  //             )) }
-  //           </div>
-  //         ))}
-  //       </div>
-  //     )
-  //   } else {
-  //     return (
-  //       < SchedulingBlock course_instance={outer} visible={filter[outer.course_number]} linkIDs={randIDs()} key={`shallow-unravel-${JSON.stringify(outer)}`}/>
-  //     )
-  //   }
-  // }
-
-  // Modified binary search that finds the first block that ends after the given line
-  const findCollisionRegionStart = (line: Date, start: number, end: number) => {
-    let start_i = start;
-    let end_i = end;
-
-    while (start_i <= end_i) {
-      let m = Math.floor((start_i + end_i)/2);
-      if (blocks[m].end_time > line) { // We found a block that ends after the line
-
-        // Need to find the FIRST block that ends after the line
-        while (start_i <= end_i) {
-          if (blocks[m-1].end_time <= line) return m;
-          
-          end_i = m-1;
-          m = Math.floor((start_i + end_i)/2);
-        }
-
-        return start; // All blocks end after the line, so the region starts with the first block
-      }
-
-      start_i = m + 1;
-    }
-
-    return end; // Every block ends before the line, so the region starts after the end
-  }
-
-  // Modified binary search that finds the last block that starts before the given line
-  const findCollisionRegionEnd = (line: Date, start: number, end: number) => {
-    let start_i = start;
-    let end_i = end;
-
-    while (start_i <= end_i) {
-      let m = Math.floor((start_i + end_i)/2);
-      if (blocks[m].start_time < line) { // We found a block that starts before the line
-
-        // Need to find the LAST block that starts before the line
-        while (start_i <= end_i) {
-          if (blocks[m+1].start_time >= line) return m;
-          
-          start_i = m+1;
-          m = Math.floor((start_i + end_i)/2);
-        }
-
-        return end; // All blocks start before the line, so the region ends with the last block
-      }
-
-      end_i = m - 1;
-    }
-
-    return start; // No blocks start before the line, so the region ends before the start
-  }
-
   // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
-  const findCollisions = (region_start: Date, region_end: Date, arr_start: number = 0, arr_end: number = blocks.length-1) => {
-    const start = findCollisionRegionStart(region_start, arr_start, arr_end);
-    const end = findCollisionRegionEnd(region_end, start, arr_end);
-    return {start, end};
+  const registerCollisions = (block: APICourseBlock, idx: number): RenderCourseBlock => ({...block, ...findCollisions(block.start_time, block.end_time, idx)});
+  const findCollisions = (region_start: Date, region_end: Date, loc: number, arr_start: number = 0, arr_end: number = blocks.length-1) => {
+    let collisions_left: number[] = [];
+    let collisions_right: number[] = [];
+    const startsDuring = (i: number) => blocks[i].start_time >= region_start && blocks[i].start_time < region_end;
+    const endsDuring = (i: number) => blocks[i].end_time < region_end;
+    const isDuring = (i: number) => blocks[i].start_time < region_start && blocks[i].end_time > region_end;
+    for (let i = arr_start; i <= arr_end; i++) {
+      console.log({
+        blk: blocks[i],
+        region_start: `${region_start.getHours()}:${region_start.getMinutes()}`,
+        region_end: `${region_end.getHours()}:${region_end.getMinutes()}`,
+        startsDuring: startsDuring(i),
+        endsDuring: endsDuring(i),
+        isDuring: isDuring(i)
+      })
+      if (endsDuring(i) || startsDuring(i) || isDuring(i)) {
+        if (i < loc) collisions_left.push(i);       // Found block is on the left of the target
+        else if (i > loc) collisions_right.push(i); // Found block is on the right of the target
+      }
+    }
+    return {collisions_left: collisions_left.length, collisions_right: collisions_right.length};
   }
-
-  blocks.forEach((target: APICourseBlock, ti: number) => { // Every block should be a target once
-    const tLineStart = target.start_time;
-    const tLineEnd = target.end_time;
-  })
+  const renderSpacers = (count: number, key: string) => {
+    const ret: JSX.Element[] = [];
+    for (let i = 0; i < count; i++) ret.push(<div className="block spacer" key={`key-${i}`} style={{flex: `1 1 ${"auto"}`}}/>)
+    return ret;
+  }
 
   return (
-    <>
-      { blocks.map((set: any, idx: number) => (
-        // Needs a key
-        <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(set)}`} style={{ 
+    blocks.map((block: APICourseBlock, idx: number) => {
+      const preparedBlock = registerCollisions(block, idx);
+      return (
+        <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(block)}`} style={{ 
           padding: 0, 
-          height: `${time_to_height(set[0].start_time, set[0].end_time)}%`,
-          top: `${start_time_to_top(set[0].start_time)}%`
+          height: `${time_to_height(block.start_time, block.end_time)}%`,
+          top: `${start_time_to_top(block.start_time)}%`
         }}>
-          { set.map((outer: any) => (
-            unravel(outer, maxes[idx], `${spacerLens[idx]}%`)
-          ))}
-          { spacers[idx] }
+          { renderSpacers(preparedBlock.collisions_left, 'left-spacer')}
+          < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} key={`block-${JSON.stringify(block)}`}/>
+          { renderSpacers(preparedBlock.collisions_right, 'right-spacer')}
         </div>
-      ))}
-    </>
+      )
+    })
   )
 }
 
