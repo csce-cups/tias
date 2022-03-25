@@ -21,7 +21,7 @@ interface Props {
   visible: boolean,
   select: any
 }
-const CourseBlock: FC<Props> = ({course_instance, visible, select}) => {
+export const CourseBlock: FC<Props> = ({course_instance, visible, select}) => {
   //need onclick to store selection in parent class
   const [section, setSection] = useState<String>("")
   const isVisible = {
@@ -49,8 +49,8 @@ const CourseBlock: FC<Props> = ({course_instance, visible, select}) => {
       <InputLabel id={`${course_instance.course}${course_instance.start}${course_instance.end}`} style={{alignContent:"center", ...isContentVisible}}>{course_instance.course}</InputLabel>
       <Select 
         labelId={`${course_instance.course}${course_instance.start}${course_instance.end}`} value={section}  
-        onChange={(v)=>select(course_instance,v.target.value)}
-        style={{display: (open || section!==''? undefined:"none")}}
+        onChange={(v)=>{select(course_instance,v.target.value);setSection(""+v.target.value)}}
+        // style={{display: (open || section!==''? undefined:"none")}}
         open={open}
       >
         <MenuItem value="" ><em>None</em></MenuItem>
@@ -60,4 +60,3 @@ const CourseBlock: FC<Props> = ({course_instance, visible, select}) => {
   )
 }
 
-export default CourseBlock

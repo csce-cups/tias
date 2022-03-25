@@ -3,7 +3,7 @@ interface Props{
     sections: any
     title: String
 }
-const Selection: FC<Props> = ({title, sections}) => {
+export const Selection: FC<Props> = ({title, sections}) => {
   //maybe make a colored box display depending on 
   let data=(
     <div>
@@ -33,4 +33,3 @@ const Selection: FC<Props> = ({title, sections}) => {
   )
 }
 
-export default Selection

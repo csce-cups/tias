@@ -28,7 +28,7 @@ export const SchedulingRender: FC<Props> = ({filter, select}) => {
   const filterValid = (courses:Array<any>) =>{
     let filtered: Array<any> = [];
     let fidx = -1;
-    let cidx=0;
+    let cidx = 0;
     while(cidx<courses.length){
       filtered.push({...courses[cidx]});
       fidx++;

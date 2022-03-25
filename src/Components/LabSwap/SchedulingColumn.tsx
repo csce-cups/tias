@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import CourseBlock from './CourseBlock';
+import {CourseBlock} from './CourseBlock';
 
 let numHours = 11;
 

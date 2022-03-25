@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import CourseBlock from './CourseBlock'
-import Selection from './Selection'
+import {CourseBlock} from './CourseBlock'
+import {Selection} from './Selection'
 import { SchedulingWindow } from './SchedulingWindow'
 import { Button } from '@material-ui/core'
 //for main component
@@ -15,7 +15,7 @@ interface CourseInstance { // Results of a join between course, course_section, 
   sections: Array<number>
   // If the API returns more information from this I can add them to the interface here
 }
-const LabSwap = () => {
+export const LabSwap = () => {
   const [requests, setRequests] = useState<any>({valid: false})
   const [offers, setOffers] = useState<any>({valid: false})
   const selectSection = (course: CourseInstance, section: number)=>{
@@ -50,5 +50,3 @@ const LabSwap = () => {
     </>
   )
 }
-
-export default LabSwap
