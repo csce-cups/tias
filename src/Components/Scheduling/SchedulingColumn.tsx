@@ -78,7 +78,7 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
     let collisions_left: number[] = [];
     let collisions_right: number[] = [];
     const startsDuring = (i: number) => blocks[i].start_time >= region_start && blocks[i].start_time < region_end;
-    const endsDuring = (i: number) => blocks[i].end_time < region_end;
+    const endsDuring = (i: number) => blocks[i].end_time < region_end && blocks[i].end_time > region_start;
     const isDuring = (i: number) => blocks[i].start_time < region_start && blocks[i].end_time > region_end;
     for (let i = arr_start; i <= arr_end; i++) {
       console.log({

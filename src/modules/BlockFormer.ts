@@ -158,14 +158,13 @@ class BlockFormer {
             { department: "CSCE", course_number: 313, section_number: 599, start_time: createDate("09:00:00"), end_time: createDate("10:40:00"), weekday: "Friday", place: "ZACH 590" }
         ],
         Test_schedule3: [
-            // BlockFormer.generateBlock(121, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
-            // BlockFormer.generateBlock(221, 101, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
-            // BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, "none", "nowhere"),
-            // BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_B, BlockFormer.setTimes.MW_B_short, "none", "nowhere"),
-            // BlockFormer.generateBlock(313, 100, BlockFormer.starts.MW_B, BlockFormer.setTimes.MW_B_short, "none", "nowhere"),
             BlockFormer.generateBlock(121, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
             BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, "none", "nowhere"),
             BlockFormer.generateBlock(221, 100, BlockFormer.starts.MW_B, BlockFormer.setTimes.MW_B_short, "none", "nowhere"),
+        ],
+        Test_schedule4: [
+            BlockFormer.generateBlock(121, 100, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, "none", "nowhere"),
+            BlockFormer.generateBlock(121, 100, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, "none", "nowhere"),
         ],
         M_schedule: [
             // MONDAYS //
