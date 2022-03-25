@@ -92,7 +92,6 @@ class API {
 	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
 			.then(({data}) => {
-				console.log(JSON.stringify(data));
 				let dataStrict: raw_APICourseBlockWeek = data;
 				const createDate = (datestring: string): Date => {
 					let d = new Date(0);

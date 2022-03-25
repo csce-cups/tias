@@ -57,56 +57,8 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
     // They're equal
     else return 0;
   });
-
-
-  let base: any = [];
-  let i = 0;
-  let iter = 0;
-  const maxIter = 1e5;
-  const safe = () => i < data.length && iter++ < maxIter;
-  while (safe()) {
-
-    let outer: any = [];
-    let max = data[i];
-    while (safe() && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
-
-      let inner: any = [];
-      while (safe() && d_len(data[i]) < d_len(max) 
-        && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
-
-        let temp_arr: any = [];
-        let temp = data[i];
-        while (safe() && data[i].start_time.getTime() === temp.start_time.getTime() && data[i].end_time.getTime() === temp.end_time.getTime()
-          && data[i].start_time.getTime() >= max.start_time.getTime() && data[i].end_time.getTime() <= max.end_time.getTime()) {
-
-          temp_arr.push(data[i]);
-          i++;
-        }
-        
-        if (temp_arr.length > 0) inner.push(temp_arr);
-
-      }
-      
-      if (inner.length > 0) outer.push(inner);
-      else { outer.push(data[i]); i++;}
-
-    }
-    
-    base.push(outer);
-
-  }
-
-  if (maxIter <= iter) {
-    console.error("ERROR in generateBlocks: data packer exceeded the maximum number of iterations with the following data", data);
-    return (
-      <div className="vstack absolute">
-        <div className="day-error">A rendering error occurred</div>
-      </div>
-    )
-  }
   
-  return placeBlocks(base, filter);
-
+  return placeBlocks(data, filter);
 }
 
 
@@ -114,69 +66,92 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
   const r = () => Math.floor(Math.random() * 40);
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
-  const unravel = (outer: APICourseBlock | APICourseBlock[][], parent: APICourseBlock, spacerSz: string) => {
-    console.log({outer: outer});
-    if (Array.isArray(outer)) { // Creates a subview for the smaller elements
-      return (
-        <div className="vstack absolute" key={`deep-unravel-outer-${JSON.stringify(outer)}`}>
-          { outer.map((row: APICourseBlock[]) => (
-            <div className="hstack block-container" key={`deep-unravel-row-${JSON.stringify(row)}`} style={{
-              height: `${time_to_height(row[0].start_time, row[0].end_time, d_len(parent))}%`,
-              top: `${start_time_to_top(row[0].start_time, parent.start_time, d_len(parent))}%`
-            }}>
-              <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
-              { row.map(c => (
-                < SchedulingBlock course_instance={c} visible={filter[c.course_number]} linkIDs={randIDs()} key={`deep-unravel-block-${JSON.stringify(c)}`}/>
-              )) }
-            </div>
-          ))}
-        </div>
-      )
-    } else {
-      return (
-        < SchedulingBlock course_instance={outer} visible={filter[outer.course_number]} linkIDs={randIDs()} key={`shallow-unravel-${JSON.stringify(outer)}`}/>
-      )
+  // const unravel = (outer: APICourseBlock | APICourseBlock[][], parent: APICourseBlock, spacerSz: string) => {
+  //   if (Array.isArray(outer)) { // Creates a subview for the smaller elements
+  //     return (
+  //       <div className="vstack absolute" key={`deep-unravel-outer-${JSON.stringify(outer)}`}>
+  //         { outer.map((row: APICourseBlock[]) => (
+  //           <div className="hstack block-container" key={`deep-unravel-row-${JSON.stringify(row)}`} style={{
+  //             height: `${time_to_height(row[0].start_time, row[0].end_time, d_len(parent))}%`,
+  //             top: `${start_time_to_top(row[0].start_time, parent.start_time, d_len(parent))}%`
+  //           }}>
+  //             <div className="block spacer" style={{flex: `0 0 ${spacerSz}`}}/>
+  //             { row.map(c => (
+  //               < SchedulingBlock course_instance={c} visible={filter[c.course_number]} linkIDs={randIDs()} key={`deep-unravel-block-${JSON.stringify(c)}`}/>
+  //             )) }
+  //           </div>
+  //         ))}
+  //       </div>
+  //     )
+  //   } else {
+  //     return (
+  //       < SchedulingBlock course_instance={outer} visible={filter[outer.course_number]} linkIDs={randIDs()} key={`shallow-unravel-${JSON.stringify(outer)}`}/>
+  //     )
+  //   }
+  // }
+
+  // Modified binary search that finds the first block that ends after the given line
+  const findCollisionRegionStart = (line: Date, start: number, end: number) => {
+    let start_i = start;
+    let end_i = end;
+
+    while (start_i <= end_i) {
+      let m = Math.floor((start_i + end_i)/2);
+      if (blocks[m].end_time > line) { // We found a block that ends after the line
+
+        // Need to find the FIRST block that ends after the line
+        while (start_i <= end_i) {
+          if (blocks[m-1].end_time <= line) return m;
+          
+          end_i = m-1;
+          m = Math.floor((start_i + end_i)/2);
+        }
+
+        return start; // All blocks end after the line, so the region starts with the first block
+      }
+
+      start_i = m + 1;
     }
+
+    return end; // Every block ends before the line, so the region starts after the end
   }
 
-  // Find the largest block for each set of blocks
-  let maxes: any = [];
-  blocks.forEach((set: any) => {
-    maxes.push(set.reduce((p: any, e: any) => {
-      if (Array.isArray(e)) { return p; }
-      else if (Array.isArray(p)) { return e; }
-      else return d_len(p) > d_len(e) ? p : e;
-    }))
-  })
-  
-  let spacers: any = [];
-  let spacerLens: any = [];
-  blocks.forEach((set: any) => {
+  // Modified binary search that finds the last block that starts before the given line
+  const findCollisionRegionEnd = (line: Date, start: number, end: number) => {
+    let start_i = start;
+    let end_i = end;
 
-    // Calculate how many spacers to add to the end of the top level block list
-    let count = 0;
-    set.forEach((subset: any) => {
-      let maxCount = 0;
-      if (Array.isArray(subset)) {
-        subset.forEach((block: any) => {
-          if (Array.isArray(block)) {
-            maxCount = Math.max(maxCount, block.length);
-          } else {
-            maxCount = Math.max(maxCount, 1);
-          }
-        })
+    while (start_i <= end_i) {
+      let m = Math.floor((start_i + end_i)/2);
+      if (blocks[m].start_time < line) { // We found a block that starts before the line
+
+        // Need to find the LAST block that starts before the line
+        while (start_i <= end_i) {
+          if (blocks[m+1].start_time >= line) return m;
+          
+          start_i = m+1;
+          m = Math.floor((start_i + end_i)/2);
+        }
+
+        return end; // All blocks start before the line, so the region ends with the last block
       }
-      count = Math.max(maxCount, count);
-    });
-    
-    // Add the spacers to the block list
-    spacers.push([]);
-    for (let j = 0; j < count; j++) {
-      spacers[spacers.length - 1].push(<div className="block spacer" key={`spacer-${j}`}/>)
+
+      end_i = m - 1;
     }
 
-    // Pre-calculate how large the spacer should be in subviews
-    spacerLens.push(100 * (set.length - 1) / (spacers[spacers.length - 1].length + (set.length - 1)));
+    return start; // No blocks start before the line, so the region ends before the start
+  }
+
+  // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
+  const findCollisions = (region_start: Date, region_end: Date, arr_start: number = 0, arr_end: number = blocks.length-1) => {
+    const start = findCollisionRegionStart(region_start, arr_start, arr_end);
+    const end = findCollisionRegionEnd(region_end, start, arr_end);
+    return {start, end};
+  }
+
+  blocks.forEach((target: APICourseBlock, ti: number) => { // Every block should be a target once
+    const tLineStart = target.start_time;
+    const tLineEnd = target.end_time;
   })
 
   return (
