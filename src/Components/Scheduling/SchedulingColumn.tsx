@@ -8,8 +8,8 @@ let startTime = new Date(0);
 startTime.setHours(8);
 
 interface RenderCourseBlock extends APICourseBlock {
-  collisions_left: number
-  collisions_right: number
+  collisions_left: number[]
+  collisions_right: number[]
 }
 
 interface Props {
@@ -78,28 +78,33 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
     let collisions_left: number[] = [];
     let collisions_right: number[] = [];
     const startsDuring = (i: number) => blocks[i].start_time >= region_start && blocks[i].start_time < region_end;
-    const endsDuring = (i: number) => blocks[i].end_time < region_end && blocks[i].end_time > region_start;
+    const endsDuring = (i: number) => blocks[i].end_time <= region_end && blocks[i].end_time > region_start;
     const isDuring = (i: number) => blocks[i].start_time < region_start && blocks[i].end_time > region_end;
     for (let i = arr_start; i <= arr_end; i++) {
-      console.log({
-        blk: blocks[i],
-        region_start: `${region_start.getHours()}:${region_start.getMinutes()}`,
-        region_end: `${region_end.getHours()}:${region_end.getMinutes()}`,
-        startsDuring: startsDuring(i),
-        endsDuring: endsDuring(i),
-        isDuring: isDuring(i)
-      })
+      // console.log({
+      //   blk: blocks[i],
+      //   region_start: `${region_start.getHours()}:${region_start.getMinutes()}`,
+      //   region_end: `${region_end.getHours()}:${region_end.getMinutes()}`,
+      // })
+      // console.log({
+      //   startsDuring: startsDuring(i),
+      //   endsDuring: endsDuring(i),
+      //   isDuring: isDuring(i)
+      // })
+      // console.log('=====')
       if (endsDuring(i) || startsDuring(i) || isDuring(i)) {
         if (i < loc) collisions_left.push(i);       // Found block is on the left of the target
         else if (i > loc) collisions_right.push(i); // Found block is on the right of the target
       }
     }
-    return {collisions_left: collisions_left.length, collisions_right: collisions_right.length};
+    return {collisions_left, collisions_right};
   }
-  const renderSpacers = (count: number, key: string) => {
-    const ret: JSX.Element[] = [];
-    for (let i = 0; i < count; i++) ret.push(<div className="block spacer" key={`key-${i}`} style={{flex: `1 1 ${"auto"}`}}/>)
-    return ret;
+  const renderSpacers = (collisions: number[], key: string) => {
+    return (
+      collisions.map((collision: number, idx: number) => (
+        < SchedulingBlock spacer={true} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`${key}-${idx}`}/>
+      ))
+    )
   }
 
   return (

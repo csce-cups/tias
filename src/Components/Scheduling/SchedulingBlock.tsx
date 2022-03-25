@@ -11,15 +11,16 @@ colors.set(314, 'green');
 colors.set(315, '#009489');
 
 interface Props {
-  course_instance: APICourseBlock,
+  course_instance?: APICourseBlock,
   visible: boolean,
-  linkIDs: number[]
+  linkIDs: number[],
+  spacer?: boolean
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs}) => {
+export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, spacer}) => {
   const isVisible = {
     width: visible? undefined : 0,
-    flex: visible? undefined : '0 0 auto',
+    flex: visible? ((spacer === true)? `1 1 ${"auto"}` : undefined) : '0 0 auto',
     margin: visible? undefined : 0
   }
 
@@ -28,17 +29,19 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs}) 
     display: visible? undefined : 'none'
   }
 
+  if (spacer === true) return <div className="block spacer" style={isVisible}/>
+
   return (
     <div className="block" 
-      title={`${course_instance.course_number}-${course_instance.section_number}`} 
-      style={{backgroundColor: colors.get(course_instance.course_number), ...isVisible}}
+      title={`${course_instance!.course_number}-${course_instance!.section_number}`} 
+      style={{backgroundColor: colors.get(course_instance!.course_number), ...isVisible}}
     >
       <div className="hat-container">
         {linkIDs.map(id => (< Hat key={id} linkID={id} />))}
       </div>
       <div className="fill"/>
       <div className="block-text" style={isContentVisible}>
-        {course_instance.course_number} {course_instance.section_number}
+        {course_instance!.course_number} {course_instance!.section_number}
       </div>
     </div>
   )
