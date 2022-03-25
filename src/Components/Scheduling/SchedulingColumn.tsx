@@ -98,15 +98,21 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
       return found;
     }
 
-    let maxes = [findLineCollisions(target.start_time)]; // Parallel arrays of collisions
-    collisions.forEach((e: number) => {
-      const possible_max = findLineCollisions(blocks[e].start_time);
-      if (possible_max.length > maxes[0].length) maxes = [possible_max];
-      else if (possible_max.length === maxes[0].length) maxes.push(possible_max);
-    }) 
+    let colis = [findLineCollisions(target.start_time)]; // Parallel arrays of collisions
+    collisions.forEach((e: number) => colis.push(findLineCollisions(blocks[e].start_time)))
+
+    let spacers: JSX.Element[] = [];
+    let spacerCount = Math.max(...colis.map(e => e.length));
+    for (let i = 0; i < spacerCount; i++) {
+      spacers.push(
+        < SchedulingBlock spacer={true} visible={} linkIDs={[]} key={`${key}-${idx}`}/>
+      )
+    }
+
+    
 
     return (
-      maxes[0].map((_, idx: number) => (
+      maxes.map((_, idx: number) => (
         < SchedulingBlock spacer={true} visible={maxes.some(e => filter[blocks[e[idx]].course_number])} linkIDs={[]} key={`${key}-${idx}`}/>
       ))
     )
