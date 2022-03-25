@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
@@ -64,11 +64,11 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
     else return 0;
   });
   
-  return placeBlocks(data, filter);
+  return placeStaggeredBlocks(data, filter);
 }
 
 
-const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
+const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
   const r = () => Math.floor(Math.random() * 40);
   const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
@@ -92,28 +92,43 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
     const doesCollide = (line: Date, block: APICourseBlock) => block.start_time <= line && block.end_time > line;
     const findLineCollisions = (line: Date) => {
       let found: number[] = [];
+      let spacerCount = 0;
       collisions.forEach((e: number) => {
-        if (doesCollide(line, blocks[e])) found.push(e);
+        if (doesCollide(line, blocks[e])) {
+          if (filter[blocks[e].course_number]) spacerCount++;
+          found.push(e);
+        }
       })
-      return found;
+      return { arr: found, count: spacerCount};
     }
 
-    let colis = [findLineCollisions(target.start_time)]; // Parallel arrays of collisions
-    collisions.forEach((e: number) => colis.push(findLineCollisions(blocks[e].start_time)))
+    let maxes = [findLineCollisions(target.start_time)]; // Parallel arrays of collisions
+    collisions.forEach((e: number) => {
+      const possible_max = findLineCollisions(blocks[e].start_time);
+      if (possible_max.count > maxes[0].count) maxes = [possible_max];
+      else if (possible_max.count === maxes[0].count) maxes.push(possible_max);
+    })
 
-    let spacers: JSX.Element[] = [];
-    let spacerCount = Math.max(...colis.map(e => e.length));
-    for (let i = 0; i < spacerCount; i++) {
-      spacers.push(
-        < SchedulingBlock spacer={true} visible={} linkIDs={[]} key={`${key}-${idx}`}/>
-      )
-    }
+    let maxLen = maxes[0].arr.length;
+    let maxi = 0;
+    maxes.forEach((e, ei) => {
+      if (e.arr.length > maxLen) {
+        maxLen = e.arr.length;
+        maxi = ei;
+      }
+    })
 
-    
+    console.log({maxLen, maxi, maxes, m: maxes[maxi]})
 
     return (
-      maxes.map((_, idx: number) => (
-        < SchedulingBlock spacer={true} visible={maxes.some(e => filter[blocks[e[idx]].course_number])} linkIDs={[]} key={`${key}-${idx}`}/>
+      maxes[maxi].arr.map((_, idx: number) => (
+        < SchedulingBlock spacer={true} visible={maxes.some(e => {
+          if (idx >= e.arr.length || maxes[maxi].count === 0 || !filter[blocks[e.arr[idx]].course_number]) return false;
+          else {
+            maxes[maxi].count--;
+            return true;
+          }
+        })} linkIDs={[]} key={`${key}-${idx}`}/>
       ))
     )
   }
@@ -139,6 +154,7 @@ const placeBlocks = (blocks: APICourseBlock[], filter: any) => {
 }
 
 export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
+  console.log('===========================');
   const [detailed, setDetailed] = useState(false);
   const id = uuid();
   if (hours !== undefined) numHours = hours;
@@ -148,6 +164,8 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     // Needs a key
     dividers[i] = <div className="divider" key={`divider-${i}`}/>;
   }
+
+  // useEffect(() => { console.log("Update!"); setForceUpdate(!forceUpdate); }, [filter]);
 
   const select = () => {
     if (!detailed) {
