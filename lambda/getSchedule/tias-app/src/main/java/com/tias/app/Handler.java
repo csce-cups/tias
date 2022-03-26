@@ -1,9 +1,34 @@
+package com.tias.app;
+
 import java.sql.*;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
+
+import software.amazon.awssdk.services.lambda.model.GetAccountSettingsRequest;
+import software.amazon.awssdk.services.lambda.model.GetAccountSettingsResponse;
+import software.amazon.awssdk.services.lambda.model.ServiceException;
+import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
+import software.amazon.awssdk.services.lambda.model.AccountUsage;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.StringBuilder;
+import java.util.concurrent.CompletableFuture;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import db.Availability;
 import db.Course;
@@ -13,7 +38,8 @@ import db.Preference;
 import db.Qualification;
 import db.Section;
 
-public class Driver {
+// https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html
+public class Handler implements RequestHandler<SQSEvent, String> {
     static Connection conn;
 
     static HashMap<Integer, Person> people;
@@ -21,12 +47,44 @@ public class Driver {
     static HashMap<Integer, Section> sections;
     static HashMap<Integer /* section id */, ArrayList<Integer> /* person id */> schedule;
 
-    public static void main(String[] args) {
+    private static final Logger logger = LoggerFactory.getLogger(Handler.class);
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final LambdaAsyncClient lambdaClient = LambdaAsyncClient.create();
+
+    // https://github.com/awsdocs/aws-lambda-developer-guide/blob/main/sample-apps/java-basic/src/main/java/example/Handler.java
+    @Override
+    public String handleRequest(SQSEvent event, Context context)
+    {
+        String response = new String();
+        // call Lambda API
+        logger.info("Getting account settings");
+        CompletableFuture<GetAccountSettingsResponse> accountSettings = 
+            lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
+        // log execution details
+        logger.info("ENVIRONMENT VARIABLES: {}", gson.toJson(System.getenv()));
+        logger.info("CONTEXT: {}", gson.toJson(context));
+        logger.info("EVENT: {}", gson.toJson(event));
+        // process event
+        for(SQSMessage msg : event.getRecords()){
+            logger.info(msg.getBody());
+        }
+        // process Lambda API response
+        try {
+            GetAccountSettingsResponse settings = accountSettings.get();
+            response = gson.toJson(settings.accountUsage());
+            logger.info("Account usage: {}", response);
+        } catch(Exception e) {
+            e.getStackTrace();
+        }
+        return response;
+    }
+
+    public static void generateSchedule() {
         // https://jdbc.postgresql.org/documentation/head/index.html
-        String url = "jdbc:postgresql://tias-db-instance.crx9tdpnvcfm.us-east-1.rds.amazonaws.com/tias_db"; // TODO: Set values in Parameter Store
+        String url = "jdbc:postgresql://localhost/postgres"; // TODO: Set values in Parameter Store
         Properties props = new Properties();
-        props.setProperty("user","username"); // TODO: Set values in Parameter Store
-        props.setProperty("password","secret"); // TODO: Set values in Parameter Store
+        props.setProperty("user","postgres"); // TODO: Set values in Parameter Store
+        props.setProperty("password","admin"); // TODO: Set values in Parameter Store
         try {
             conn = DriverManager.getConnection(url, props);
         } catch (Exception e) {
@@ -38,6 +96,7 @@ public class Driver {
         people = new HashMap<Integer, Person>();
         courses = new HashMap<Integer, Course>();
         sections = new HashMap<Integer, Section>();
+        schedule = new HashMap<Integer, ArrayList<Integer>>();
 
         try {
             getCourses();
@@ -55,17 +114,21 @@ public class Driver {
                 System.out.println(key + "\t" + value);
             });
 
+            for (int i = 0; i < 10; ++i) System.out.println();
             schedulePeopleToSections();
+            schedule.forEach((key, value) -> {
+                System.out.println(key + "\t" + value);
+            });
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void getTypeMapping() throws SQLException {
-        var rs = conn.getMetaData().getTypeInfo();
-        while (rs.next())
-            System.out.println(rs.getString("TYPE_NAME") + "\t" + JDBCType.valueOf(rs.getInt("DATA_TYPE")).getName());
-    }
+    // public static void getTypeMapping() throws SQLException {
+    //     var rs = conn.getMetaData().getTypeInfo();
+    //     while (rs.next())
+    //         System.out.println(rs.getString("TYPE_NAME") + "\t" + JDBCType.valueOf(rs.getInt("DATA_TYPE")).getName());
+    // }
 
     static void getCourses() throws SQLException {
         Statement st = conn.createStatement();
@@ -152,8 +215,8 @@ public class Driver {
 
         while (rs.next())
         {
-            String grade = rs.getString("grade");
-            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), grade != null ? grade.charAt(0) : null));
+            boolean qualified = rs.getBoolean("qualified");
+            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), qualified));
         }
 
         rs.close();
@@ -203,6 +266,10 @@ public class Driver {
             people.get(rs.getInt("person_id")).addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
         }
 
+        for (Person person : people.values()) {
+            person.sortPreferences();
+        }
+
         rs.close();
         st.close();
 
@@ -212,8 +279,8 @@ public class Driver {
 
         while (rs.next())
         {
-            String grade = rs.getString("grade");
-            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), grade != null ? grade.charAt(0) : null));
+            boolean qualified = rs.getBoolean("qualified");
+            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), qualified));
         }
 
         rs.close();
@@ -231,7 +298,7 @@ public class Driver {
         st.close();
 
         st = conn.createStatement();
-        rs = st.executeQuery("SELECT * FROM section_meeting");
+        rs = st.executeQuery("SELECT * FROM section_meeting WHERE meeting_type='Laboratory'");
         while (rs.next())
         {
             sections.get(rs.getInt("section_id")).addMeeting(new Meeting(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time"), rs.getString("place"), rs.getString("meeting_type")));
@@ -250,13 +317,19 @@ public class Driver {
         while (!queue.isEmpty()) {
             Person frontPerson = queue.remove();
 
-            HashSet<Integer> notPreferredSections = new HashSet<>();
-            notPreferredSections.addAll(sections.keySet());
+            HashSet<Integer> possibleSections = new HashSet<>();
+            possibleSections.addAll(
+                sections.keySet().stream()
+                    .filter(sectionId ->  frontPerson.isGoodSection(sectionId, sections.get(sectionId)))
+                    .collect(Collectors.toSet())
+            );
+
+            HashSet<Integer> badSections = new HashSet<>();
 
             // Schedule what you prefer or marked indifferent
             for (Preference preference : frontPerson.getPreferences()) {
                 if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
-                notPreferredSections.remove(preference.getSectionId());
+                if (!possibleSections.contains(preference.getSectionId())) continue;
                 if (preference.isPreferable()) {
                     Section section = sections.get(preference.getSectionId());
                     if (section.getAssignedPTs() < section.getCapacityPTs()) {
@@ -265,13 +338,15 @@ public class Driver {
                         schedule.putIfAbsent(preference.getSectionId(), new ArrayList<>());
                         schedule.get(preference.getSectionId()).add(frontPerson.getPersonId());
                     }
+                } else {
+                    badSections.add(preference.getSectionId());
                 }
+                possibleSections.remove(preference.getSectionId());
             }
 
             // Schedule what you didn't mark at all
-            // FIXME: Ensure student is available for the section before adding
             if (frontPerson.getCurrentAssignments() < frontPerson.getDesiredNumberAssignments()) {
-                for (int sectionId : notPreferredSections) {
+                for (int sectionId : possibleSections) {
                     if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() < section.getCapacityPTs()) {
@@ -284,16 +359,21 @@ public class Driver {
             }
 
             // Schedule what you marked as not preferred
-            for (Preference preference : frontPerson.getPreferences()) {
-                if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments() || preference.getPreference() == Preference.DBPreference.CANT_DO) break;
-                if (preference.isPreferable()) continue;
-                Section section = sections.get(preference.getSectionId());
-                if (section.getAssignedPTs() < section.getCapacityPTs()) {
-                    section.addAssignedPTs();
-                    frontPerson.addCurrentAssignment();
-                    schedule.putIfAbsent(preference.getSectionId(), new ArrayList<>());
-                    schedule.get(preference.getSectionId()).add(frontPerson.getPersonId());
+            if (frontPerson.getCurrentAssignments() < frontPerson.getDesiredNumberAssignments()) {
+                for (int sectionId : badSections) {
+                    if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
+                    Section section = sections.get(sectionId);
+                    if (section.getAssignedPTs() < section.getCapacityPTs()) {
+                        section.addAssignedPTs();
+                        frontPerson.addCurrentAssignment();
+                        schedule.putIfAbsent(sectionId, new ArrayList<>());
+                        schedule.get(sectionId).add(frontPerson.getPersonId());
+                    }
                 }
+            }
+
+            if (frontPerson.getCurrentAssignments() == 0) {
+                System.out.println("Failed to Schedule:\n" + frontPerson);
             }
 
             // At this stage you are either satisfied or you cannot be fully satisfied because there aren't enough available, qualified labs that you can do that fulfill the number of desired labs. This is an extremely unlikely occurrence.

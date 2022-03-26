@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
+import db.Preference.DBPreference;
+
 public class Person implements Comparable<Person> {
     int personId;
 
@@ -61,7 +63,6 @@ public class Person implements Comparable<Person> {
         return desiredNumberAssignments;
     }
 
-
     public boolean isPeerTeacher() {
         return peerTeacher;
     }
@@ -87,11 +88,14 @@ public class Person implements Comparable<Person> {
     }
 
     public ArrayList<Preference> getPreferences() {
-        return (ArrayList<Preference>) Collections.unmodifiableList(preferences);
+        return preferences;
     }
 
     public void addPreference(Preference preference) {
         preferences.add(preference);
+    }
+
+    public void sortPreferences() {
         Collections.sort(preferences, Collections.reverseOrder());
     }
 
@@ -111,19 +115,50 @@ public class Person implements Comparable<Person> {
         return (ArrayList<Integer>) Collections.unmodifiableList(availableSections);
     }
 
-    static boolean gradeQualifies(char grade) {
-        switch (grade) {
-            case 'A': return true;
-            default: return false;
-        }
-    }
-
     public int getCurrentAssignments() {
         return currentAssignments;
     }
     
-    public int addCurrentAssignment() {
-        return currentAssignments;
+    public void addCurrentAssignment() {
+        currentAssignments++;
+    }
+
+    boolean isQualified(int courseId) {
+        for (Qualification qualification : qualifications) {
+            if (courseId == qualification.getCourseId()) {
+                return qualification.isQualified();
+            }
+        }
+        return false;
+    }
+
+    boolean isAvailable(ArrayList<Meeting> meetings) {
+        for (Meeting meeting : meetings) {
+            boolean quit = true;
+            for (Availability availability : availabilities) {
+                if (availability.getWeekday().equals(meeting.getWeekday()) && timeContains(availability.startTime, availability.endTime, meeting.startTime, meeting.endTime)) {
+                    quit = false;
+                }
+            }
+            if (quit) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    boolean getPreferenceEquals(int sectionId, DBPreference target) {
+        for (Preference preference : preferences) {
+            if (preference.getSectionId() == sectionId) {
+                return preference.getPreference() == target;
+            }
+        }
+        return false;
+    }
+
+    public boolean isGoodSection(int sectionId, Section section) {
+        return isQualified(section.getCourseId()) && isAvailable(section.getMeetings()) && !getPreferenceEquals(sectionId, DBPreference.CANT_DO);
     }
 
     /**
@@ -142,24 +177,9 @@ public class Person implements Comparable<Person> {
         data[0] = 0; // Number Qualified
         data[1] = 0; // Number Available
         sections.forEach((sectionId, section) -> {
-            char grade = '\0';
-            for (Qualification qualification : qualifications) {
-                if (section.getCourseId() == qualification.getCourseId()) {
-                    grade = qualification.getGrade();
-                }
-            }
-            if (!gradeQualifies(grade)) return;
+            if (!isQualified(section.getCourseId())) return;
             data[0]++;
-            boolean available = true;
-            for (Meeting meeting : section.getMeetings()) {
-                if (!meeting.getMeetingType().equals("Laboratory")) continue;
-                for (Availability availability : availabilities) {
-                    if (!(availability.getWeekday().equals(meeting.getWeekday()) && timeContains(availability.startTime, availability.endTime, meeting.startTime, meeting.endTime))) {
-                        available = false;
-                    }
-                }
-            }
-            if (available) {
+            if (isAvailable(section.getMeetings())) {
                 availableSections.add(sectionId);
                 data[1]++;
             }
@@ -171,10 +191,11 @@ public class Person implements Comparable<Person> {
 
     @Override
     public String toString() {
-        return "Person [administrator=" + administrator + ", availabilities=" + availabilities + ", firstName="
-                + firstName + ", lastName=" + lastName + ", peerTeacher=" + peerTeacher + ", preferences=" + preferences
-                + ", professor=" + professor + ", qualifications=" + qualifications + ", teachingAssistant="
-                + teachingAssistant + "]";
+        return "Person [administrator=" + administrator + ", availabilities=" + availabilities
+                + ", desiredNumberAssignments=" + desiredNumberAssignments + ", email=" + email + ", firstName="
+                + firstName + ", lastName=" + lastName + ", peerTeacher=" + peerTeacher + ", personId=" + personId
+                + ", preferences=" + preferences + ", professor=" + professor + ", qualifications=" + qualifications
+                + ", teachingAssistant=" + teachingAssistant + "]";
     }
 
     @Override

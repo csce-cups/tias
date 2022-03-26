@@ -1,7 +1,6 @@
 package db;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Section {
     int courseId;
@@ -19,6 +18,7 @@ public class Section {
         this.capacityPTs = capacityPTs;
         this.capacityTAs = capacityTAs;
 
+        meetings = new ArrayList<>();
         currentPTs = 0;
         currentTAs = 0;
     }
@@ -40,23 +40,23 @@ public class Section {
     }
 
     public int getAssignedPTs() {
-        return capacityPTs;
+        return currentPTs;
     }
 
     public void addAssignedPTs() {
-        ++capacityPTs;
+        ++currentPTs;
     }
 
     public int getAssignedTAs() {
-        return capacityTAs;
+        return currentTAs;
     }
 
     public void addAssignedTAs() {
-        ++capacityTAs;
+        ++currentTAs;
     }
 
     public ArrayList<Meeting> getMeetings() {
-        return (ArrayList<Meeting>) Collections.unmodifiableList(meetings);
+        return meetings;
     }
 
     public void addMeeting(Meeting meeting) {

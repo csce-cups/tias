@@ -78,7 +78,7 @@ CREATE TABLE course_section (
     person_id_professor INTEGER REFERENCES course(course_id),
 	section_number CHAR(3) NOT NULL,
 	placeholder_professor_name VARCHAR,
-    capacity_peer_teachers INT,
+    capacity_peer_teachers INT DEFAULT 2,
     capacity_teaching_assistants INT
 );
 
