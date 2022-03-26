@@ -598,6 +598,33 @@ img.back-arrow {
 	}
 }
 
+.profile-status-bar {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+
+	padding: 5px 0;
+	
+	.button {
+		margin: 0 5px;
+	}
+
+	.profile-status {
+		display: flex;
+		align-items: center;
+
+		font-size: 1.2em;
+		font-weight: bold;
+		
+		border: 2px solid;
+		flex: 1 1 auto;
+
+		padding: 0 5px;
+
+	}
+	
+}
+
 .class-render-container {
 	flex: 1 1 auto;
 	display: flex;
