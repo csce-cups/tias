@@ -197,11 +197,16 @@ class API {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve({
-					Monday: BlockFormer.samples.M_schedule,
-					Tuesday: BlockFormer.samples.Test_schedule,
-					Wednesday: BlockFormer.samples.TH_schedule,
+					Monday: BlockFormer.samples.W_schedule,
+					Tuesday: BlockFormer.samples.W_schedule,
+					Wednesday: BlockFormer.samples.W_schedule,
 					Thursday: BlockFormer.samples.W_schedule,
-					Friday: BlockFormer.samples.F_schedule
+					Friday: BlockFormer.samples.W_schedule
+					// Monday: BlockFormer.samples.Test_schedule2,
+					// Tuesday: BlockFormer.samples.Test_schedule,
+					// Wednesday: BlockFormer.samples.TH_schedule,
+					// Thursday: BlockFormer.samples.W_schedule,
+					// Friday: BlockFormer.samples.F_schedule
 				})
 			}, 1500);
 		})

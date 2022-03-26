@@ -23,18 +23,20 @@ interface Props {
   visible: boolean,
   linkIDs: number[],
   spacer?: boolean,
-  size?: string
+  size?: string,
+  inline?: boolean,
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, spacer, size}) => {
+export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, spacer, size, inline}) => {
   let flex: string | undefined = '0 0 0';
-  if (size && visible && size === 'auto') flex = `1 1 auto`
+  if (!visible && inline === true) flex = '0 0 auto';
+  else if (size && visible && size === 'auto') flex = `1 1 auto`
   else if (size && visible) flex = `0 0 ${size}`
   else if (visible && spacer) flex = '1 1 auto'
   else if (visible) flex = undefined
 
   const isVisible = {
-    // width: visible? undefined : 0,
+    width: (inline !== true || visible)? undefined : 0, // Different render methods prefer different shrinking methods
     flex: flex,
     margin: visible? undefined : 0
   }

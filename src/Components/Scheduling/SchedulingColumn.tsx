@@ -65,14 +65,99 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
     else return 0;
   });
   
-  return placeStaggeredBlocks(data, filter);
+  return placeBlocks(data, filter);
 }
 
+const placeBlocks = (data: APICourseBlock[], filter: any) => {
+  let line: APICourseBlock[] = [];
+  let layered: APICourseBlock[][] = [];
+  
+  let returns: JSX.Element[] = [];
+  let region_start = data[0].start_time;
+  let region_end = data[0].end_time;
+  let inline = true;
+  const startsDuring = (block: APICourseBlock) => block.start_time > region_start && block.start_time < region_end;
+  const endsDuring = (block: APICourseBlock) => block.end_time < region_end && block.end_time > region_start;
+  const isDuring = (block: APICourseBlock) => block.start_time < region_start && block.end_time > region_end;
+  
+  data.forEach((block: APICourseBlock) => {
+    if (inline && block.start_time.getTime() === region_start.getTime() && block.end_time.getTime() === region_end.getTime()) { // Same line as previous
+      console.log("Same line");
+      line.push(block);
+
+    } else if (startsDuring(block) || endsDuring(block) || isDuring(block)) { // Staggered
+      console.log("Staggered")
+      // if (inline) { // Commit the inline bits and flush the buffer
+      //   console.log("Commit")
+      //   returns.push(...placeInlineBlocks(layered, filter));
+      //   line = [];
+      //   inline = false;
+      // }
+      inline = false;
+      
+      line.push(block);
+    } else { // Not, staggered but different line
+      console.log("Different line")
+      if (!inline) { // Commit the staggered bits and flush the buffer
+        console.log("Commit")
+        returns.push(...placeStaggeredBlocks(line, filter));
+        line = [];
+        inline = true;
+      } else {
+        layered.push(line);
+        line = [];
+      }
+      line.push(block);
+      
+      region_start = block.start_time;
+      region_end = block.end_time;
+    }
+  });
+
+  if (!inline) returns.push(...placeStaggeredBlocks(line, filter));
+  else if (line.length > 0) layered.push(line);
+
+  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter));
+
+  return returns;
+}
+
+const r = () => Math.floor(Math.random() * 40);
+const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
+
+const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: any): JSX.Element[] => {
+  // if (data.length === 0) return [<></>];
+
+  // let curr = data[0];
+  // let layered_data: APICourseBlock[][] = [];
+  // let ld_temp: APICourseBlock[] = [];
+  // data.forEach((block: APICourseBlock) => {
+  //   if (curr.start_time.getTime() !== block.start_time.getTime()) {
+  //     console.log({curr, block});
+  //     layered_data.push(ld_temp);
+  //     ld_temp = [];
+  //     curr = block;
+  //   }
+  //   ld_temp.push(block);
+  // });
+  // if (ld_temp.length > 0) layered_data.push(ld_temp);
+
+  return (
+    layered_data.map((layer: APICourseBlock[]) => (
+      <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(layer)}`} style={{ 
+        padding: 0, 
+        height: `${time_to_height(layer[0].start_time, layer[0].end_time)}%`,
+        top: `${start_time_to_top(layer[0].start_time)}%`
+      }}>
+        { layer.map((block: APICourseBlock) => (
+          < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+        ))}
+      </div>
+    )
+  ))
+}
 
 const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
-  const r = () => Math.floor(Math.random() * 40);
-  const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
-
   // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
   const registerCollisions = (block: APICourseBlock, idx: number): RenderCourseBlock => ({...block, ...findCollisions(block.start_time, block.end_time, idx)});
   const findCollisions = (region_start: Date, region_end: Date, loc: number, arr_start: number = 0, arr_end: number = blocks.length-1) => {
@@ -152,9 +237,6 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
 
       ratios.set(bidx, rightSpacers.collisionRatio + 1);
       collisionReferences.set(bidx, []);
-      console.log({block, rightSpacers});
-      console.log(ratios);
-      console.log(collisionReferences);
       return (
         <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(block)}`} style={{ 
           padding: 0, 
@@ -163,7 +245,6 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
         }}>
           { preparedBlock.collisions_left.map((collision: number, idx: number) => {
             collisionReferences.get(bidx).push(collision);
-            console.log(`${bidx} accessed ${collision} which was ${(ratios.has(collision))? calcRatio(collision) : undefined}`)
             if (blocks[bidx].start_time.getTime() === blocks[collision].start_time.getTime() && blocks[bidx].end_time.getTime() === blocks[collision].end_time.getTime()) {
               return < SchedulingBlock spacer={true} size={'auto'} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
             }
@@ -178,8 +259,6 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
 }
 
 export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
-  console.log('===========================');
-  console.log(blocks);
   const [detailed, setDetailed] = useState(false);
   const id = uuid();
   if (hours !== undefined) numHours = hours;
@@ -189,8 +268,6 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     // Needs a key
     dividers[i] = <div className="divider" key={`divider-${i}`}/>;
   }
-
-  // useEffect(() => { console.log("Update!"); setForceUpdate(!forceUpdate); }, [filter]);
 
   const select = () => {
     if (!detailed) {
