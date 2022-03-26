@@ -82,24 +82,10 @@ const placeBlocks = (data: APICourseBlock[], filter: any) => {
   
   data.forEach((block: APICourseBlock) => {
     if (inline && block.start_time.getTime() === region_start.getTime() && block.end_time.getTime() === region_end.getTime()) { // Same line as previous
-      console.log("Same line");
-      line.push(block);
-
     } else if (startsDuring(block) || endsDuring(block) || isDuring(block)) { // Staggered
-      console.log("Staggered")
-      // if (inline) { // Commit the inline bits and flush the buffer
-      //   console.log("Commit")
-      //   returns.push(...placeInlineBlocks(layered, filter));
-      //   line = [];
-      //   inline = false;
-      // }
       inline = false;
-      
-      line.push(block);
     } else { // Not, staggered but different line
-      console.log("Different line")
       if (!inline) { // Commit the staggered bits and flush the buffer
-        console.log("Commit")
         returns.push(...placeStaggeredBlocks(line, filter));
         line = [];
         inline = true;
@@ -107,11 +93,11 @@ const placeBlocks = (data: APICourseBlock[], filter: any) => {
         layered.push(line);
         line = [];
       }
-      line.push(block);
       
       region_start = block.start_time;
       region_end = block.end_time;
     }
+    line.push(block);
   });
 
   if (!inline) returns.push(...placeStaggeredBlocks(line, filter));
@@ -125,23 +111,8 @@ const placeBlocks = (data: APICourseBlock[], filter: any) => {
 const r = () => Math.floor(Math.random() * 40);
 const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
+// Requires input to be pre-layered
 const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: any): JSX.Element[] => {
-  // if (data.length === 0) return [<></>];
-
-  // let curr = data[0];
-  // let layered_data: APICourseBlock[][] = [];
-  // let ld_temp: APICourseBlock[] = [];
-  // data.forEach((block: APICourseBlock) => {
-  //   if (curr.start_time.getTime() !== block.start_time.getTime()) {
-  //     console.log({curr, block});
-  //     layered_data.push(ld_temp);
-  //     ld_temp = [];
-  //     curr = block;
-  //   }
-  //   ld_temp.push(block);
-  // });
-  // if (ld_temp.length > 0) layered_data.push(ld_temp);
-
   return (
     layered_data.map((layer: APICourseBlock[]) => (
       <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(layer)}`} style={{ 
