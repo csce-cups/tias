@@ -40,6 +40,7 @@ export const LabSwap = () => {
     <>
       <div className="vstack"> {/*for selection and submit button */}
         <div className="hstack" >
+          {/*TODO: Better CSS for these*/}
           <Selection sections={requests} title="Request" />
           <Selection sections={offers} title="Offer"/>
         </div>
