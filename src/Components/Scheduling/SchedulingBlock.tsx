@@ -3,13 +3,20 @@ import { Hat } from '../Misc/Hat';
 import { APICourseBlock } from '../../modules/API';
 
 const colors = new Map()
-colors.set(121, '#0086B6');
-colors.set(221, '#434F6F');
-colors.set(222, '#405AB9');
-colors.set(312, '#A78B57');
-colors.set(313, '#437548');
-colors.set(314, '#787256');
-colors.set(315, '#009489');
+colors.set(121, '#713275');
+colors.set(221, '#443989');
+colors.set(222, '#4C698A');
+colors.set(312, '#4F8970');
+colors.set(313, '#2B6737');
+colors.set(314, '#677D5D');
+colors.set(315, '#394708');
+// colors.set(121, '#0086B6');
+// colors.set(221, '#434F6F');
+// colors.set(222, '#5358AE');
+// colors.set(312, '#568C6D');
+// colors.set(313, '#045B47');
+// colors.set(314, '#00823D');
+// colors.set(315, '#009489');
 
 interface Props {
   course_instance?: APICourseBlock,

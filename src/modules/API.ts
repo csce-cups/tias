@@ -128,6 +128,7 @@ class API {
 						"Gary Chess", 
 						"Sandy Banks", 
 						"King Gerold III",
+						"Mayde Enless",
 						"Sharpness IV", 
 						"Zelda DeLegendof",
 						"Star Fox", 
