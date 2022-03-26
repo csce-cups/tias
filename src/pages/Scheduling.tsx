@@ -7,10 +7,8 @@ import '../Components/common.scss';
 export const Scheduling = () => {
   return (
     <div className="app-body">
-      < APIContext test={true}>
-        < EmployeeList />
-        < SchedulingWindow />
-      </APIContext>
+      < EmployeeList />
+      < SchedulingWindow />
     </div>
   );
 }
