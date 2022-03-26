@@ -1,31 +1,35 @@
-package com.tias.app;
+package scheduler;
 
 import java.sql.*;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
+// import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
-import software.amazon.awssdk.services.lambda.model.GetAccountSettingsRequest;
-import software.amazon.awssdk.services.lambda.model.GetAccountSettingsResponse;
-import software.amazon.awssdk.services.lambda.model.ServiceException;
-import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
-import software.amazon.awssdk.services.lambda.model.AccountUsage;
+// import software.amazon.awssdk.services.lambda.model.GetAccountSettingsRequest;
+// import software.amazon.awssdk.services.lambda.model.GetAccountSettingsResponse;
+// import software.amazon.awssdk.services.lambda.model.ServiceException;
+// import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
+// import software.amazon.awssdk.services.lambda.model.AccountUsage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 
 import java.lang.StringBuilder;
-import java.util.concurrent.CompletableFuture;
+// import java.util.concurrent.CompletableFuture;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -39,52 +43,67 @@ import db.Qualification;
 import db.Section;
 
 // https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html
-public class Handler implements RequestHandler<SQSEvent, String> {
+public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     static Connection conn;
 
     static HashMap<Integer, Person> people;
     static HashMap<Integer, Course> courses;
     static HashMap<Integer, Section> sections;
     static HashMap<Integer /* section id */, ArrayList<Integer> /* person id */> schedule;
+    static ArrayList<Integer> unscheduled;
 
-    private static final Logger logger = LoggerFactory.getLogger(Handler.class);
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static final LambdaAsyncClient lambdaClient = LambdaAsyncClient.create();
+    // private static final Logger logger = LoggerFactory.getLogger(Handler.class);
+    private static final Gson gson = new GsonBuilder().create();
+    // private static final LambdaAsyncClient lambdaClient = LambdaAsyncClient.create();
 
     // https://github.com/awsdocs/aws-lambda-developer-guide/blob/main/sample-apps/java-basic/src/main/java/example/Handler.java
+    @SuppressWarnings("unchecked")
     @Override
-    public String handleRequest(SQSEvent event, Context context)
+    public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent event, final Context context)
     {
-        String response = new String();
-        // call Lambda API
-        logger.info("Getting account settings");
-        CompletableFuture<GetAccountSettingsResponse> accountSettings = 
-            lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
-        // log execution details
-        logger.info("ENVIRONMENT VARIABLES: {}", gson.toJson(System.getenv()));
-        logger.info("CONTEXT: {}", gson.toJson(context));
-        logger.info("EVENT: {}", gson.toJson(event));
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("Access-Control-Allow-Origin", "http://localhost:3000");
+
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
+                .withHeaders(headers);
+        // // call Lambda API
+        // logger.info("Getting account settings");
+        // CompletableFuture<GetAccountSettingsResponse> accountSettings = 
+        //     lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
+        // // log execution details
+        // logger.info("ENVIRONMENT VARIABLES: {}", gson.toJson(System.getenv()));
+        // logger.info("CONTEXT: {}", gson.toJson(context));
+        // logger.info("EVENT: {}", gson.toJson(event));
         // process event
-        for(SQSMessage msg : event.getRecords()){
-            logger.info(msg.getBody());
-        }
+        
         // process Lambda API response
+
+        HashMap<String, ArrayList<Double>> eventBody = gson.fromJson(event.getBody(), HashMap.class);
+
         try {
-            GetAccountSettingsResponse settings = accountSettings.get();
-            response = gson.toJson(settings.accountUsage());
-            logger.info("Account usage: {}", response);
-        } catch(Exception e) {
-            e.getStackTrace();
+            generateSchedule(eventBody.get("peerTeachers").stream().mapToInt(Double::intValue).toArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            return response
+                .withStatusCode(500)
+                .withBody("{ \"message\": \"Scheduler Encountered an Error. Please check the logs in AWS or contact an Administrator.\" }");
         }
-        return response;
+
+        return response
+            .withStatusCode(200)
+            .withBody(String.format("{ \"scheduled\": %s, \"unscheduled\": %s }", gson.toJson(schedule), gson.toJson(unscheduled)));
     }
 
-    public static void generateSchedule() throws SQLException {
+    public static void generateSchedule(int[] peopleIds) throws SQLException {
         // https://jdbc.postgresql.org/documentation/head/index.html
-        String url = "jdbc:postgresql://localhost/postgres"; // TODO: Set values in Parameter Store
+        String url = String.format("jdbc:postgresql://%s/%s", System.getenv("DB_ENDPOINT"), System.getenv("DB_NAME"));
         Properties props = new Properties();
-        props.setProperty("user","postgres"); // TODO: Set values in Parameter Store
-        props.setProperty("password","admin"); // TODO: Set values in Parameter Store
+        props.setProperty("user", System.getenv("DB_USERNAME"));
+        props.setProperty("password", "admin");
         try {
             conn = DriverManager.getConnection(url, props);
         } catch (Exception e) {
@@ -97,14 +116,13 @@ public class Handler implements RequestHandler<SQSEvent, String> {
         courses = new HashMap<Integer, Course>();
         sections = new HashMap<Integer, Section>();
         schedule = new HashMap<Integer, ArrayList<Integer>>();
+        unscheduled = new ArrayList<Integer>();
 
         getCourses();
         courses.forEach((key, value) -> {
             System.out.println(key + "\t" + value);
         });
-        // TODO: Get list of Person IDs programmatically
-        // getPeople(new int[]{3, 5});
-        getPeople();
+        getPeople(peopleIds);
         people.forEach((key, value) -> {
             System.out.println(key + "\t" + value);
         });
@@ -369,7 +387,7 @@ public class Handler implements RequestHandler<SQSEvent, String> {
             }
 
             if (frontPerson.getCurrentAssignments() == 0) {
-                System.out.println("Failed to Schedule:\n" + frontPerson);
+                unscheduled.add(frontPerson.getPersonId());
             }
 
             // At this stage you are either satisfied or you cannot be fully satisfied because there aren't enough available, qualified labs that you can do that fulfill the number of desired labs. This is an extremely unlikely occurrence.
