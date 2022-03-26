@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
-import internal from 'stream';
+import back_arrow from '../../assets/back_arrow_icon.svg'
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -279,12 +279,15 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   return (
     <div className="vstack grow-h day column" id={id} onClick={select}>
       { (detailed) ? 
-        <div className="day-label hstack" style={{padding: 0}}>
-          <div className="left element detailed" style={{padding: '5px'}}>
-            Viewing: {day}
+        <div className="day-label hstack exit" style={{padding: 0}}>
+          <div className="exit left element detailed hstack" onClick={deselect}>
+            <div className="vstack" style={{justifyContent: 'center'}}>
+              <img className="back-arrow" src={back_arrow} alt=""/>
+            </div>
+            <div className="exit-text">BACK</div>
           </div>
           <div className="center element detailed" style={{padding: '3px'}} onClick={deselect}>
-            Exit
+            {day}
           </div>
         </div>
       : 

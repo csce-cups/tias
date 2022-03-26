@@ -189,32 +189,45 @@ $day_divider_size : 1.5px;
 	display: flex;
 	position: relative;
 
+	.day-label .exit {
+		background-color: red;
+		border-radius: 5px;
+		border: 1px solid $render_background;
+		color: $render_background;
+		padding: 2px 2em;
+	}
+
+	.day-label.exit {
+		color: red;
+		border-radius: 5px;
+		border: 1px solid red;
+		z-index: 3;
+	}
+
+	.day-label.exit:hover {
+		background-color: red;
+		color: $render_background;
+		opacity: 0.4;
+	}
+
 	.day-label {
 		text-align: center;
 		color: $render_divider;
 		padding: 5px 0px;
 		position: relative;
+		transition: all .2s ease-in-out;
 
 		.element {
 			font-weight: bold;
-			transition: all .2s ease-in-out;
-		}
-
-		.left.detailed {
-			position: absolute;
+			// transition: all .2s ease-in-out;
 		}
 
 		.center.detailed {
-			color: red;
-			border-radius: 5px;
-			border: 1px solid red;
-			z-index: 3;
+			color: $render_divider;
 		}
-
-		.center.detailed:hover {
-			background-color: red;
-			color: $render_background;
-			opacity: 0.4;
+		
+		.left.detailed {
+			position: absolute;
 		}
 	}
 	
@@ -577,6 +590,7 @@ div.loading {
 	font-size: 1.4em;
 }
 
-img {
-	max-height: 20px;
+img.back-arrow {
+	max-height: 1.1em;
+	position: absolute;
 }
