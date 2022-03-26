@@ -1,6 +1,4 @@
 import React, {FC} from 'react'
-import red from '../../assets/red.png'
-import green from '../../assets/green.png'
 
 
 interface Props {
@@ -8,7 +6,7 @@ interface Props {
   color: string
 }
 
-export const GradeSelectorRow : FC<Props> = ({element, color}) => {
+export const ProfileFormRow : FC<Props> = ({element, color}) => {
 
   const styles = { // FIXME: Help me ben
     backgroundColor : color,
@@ -16,9 +14,6 @@ export const GradeSelectorRow : FC<Props> = ({element, color}) => {
     margin : "2px",
     border : "1px"
   }
-
-
-  let clr = (color == 'red')? red : green;
 
   return (
   <>
