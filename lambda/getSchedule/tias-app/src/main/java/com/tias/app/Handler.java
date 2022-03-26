@@ -79,7 +79,7 @@ public class Handler implements RequestHandler<SQSEvent, String> {
         return response;
     }
 
-    public static void generateSchedule() {
+    public static void generateSchedule() throws SQLException {
         // https://jdbc.postgresql.org/documentation/head/index.html
         String url = "jdbc:postgresql://localhost/postgres"; // TODO: Set values in Parameter Store
         Properties props = new Properties();
@@ -98,30 +98,26 @@ public class Handler implements RequestHandler<SQSEvent, String> {
         sections = new HashMap<Integer, Section>();
         schedule = new HashMap<Integer, ArrayList<Integer>>();
 
-        try {
-            getCourses();
-            courses.forEach((key, value) -> {
-                System.out.println(key + "\t" + value);
-            });
-            // TODO: Get list of Person IDs programmatically
-            // getPeople(new int[]{3, 5});
-            getPeople();
-            people.forEach((key, value) -> {
-                System.out.println(key + "\t" + value);
-            });
-            getSections();
-            sections.forEach((key, value) -> {
-                System.out.println(key + "\t" + value);
-            });
+        getCourses();
+        courses.forEach((key, value) -> {
+            System.out.println(key + "\t" + value);
+        });
+        // TODO: Get list of Person IDs programmatically
+        // getPeople(new int[]{3, 5});
+        getPeople();
+        people.forEach((key, value) -> {
+            System.out.println(key + "\t" + value);
+        });
+        getSections();
+        sections.forEach((key, value) -> {
+            System.out.println(key + "\t" + value);
+        });
 
-            for (int i = 0; i < 10; ++i) System.out.println();
-            schedulePeopleToSections();
-            schedule.forEach((key, value) -> {
-                System.out.println(key + "\t" + value);
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        for (int i = 0; i < 10; ++i) System.out.println();
+        schedulePeopleToSections();
+        schedule.forEach((key, value) -> {
+            System.out.println(key + "\t" + value);
+        });
     }
 
     // public static void getTypeMapping() throws SQLException {
