@@ -581,36 +581,22 @@ img.back-arrow {
 // TODO: In general, lets try to use responsive units
 
 .profile-picture {
-	max-height: 17em;
-	max-width: 17em;
+	max-height: 250px;
+	max-width: 250px;
 	flex: 1 1 auto;	
-	border-left: 2px solid;
-	border-right: 2px solid;
-	border-top: 2px solid;
-	border-bottom: 2px solid;
-	margin-left: 50px;
+	border: 2px solid;
+	margin: 0 20px;
 }
 
-.peer-teacher-heading {
-	flex: 1 1 auto;
-	margin-left: 50px;
-}
+.profile-sidebar {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 
-.name {
-	flex: 1 1 auto;
-	top: 35%;
-	margin-left: 115px;
-	margin-top: 10px;
-	font-weight: 600;
+	span {
+		font-weight: bold;
+	}
 }
-
-.name2 {
-	margin-left: 110px;
-	margin-top: 200px;
-	margin-bottom: 10px;
-	font-weight: 600;
-}
-
 
 .class-render-container {
 	flex: 1 1 auto;

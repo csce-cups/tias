@@ -3,16 +3,16 @@ import rick from '../../assets/rick.jpg'
 
 export const ProfileSidebar = () => {
   return (
-    <div className="vstack" style={{width :"20vw"}}>
-      <div className="name2">
-        Peer Teacher
-      </div>
+    <div className="profile-sidebar">
+      <div style={{height: '100px'}}/>
+      <span>Peer Teacher</span>
       <div className="hstack">
         <img src={rick} className="profile-picture"/>
       </div>
-      <div className="name">
-        Rick Astley
-      </div>
+      <span>Rick Astley</span>
+
+      <div className="fill"/>
+      <span style={{padding: '20px'}}>Some Preferences Go Here</span>
     </div>
   )
 }
