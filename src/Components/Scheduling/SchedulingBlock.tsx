@@ -36,7 +36,7 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, s
   else if (visible) flex = undefined
 
   const isVisible = {
-    width: (inline !== true || visible)? undefined : 0, // Different render methods prefer different shrinking methods
+    width: (visible)? undefined : 0,
     flex: flex,
     margin: visible? undefined : 0
   }
@@ -57,7 +57,7 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, s
         {linkIDs.map(id => (< Hat key={id} linkID={id} />))}
       </div>
       <div className="fill"/>
-      <div className="block-text" style={isContentVisible}>
+      <div className="block-text">
         {course_instance!.course_number} {course_instance!.section_number}
       </div>
     </div>
