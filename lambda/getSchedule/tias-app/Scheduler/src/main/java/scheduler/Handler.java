@@ -8,6 +8,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
+import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
+import software.amazon.awssdk.services.ssm.model.SsmException;
+
 // import software.amazon.awssdk.services.lambda.model.GetAccountSettingsRequest;
 // import software.amazon.awssdk.services.lambda.model.GetAccountSettingsResponse;
 // import software.amazon.awssdk.services.lambda.model.ServiceException;
@@ -16,9 +22,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
@@ -44,6 +47,7 @@ import db.Section;
 
 // https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html
 public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+
     static Connection conn;
 
     static HashMap<Integer, Person> people;
@@ -67,6 +71,18 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
+
+        //Get specified version of secure string attribute
+
+        SsmClient ssmClient = SsmClient.builder()
+                .region(Region.US_EAST_1)
+                .build();
+
+        String secureStringToken = getParaValue(ssmClient, "db-password");
+        ssmClient.close();
+
+        // System.out.println("Password: " + secureStringToken);
+
         // // call Lambda API
         // logger.info("Getting account settings");
         // CompletableFuture<GetAccountSettingsResponse> accountSettings = 
@@ -82,12 +98,9 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         HashMap<String, ArrayList<Double>> eventBody = gson.fromJson(event.getBody(), HashMap.class);
 
         try {
-            generateSchedule(eventBody.get("peerTeachers").stream().mapToInt(Double::intValue).toArray());
+            generateSchedule(eventBody.get("peerTeachers").stream().mapToInt(Double::intValue).toArray(), secureStringToken);
         } catch (Exception e) {
             e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
             return response
                 .withStatusCode(500)
                 .withBody("{ \"message\": \"Scheduler Encountered an Error. Please check the logs in AWS or contact an Administrator.\" }");
@@ -98,12 +111,28 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             .withBody(String.format("{ \"scheduled\": %s, \"unscheduled\": %s }", gson.toJson(schedule), gson.toJson(unscheduled)));
     }
 
-    public static void generateSchedule(int[] peopleIds) throws SQLException {
+    public static String getParaValue(SsmClient ssmClient, String paraName) {
+
+        try {
+            GetParameterRequest parameterRequest = GetParameterRequest.builder()
+                .name(paraName)
+                .build();
+
+            GetParameterResponse parameterResponse = ssmClient.getParameter(parameterRequest);
+            return parameterResponse.parameter().value();
+        } catch (SsmException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        return ""; // appease compiler
+   }
+
+    public static void generateSchedule(int[] peopleIds, String dbpassword) throws SQLException {
         // https://jdbc.postgresql.org/documentation/head/index.html
         String url = String.format("jdbc:postgresql://%s/%s", System.getenv("DB_ENDPOINT"), System.getenv("DB_NAME"));
         Properties props = new Properties();
         props.setProperty("user", System.getenv("DB_USERNAME"));
-        props.setProperty("password", "admin");
+        props.setProperty("password", dbpassword);
         try {
             conn = DriverManager.getConnection(url, props);
         } catch (Exception e) {
@@ -119,23 +148,23 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         unscheduled = new ArrayList<Integer>();
 
         getCourses();
-        courses.forEach((key, value) -> {
-            System.out.println(key + "\t" + value);
-        });
+        // courses.forEach((key, value) -> {
+        //     System.out.println(key + "\t" + value);
+        // });
         getPeople(peopleIds);
-        people.forEach((key, value) -> {
-            System.out.println(key + "\t" + value);
-        });
+        // people.forEach((key, value) -> {
+        //     System.out.println(key + "\t" + value);
+        // });
         getSections();
-        sections.forEach((key, value) -> {
-            System.out.println(key + "\t" + value);
-        });
+        // sections.forEach((key, value) -> {
+        //     System.out.println(key + "\t" + value);
+        // });
 
-        for (int i = 0; i < 10; ++i) System.out.println();
+        // for (int i = 0; i < 10; ++i) System.out.println();
         schedulePeopleToSections();
-        schedule.forEach((key, value) -> {
-            System.out.println(key + "\t" + value);
-        });
+        // schedule.forEach((key, value) -> {
+        //     System.out.println(key + "\t" + value);
+        // });
     }
 
     // public static void getTypeMapping() throws SQLException {
@@ -170,7 +199,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     }
 
     static void getPeople(int[] peopleIds) throws SQLException {
-        System.out.println(constructPersonQuery("person", peopleIds.length));
+        // System.out.println(constructPersonQuery("person", peopleIds.length));
         PreparedStatement st = conn.prepareStatement(constructPersonQuery("person", peopleIds.length));
 
         for (int i = 0; i < peopleIds.length; ++i) {
@@ -246,7 +275,6 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     }
 
     static void getPeople() throws SQLException {
-        System.out.println(constructPersonQuery("person"));
         Statement st = conn.createStatement();
 
         ResultSet rs = st.executeQuery(constructPersonQuery("person"));
