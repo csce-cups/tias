@@ -1,9 +1,9 @@
 import React from 'react'
 import { ProfileFormRow } from './ProfileFormRow'
+import { contexts } from '../APIContext'
+import { APIUserQualification } from '../../modules/API';
 
 export const ProfileForm = () => {
-  const courses = ['110', '121', '221', '222', '312', '313', '314', '315'].map(e => `CSCE ${e}`);
-
   return (
     <div className="profile-form" >
       <div className="header">
@@ -19,9 +19,13 @@ export const ProfileForm = () => {
         </div>
         <div className="hr-container"><hr/></div>
 
-        { courses.map((course: string, idx: number) => (
-          <ProfileFormRow element={course} key={`pfrow-${idx}`}/>
-        ))}
+        < contexts.userQuals.Consumer >
+          { (quals) => (
+            quals.map((qual: APIUserQualification, idx: number) => (
+              <ProfileFormRow course={qual.course_id} qual={qual.qualified} key={`pfrow-${idx}`}/>
+            ))
+          )}
+        </contexts.userQuals.Consumer>
       </div>
 
       <div className="hstack">

@@ -598,11 +598,8 @@ img.back-arrow {
 	position: absolute;
 }
 
-// TODO: In general, lets try to use responsive units
-
 .profile-picture {
-	max-height: 250px;
-	max-width: 250px;
+	max-width: min(250px, 20vw);
 	flex: 1 1 auto;	
 	border: 2px solid;
 	margin: 0 20px;

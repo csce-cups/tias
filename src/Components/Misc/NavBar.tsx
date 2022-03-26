@@ -1,13 +1,13 @@
 import React from 'react'
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GoogleButton } from "./GoogleButton"
 
 export const NavBar = () => {
   return (
     <div className="navbar">
-        <div className="left element major">TIAS</div>
-        <Link className="left element" to='/Profile'>Profile</Link>
-        <Link className="left element" to='Scheduling'>Scheduling</Link>
+        <Link to='/' className="left element major" style={{textDecoration: 'none'}}>TIAS</Link>
+        <Link to='Profile' className="left element">Profile</Link>
+        <Link to='Scheduling' className="left element">Scheduling</Link>
         <div className="left element">LabSwap™</div>
         <div className="fill element"></div>
         < GoogleButton />

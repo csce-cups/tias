@@ -46,7 +46,7 @@ export const GoogleButton = () => {
       token: id_token,
       firstName: userBasicInfo.getGivenName(),
       lastName: userBasicInfo.getFamilyName(),
-      // email: userBasicInfo.getEmail()
+      email: userBasicInfo.getEmail(),
       profilePhoto: userBasicInfo.getImageUrl(),
       isPeerTeacher: false,
       isTeachingAssistant: false,
@@ -59,14 +59,17 @@ export const GoogleButton = () => {
       method: 'POST',
       body: JSON.stringify(requestBody)
     }).then(sessionResponse => sessionResponse.json())
-      .then(responseData => document.cookie = `tias_user_id=${responseData.id}`);
+      .then(responseData => {
+        document.cookie = `tias_user_id=${responseData.id}`
+      });
 
     clientUsername = response.Du.VX
     setLoggedIn(true);
   };
 
-  const logoutSuccess = () => {
-    setLoggedIn(!loggedIn);
+  const logout = () => {
+    setLoggedIn(false);
+    window.location.replace(window.location.origin);
   }
 
   return (
@@ -75,7 +78,7 @@ export const GoogleButton = () => {
         <GoogleLogout
           clientId={tiasClientID}
           buttonText={`Logged in as ${clientUsername}. Click to sign out.`}
-          onLogoutSuccess={logoutSuccess}
+          onLogoutSuccess={logout}
           onFailure={() => {}}
           render={renderProps => (
             <div className="vstack google">

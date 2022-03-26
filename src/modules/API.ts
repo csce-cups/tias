@@ -56,29 +56,59 @@ interface raw_APICourseBlockWeek {
 	Friday: raw_APICourseBlock[]
 }
 
+export interface APIUserQualification {
+	course_id: string
+	qualified: boolean
+}
 
 export interface APIContents {
 	employees: APIPerson[]
-	blocks: APICourseBlockWeek
+	blocks: APICourseBlockWeek,
+	userQuals: any
 }
 
 export interface APIReturn {
 	employees: Promise<APIPerson[]>
-	blocks: Promise<APICourseBlockWeek>
+	blocks: Promise<APICourseBlockWeek>,
+	userQuals: Promise<any>
+}
+
+// https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
+const parseCookie: any = (str: string) => {
+	return (str
+		.split(';')
+		.map(v => v.split('='))
+		.reduce((acc: any, v) => {
+			acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+			return acc;
+		}, {})
+	)
 }
 
 class API {
 	static fetchAll = (): APIReturn => {
+		let id = undefined;
+		try {
+			id = parseCookie(document.cookie).tias_user_id;
+		} catch (SyntaxError) {};
+
 		return {
 			employees: API.fetchPTList(),
-			blocks: API.fetchCourseBlocks()
+			blocks: API.fetchCourseBlocks(),
+			userQuals: API.fetchUserQualifications(id)
 		}
 	}
 
 	static fetchAllDummy = (args?: {employees?: APIPerson[]}): APIReturn => {
+		let id = undefined;
+		try {
+			id = parseCookie(document.cookie).tias_user_id;
+		} catch (SyntaxError) {};
+
 		return {
 			employees: API.fetchPTListDummy(args?.employees),
-			blocks: API.fetchCourseBlocksDummy()
+			blocks: API.fetchCourseBlocksDummy(),
+			userQuals: API.fetchUserQualificationsDummy(id)
 		}
 	}
 
@@ -118,6 +148,14 @@ class API {
 					Friday: convert(dataStrict.Friday)
 				} as any)
 			})
+			.catch(err => console.log(err));
+	}
+
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/qualifications
+	private static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`)
+			.then(({data}) => data.qualifications)
 			.catch(err => console.log(err));
 	}
 
@@ -206,6 +244,24 @@ class API {
 					Friday: BlockFormer.samples.F_schedule
 				})
 			}, 1500);
+		})
+	}
+
+	private static fetchUserQualificationsDummy = async (user_id?: number): Promise<any> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
+		console.log(user_id);
+		return new Promise((resolve, _) => {
+			setTimeout(() => {
+				resolve([
+					{course_id: "121", qualified: true},
+					{course_id: "221", qualified: false},
+					{course_id: "222", qualified: false},
+					{course_id: "312", qualified: true},
+					{course_id: "313", qualified: true},
+					{course_id: "314", qualified: false},
+					{course_id: "315", qualified: true},
+				])
+			}, 800);
 		})
 	}
 }

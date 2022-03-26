@@ -1,26 +1,33 @@
 import React, { FC, useState } from 'react'
 
-
 interface Props {
-	element: string // The body of the list element
+	course: string // The body of the list element
+  qual: boolean
 }
 
-export const ProfileFormRow : FC<Props> = ({element}) => {
-  const elementJoined = element.replace(/ /g, '-');
-  const [qualified, setQualified] = useState(false);
+export const ProfileFormRow : FC<Props> = ({course, qual}) => {
+  const [qualified, setQualified] = useState(qual);
   const update = () => {
-    const e = document.getElementById(`${elementJoined}-prefs`)! as HTMLSelectElement
+    const e = document.getElementById(`${course}-prefs`)! as HTMLSelectElement
     setQualified(e.value === 'true');
+  }
+
+  if (course === 'loading') {
+    return (
+      <div className="hstack form-row">
+        <div className="center element loading" style={{margin: '5vh 0 10vh 0'}}>Loading your saved qualifications...</div>
+      </div>
+    )
   }
 
   return (
   <>
     <div className="hstack form-row">
       <div className="element">
-        {element}
+        CSCE {course}
       </div>
       <div className="fill">
-        <select id={`${elementJoined}-prefs`} name="prefs" onChange={update}>
+        <select id={`${course}-prefs`} defaultValue={`${qual}`} name="prefs" onChange={update}>
           <option value="false">Not Qualified to Teach</option>
           <option value="true">Qualified to Teach</option>
         </select>
