@@ -3,31 +3,19 @@ package scheduler;
 import java.sql.*;
 
 import com.amazonaws.services.lambda.runtime.Context;
-// import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import software.amazon.awssdk.services.ssm.model.SsmException;
 
-// import software.amazon.awssdk.services.lambda.model.GetAccountSettingsRequest;
-// import software.amazon.awssdk.services.lambda.model.GetAccountSettingsResponse;
-// import software.amazon.awssdk.services.lambda.model.ServiceException;
-// import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
-// import software.amazon.awssdk.services.lambda.model.AccountUsage;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
-
 import java.lang.StringBuilder;
-// import java.util.concurrent.CompletableFuture;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,9 +44,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     static HashMap<Integer /* section id */, ArrayList<Integer> /* person id */> schedule;
     static ArrayList<Integer> unscheduled;
 
-    // private static final Logger logger = LoggerFactory.getLogger(Handler.class);
     private static final Gson gson = new GsonBuilder().create();
-    // private static final LambdaAsyncClient lambdaClient = LambdaAsyncClient.create();
 
     // https://github.com/awsdocs/aws-lambda-developer-guide/blob/main/sample-apps/java-basic/src/main/java/example/Handler.java
     @SuppressWarnings("unchecked")
@@ -72,33 +58,18 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
-        //Get specified version of secure string attribute
-
-        SsmClient ssmClient = SsmClient.builder()
-                .region(Region.US_EAST_1)
+        GetParameterRequest parameterRequest = GetParameterRequest.builder()
+                .name("/tias/prod/db-password")
+                .withDecryption(true)
                 .build();
-
-        String secureStringToken = getParaValue(ssmClient, "db-password");
-        ssmClient.close();
-
-        // System.out.println("Password: " + secureStringToken);
-
-        // // call Lambda API
-        // logger.info("Getting account settings");
-        // CompletableFuture<GetAccountSettingsResponse> accountSettings = 
-        //     lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
-        // // log execution details
-        // logger.info("ENVIRONMENT VARIABLES: {}", gson.toJson(System.getenv()));
-        // logger.info("CONTEXT: {}", gson.toJson(context));
-        // logger.info("EVENT: {}", gson.toJson(event));
-        // process event
-        
-        // process Lambda API response
+        SsmClient ssmclient = SsmClient.create();
+        GetParameterResponse parameterResult = ssmclient.getParameter(parameterRequest);
+        String dbpassword = parameterResult.parameter().value();
 
         HashMap<String, ArrayList<Double>> eventBody = gson.fromJson(event.getBody(), HashMap.class);
 
         try {
-            generateSchedule(eventBody.get("peerTeachers").stream().mapToInt(Double::intValue).toArray(), secureStringToken);
+            generateSchedule(eventBody.get("peerTeachers").stream().mapToInt(Double::intValue).toArray(), dbpassword);
         } catch (Exception e) {
             e.printStackTrace();
             return response
@@ -148,30 +119,11 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         unscheduled = new ArrayList<Integer>();
 
         getCourses();
-        // courses.forEach((key, value) -> {
-        //     System.out.println(key + "\t" + value);
-        // });
         getPeople(peopleIds);
-        // people.forEach((key, value) -> {
-        //     System.out.println(key + "\t" + value);
-        // });
         getSections();
-        // sections.forEach((key, value) -> {
-        //     System.out.println(key + "\t" + value);
-        // });
 
-        // for (int i = 0; i < 10; ++i) System.out.println();
         schedulePeopleToSections();
-        // schedule.forEach((key, value) -> {
-        //     System.out.println(key + "\t" + value);
-        // });
     }
-
-    // public static void getTypeMapping() throws SQLException {
-    //     var rs = conn.getMetaData().getTypeInfo();
-    //     while (rs.next())
-    //         System.out.println(rs.getString("TYPE_NAME") + "\t" + JDBCType.valueOf(rs.getInt("DATA_TYPE")).getName());
-    // }
 
     static void getCourses() throws SQLException {
         Statement st = conn.createStatement();
@@ -199,7 +151,6 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     }
 
     static void getPeople(int[] peopleIds) throws SQLException {
-        // System.out.println(constructPersonQuery("person", peopleIds.length));
         PreparedStatement st = conn.prepareStatement(constructPersonQuery("person", peopleIds.length));
 
         for (int i = 0; i < peopleIds.length; ++i) {
