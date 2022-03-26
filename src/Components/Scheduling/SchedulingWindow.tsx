@@ -11,6 +11,7 @@ export const SchedulingWindow: FC<Props> = () => {
   const [filter, setFilter] = useState({
     121: true,
     221: true,
+    222: true,
     312: true,
     314: true,
     313: true,

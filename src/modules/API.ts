@@ -1,4 +1,7 @@
 import axios from 'axios'
+import BlockFormer from './BlockFormer'
+
+const timezone_offset = 6;
 
 export interface APIPerson {
 	person_id: number
@@ -11,24 +14,70 @@ export interface APIPerson {
 	professor: boolean
 }
 
+
 export interface APIPTListResponse {
 	users: APIPerson[]
 }
 
+export interface APICourseBlock {
+	department: string
+	course_number: number
+	section_number: number
+	start_time: Date
+	end_time: Date
+	weekday: string
+	place: string
+}
+
+export interface APICourseBlockWeek {
+	Monday: APICourseBlock[] | null
+	Tuesday: APICourseBlock[] | null
+	Wednesday: APICourseBlock[] | null
+	Thursday: APICourseBlock[] | null
+	Friday: APICourseBlock[] | null
+}
+
+interface raw_APICourseBlock {
+	department: string
+	course_number: string
+	section_number: string
+	start_time: string
+	end_time: string
+	weekday: string
+	place: string
+}
+
+interface raw_APICourseBlockWeek {
+	Monday: raw_APICourseBlock[]
+	Tuesday: raw_APICourseBlock[]
+	Wednesday: raw_APICourseBlock[]
+	Thursday: raw_APICourseBlock[]
+	Friday: raw_APICourseBlock[]
+}
+
+
 export interface APIContents {
 	employees: APIPerson[]
+	blocks: APICourseBlockWeek
+}
+
+export interface APIReturn {
+	employees: Promise<APIPerson[]>
+	blocks: Promise<APICourseBlockWeek>
 }
 
 class API {
-	static fetchAll = () => {
+	static fetchAll = (): APIReturn => {
 		return {
-			employees: API.fetchPTList()
+			employees: API.fetchPTList(),
+			blocks: API.fetchCourseBlocks()
 		}
 	}
 
-	static fetchAllDummy = (args?: {employees?: APIPerson[]}) => {
+	static fetchAllDummy = (args?: {employees?: APIPerson[]}): APIReturn => {
 		return {
-			employees: API.fetchPTListDummy(args?.employees)
+			employees: API.fetchPTListDummy(args?.employees),
+			blocks: API.fetchCourseBlocksDummy()
 		}
 	}
 
@@ -39,6 +88,37 @@ class API {
 			.catch(err => console.log(err));
 	}
 
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings
+	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
+		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
+			.then(({data}) => {
+				let dataStrict: raw_APICourseBlockWeek = data;
+				const createDate = (datestring: string): Date => {
+					let d = new Date(0);
+					d.setHours(timezone_offset + parseInt(datestring.substring(0, 2))); // First two digits are the hours
+					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
+					return d;
+				}
+				const convert = (input: raw_APICourseBlock[]): APICourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
+					department: e.department,
+					course_number: parseInt(e.course_number),
+					section_number: parseInt(e.section_number),
+					start_time: createDate(e.start_time),
+					end_time: createDate(e.end_time),
+					weekday: e.weekday,
+					place: e.place
+				})))
+
+				return ({
+					Monday: convert(dataStrict.Monday),
+					Tuesday: convert(dataStrict.Tuesday),
+					Wednesday: convert(dataStrict.Wednesday),
+					Thursday: convert(dataStrict.Thursday),
+					Friday: convert(dataStrict.Friday)
+				} as any)
+			})
+			.catch(err => console.log(err));
+	}
 
 	private static fetchPTListDummy = async (response?: APIPerson[]): Promise<APIPerson[]> => {
 		return new Promise((resolve, _) => {
@@ -48,6 +128,7 @@ class API {
 						"Gary Chess", 
 						"Sandy Banks", 
 						"King Gerold III",
+						"Mayde Enless",
 						"Sharpness IV", 
 						"Zelda DeLegendof",
 						"Star Fox", 
@@ -109,6 +190,20 @@ class API {
 					})
 				))
 			}, 1000)
+		})
+	}
+
+	private static fetchCourseBlocksDummy = async (): Promise<APICourseBlockWeek> => {
+		return new Promise((resolve, _) => {
+			setTimeout(() => {
+				resolve({
+					Monday: BlockFormer.samples.Test_schedule2,
+					Tuesday: BlockFormer.samples.Test_schedule,
+					Wednesday: BlockFormer.samples.TH_schedule,
+					Thursday: BlockFormer.samples.W_schedule,
+					Friday: BlockFormer.samples.F_schedule
+				})
+			}, 1500);
 		})
 	}
 }
