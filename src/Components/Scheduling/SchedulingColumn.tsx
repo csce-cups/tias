@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
+import internal from 'stream';
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -88,6 +89,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
     }
     return {collisions_left, collisions_right};
   }
+
   const renderSpacers = (target: RenderCourseBlock, collisions: number[], key: string) => {
     const doesCollide = (line: Date, block: APICourseBlock) => block.start_time <= line && block.end_time > line;
     const findLineCollisions = (line: Date) => {
@@ -120,33 +122,55 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
 
     console.log({maxLen, maxi, maxes, m: maxes[maxi]})
 
-    return (
-      maxes[maxi].arr.map((_, idx: number) => (
-        < SchedulingBlock spacer={true} visible={maxes.some(e => {
-          if (idx >= e.arr.length || maxes[maxi].count === 0 || !filter[blocks[e.arr[idx]].course_number]) return false;
-          else {
-            maxes[maxi].count--;
-            return true;
-          }
-        })} linkIDs={[]} key={`${key}-${idx}`}/>
-      ))
-    )
+    return ({
+      collisionRatio: maxes[maxi].count,
+      render: (
+        maxes[maxi].arr.map((_, idx: number) => (
+          < SchedulingBlock spacer={true} visible={maxes.some(e => {
+            if (idx >= e.arr.length || maxes[maxi].count === 0 || !filter[blocks[e.arr[idx]].course_number]) return false;
+            else {
+              maxes[maxi].count--;
+              return true;
+            }
+          })} linkIDs={[]} key={`${key}-${idx}`}/>
+        ))
+      ),
+    })
   }
 
+  let ratios = new Map();
+  let collisionReferences = new Map();
   return (
-    blocks.map((block: APICourseBlock, idx: number) => {
-      const preparedBlock = registerCollisions(block, idx);
+    blocks.map((block: APICourseBlock, bidx: number) => {
+      const preparedBlock = registerCollisions(block, bidx);
+      const rightSpacers = renderSpacers(preparedBlock, preparedBlock.collisions_right, 'right-spacer');
+      const calcRatio = (collision: number) => {
+        console.log(collisionReferences.get(collision).reduce((p: number, e: number) => (filter[blocks[e].course_number])? p+1: p, 0));
+        let denominator = (ratios.get(collision) + collisionReferences.get(collision).reduce((p: number, e: number) => (filter[blocks[e].course_number])? p+1: p, 0));
+        return `calc(${1/denominator*100}% - 4px)`
+      }
+
+      ratios.set(bidx, rightSpacers.collisionRatio + 1);
+      collisionReferences.set(bidx, []);
+      console.log({block, rightSpacers});
+      console.log(ratios);
+      console.log(collisionReferences);
       return (
         <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(block)}`} style={{ 
           padding: 0, 
           height: `${time_to_height(block.start_time, block.end_time)}%`,
           top: `${start_time_to_top(block.start_time)}%`
         }}>
-          { preparedBlock.collisions_left.map((collision: number, idx: number) => (
-            < SchedulingBlock spacer={true} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
-          ))}
+          { preparedBlock.collisions_left.map((collision: number, idx: number) => {
+            collisionReferences.get(bidx).push(collision);
+            console.log(`${bidx} accessed ${collision} which was ${(ratios.has(collision))? calcRatio(collision) : undefined}`)
+            if (blocks[bidx].start_time.getTime() === blocks[collision].start_time.getTime() && blocks[bidx].end_time.getTime() === blocks[collision].end_time.getTime()) {
+              return < SchedulingBlock spacer={true} size={'auto'} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
+            }
+            return < SchedulingBlock spacer={true} size={(ratios.has(collision))? calcRatio(collision) : undefined} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
+          })}
           < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} key={`block-${JSON.stringify(block)}`}/>
-          { renderSpacers(preparedBlock, preparedBlock.collisions_right, 'right-spacer')}
+          { rightSpacers.render }
         </div>
       )
     })
@@ -155,6 +179,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
 
 export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   console.log('===========================');
+  console.log(blocks);
   const [detailed, setDetailed] = useState(false);
   const id = uuid();
   if (hours !== undefined) numHours = hours;
