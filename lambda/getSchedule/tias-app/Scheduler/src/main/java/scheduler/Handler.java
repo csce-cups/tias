@@ -82,22 +82,6 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             .withBody(String.format("{ \"scheduled\": %s, \"unscheduled\": %s }", gson.toJson(schedule), gson.toJson(unscheduled)));
     }
 
-    public static String getParaValue(SsmClient ssmClient, String paraName) {
-
-        try {
-            GetParameterRequest parameterRequest = GetParameterRequest.builder()
-                .name(paraName)
-                .build();
-
-            GetParameterResponse parameterResponse = ssmClient.getParameter(parameterRequest);
-            return parameterResponse.parameter().value();
-        } catch (SsmException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-        return ""; // appease compiler
-   }
-
     public static void generateSchedule(int[] peopleIds, String dbpassword) throws SQLException {
         // https://jdbc.postgresql.org/documentation/head/index.html
         String url = String.format("jdbc:postgresql://%s/%s", System.getenv("DB_ENDPOINT"), System.getenv("DB_NAME"));
