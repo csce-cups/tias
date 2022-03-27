@@ -143,8 +143,8 @@ class BlockFormer {
         ],
         Test_schedule2: [
             { department: "CSCE", course_number: 121, section_number: 101, start_time: createDate("02:00:00"), end_time: createDate("04:00:00"), weekday: "Friday", place: "ZACH 590" },
+            { department: "CSCE", course_number: 222, section_number: 103, start_time: createDate("02:00:00"), end_time: createDate("04:00:00"), weekday: "Friday", place: "ZACH 590" },
             { department: "CSCE", course_number: 121, section_number: 102, start_time: createDate("02:00:00"), end_time: createDate("04:00:00"), weekday: "Friday", place: "ZACH 590" },
-            // { department: "CSCE", course_number: 222, section_number: 103, start_time: createDate("02:00:00"), end_time: createDate("04:00:00"), weekday: "Friday", place: "ZACH 590" },
             // { department: "CSCE", course_number: 312, section_number: 104, start_time: createDate("02:00:00"), end_time: createDate("04:00:00"), weekday: "Friday", place: "ZACH 590" },
 
             // { department: "CSCE", course_number: 313, section_number: 201, start_time: createDate("05:10:00"), end_time: createDate("07:00:00"), weekday: "Friday", place: "ZACH 590" },

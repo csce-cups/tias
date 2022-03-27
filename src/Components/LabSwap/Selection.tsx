@@ -19,7 +19,7 @@ interface Props{
 const days = ["Sun", "M","T","W","H","F","Sat"];
 export const Selection: FC<Props> = ({title, sections}) => {
   //maybe make a colored box display depending on
-  let info=(
+  let info = (
     <div>
       <p>
         Course: 
@@ -33,19 +33,21 @@ export const Selection: FC<Props> = ({title, sections}) => {
       <hr/>
     </div>
   );
-  if(sections.valid){
-    info=(<div>
-    <p>
-      Course: {sections.course_number}
-    </p>
-    <p>
-      Section: {sections.section_numbers[0]}
-    </p>
-    <p>
-      Meeting Time: {"gonna get better output"}
-    </p>
-    <hr/>
-  </div>)
+  if (sections.valid) {
+    info = (
+    <div>
+      <p>
+        Course: {sections.course_number}
+      </p>
+      <p>
+        Section: {sections.section_numbers[0]}
+      </p>
+      <p>
+        Meeting Time: {"gonna get better output"}
+      </p>
+      <hr/>
+    </div>
+  )
   }
   return (
     <div style={{width:"12vw"}}>

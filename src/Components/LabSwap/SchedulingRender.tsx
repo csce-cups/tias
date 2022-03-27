@@ -31,13 +31,26 @@ const cmp = (course1:CourseInstance, course2:APICourseBlock, debug:boolean) => {
   // if(debug && course1.end_time!==course2.end_time){
   //   console.log({course1,course2,t:"DIFFER END"})
   // }
-  return course1.course_number===course2.course_number && course1.start_time.getTime()===course2.start_time.getTime() && course1.end_time.getTime()===course2.end_time.getTime();
+  return course1.course_number === course2.course_number && course1.start_time.getTime()===course2.start_time.getTime() && course1.end_time.getTime()===course2.end_time.getTime();
 }
-const compressValid = (courses:Array<APICourseBlock>|null, debug:boolean) =>{
+const compressValid = (courses: Array<APICourseBlock> | null, debug: boolean) => {
   let filtered: Array<CourseInstance> = [];
-  if(courses===null){
-    return filtered;
-  }
+  if (courses === null) return filtered;
+
+  courses.sort((a, b) => {
+    // Sort by start time
+    if (a.start_time.getTime() < b.start_time.getTime()) return -1;
+    else if (a.start_time.getTime() > b.start_time.getTime()) return 1;
+
+    else if (a.end_time.getTime() < b.end_time.getTime()) return -1;
+    else if (a.end_time.getTime() > b.end_time.getTime()) return 1;
+
+    else if (a.course_number < b.course_number) return -1;
+    else if (a.course_number > b.course_number) return 1;
+
+    else return 0;
+  });
+
   let fidx = -1;
   let cidx = 0;
   while(cidx<courses.length){
