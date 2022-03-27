@@ -25,7 +25,13 @@ export const ProfileForm = () => {
       method: 'PUT',
       body: JSON.stringify(requestBody)
     }).then(response => response.json())
-      .then(responseJSON => document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!'))
+      .then(responseJSON => {
+        if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
+          document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
+        } else {
+          document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!')
+        }
+      })
       .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
     
     updateOnDismount = () => setQuals(newQuals);
