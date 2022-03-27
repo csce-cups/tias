@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import colorFromId from '../../modules/color'
-import { contexts } from '../APIContext'
+import contexts from '../APIContext'
 import { APIPerson } from '../../modules/API'
 
 interface Props {
@@ -22,7 +22,7 @@ export const Hat: FC<Props> = ({linkID}) => {
 
   return (
     < contexts.employees.Consumer >
-      {(employees) => (
+      {([employees, setEmployees]) => (
         <div 
           className="hat" 
           link-id={linkID} 

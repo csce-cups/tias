@@ -3,7 +3,7 @@ import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
 import { APIPerson } from '../../modules/API'
-import { contexts } from '../APIContext'
+import contexts from '../APIContext'
 
 interface Props {
   
@@ -17,7 +17,7 @@ export const EmployeeList: FC<Props> = () => {
       </div>
 
       < contexts.employees.Consumer >
-        {employees => (
+        {([employees, setEmployees]) => (
             (employees.length > 0)?
               <div className="scrollable">
                 {employees.map((e: APIPerson, index: number) => (

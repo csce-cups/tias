@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { GoogleLogin, GoogleLogout } from "react-google-login";
+import contexts from '../APIContext';
 
 const tiasClientID : string = (process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID as string)
 let clientUsername = ""
@@ -31,7 +32,7 @@ const button = (renderProps: GoogleProps, text: string) => {
 export const GoogleButton = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const googleResponseCallback = (response: any) => {
+  const googleResponseCallback = (response: any, setGoogleData: any) => {
     // Acquire the Google sign-in token.
     let id_token = response.getAuthResponse().id_token;
     // Obtain basic user info from the user's Google profile.
@@ -41,14 +42,13 @@ export const GoogleButton = () => {
     // the API. All basic information is needed
     // to automatically generate a user if the 
     // user has not signed into the system before.
-    let requestBody = 
-    {
+    let requestBody = {
       token: id_token,
       firstName: userBasicInfo.getGivenName(),
       lastName: userBasicInfo.getFamilyName(),
-      // email: userBasicInfo.getEmail()
+      email: userBasicInfo.getEmail(),
       profilePhoto: userBasicInfo.getImageUrl(),
-      isPeerTeacher: false,
+      isPeerTeacher: true,
       isTeachingAssistant: false,
       isProfessor: false,
       isAdmin: false    
@@ -59,14 +59,19 @@ export const GoogleButton = () => {
       method: 'POST',
       body: JSON.stringify(requestBody)
     }).then(sessionResponse => sessionResponse.json())
-      .then(responseData => document.cookie = `tias_user_id=${responseData.id}`);
+      .then(responseData => {
+        document.cookie = `tias_user_id=${responseData.id}`
+      });
 
     clientUsername = response.Du.VX
     setLoggedIn(true);
+    setGoogleData(userBasicInfo);
   };
 
-  const logoutSuccess = () => {
-    setLoggedIn(!loggedIn);
+  const logout = () => {
+    setLoggedIn(false);
+    document.cookie = `tias_user_id=-1`;
+    window.location.replace(window.location.origin);
   }
 
   return (
@@ -75,7 +80,7 @@ export const GoogleButton = () => {
         <GoogleLogout
           clientId={tiasClientID}
           buttonText={`Logged in as ${clientUsername}. Click to sign out.`}
-          onLogoutSuccess={logoutSuccess}
+          onLogoutSuccess={logout}
           onFailure={() => {}}
           render={renderProps => (
             <div className="vstack google">
@@ -84,20 +89,24 @@ export const GoogleButton = () => {
           )}
         />
         : 
-        <GoogleLogin
-          clientId={tiasClientID}
-          buttonText="Sign in"
-          onSuccess={googleResponseCallback}
-          onFailure={(a: any) => console.log(a)}
-          cookiePolicy={"single_host_origin"}
-          isSignedIn={true}
-          hostedDomain="tamu.edu"
-          render={renderProps => (
-            <div className="vstack google">
-              {button(renderProps, 'Sign in with Google')}
-            </div>
+        < contexts.googleData.Consumer >
+          {([googleData, setGoogleData]) => (
+            <GoogleLogin
+              clientId={tiasClientID}
+              buttonText="Sign in"
+              onSuccess={(resp) => googleResponseCallback(resp, setGoogleData)}
+              onFailure={(a: any) => console.log(a)}
+              cookiePolicy={"single_host_origin"}
+              isSignedIn={true}
+              hostedDomain="tamu.edu"
+              render={renderProps => (
+                <div className="vstack google">
+                  {button(renderProps, 'Sign in with Google')}
+                </div>
+              )}
+            />
           )}
-        />
+        </contexts.googleData.Consumer>
       }
     </>
   )

@@ -5,6 +5,7 @@ const timezone_offset = 6;
 
 export interface APIPerson {
 	person_id: number
+	email: string
 	first_name: string
 	last_name: string
 	profile_photo_url: string
@@ -55,29 +56,63 @@ interface raw_APICourseBlockWeek {
 	Friday: raw_APICourseBlock[]
 }
 
+export interface APIUserQualification {
+	course_id: number
+	course_number: string
+	qualified: boolean
+}
 
 export interface APIContents {
 	employees: APIPerson[]
-	blocks: APICourseBlockWeek
+	blocks: APICourseBlockWeek,
+	userQuals: APIUserQualification[]
 }
 
 export interface APIReturn {
 	employees: Promise<APIPerson[]>
-	blocks: Promise<APICourseBlockWeek>
+	blocks: Promise<APICourseBlockWeek>,
+	userQuals: Promise<APIUserQualification[]>
+}
+
+// https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
+export const parseCookie: any = () => {
+	return (
+		document.cookie
+			.split(';')
+			.map(v => v.split('='))
+			.reduce((acc: any, v) => {
+				acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+				return acc;
+			}, {})
+	)
 }
 
 class API {
 	static fetchAll = (): APIReturn => {
+		let id = undefined;
+		try {
+			id = parseCookie().tias_user_id;
+			if (id === -1) id = undefined;
+		} catch (SyntaxError) {};
+
 		return {
 			employees: API.fetchPTList(),
-			blocks: API.fetchCourseBlocks()
+			blocks: API.fetchCourseBlocks(),
+			userQuals: API.fetchUserQualifications(id)
 		}
 	}
 
 	static fetchAllDummy = (args?: {employees?: APIPerson[]}): APIReturn => {
+		let id = undefined;
+		try {
+			id = parseCookie(document.cookie).tias_user_id;
+			if (id === -1) id = undefined;
+		} catch (SyntaxError) {};
+
 		return {
 			employees: API.fetchPTListDummy(args?.employees),
-			blocks: API.fetchCourseBlocksDummy()
+			blocks: API.fetchCourseBlocksDummy(),
+			userQuals: API.fetchUserQualificationsDummy(id)
 		}
 	}
 
@@ -117,6 +152,14 @@ class API {
 					Friday: convert(dataStrict.Friday)
 				} as any)
 			})
+			.catch(err => console.log(err));
+	}
+
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/qualifications
+	private static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`)
+			.then(({data}) => data.qualifications)
 			.catch(err => console.log(err));
 	}
 
@@ -180,6 +223,7 @@ class API {
 						"Hero Sandwich"
 					].map((e, i) => ({
 						person_id: i, 
+						email: "",
 						first_name: e.substring(0, e.indexOf(' ')), 
 						last_name: e.substring(e.indexOf(' ')),
 						profile_photo_url: "",
@@ -204,6 +248,29 @@ class API {
 					Friday: BlockFormer.samples.F_schedule
 				})
 			}, 1500);
+		})
+	}
+
+	private static fetchUserQualificationsDummy = async (user_id?: number): Promise<APIUserQualification[]> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
+		return new Promise((resolve, _) => {
+			setTimeout(() => {
+				resolve([
+					{course_id: 1, course_number: "110", qualified: true},
+					{course_id: 2, course_number: "111", qualified: false},
+					{course_id: 3, course_number: "120", qualified: false},
+					{course_id: 4, course_number: "121", qualified: false},
+					{course_id: 5, course_number: "206", qualified: false},
+					{course_id: 6, course_number: "221", qualified: false},
+					{course_id: 7, course_number: "222", qualified: false},
+					{course_id: 8, course_number: "312", qualified: false},
+					{course_id: 9, course_number: "313", qualified: false},
+					{course_id: 10, course_number: "314", qualified: true},
+					{course_id: 11, course_number: "315", qualified: true},
+					{course_id: 11, course_number: "331", qualified: true}
+
+				])
+			}, 800);
 		})
 	}
 }
