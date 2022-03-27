@@ -19,3 +19,6 @@ buildNumber.properties
 
 # AWS SAM
 .aws-sam
+
+# Node JS
+package-lock.json
