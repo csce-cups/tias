@@ -71,7 +71,6 @@ export const GoogleButton = () => {
   const logout = () => {
     setLoggedIn(false);
     document.cookie = `tias_user_id=-1`;
-    console.log(document.cookie);
     window.location.replace(window.location.origin);
   }
 
