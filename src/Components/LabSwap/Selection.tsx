@@ -30,11 +30,10 @@ export const Selection: FC<Props> = ({title, sections}) => {
       <p>
         Meeting Time: 
       </p>
-      {/* <hr/> */}
+      <hr/>
     </div>
   );
   if(sections.valid){
-
     info=(<div>
     <p>
       Course: {sections.course_number}
@@ -43,7 +42,7 @@ export const Selection: FC<Props> = ({title, sections}) => {
       Section: {sections.section_numbers[0]}
     </p>
     <p>
-      Meeting Time: {days[sections.start_time.getDay()]} {sections.start_time.getHours()}:{sections.start_time.getMinutes()}-{sections.end_time.getHours()}:{sections.end_time.getMinutes()}
+      Meeting Time: {"gonna get better output"}
     </p>
     <hr/>
   </div>)

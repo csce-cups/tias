@@ -40,6 +40,7 @@ export const CourseBlock: FC<Props> = ({course_instance, visible, spacer, size, 
   const update = (ev: stringEvent)  => {
     //magic taken from https://medium.com/@david.zhao.blog/typescript-error-argument-of-type-unknown-is-not-assignable-to-parameter-of-type-or-6b89f429cf1e
     let sec: String = (typeof ev.target.value === 'string' ? ev.target.value : ''); 
+    console.log("SEC: |"+sec+"|")
     if(sec === ''){
       setTitle(`${c.course_number}`)
       setSection('');
@@ -67,7 +68,7 @@ export const CourseBlock: FC<Props> = ({course_instance, visible, spacer, size, 
     ...isVisible,
     display: visible? undefined : 'none'
   }
-
+  const isOpen = {display: (open && visible ? undefined : 'none')};
   if (spacer === true) return <div className="block spacer" style={isVisible}/>
 
   return (
@@ -81,20 +82,22 @@ export const CourseBlock: FC<Props> = ({course_instance, visible, spacer, size, 
       sx={{height: "100%"}}
       
     >
-      <InputLabel id={id} 
-      sx={{textAlign: 'center', color:'white'}}
+      <InputLabel 
+      id={id} 
+      style={isContentVisible}
+      sx={{textAlignLast: 'center', color:'white'}}
       >{title}</InputLabel>
       <Select
         labelId={id}
         value={''}  
         onChange={update}
-        // style={{display: (open ? undefined:"none")}}
+        style={isOpen}
         open={open}
-        sx={{height: "100%", textAlignLast: 'center'}}
+        sx={{height: "100%"}}
         IconComponent={()=>null}
       >
-        <MenuItem sx = {{textAlignLast: 'center'}} value="" ><em>None</em></MenuItem>
-        {course_instance.section_numbers.map((v,i)=><MenuItem sx = {{textAlignLast: 'center'}} value={v.toString()} key={i}>{v}</MenuItem>)}
+        <MenuItem value="" ><em>None</em></MenuItem>
+        {course_instance.section_numbers.map((v,i)=><MenuItem value={v.toString()} key={i}>{v}</MenuItem>)}
       </Select>
     </FormControl>
   )

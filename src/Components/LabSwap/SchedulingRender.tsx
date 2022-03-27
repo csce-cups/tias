@@ -21,16 +21,28 @@ interface CourseInstance{
 interface Props {
   filter: Object //int -> bool
 }
-const cmp = (course1:CourseInstance, course2:APICourseBlock) => {
-  return course1.course_number===course2.course_number && course1.start_time===course2.start_time&&course1.end_time===course2.end_time;
+const cmp = (course1:CourseInstance, course2:APICourseBlock, debug:boolean) => {
+  // if(debug && course1.course_number!==course2.course_number){
+  //   console.log({course1,course2,t:"DIFFER NUM"})
+  // }
+  // if(debug && course1.start_time!==course2.start_time){
+  //   console.log({course1,course2,t:"DIFFER START"})
+  // }
+  // if(debug && course1.end_time!==course2.end_time){
+  //   console.log({course1,course2,t:"DIFFER END"})
+  // }
+  return course1.course_number===course2.course_number && course1.start_time.getTime()===course2.start_time.getTime() && course1.end_time.getTime()===course2.end_time.getTime();
 }
-const filterValid = (courses:Array<APICourseBlock> | null) =>{
+const compressValid = (courses:Array<APICourseBlock>|null, debug:boolean) =>{
   let filtered: Array<CourseInstance> = [];
+  if(courses===null){
+    return filtered;
+  }
   let fidx = -1;
   let cidx = 0;
-  while(courses!==null && cidx<courses.length){
+  while(cidx<courses.length){
     let c = courses[cidx];
-    filtered.push({
+    filtered.push({ //make object from current section to push
       department: c.department,
       course_number: c.course_number,
       section_numbers: [c.section_number],
@@ -38,13 +50,11 @@ const filterValid = (courses:Array<APICourseBlock> | null) =>{
       end_time: c.end_time,
       weekday: c.weekday,
       place: c.place
-
     });
-    fidx++;
-    filtered[fidx].section_numbers=[courses[cidx].section_number];
-    cidx++;
-    // console.log(filtered[fidx])
-    while(courses!==null && cidx<courses.length && cmp(filtered[fidx],courses[cidx])){ //while the next course in the array is compatiable with the current one
+    fidx++; //update to the newly added index
+    cidx++; //move to the next uncondensed section
+    //while the next course in the array is compatiable with the current one
+    while(cidx<courses.length && cmp(filtered[fidx],courses[cidx],debug)){ 
       filtered[fidx].section_numbers.push(courses[cidx].section_number)
       cidx++;
     }
@@ -59,11 +69,11 @@ export const SchedulingRender: FC<Props> = ({filter}) => {
         < contexts.blocks.Consumer >
           { (blocks: APICourseBlockWeek) => (
             <>
-              < SchedulingColumn hours={hours} filter={filter} day={'Monday'} blocks={filterValid(blocks.Monday)} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Tuesday'} blocks={filterValid(blocks.Tuesday)} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Wednesday'} blocks={filterValid(blocks.Wednesday)} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Thursday'} blocks={filterValid(blocks.Thursday)} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Friday'} blocks={filterValid(blocks.Friday)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Monday'} blocks={compressValid(blocks.Monday, false)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Tuesday'} blocks={compressValid(blocks.Tuesday, false)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Wednesday'} blocks={compressValid(blocks.Wednesday, false)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Thursday'} blocks={compressValid(blocks.Thursday, false)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Friday'} blocks={compressValid(blocks.Friday, false)} />
             </>
           )}
         </contexts.blocks.Consumer>
