@@ -1,6 +1,5 @@
 import React from 'react';
 import './../Components/common.scss';
-import { ProfileFormRow } from '../Components/Profile/ProfileFormRow';
 import { ProfileSidebar } from '../Components/Profile/ProfileSidebar';
 import { ProfileStatusBar } from '../Components/Profile/ProfileStatusBar';
 import { ProfileForm } from '../Components/Profile/ProfileForm';

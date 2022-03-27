@@ -92,6 +92,7 @@ class API {
 		let id = undefined;
 		try {
 			id = parseCookie().tias_user_id;
+			if (id === -1) id = undefined;
 		} catch (SyntaxError) {};
 
 		return {
@@ -105,6 +106,7 @@ class API {
 		let id = undefined;
 		try {
 			id = parseCookie(document.cookie).tias_user_id;
+			if (id === -1) id = undefined;
 		} catch (SyntaxError) {};
 
 		return {

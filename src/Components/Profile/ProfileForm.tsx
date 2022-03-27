@@ -22,7 +22,7 @@ export const ProfileForm = () => {
 
     document.getElementById("submit-button")?.setAttribute('value', 'Saving...');
     fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/qualifications`, {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify(requestBody)
     }).then(response => response.json())
       .then(responseJSON => document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!'))
