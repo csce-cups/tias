@@ -17,7 +17,7 @@ export const EmployeeList: FC<Props> = () => {
       </div>
 
       < contexts.employees.Consumer >
-        {employees => (
+        {([employees, setEmployees]) => (
             (employees.length > 0)?
               <div className="scrollable">
                 {employees.map((e: APIPerson, index: number) => (

@@ -74,14 +74,15 @@ export interface APIReturn {
 }
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
-const parseCookie: any = (str: string) => {
-	return (str
-		.split(';')
-		.map(v => v.split('='))
-		.reduce((acc: any, v) => {
-			acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
-			return acc;
-		}, {})
+export const parseCookie: any = () => {
+	return (
+		document.cookie
+			.split(';')
+			.map(v => v.split('='))
+			.reduce((acc: any, v) => {
+				acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+				return acc;
+			}, {})
 	)
 }
 
@@ -89,7 +90,7 @@ class API {
 	static fetchAll = (): APIReturn => {
 		let id = undefined;
 		try {
-			id = parseCookie(document.cookie).tias_user_id;
+			id = parseCookie().tias_user_id;
 		} catch (SyntaxError) {};
 
 		return {

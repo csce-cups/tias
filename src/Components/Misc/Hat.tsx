@@ -22,7 +22,7 @@ export const Hat: FC<Props> = ({linkID}) => {
 
   return (
     < contexts.employees.Consumer >
-      {(employees) => (
+      {([employees, setEmployees]) => (
         <div 
           className="hat" 
           link-id={linkID} 

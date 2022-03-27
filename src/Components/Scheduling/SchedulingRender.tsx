@@ -20,7 +20,7 @@ export const SchedulingRender: FC<Props> = ({filter}) => {
       < SchedulingTimes hours={hours} start={start}/>
       <div className="render-content">
         < contexts.blocks.Consumer >
-          { (blocks: APICourseBlockWeek) => (
+          {([blocks, setBlocks]) => (
             <>
               < SchedulingColumn hours={hours} filter={filter} day={'Monday'} blocks={blocks.Monday} />
               < SchedulingColumn hours={hours} filter={filter} day={'Tuesday'} blocks={blocks.Tuesday} />
