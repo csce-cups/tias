@@ -2,7 +2,7 @@ import React, {FC} from 'react'
 import { SchedulingColumn } from './SchedulingColumn';
 import { SchedulingTimes } from './SchedulingTimes';
 import BlockFormer from '../../modules/BlockFormer';
-import { contexts } from '../APIContext';
+import contexts from '../APIContext';
 import { APICourseBlockWeek } from '../../modules/API';
 
 const hours = 12;

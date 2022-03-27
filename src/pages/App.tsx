@@ -6,7 +6,7 @@ import Profile from './Profile';
 import Scheduling from './Scheduling';
 import Landing from './Landing';
 import './../Components/common.scss';
-import APIContext from '../Components/APIContext';
+import { APIContext } from '../Components/APIContext';
 
 export const App = () => {
   return (

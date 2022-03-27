@@ -603,6 +603,7 @@ img.back-arrow {
 	flex: 1 1 auto;	
 	border: 2px solid;
 	margin: 0 20px;
+	border-radius: 50%;
 }
 
 .profile-sidebar {
@@ -612,6 +613,7 @@ img.back-arrow {
 
 	span {
 		font-weight: bold;
+		margin: 5px 0;
 	}
 }
 

@@ -1,15 +1,38 @@
 import React from 'react'
-import rick from '../../assets/rick.jpg'
+import { getJSDocTypeParameterTags } from 'typescript'
+import contexts from '../APIContext'
 
 export const ProfileSidebar = () => {
+  const img = (googleData: any) => {
+    try {
+      return <img src={(googleData !== {})? googleData.getImageUrl() : undefined} className="profile-picture"/>
+    } catch (TypeError) {
+      return <div>No Image</div>
+    }
+  }
+
+  const name = (googleData: any) => {
+    try {
+      return <span>{googleData.getGivenName()} {googleData.getFamilyName()}</span>
+    } catch (TypeError) {
+      return <span>Loading...</span>
+    }
+  }
+
   return (
     <div className="profile-sidebar">
       <div style={{height: '100px'}}/>
       <span>Peer Teacher</span>
-      <div className="hstack">
-        <img src={rick} className="profile-picture"/>
-      </div>
-      <span>Rick Astley</span>
+      < contexts.googleData.Consumer >
+        {([googleData, _]) => (
+          <>
+            <div className="hstack">
+              {img(googleData)}
+            </div>
+            <span>{name(googleData)}</span>
+          </>
+        )}
+      </contexts.googleData.Consumer>
 
       <div className="fill"/>
       <span style={{padding: '20px'}}>Some Preferences Go Here</span>

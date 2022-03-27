@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { ProfileFormRow } from './ProfileFormRow'
-import { contexts } from '../APIContext'
+import contexts from '../APIContext'
 import { APIUserQualification, parseCookie } from '../../modules/API';
 
 export const ProfileForm = () => {
@@ -12,11 +12,12 @@ export const ProfileForm = () => {
     selections.forEach((dropdown) => {
       const e = dropdown as HTMLSelectElement;
       newQuals.push({
-        course_id: e.getAttribute('for-course')!,
+        course_id: parseInt(e.getAttribute('for-cid')!),
+        course_number: e.getAttribute('for-course')!,
         qualified: e.value === "true"
       })
 
-      requestBody.qualifications[e.getAttribute('for-course')!] = e.value === "true";
+      requestBody.qualifications[e.getAttribute('for-cid')!] = e.value === "true";
     })
 
     document.getElementById("submit-button")?.setAttribute('value', 'Saving...');
@@ -24,12 +25,8 @@ export const ProfileForm = () => {
       method: 'POST',
       body: JSON.stringify(requestBody)
     }).then(response => response.json())
-      .then(responseJSON => {
-        document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
-        console.log(responseJSON)
-    }).catch(() => {
-      document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.');
-    });
+      .then(responseJSON => document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!'))
+      .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
     
     updateOnDismount = () => setQuals(newQuals);
 
@@ -60,10 +57,10 @@ export const ProfileForm = () => {
 
               { (quals.length > 0)? 
                 quals.map((qual: APIUserQualification, idx: number) => (
-                  <ProfileFormRow course={qual.course_id} qual={qual.qualified} key={`pfrow-${idx}`}/>
+                  <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${idx}`}/>
                 ))
                 :
-                <ProfileFormRow course={"none"} qual={false} key={`pfrow-none`}/>
+                <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
               }
             </div>
 

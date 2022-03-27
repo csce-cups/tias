@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import colorFromId from '../../modules/color'
-import { contexts } from '../APIContext'
+import contexts from '../APIContext'
 import { APIPerson } from '../../modules/API'
 
 interface Props {

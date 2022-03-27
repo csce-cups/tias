@@ -57,7 +57,8 @@ interface raw_APICourseBlockWeek {
 }
 
 export interface APIUserQualification {
-	course_id: string
+	course_id: number
+	course_number: string
 	qualified: boolean
 }
 
@@ -109,7 +110,7 @@ class API {
 		return {
 			employees: API.fetchPTListDummy(args?.employees),
 			blocks: API.fetchCourseBlocksDummy(),
-			userQuals: API.fetchUserQualificationsDummy(id)
+			userQuals: API.fetchUserQualifications(id)
 		}
 	}
 
@@ -250,7 +251,6 @@ class API {
 
 	private static fetchUserQualificationsDummy = async (user_id?: number): Promise<any> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
-		console.log(user_id);
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve([

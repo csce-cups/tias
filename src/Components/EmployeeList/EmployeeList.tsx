@@ -3,7 +3,7 @@ import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
 import { APIPerson } from '../../modules/API'
-import { contexts } from '../APIContext'
+import contexts from '../APIContext'
 
 interface Props {
   
