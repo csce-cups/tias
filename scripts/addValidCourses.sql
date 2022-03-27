@@ -15,21 +15,21 @@ SELECT DISTINCT
 	(section_meeting.end_time - section_meeting.start_time) AS duration
 FROM person_availability
 JOIN section_meeting ON
-person_availability.weekday = section_meeting.weekday
-AND person_availability.start_time < section_meeting.start_time
-AND person_availability.end_time > section_meeting.end_time
-AND section_meeting.meeting_type = 'Laboratory'
-JOIN qualification ON
-qualified = 'true' AND
-qualification.person_id = "P_person_id" AND
-qualification.course_id = (SELECT course_section.course_id FROM course_section WHERE course_section.section_id = section_meeting.section_id)
-JOIN section_assignment_preference ON
-section_assignment_preference.person_id = "P_person_id" AND
-section_assignment_preference.section_id = section_meeting.section_id
-JOIN course ON
-course.course_id = qualification.course_id
+	person_availability.weekday = section_meeting.weekday
+	AND person_availability.start_time < section_meeting.start_time
+	AND person_availability.end_time > section_meeting.end_time
+	AND section_meeting.meeting_type = 'Laboratory'
 JOIN course_section ON
-course_section.section_id = section_meeting.section_id
+	course_section.section_id = section_meeting.section_id
+JOIN qualification ON
+	qualified = 'true' AND
+	qualification.person_id = "P_person_id" AND
+	qualification.course_id IN (SELECT course_section.course_id FROM course_section WHERE course_section.section_id = section_meeting.section_id)
+JOIN course ON
+	course.course_id = course_section.course_id
+LEFT OUTER JOIN section_assignment_preference ON
+	section_assignment_preference.person_id = "P_person_id" AND
+	section_assignment_preference.section_id = section_meeting.section_id
 WHERE person_availability.person_id = "P_person_id"
 ORDER BY section_meeting.weekday, section_meeting.start_time, duration, course.department, course.course_number, course_section.section_number
 $BODY$;
