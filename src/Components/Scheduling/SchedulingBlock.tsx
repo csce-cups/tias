@@ -50,14 +50,29 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, s
 
   if (spacer === true) return <div className="block spacer" style={isVisible}/>
 
+  const hats = () => {
+    if (linkIDs === null) return <></>
+    else if (linkIDs.length === 0) {
+      return (
+        <div className="hat-container alert">
+          < Hat linkID={-1} />
+        </div>
+      )
+    } else {
+      return (
+        <div className="hat-container">
+          {linkIDs?.map(id => (< Hat key={id} linkID={id} />))}
+        </div>
+      )
+    }
+  }
+
   return (
     <div className="block" 
       title={`${course_instance!.course_number}-${course_instance!.section_number}`} 
       style={{backgroundColor: colors.get(course_instance!.course_number), ...isVisible}}
     >
-      <div className="hat-container">
-        {linkIDs?.map(id => (< Hat key={id} linkID={id} />))}
-      </div>
+      { hats() }
       <div className="fill"/>
       <div className="block-text">
         {course_instance!.course_number} {course_instance!.section_number}

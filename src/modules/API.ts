@@ -167,9 +167,9 @@ class API {
 	}
 
 	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
-		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/session', {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/schedule-peer-teachers', {
 			method: 'POST',
-			body: JSON.stringify({ "peerTeachers": peer_teachers})
+			body: JSON.stringify({"peerTeachers": peer_teachers})
 		}).then(sessionResponse => sessionResponse.json())
 		  .then(responseData => {
 			console.log(responseData);
@@ -294,7 +294,7 @@ class API {
 	static runSchedulerDummy = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
-				let resp = JSON.parse(`{ "scheduled": {"1":[17],"129":[9],"66":[9],"3":[14,16],"4":[14],"71":[4],"72":[12],"78":[8],"79":[8,12],"80":[2,15],"16":[3],"81":[2,15],"88":[17],"32":[1,16],"96":[5],"97":[5],"43":[1],"109":[6],"110":[6],"112":[13,10],"48":[11],"113":[13,10],"50":[11],"127":[3],"63":[4]}, "unscheduled": [7] }`)
+				let resp = JSON.parse(`{ "scheduled": {"1":[17],"129":[9, 10],"66":[9, 10],"3":[14,16],"4":[14],"71":[4],"72":[12],"78":[8],"79":[8,12],"80":[2,15],"16":[3],"81":[2,15],"88":[17],"32":[1,16],"96":[5],"97":[5],"43":[1],"109":[6],"110":[6],"112":[13,10],"48":[11],"113":[13,10],"50":[11],"127":[3],"63":[4]}, "unscheduled": [7] }`)
 				let map = new Map<string, number[]>();
 				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
 				resp.scheduled = map;
