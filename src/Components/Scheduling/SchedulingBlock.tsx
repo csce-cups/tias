@@ -23,7 +23,7 @@ colors.set(315, '#6e438c');
 interface Props {
   course_instance?: APICourseBlock,
   visible: boolean,
-  linkIDs: number[],
+  linkIDs: number[] | null,
   spacer?: boolean,
   size?: string,
   inline?: boolean,
@@ -56,7 +56,7 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, s
       style={{backgroundColor: colors.get(course_instance!.course_number), ...isVisible}}
     >
       <div className="hat-container">
-        {linkIDs.map(id => (< Hat key={id} linkID={id} />))}
+        {linkIDs?.map(id => (< Hat key={id} linkID={id} />))}
       </div>
       <div className="fill"/>
       <div className="block-text">

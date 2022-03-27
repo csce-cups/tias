@@ -9,6 +9,7 @@ export const createDate = (datestring: string): Date => {
     return d;
 }
 
+let i = 0;
 class BlockFormer {
     static MW_classlength = 50;
     static TH_classlength = 75;
@@ -19,9 +20,11 @@ class BlockFormer {
         course_number: course,
         section_number: section,
         start_time: start,
+        section_id: i++,
         end_time: end,
         weekday: day,
-        place: place
+        place: place,
+        scheduled: null
     })
 
     static starts = {
@@ -123,20 +126,24 @@ class BlockFormer {
                 department: "CSCE",
                 course_number: 121,
                 section_number: 500,
+                section_id: 1000,
                 start_time: BlockFormer.starts.MW_A2,
                 end_time: BlockFormer.setTimes.MW_A2_short,
                 weekday: "none",
-                place: "nowhere"
+                place: "nowhere",
+                scheduled: null
             },
 
             {
                 department: "CSCE",
                 course_number: 221,
                 section_number: 501,
+                section_id: 1500,
                 start_time: new Date(BlockFormer.starts.MW_A2.getTime() + 5 * 60 * 1000),
                 end_time: new Date(BlockFormer.setTimes.MW_A2_short.getTime() + 5 * 60 * 1000),
                 weekday: "none",
-                place: "nowhere"
+                place: "nowhere",
+                scheduled: null
             },
 
             BlockFormer.generateBlock(315, 104, BlockFormer.starts.MW_A3, BlockFormer.setTimes.MW_A3_extralong, "none", "nowhere"),

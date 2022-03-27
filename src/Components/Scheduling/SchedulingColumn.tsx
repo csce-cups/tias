@@ -108,9 +108,6 @@ const placeBlocks = (data: APICourseBlock[], filter: any) => {
   return returns;
 }
 
-const r = () => Math.floor(Math.random() * 40);
-const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
-
 // Requires input to be pre-layered
 const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: any): JSX.Element[] => {
   return (
@@ -121,7 +118,7 @@ const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: any): JSX.E
         top: `${start_time_to_top(layer[0].start_time)}%`
       }}>
         { layer.map((block: APICourseBlock) => (
-          < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+          < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={block.scheduled} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
         ))}
       </div>
     )
@@ -236,7 +233,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
             }
             return < SchedulingBlock spacer={true} size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
           })}
-          < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} key={`block-${JSON.stringify(block)}`}/>
+          < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={block.scheduled} key={`block-${JSON.stringify(block)}`}/>
           { rightSpacers.render }
         </div>
       )
