@@ -50,7 +50,9 @@ const prefetchDBInfo = async () => {
 };
 
 const queryDB = async (dbQuery, params) => {
-  await prefetchDBInfo(dbQuery, params);
+    if (dbEndpoint == null || dbName == null || dbUsername == null || dbPass == null) {
+        await prefetchDBInfo(dbQuery, params);
+    }
   
   const client = new Client({
     user: dbUsername,
@@ -65,6 +67,7 @@ const queryDB = async (dbQuery, params) => {
   return await client
     .query(dbQuery, params)
     .then((dbResponse) => {
+        client.end();
         return dbResponse.rows;
     })
     .catch((error) => console.error(error));
