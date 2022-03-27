@@ -9,18 +9,15 @@ const hours = 12;
 // const start = new Date(12*24*60*60*1000);
 let start = new Date(0);
 start.setHours(8);
-interface CourseInstance{
-  department: string
-	course_number: number
-	section_numbers: Array<number>
-	start_time: Date
-	end_time: Date
-	weekday: string
-	place: string
+
+export interface CourseInstance extends APICourseBlock {
+	section_numbers: number[]
 }
+
 interface Props {
   filter: Object //int -> bool
 }
+
 const cmp = (course1:CourseInstance, course2:APICourseBlock, debug:boolean) => {
   // if(debug && course1.course_number!==course2.course_number){
   //   console.log({course1,course2,t:"DIFFER NUM"})
@@ -58,6 +55,7 @@ const compressValid = (courses: Array<APICourseBlock> | null, debug: boolean) =>
     filtered.push({ //make object from current section to push
       department: c.department,
       course_number: c.course_number,
+      section_number: -1,
       section_numbers: [c.section_number],
       start_time: c.start_time,
       end_time: c.end_time,

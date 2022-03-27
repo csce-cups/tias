@@ -1,19 +1,13 @@
 import React, { FC } from 'react'
-interface CourseInstance{
-  department: string
-	course_number: number
-	section_numbers: Array<number>
-	start_time: Date
-	end_time: Date
-	weekday: string
-	place: string
-}
-interface Section extends CourseInstance{
+import { CourseInstance } from './SchedulingRender'
+
+interface Section extends CourseInstance {
   valid: boolean
 }
+
 interface Props{
-    sections: Section
-    title: String
+  sections: Section
+  title: String
 }
 
 const days = ["Sun", "M","T","W","H","F","Sat"];

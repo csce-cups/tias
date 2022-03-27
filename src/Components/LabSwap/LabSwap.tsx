@@ -3,19 +3,11 @@ import {CourseBlock} from './CourseBlock'
 import {Selection} from './Selection'
 import { SchedulingWindow } from './SchedulingWindow'
 import { Button } from '@material-ui/core'
+import { CourseInstance } from './SchedulingRender'
 //for main component
 //needs selection confirmation window
 //submition ability
-//render view
-interface CourseInstance{
-  department: string
-	course_number: number
-	section_numbers: Array<number>
-	start_time: Date
-	end_time: Date
-	weekday: string
-	place: string
-}
+//render viewce: string
 
 export const selectFunction = createContext<any>(null);
 export const LabSwap = () => {

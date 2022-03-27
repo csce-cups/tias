@@ -2,16 +2,9 @@ import { FormControl, InputLabel, Menu, MenuItem, Select, SelectChangeEvent } fr
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import React, { FC, useState, useContext } from 'react'
 import { selectFunction } from './LabSwap';
+import { CourseInstance } from './SchedulingRender'; 
 import "../common.scss"
-interface CourseInstance{
-  department: string
-	course_number: number
-	section_numbers: Array<number>
-	start_time: Date
-	end_time: Date
-	weekday: string
-	place: string
-}
+
 const colors = new Map()
 colors.set(121, '#713275');
 colors.set(221, '#443989');
@@ -20,6 +13,7 @@ colors.set(312, '#4F8970');
 colors.set(313, '#2B6737');
 colors.set(314, '#677D5D');
 colors.set(315, '#394708');
+
 interface Props {
   linkIDs?: number[],
   spacer?: boolean,
@@ -28,6 +22,7 @@ interface Props {
   course_instance: CourseInstance,
   visible: boolean,
 }
+
 type stringEvent = SelectChangeEvent<string>;
 export const CourseBlock: FC<Props> = ({course_instance, visible, spacer, size, inline}) => {
   //need onclick to store selection in parent class
