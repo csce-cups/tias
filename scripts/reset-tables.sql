@@ -23,7 +23,7 @@ CREATE TABLE person (
 	last_name VARCHAR NOT NULL,
 	profile_photo_url VARCHAR NOT NULL,
 	desired_number_assignments INTEGER NOT NULL DEFAULT 2,
-	peer_teacher BOOLEAN,
+	peer_teacher BOOLEAN DEFAULT 'true',
 	teaching_assistant BOOLEAN,
 	administrator BOOLEAN,
 	professor BOOLEAN
@@ -67,7 +67,7 @@ DROP TABLE IF EXISTS qualification CASCADE;
 CREATE TABLE qualification (
 	person_id INTEGER REFERENCES person(person_id),
 	course_id INTEGER REFERENCES course(course_id),
-	qualified BOOLEAN,
+	qualified BOOLEAN NOT NULL DEFAULT 'false',
 	PRIMARY KEY(person_id, course_id)
 );
 
