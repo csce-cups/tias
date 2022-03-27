@@ -10,7 +10,7 @@ const hours = 12;
 let start = new Date(0);
 start.setHours(8);
 
-export interface CourseInstance extends APICourseBlock {
+export interface CompressedCourseBlock extends APICourseBlock {
 	section_numbers: number[]
 }
 
@@ -18,7 +18,7 @@ interface Props {
   filter: Object //int -> bool
 }
 
-const cmp = (course1:CourseInstance, course2:APICourseBlock, debug:boolean) => {
+const cmp = (course1:CompressedCourseBlock, course2:APICourseBlock, debug:boolean) => {
   // if(debug && course1.course_number!==course2.course_number){
   //   console.log({course1,course2,t:"DIFFER NUM"})
   // }
@@ -31,7 +31,7 @@ const cmp = (course1:CourseInstance, course2:APICourseBlock, debug:boolean) => {
   return course1.course_number === course2.course_number && course1.start_time.getTime()===course2.start_time.getTime() && course1.end_time.getTime()===course2.end_time.getTime();
 }
 const compressValid = (courses: Array<APICourseBlock> | null, debug: boolean) => {
-  let filtered: Array<CourseInstance> = [];
+  let filtered: Array<CompressedCourseBlock> = [];
   if (courses === null) return filtered;
 
   courses.sort((a, b) => {

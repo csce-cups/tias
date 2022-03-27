@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
-import { CourseInstance } from './SchedulingRender'
+import { CompressedCourseBlock } from './SchedulingRender'
 
-interface Section extends CourseInstance {
+interface Section extends CompressedCourseBlock {
   valid: boolean
 }
 

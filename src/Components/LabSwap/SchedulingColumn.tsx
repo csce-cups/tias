@@ -4,7 +4,7 @@ import { CourseBlock } from './CourseBlock';
 import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
 import back_arrow from '../../assets/back_arrow_icon.svg'
-import { CourseInstance } from './SchedulingRender'
+import { CompressedCourseBlock } from './SchedulingRender'
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -114,9 +114,9 @@ const r = () => Math.floor(Math.random() * 40);
 const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
 
 // Requires input to be pre-layered
-const placeInlineBlocks = (layered_data: APICourseBlock[][] | CourseInstance[][], filter: any, compress: boolean): JSX.Element[] => {
+const placeInlineBlocks = (layered_data: APICourseBlock[][] | CompressedCourseBlock[][], filter: any, compress: boolean): JSX.Element[] => {
   return (
-    layered_data.map((layer: APICourseBlock[] | CourseInstance[]) => (
+    layered_data.map((layer: APICourseBlock[] | CompressedCourseBlock[]) => (
       <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(layer)}`} style={{ 
         padding: 0, 
         height: `${time_to_height(layer[0].start_time, layer[0].end_time)}%`,
@@ -124,7 +124,7 @@ const placeInlineBlocks = (layered_data: APICourseBlock[][] | CourseInstance[][]
       }}>
         { (compress)?
           layer.map((block: any) => ( // We know it's a CourseInstance at this point, type script just doesn't know yet
-            < CourseBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+            < CourseBlock course_instance={block} visible={filter[block.course_number]} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
           ))
           :
           layer.map((block: APICourseBlock) => (
@@ -245,7 +245,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any, compress: b
             return < SchedulingBlock spacer={true} size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
           })}
           { (compress)?
-            < CourseBlock size={calcSelf()} course_instance={block as CourseInstance} visible={filter[block.course_number]} key={`block-${JSON.stringify(block)}`}/>
+            < CourseBlock size={calcSelf()} course_instance={block as CompressedCourseBlock} visible={filter[block.course_number]} key={`block-${JSON.stringify(block)}`}/>
             :
             < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} key={`block-${JSON.stringify(block)}`}/>
           }

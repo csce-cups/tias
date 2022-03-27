@@ -3,7 +3,7 @@ import {CourseBlock} from './CourseBlock'
 import {Selection} from './Selection'
 import { SchedulingWindow } from './SchedulingWindow'
 import { Button } from '@material-ui/core'
-import { CourseInstance } from './SchedulingRender'
+import { CompressedCourseBlock } from './SchedulingRender'
 //for main component
 //needs selection confirmation window
 //submition ability
@@ -13,23 +13,22 @@ export const selectFunction = createContext<any>(null);
 export const LabSwap = () => {
   const [requests, setRequests] = useState<any>({valid: false})
   const [offers, setOffers] = useState<any>({valid: false})
-  const selectSection = (course: CourseInstance, section: number)=>{
+  const selectSection = (course: CompressedCourseBlock, section: number)=>{
     let data = {
       valid: true,
-      ...course,
+      ...course
     }
-    data.section_numbers=[section] //only include chosen course
-    if(offers.valid){
-      setRequests(data);
-    }else{
-      setOffers(data);
-    }
+
+    data.section_numbers = [section] // only include chosen course
+    if (offers.valid) setRequests(data);
+    else setOffers(data);
   }
   
-  const submitTrade = ()=>{
+  const submitTrade = () => {
     setRequests({valid: false});
     setOffers({valid: false});
   }
+  
   return (
     <>
       <div className="vstack sidebar"> {/*for selection and submit button */}
