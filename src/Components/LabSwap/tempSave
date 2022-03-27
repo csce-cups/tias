@@ -1,0 +1,21 @@
+const cmp = (course1:any, course2:any) => {
+    return course1.course===course2.course && course1.start===course2.start&&course1.end===course2.end;
+  }
+  const filterValid = (courses:Array<any>) =>{
+    let filtered: Array<any> = [];
+    let fidx = -1;
+    let cidx = 0;
+    while(cidx<courses.length){
+      filtered.push({...courses[cidx]});
+      fidx++;
+      filtered[fidx].sections=[courses[cidx].section];
+      cidx++;
+      // console.log(filtered[fidx])
+      while(cidx<courses.length && cmp(filtered[fidx],courses[cidx])){ //while the next course in the array is compatiable with the current one
+        filtered[fidx].sections.push(courses[cidx].section)
+        cidx++;
+      }
+    }
+    return filtered
+  }
+  

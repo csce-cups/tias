@@ -1,8 +1,21 @@
 import React, { FC } from 'react'
+interface CourseInstance{
+  department: string
+	course_number: number
+	section_numbers: Array<number>
+	start_time: Date
+	end_time: Date
+	weekday: string
+	place: string
+}
+interface Section extends CourseInstance{
+  valid: boolean
+}
 interface Props{
-    sections: any
+    sections: Section
     title: String
 }
+
 const days = ["Sun", "M","T","W","H","F","Sat"];
 export const Selection: FC<Props> = ({title, sections}) => {
   //maybe make a colored box display depending on
@@ -24,13 +37,13 @@ export const Selection: FC<Props> = ({title, sections}) => {
 
     info=(<div>
     <p>
-      Course: {sections.course}
+      Course: {sections.course_number}
     </p>
     <p>
-      Section: {sections.section}
+      Section: {sections.section_numbers[0]}
     </p>
     <p>
-      Meeting Time: {days[sections.start.getDay()]} {sections.start.getHours()}:{sections.start.getMinutes()}-{sections.end.getHours()}:{sections.end.getMinutes()}
+      Meeting Time: {days[sections.start_time.getDay()]} {sections.start_time.getHours()}:{sections.start_time.getMinutes()}-{sections.end_time.getHours()}:{sections.end_time.getMinutes()}
     </p>
     <hr/>
   </div>)

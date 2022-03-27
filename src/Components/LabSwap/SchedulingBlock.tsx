@@ -1,31 +1,43 @@
 import React, { FC } from 'react'
-import { Dot } from '../Misc/Dot'
+import { Hat } from '../Misc/Hat';
+import { APICourseBlock } from '../../modules/API';
 
 const colors = new Map()
-colors.set(121, '#0086B6');
-colors.set(221, '#434F6F');
-colors.set(312, 'white');
-colors.set(313, '#405AB9');
-colors.set(314, 'white');
-colors.set(315, '#009489');
-
-interface CourseInstance { // Results of a join between course, course_section, and section_meetings
-  course: number,   // Course_Number from Course
-  section: number,  // Section_Number from Course_Section
-  start: Date,      // Start_Time from Section_Meeting
-  end: Date         // End_Time from Section_Meeting 
-  // If the API returns more information from this I can add them to the interface here
-}
+colors.set(121, '#713275');
+colors.set(221, '#443989');
+colors.set(222, '#4C698A');
+colors.set(312, '#4F8970');
+colors.set(313, '#2B6737');
+colors.set(314, '#677D5D');
+colors.set(315, '#394708');
+// colors.set(121, '#0086B6');
+// colors.set(221, '#434F6F');
+// colors.set(222, '#5358AE');
+// colors.set(312, '#568C6D');
+// colors.set(313, '#045B47');
+// colors.set(314, '#00823D');
+// colors.set(315, '#009489');
 
 interface Props {
-  course_instance: CourseInstance,
-  visible: boolean
+  course_instance?: APICourseBlock,
+  visible: boolean,
+  linkIDs: number[],
+  spacer?: boolean,
+  size?: string,
+  inline?: boolean,
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, visible}) => {
+export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, spacer, size, inline}) => {
+  let flex: string | undefined = '0 0 0';
+  if (!visible && inline === true) flex = '0 0 auto';
+  else if (size && visible && size === 'auto') flex = `1 1 auto`
+  else if (size && visible) flex = `0 0 ${size}`
+  else if (visible && spacer) flex = '1 1 auto'
+  else if (visible) flex = undefined
+
   const isVisible = {
-    width: visible? undefined : 0,
-    flex: visible? undefined : '0 0 auto',
+    width: (visible)? undefined : 0,
+    flex: flex,
     margin: visible? undefined : 0
   }
 
@@ -34,16 +46,19 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible}) => {
     display: visible? undefined : 'none'
   }
 
+  if (spacer === true) return <div className="block spacer" style={isVisible}/>
+
   return (
     <div className="block" 
-      title={`${course_instance.course}-${course_instance.section}`} 
-      style={{backgroundColor: colors.get(course_instance.course), ...isVisible}}
+      title={`${course_instance!.course_number}-${course_instance!.section_number}`} 
+      style={{backgroundColor: colors.get(course_instance!.course_number), ...isVisible}}
     >
-      <div className="block-indicator slim" style={isContentVisible}>
-        < Dot linkID={Math.floor(Math.random()*20)}/> {/* TODO: Random Keys to be replaced }*/}
+      <div className="hat-container">
+        {linkIDs.map(id => (< Hat key={id} linkID={id} />))}
       </div>
-      <div className="block-text" style={isContentVisible}>
-        {course_instance.course}-{course_instance.section}
+      <div className="fill"/>
+      <div className="block-text">
+        {course_instance!.course_number} {course_instance!.section_number}
       </div>
     </div>
   )

@@ -12,7 +12,7 @@ const formatAMPM = (date: Date, offset: number) => {
   var ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? '0'+minutes : minutes;
+  minutes = minutes < 10 ? '0' + minutes : minutes;
   var strTime = hours + ':' + minutes + ' ' + ampm;
   return strTime;
 }
@@ -21,7 +21,8 @@ export const SchedulingTimes: FC<Props> = ({hours, start}) => {
   let times = [];
   for (let i = 0; i < hours; i++) {
     // Needs a key
-    times[i] = <div className="divider hover-divider">{formatAMPM(start, i)}</div>;
+    const time = formatAMPM(start, i);
+    times[i] = <div className="divider hover-divider" key={`SchedulingTimes-${time}`}>{time}</div>;
   }
 
   return (

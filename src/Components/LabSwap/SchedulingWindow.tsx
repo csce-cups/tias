@@ -1,23 +1,17 @@
-import React, { FC, SetStateAction, useState } from 'react'
+import React, { FC, useState } from 'react'
 import { SchedulingHeader } from './SchedulingHeader'
 import { SchedulingRender } from './SchedulingRender'
 import { SchedulingFilter } from './SchedulingFilter'
-interface CourseInstance { // Results of a join between course, course_section, and section_meetings
-  course: number,   // Course_Number from Course
-  section: number,  // Section_Number from Course_Section
-  start: Date,      // Start_Time from Section_Meeting
-  end: Date         // End_Time from Section_Meeting 
-  sections: Array<number>
-  // If the API returns more information from this I can add them to the interface here
-}
+
 interface Props {
-  select: any
+  
 }
 
-export const SchedulingWindow: FC<Props> = ({select}) => {
+export const SchedulingWindow: FC<Props> = () => {
   const [filter, setFilter] = useState({
     121: true,
     221: true,
+    222: true,
     312: true,
     314: true,
     313: true,
@@ -27,7 +21,7 @@ export const SchedulingWindow: FC<Props> = ({select}) => {
   return (
     <div className="vstack main">
       < SchedulingHeader />
-      < SchedulingRender filter={filter} select={select}/>
+      < SchedulingRender filter={filter} />
       < SchedulingFilter filter={filter} setFilter={setFilter}/>
     </div>
   )

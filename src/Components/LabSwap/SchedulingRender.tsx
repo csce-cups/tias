@@ -1,57 +1,72 @@
-import React, {FC, SetStateAction} from 'react'
+import React, {FC} from 'react'
 import { SchedulingColumn } from './SchedulingColumn';
 import { SchedulingTimes } from './SchedulingTimes';
-import BlockFormer from './BlockFormer';
+import BlockFormer from '../../modules/BlockFormer';
+import { contexts } from '../APIContext';
+import { APICourseBlockWeek, APICourseBlock } from '../../modules/API';
 
-const hours = 11;
+const hours = 12;
 // const start = new Date(12*24*60*60*1000);
 let start = new Date(0);
 start.setHours(8);
-interface CourseInstance { // Results of a join between course, course_section, and section_meetings
-  course: number,   // Course_Number from Course
-  section: number,  // Section_Number from Course_Section
-  start: Date,      // Start_Time from Section_Meeting
-  end: Date         // End_Time from Section_Meeting 
-  sections: Array<number>
-  // If the API returns more information from this I can add them to the interface here
+interface CourseInstance{
+  department: string
+	course_number: number
+	section_numbers: Array<number>
+	start_time: Date
+	end_time: Date
+	weekday: string
+	place: string
 }
 interface Props {
-  filter: any, //int -> bool
-  select: any
+  filter: Object //int -> bool
 }
+const cmp = (course1:CourseInstance, course2:APICourseBlock) => {
+  return course1.course_number===course2.course_number && course1.start_time===course2.start_time&&course1.end_time===course2.end_time;
+}
+const filterValid = (courses:Array<APICourseBlock> | null) =>{
+  let filtered: Array<CourseInstance> = [];
+  let fidx = -1;
+  let cidx = 0;
+  while(courses!==null && cidx<courses.length){
+    let c = courses[cidx];
+    filtered.push({
+      department: c.department,
+      course_number: c.course_number,
+      section_numbers: [c.section_number],
+      start_time: c.start_time,
+      end_time: c.end_time,
+      weekday: c.weekday,
+      place: c.place
 
-export const SchedulingRender: FC<Props> = ({filter, select}) => {
-  console.log(start);
-  const cmp = (course1:any, course2:any) => {
-    return course1.course===course2.course && course1.start===course2.start&&course1.end===course2.end;
-  }
-  const filterValid = (courses:Array<any>) =>{
-    let filtered: Array<any> = [];
-    let fidx = -1;
-    let cidx = 0;
-    while(cidx<courses.length){
-      filtered.push({...courses[cidx]});
-      fidx++;
-      filtered[fidx].sections=[courses[cidx].section];
+    });
+    fidx++;
+    filtered[fidx].section_numbers=[courses[cidx].section_number];
+    cidx++;
+    // console.log(filtered[fidx])
+    while(courses!==null && cidx<courses.length && cmp(filtered[fidx],courses[cidx])){ //while the next course in the array is compatiable with the current one
+      filtered[fidx].section_numbers.push(courses[cidx].section_number)
       cidx++;
-      // console.log(filtered[fidx])
-      while(cidx<courses.length && cmp(filtered[fidx],courses[cidx])){ //while the next course in the array is compatiable with the current one
-        filtered[fidx].sections.push(courses[cidx].section)
-        cidx++;
-      }
     }
-    return filtered
   }
-  // console.log(filterValid(BlockFormer.samples.M_schedule));
+  return filtered
+}
+export const SchedulingRender: FC<Props> = ({filter}) => {
   return (
     <div className="render-container">
       < SchedulingTimes hours={hours} start={start}/>
       <div className="render-content">
-        < SchedulingColumn hours={hours} day={'Monday'} blocks={filterValid(BlockFormer.samples.M_schedule)} filter={filter} select={select}/>
-        < SchedulingColumn hours={hours} day={'Tuesday'} blocks={filterValid(BlockFormer.samples.TH_shcedule)} filter={filter} select={select}/>
-        < SchedulingColumn hours={hours} day={'Wednesday'} blocks={filterValid(BlockFormer.samples.W_schedule)} filter={filter} select={select}/>
-        < SchedulingColumn hours={hours} day={'Thursday'} blocks={filterValid(BlockFormer.samples.TH_shcedule)} filter={filter} select={select}/>
-        < SchedulingColumn hours={hours} day={'Friday'} blocks={filterValid(BlockFormer.samples.F_schedule)} filter={filter} end={true} select={select}/>
+        < contexts.blocks.Consumer >
+          { (blocks: APICourseBlockWeek) => (
+            <>
+              < SchedulingColumn hours={hours} filter={filter} day={'Monday'} blocks={filterValid(blocks.Monday)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Tuesday'} blocks={filterValid(blocks.Tuesday)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Wednesday'} blocks={filterValid(blocks.Wednesday)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Thursday'} blocks={filterValid(blocks.Thursday)} />
+              < SchedulingColumn hours={hours} filter={filter} day={'Friday'} blocks={filterValid(blocks.Friday)} />
+            </>
+          )}
+        </contexts.blocks.Consumer>
       </div>
     </div>
   )
