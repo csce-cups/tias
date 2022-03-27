@@ -11,7 +11,7 @@ import { APIContext } from '../Components/APIContext';
 export const App = () => {
   return (
     <div className="App">
-      < APIContext test={false}>
+      < APIContext test={true}>
         <Router>
           < NavBar />
           <Routes>

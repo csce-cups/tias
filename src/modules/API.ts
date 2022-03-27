@@ -65,13 +65,13 @@ export interface APIUserQualification {
 export interface APIContents {
 	employees: APIPerson[]
 	blocks: APICourseBlockWeek,
-	userQuals: any
+	userQuals: APIUserQualification[]
 }
 
 export interface APIReturn {
 	employees: Promise<APIPerson[]>
 	blocks: Promise<APICourseBlockWeek>,
-	userQuals: Promise<any>
+	userQuals: Promise<APIUserQualification[]>
 }
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
@@ -112,7 +112,7 @@ class API {
 		return {
 			employees: API.fetchPTListDummy(args?.employees),
 			blocks: API.fetchCourseBlocksDummy(),
-			userQuals: API.fetchUserQualifications(id)
+			userQuals: API.fetchUserQualificationsDummy(id)
 		}
 	}
 
@@ -251,18 +251,24 @@ class API {
 		})
 	}
 
-	private static fetchUserQualificationsDummy = async (user_id?: number): Promise<any> => {
+	private static fetchUserQualificationsDummy = async (user_id?: number): Promise<APIUserQualification[]> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve([
-					{course_id: "121", qualified: true},
-					{course_id: "221", qualified: false},
-					{course_id: "222", qualified: false},
-					{course_id: "312", qualified: true},
-					{course_id: "313", qualified: true},
-					{course_id: "314", qualified: false},
-					{course_id: "315", qualified: true},
+					{course_id: 1, course_number: "110", qualified: true},
+					{course_id: 2, course_number: "111", qualified: false},
+					{course_id: 3, course_number: "120", qualified: false},
+					{course_id: 4, course_number: "121", qualified: false},
+					{course_id: 5, course_number: "206", qualified: false},
+					{course_id: 6, course_number: "221", qualified: false},
+					{course_id: 7, course_number: "222", qualified: false},
+					{course_id: 8, course_number: "312", qualified: false},
+					{course_id: 9, course_number: "313", qualified: false},
+					{course_id: 10, course_number: "314", qualified: true},
+					{course_id: 11, course_number: "315", qualified: true},
+					{course_id: 11, course_number: "331", qualified: true}
+
 				])
 			}, 800);
 		})
