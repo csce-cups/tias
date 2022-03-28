@@ -108,3 +108,6 @@ dist
 
 # Node
 package-lock.json
+
+# VS Code Ignores
+.vscode

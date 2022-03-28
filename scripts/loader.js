@@ -83,7 +83,9 @@ const update_course_sections = (
     section_id: section_id,
     person_id_professor: null,
     section_number: section_number,
-    peer_teachable: null,
+    placeholder_professor_name: null,
+    capacity_peer_teachers: null,
+    capacity_teaching_assistants: null,
     weekday: weekday_map[weekday],
     start_time: to_db_time(start_time),
     end_time: to_db_time(end_time),
@@ -139,7 +141,7 @@ const parse_time = (time_str, time_zone_offset) => {
   let hour = +time_str.substring(0, time_colon);
   let minute = +time_str.substring(time_colon + 1, time_space);
   let meridiem = time_str.substring(time_space + 1);
-  if (meridiem === "PM") hour += 12;
+  if ((meridiem === "PM") && (hour !== 12)) hour += 12;
 
   return `${(hour + time_zone_offset) % 24}:${minute}`;
 };
@@ -153,7 +155,7 @@ client
       `
         SELECT
           course.course_id, course.department, course.course_number, course.course_name,
-          course_section.section_id, course_section.person_id_professor, course_section.section_number, course_section.peer_teachable,
+          course_section.section_id, course_section.person_id_professor, course_section.section_number, course_section.placeholder_professor_name, course_section.capacity_peer_teachers, course_section.capacity_teaching_assistants,
           section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, section_meeting.place, section_meeting.meeting_type
         FROM course
         LEFT OUTER JOIN course_section
@@ -212,6 +214,8 @@ client
           let end_time = `${line[EndTime]}`;
           let place = line[Room];
 
+          let instructor = line[Instructor];
+
           start_time = parse_time(start_time, time_zone);
           end_time = parse_time(end_time, time_zone);
 
@@ -234,11 +238,11 @@ client
             let section_id = (
               await loader(
                 `
-                  INSERT INTO course_section (course_id, section_number)
-                  VALUES ($1, $2)
+                  INSERT INTO course_section (course_id, section_number, placeholder_professor_name)
+                  VALUES ($1, $2, $3)
                   RETURNING section_id
                 `,
-                [filtered_sections[0].course_id, section_number]
+                [filtered_sections[0].course_id, section_number, instructor]
               )
             ).rows[0].section_id;
             add_section_meetings(
