@@ -20,10 +20,8 @@ export const GenerateButton = () => {
       });
 
       // Update if the employees are scheduled or not
-      console.log(blocks);
       employees.forEach((e, i) => {
         employees[i].isScheduled![1](resp.unscheduled.indexOf(e.person_id) === -1)
-        console.log({name: e.first_name, id: e.person_id, s: employees[i].isScheduled![0], r: resp.unscheduled});
       });
 
       setBlocks({Monday: allBlocks[0], Tuesday: allBlocks[1], Wednesday: allBlocks[2], Thursday: allBlocks[3], Friday: allBlocks[4]});

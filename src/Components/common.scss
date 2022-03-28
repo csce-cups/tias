@@ -378,6 +378,10 @@ $day_divider_size : 1.5px;
 			display: flex;
 			align-items: flex-end;
 		}
+
+		.block-detail {
+			display: none;
+		}
 	}
 
 	.block.spacer {
@@ -404,6 +408,20 @@ $day_divider_size : 1.5px;
 		visibility: hidden;
 		max-height: 0;
 	}
+}
+
+.column.detailed .block-text {
+	display: none;
+}
+
+.column.detailed .block-detail {
+	color: $light;
+	overflow: hidden;
+	padding: 0 0 5px 5px;
+	flex: 1 1 auto;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-end;
 }
 
 .fill {

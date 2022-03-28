@@ -80,6 +80,14 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, s
       <div className="block-text">
         {course_instance!.course_number} {course_instance!.section_number}
       </div>
+      <div className="vstack block-detail">
+        <div>
+          {course_instance!.department} {course_instance!.course_number}-{course_instance!.section_number}
+        </div>
+        <div>
+          {course_instance!.place}
+        </div>
+      </div>
     </div>
   )
 }
