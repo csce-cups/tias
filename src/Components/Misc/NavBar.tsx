@@ -9,7 +9,7 @@ export const NavBar = () => {
       <Link to='/' className="left element major" style={{textDecoration: 'none'}}>TIAS</Link>
       <Link to='Profile' className="left element">Profile</Link>
       <Link to='Scheduling' className="left element">Scheduling</Link>
-      <div className="left element">LabSwap™</div>
+      <Link to='Labswap' className="left element">LabSwap™</Link>
       <div className="fill element"></div>
       < GoogleButton />
     </div>

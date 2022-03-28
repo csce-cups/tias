@@ -1,12 +1,14 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
+import { APIPerson } from '../../modules/API'
 import { Dot } from '../Misc/Dot'
 
 interface Props {
-	element: string, // The body of the list element
+	employee: APIPerson
   linkID: number
 }
 
-export const EmployeeRow: FC<Props> = ({element, linkID}) => {
+export const EmployeeRow: FC<Props> = ({employee, linkID}) => {
+  employee.isScheduled = useState<null| boolean>(null)
   return (
     <>
       <div className="hstack">
@@ -14,10 +16,10 @@ export const EmployeeRow: FC<Props> = ({element, linkID}) => {
           <input type="checkbox"/>
         </div>
         <div className="element label">
-         {element}
+         {employee.first_name} {employee.last_name}
         </div>
         <div className="element right">
-          < Dot linkID={linkID} />
+          < Dot isScheduled={employee.isScheduled![0]} linkID={linkID} />
         </div>
       </div>
       <div className="hr-container">
