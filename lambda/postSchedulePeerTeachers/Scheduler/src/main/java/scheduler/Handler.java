@@ -10,7 +10,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
-import software.amazon.awssdk.services.ssm.model.SsmException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -58,13 +57,14 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
-        GetParameterRequest parameterRequest = GetParameterRequest.builder()
-                .name("/tias/prod/db-password")
-                .withDecryption(true)
-                .build();
-        SsmClient ssmclient = SsmClient.create();
-        GetParameterResponse parameterResult = ssmclient.getParameter(parameterRequest);
-        String dbpassword = parameterResult.parameter().value();
+        // GetParameterRequest parameterRequest = GetParameterRequest.builder()
+        //         .name("/tias/prod/db-password")
+        //         .withDecryption(true)
+        //         .build();
+        // SsmClient ssmclient = SsmClient.create();
+        // GetParameterResponse parameterResult = ssmclient.getParameter(parameterRequest);
+        // String dbpassword = parameterResult.parameter().value();
+        String dbpassword = "admin";
 
         HashMap<String, ArrayList<Double>> eventBody = gson.fromJson(event.getBody(), HashMap.class);
 
@@ -243,10 +243,6 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             people.get(rs.getInt("person_id")).addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
         }
 
-        for (Person person : people.values()) {
-            person.sortPreferences();
-        }
-
         rs.close();
         st.close();
 
@@ -267,9 +263,11 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     static void getSections() throws SQLException {
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM course_section");
+        HashSet<Integer> onlineCourses = new HashSet<>();
         while (rs.next())
         {
-            sections.put(rs.getInt("section_id"), new Section(rs.getInt("course_id"), rs.getString("section_number"), rs.getInt("capacity_peer_teachers"), rs.getInt("capacity_teaching_assistants")));
+            sections.put(rs.getInt("section_id"), new Section(rs.getInt("section_id"), rs.getInt("course_id"), rs.getString("section_number"), rs.getInt("capacity_peer_teachers"), rs.getInt("capacity_teaching_assistants")));
+            onlineCourses.add(rs.getInt("section_id"));
         }
         rs.close();
         st.close();
@@ -279,9 +277,14 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         while (rs.next())
         {
             sections.get(rs.getInt("section_id")).addMeeting(new Meeting(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time"), rs.getString("place"), rs.getString("meeting_type")));
+            onlineCourses.remove(rs.getInt("section_id"));
         }
         rs.close();
         st.close();
+
+        for (int sectionId : onlineCourses) {
+            sections.remove(sectionId);
+        }
     }
 
     static void schedulePeopleToSections() {
@@ -304,16 +307,24 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             HashSet<Integer> badSections = new HashSet<>();
 
             // Schedule what you prefer or marked indifferent
-            for (Preference preference : frontPerson.getPreferences()) {
+            for (Preference preference : frontPerson.getSortedPreferences()) {
                 if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
                 if (!possibleSections.contains(preference.getSectionId())) continue;
                 if (preference.isPreferable()) {
                     Section section = sections.get(preference.getSectionId());
                     if (section.getAssignedPTs() < section.getCapacityPTs()) {
-                        section.addAssignedPTs();
-                        frontPerson.addCurrentAssignment();
-                        schedule.putIfAbsent(preference.getSectionId(), new ArrayList<>());
-                        schedule.get(preference.getSectionId()).add(frontPerson.getPersonId());
+                        boolean alreadyAssigned = false;
+                        for (Meeting meeting : section.getMeetings()) {
+                            if (frontPerson.alreadyAssigned(meeting.getWeekday(), meeting.getStartTime(), meeting.getEndTime())) {
+                                alreadyAssigned = true;
+                            }
+                        }
+                        if (!alreadyAssigned) {
+                            section.addAssignedPTs();
+                            frontPerson.addCurrentAssignment(section);
+                            schedule.putIfAbsent(preference.getSectionId(), new ArrayList<>());
+                            schedule.get(preference.getSectionId()).add(frontPerson.getPersonId());
+                        }
                     }
                 } else {
                     badSections.add(preference.getSectionId());
@@ -321,16 +332,24 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
                 possibleSections.remove(preference.getSectionId());
             }
 
-            // Schedule what you didn't mark at all
+            // Schedule what you didn't mark at all -- possibly deprecated
             if (frontPerson.getCurrentAssignments() < frontPerson.getDesiredNumberAssignments()) {
                 for (int sectionId : possibleSections) {
                     if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() < section.getCapacityPTs()) {
-                        section.addAssignedPTs();
-                        frontPerson.addCurrentAssignment();
-                        schedule.putIfAbsent(sectionId, new ArrayList<>());
-                        schedule.get(sectionId).add(frontPerson.getPersonId());
+                        boolean alreadyAssigned = false;
+                        for (Meeting meeting : section.getMeetings()) {
+                            if (frontPerson.alreadyAssigned(meeting.getWeekday(), meeting.getStartTime(), meeting.getEndTime())) {
+                                alreadyAssigned = true;
+                            }
+                        }
+                        if (!alreadyAssigned) {
+                            section.addAssignedPTs();
+                            frontPerson.addCurrentAssignment(section);
+                            schedule.putIfAbsent(sectionId, new ArrayList<>());
+                            schedule.get(sectionId).add(frontPerson.getPersonId());
+                        }
                     }
                 }
             }
@@ -341,10 +360,18 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
                     if (frontPerson.getCurrentAssignments() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() < section.getCapacityPTs()) {
-                        section.addAssignedPTs();
-                        frontPerson.addCurrentAssignment();
-                        schedule.putIfAbsent(sectionId, new ArrayList<>());
-                        schedule.get(sectionId).add(frontPerson.getPersonId());
+                        boolean alreadyAssigned = false;
+                        for (Meeting meeting : section.getMeetings()) {
+                            if (frontPerson.alreadyAssigned(meeting.getWeekday(), meeting.getStartTime(), meeting.getEndTime())) {
+                                alreadyAssigned = true;
+                            }
+                        }
+                        if (!alreadyAssigned) {
+                            section.addAssignedPTs();
+                            frontPerson.addCurrentAssignment(section);
+                            schedule.putIfAbsent(sectionId, new ArrayList<>());
+                            schedule.get(sectionId).add(frontPerson.getPersonId());
+                        }
                     }
                 }
             }
