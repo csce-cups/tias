@@ -4,9 +4,8 @@ import { NavBar } from '../../../Components/Misc/NavBar';
 
 
 describe('Navbar', () => {
-    beforeEach(() => render(< NavBar />));
-    
     it('has all the links', () => {
+        render(< NavBar />)
         expect(screen.getByText('TIAS')).toBeInTheDocument();
         expect(screen.getByText('Profile')).toBeInTheDocument();
         expect(screen.getByText('Scheduling')).toBeInTheDocument();

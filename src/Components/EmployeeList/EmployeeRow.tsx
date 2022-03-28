@@ -1,11 +1,13 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
+import { APIPerson } from '../../modules/API'
 import { Dot } from '../Misc/Dot'
 
 interface Props {
-	element: string // The body of the list element
+	employee: APIPerson
+  linkID: number
 }
 
-export const EmployeeRow: FC<Props> = ({element}) => {
+export const EmployeeRow: FC<Props> = ({employee, linkID}) => {
   return (
     <>
       <div className="hstack">
@@ -13,10 +15,10 @@ export const EmployeeRow: FC<Props> = ({element}) => {
           <input type="checkbox"/>
         </div>
         <div className="element label">
-         {element}
+         {employee.first_name} {employee.last_name}
         </div>
         <div className="element right">
-          < Dot linkID={Math.floor(Math.random()*20)} styles={{margin: '0', width: '0.7em'}}/> {/* TODO: Random Keys to be replaced */}
+          < Dot isScheduled={employee.isScheduled} linkID={linkID} />
         </div>
       </div>
       <div className="hr-container">

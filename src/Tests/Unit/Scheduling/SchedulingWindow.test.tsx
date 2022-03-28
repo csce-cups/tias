@@ -31,9 +31,8 @@ jest.mock("../../../Components/Scheduling/SchedulingFilter", () => {
 })
 
 describe('SchedulingWindow', () => {
-    beforeEach(() => render(< SchedulingWindow />));
-    
     it('displays the header, render, and filter', () => {
+        render(< SchedulingWindow />)
         expect(screen.getByTestId('header')).toBeInTheDocument();
         expect(screen.getByTestId('render')).toBeInTheDocument();
         expect(screen.getByTestId('filter')).toBeInTheDocument();

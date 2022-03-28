@@ -1,8 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import { SchedulingBlock } from './SchedulingBlock';
+import { CourseBlock } from './CourseBlock';
 import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
 import back_arrow from '../../assets/back_arrow_icon.svg'
+import { CompressedCourseBlock } from './SchedulingRender'
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -31,7 +33,7 @@ const start_time_to_top = (start: Date, pstart: Date = startTime, parent: number
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
+const generateBlocks = (data: APICourseBlock[] | null, filter: any, compress: boolean) => {
   // If no data, do nothing
   if (data === null) {
     return (
@@ -57,18 +59,18 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
     else if (a.course_number < b.course_number) return -1;
     else if (a.course_number > b.course_number) return 1;
 
-    // Sort by section number
-    else if (a.section_number < b.section_number) return -1;
-    else if (a.section_number > b.section_number) return 1;
+    // Sort by section number (N/A to courses)
+    // else if (a.section_number < b.section_number) return -1;
+    // else if (a.section_number > b.section_number) return 1;
     
     // They're equal
     else return 0;
   });
   
-  return placeBlocks(data, filter);
+  return placeBlocks(data, filter, compress);
 }
 
-const placeBlocks = (data: APICourseBlock[], filter: any) => {
+const placeBlocks = (data: APICourseBlock[], filter: any, compress: boolean) => {
   let line: APICourseBlock[] = [];
   let layered: APICourseBlock[][] = [];
   
@@ -86,7 +88,7 @@ const placeBlocks = (data: APICourseBlock[], filter: any) => {
       inline = false;
     } else { // Not, staggered but different line
       if (!inline) { // Commit the staggered bits and flush the buffer
-        returns.push(...placeStaggeredBlocks(line, filter));
+        returns.push(...placeStaggeredBlocks(line, filter, compress));
         line = [];
         inline = true;
       } else {
@@ -100,32 +102,41 @@ const placeBlocks = (data: APICourseBlock[], filter: any) => {
     line.push(block);
   });
 
-  if (!inline) returns.push(...placeStaggeredBlocks(line, filter));
+  if (!inline) returns.push(...placeStaggeredBlocks(line, filter, compress));
   else if (line.length > 0) layered.push(line);
 
-  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter));
+  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter, compress));
 
   return returns;
 }
 
+const r = () => Math.floor(Math.random() * 40);
+const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
+
 // Requires input to be pre-layered
-const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: any): JSX.Element[] => {
+const placeInlineBlocks = (layered_data: APICourseBlock[][] | CompressedCourseBlock[][], filter: any, compress: boolean): JSX.Element[] => {
   return (
-    layered_data.map((layer: APICourseBlock[]) => (
+    layered_data.map((layer: APICourseBlock[] | CompressedCourseBlock[]) => (
       <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(layer)}`} style={{ 
         padding: 0, 
         height: `${time_to_height(layer[0].start_time, layer[0].end_time)}%`,
         top: `${start_time_to_top(layer[0].start_time)}%`
       }}>
-        { layer.map((block: APICourseBlock) => (
-          < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={block.scheduled} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
-        ))}
+        { (compress)?
+          layer.map((block: any) => ( // We know it's a CourseInstance at this point, type script just doesn't know yet
+            < CourseBlock course_instance={block} visible={filter[block.course_number]} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+          ))
+          :
+          layer.map((block: APICourseBlock) => (
+            < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+          ))
+        }
       </div>
     )
   ))
 }
 
-const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
+const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any, compress: boolean) => {
   // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
   const registerCollisions = (block: APICourseBlock, idx: number): RenderCourseBlock => ({...block, ...findCollisions(block.start_time, block.end_time, idx)});
   const findCollisions = (region_start: Date, region_end: Date, loc: number, arr_start: number = 0, arr_end: number = blocks.length-1) => {
@@ -233,7 +244,11 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
             }
             return < SchedulingBlock spacer={true} size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
           })}
-          < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={block.scheduled} key={`block-${JSON.stringify(block)}`}/>
+          { (compress)?
+            < CourseBlock size={calcSelf()} course_instance={block as CompressedCourseBlock} visible={filter[block.course_number]} key={`block-${JSON.stringify(block)}`}/>
+            :
+            < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} key={`block-${JSON.stringify(block)}`}/>
+          }
           { rightSpacers.render }
         </div>
       )
@@ -242,8 +257,9 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
 }
 
 export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
+  const compress = (blocks !== null && blocks !== undefined && blocks.length > 0 && blocks[0].section_number === -1);
+
   const [detailed, setDetailed] = useState(false);
-  const [hatsHidden, setHatsHidden] = useState(false);
   const id = uuid();
   if (hours !== undefined) numHours = hours;
 
@@ -252,25 +268,19 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     // Needs a key
     dividers[i] = <div className="divider" key={`divider-${i}`}/>;
   }
-
+  //TODO: Fix for reuse
   const select = () => {
-    if (!detailed) {
-      setDetailed(true);
-      modifyColumns(id, 'detailed');
-      modifyColumns(id, 'undetailed', true);
-    }
+    // if (!detailed) {
+    //   setDetailed(true);
+    //   modifyColumns(id, 'detailed');
+    //   modifyColumns(id, 'undetailed', true);
+    // }
   }
   
   const deselect = () => {
-    setDetailed(false);
-    modifyColumns(id, 'detailed', false, true);
-    modifyColumns(id, 'undetailed', true, true);
-    modifyHatContainers('shrunk', true);
-  }
-
-  const toggleHats = () => {
-    modifyHatContainers('shrunk', hatsHidden);
-    setHatsHidden(!hatsHidden);
+    // setDetailed(false);
+    // modifyColumns(id, 'detailed', false, true);
+    // modifyColumns(id, 'undetailed', true, true);
   }
 
   const modifyColumns = (id: string, newClass: string, inverted: boolean = false, remove: boolean = false) => {
@@ -280,41 +290,20 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     else linked.forEach(e => e.classList.add(newClass));
   }
 
-  const modifyHatContainers = (newClass: string, remove: boolean = false) => {
-    const selector = `div.hat-container`;
-    let linked = Array.from(document.querySelectorAll(selector));
-    if (remove) linked.forEach(e => e.classList.remove(newClass));
-    else linked.forEach(e => e.classList.add(newClass));
-  }
-
   return (
-    <div className="vstack grow-h day column" id={id} onClick={select}>
+    <div className="vstack day column" id={id} onClick={select}>
+      {/*TODO: Fix grow-h on main div for reuse*/}
       { (detailed) ? 
-        <div className="day-label hstack detailed" style={{padding: 0}}>
-          <div className="exit btn element detailed hstack" onClick={deselect}>
-            <div className="fill"/>
-            <div className="vstack" style={{justifyContent: 'center', width: '0', flex: '0 0 0'}}>
+        <div className="day-label hstack exit" style={{padding: 0}}>
+          <div className="exit left element detailed hstack" onClick={deselect}>
+            <div className="vstack" style={{justifyContent: 'center'}}>
               <img className="back-arrow" src={back_arrow} alt=""/>
             </div>
-            <div>BACK</div>
-            <div className="fill"/>
+            <div className="exit-text">BACK</div>
           </div>
-          <div className="center element detailed" style={{padding: '3px'}}>
+          <div className="center element detailed" style={{padding: '3px'}} onClick={deselect}>
             {day}
           </div>
-          {
-            (blocks !== null && blocks.length > 0 && blocks[0].scheduled !== null) ?
-              (hatsHidden)?
-                <div className="hide btn element detailed hstack" onClick={toggleHats}>
-                  <div className="center">SHOW HATS (name pending also)™</div>
-                </div>
-                :
-                <div className="hide btn element detailed hstack" onClick={toggleHats}>
-                  <div className="center">HIDE THE HATS (name pending)™</div>
-                </div>
-              :
-              <div className="btn element detailed hstack"/>
-          }
         </div>
       : 
         <div className="day-label hstack">
@@ -325,7 +314,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
       }
       <div className="vstack day" >
         { dividers }
-        { generateBlocks(blocks, filter) }
+        { generateBlocks(blocks, filter, compress) }
       </div>
     </div>
   )

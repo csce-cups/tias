@@ -1,16 +1,18 @@
-import React from "react";
+import React from 'react'
+import { Link } from "react-router-dom";
+import { parseCookie } from '../../modules/API';
 import { GoogleButton } from "./GoogleButton"
 
 export const NavBar = () => {
-  return ( <>
+  return (
     <div className="navbar">
-      <div className="left element major">TIAS</div>
-      <div className="left element">Profile</div>
-      <div className="left element">Scheduling</div>
-      <div className="left element">LabSwap™</div>
+      <Link to='/' className="left element major" style={{textDecoration: 'none'}}>TIAS</Link>
+      <Link to='Profile' className="left element">Profile</Link>
+      <Link to='Scheduling' className="left element">Scheduling</Link>
+      <Link to='Labswap' className="left element">LabSwap™</Link>
       <div className="fill element"></div>
       < GoogleButton />
     </div>
-  </>
-  );
-};
+  )
+}
+

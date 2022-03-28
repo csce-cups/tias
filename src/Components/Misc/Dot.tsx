@@ -1,30 +1,52 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
-import Palette from '../../assets/colors.json'
-import uuid from '../../uuid'
+import colorFromId from '../../modules/color'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page
-  styles?: any
+  isScheduled: boolean | null
 }
 
 // Adds or removes a class from dots with or without a certain link ID
 const modifyDots = (id: number, newClass: string, inverted: boolean = false, remove: boolean = false) => {
-  const selector = `div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
-  let linked = Array.from(document.querySelectorAll(selector));
-  if (remove) linked.forEach(e => e.classList.remove(newClass));
-  else linked.forEach(e => e.classList.add(newClass));
+  const hats = `div.hat${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
+  let linkedHats = Array.from(document.querySelectorAll(hats));
+  if (remove) linkedHats.forEach(e => e.parentElement?.classList.remove(newClass));
+  else linkedHats.forEach(e => e.parentElement?.classList.add(newClass));
+  
+  const dots = `div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
+  let linkedDots = Array.from(document.querySelectorAll(dots));
+  if (remove) linkedDots.forEach(e => e.classList.remove(newClass));
+  else linkedDots.forEach(e => e.classList.add(newClass));
+
+  if (remove) {
+    setTimeout(() => linkedHats.forEach(e => e.classList.remove(newClass)), 200); // Makes sure hat is hidden before unrendering 
+  } else {
+    linkedHats.forEach(e => e.classList.add(newClass));
+  }
 }
 
 // Adds or removes a class from blocks containing dots with or without a certain link ID
-const modifyBlocks = (id: number, newClass: string, inverted: boolean = false, remove: boolean = false) => {
-  const selector = `div.dot${(inverted? ':not(' : '')}[link-id="${id}"]${(inverted? ')' : '')}`;
-  let linked = Array.from(document.querySelectorAll(selector));
+interface modifyBlocksOptions {
+  inverted?: boolean,
+  remove?: boolean,
+  exclude?: boolean
+}
+
+const modifyBlocks = (id: number, newClass: string, options: modifyBlocksOptions) => {
+  const { inverted, remove, exclude } = options;
+  const candidates = `div.hat${((inverted === true)? ':not(' : '')}[link-id="${id}"]${((inverted === true)? ')' : '')}`;
+  const exclusions = `div.hat${((inverted !== true)? ':not(' : '')}[link-id="${id}"]${((inverted !== true)? ')' : '')}`;
+  const excluded = Array.from(document.querySelectorAll(exclusions)).map(e => e.parentElement?.parentElement).filter((e, i, s) => s.indexOf(e) === i);
+
+  let linked = Array.from(document.querySelectorAll(candidates))
+  if (exclude === true) linked = linked.filter(e => excluded.indexOf(e.parentElement?.parentElement) === -1);
+
   if (remove) linked.forEach(e => e.parentElement?.parentElement?.classList.remove(newClass));
   else linked.forEach(e => e.parentElement?.parentElement?.classList.add(newClass));
 }
 
 
-export const Dot: FC<Props> = ({linkID, styles}) => {
+export const Dot: FC<Props> = ({linkID, isScheduled}) => {
   const [selected, setSelected] = useState(false);
   const ref: any = useRef(null);
   
@@ -40,7 +62,7 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
     return () => {
       document.removeEventListener('click', handleClickOutside, true);
     };
-  }, [ selected, ref ]);
+  });
 
   const emphasizeLinked = () => {
     modifyDots(linkID, 'emphasized'); // Give all dots with the same link ID the selected property
@@ -53,27 +75,40 @@ export const Dot: FC<Props> = ({linkID, styles}) => {
   }
 
   const toggleSelect = (forceState?: boolean) => {
-    if (forceState !== undefined) setSelected(forceState);
-
-    if (selected) { // Restores the page to no longer highlight certain dots
+    if (selected) {
+      // Restores the page to no longer highlight certain dots
       modifyDots(linkID, 'selected', false, true);
+      modifyBlocks(linkID, 'selected', {inverted: false, remove: true});
+
       modifyDots(linkID, 'deselected', true, true);
-      modifyBlocks(linkID, 'deselected', true, true);
-    } else { // Shrinks other dots and blocks to allow focus on a particular set of dots
+      modifyBlocks(linkID, 'deselected', {inverted: true, remove: true, exclude: true});
+
+    } else {
+      // Shrinks other dots and blocks to allow focus on a particular set of dots
       modifyDots(linkID, 'selected');
+      modifyBlocks(linkID, 'selected', {});
+
       modifyDots(linkID, 'deselected', true);
-      modifyBlocks(linkID, 'deselected', true);
+      modifyBlocks(linkID, 'deselected', {inverted: true, exclude: true});
     }
 
     if (forceState === undefined) setSelected(!selected);
   }
 
+  const {r, g, b} = colorFromId(linkID);
+
+  const className = (
+      (isScheduled === null)? ''
+    : (isScheduled === true)? 'dot'
+    : 'dot-failed'
+  )
+
   return (
     <div 
       ref={ref}
-      className="dot" 
+      className={className} 
       link-id={linkID} 
-      style={{backgroundColor: Palette.colors[linkID % Palette.colors.length], ...styles}} 
+      style={{backgroundColor: (isScheduled === true)? `rgb(${r}, ${g}, ${b})` : 'transparent'}} 
       onMouseOver={emphasizeLinked} 
       onMouseOut={deemphasizeLinked}
       onClick={() => toggleSelect()}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from '../../Components/App';
+import { Scheduling } from '../../../pages/Scheduling'
 
-jest.mock("../../Components/NavBar", () => {
+jest.mock("../../Components/Misc/NavBar", () => {
     return {
         __esModule: true,
         NavBar: () => {
@@ -29,33 +29,24 @@ jest.mock("../../Components/Scheduling/SchedulingWindow", () => {
     }
 })
 
-jest.mock("../../Components/ScheduleList/ScheduleList", () => {
-    return {
-        __esModule: true,
-        ScheduleList: () => {
-            return <div data-testid="ScheduleList"/>
-        }
-    }
-})
-
 describe('App', () => {
-    beforeEach(() => render(< App />));
-    
     describe('scheduling page', () => {
         it('renders the navbar', () => {
+            render(< Scheduling />);
+
             expect(screen.getByTestId('NavBar')).toBeInTheDocument();
         });
     
-        it('renders the navbar', () => {
+        it('renders the employee list', () => {
+            render(< Scheduling />);
+
             expect(screen.getByTestId('EmployeeList')).toBeInTheDocument();
         });
     
-        it('renders the navbar', () => {
+        it('renders the scheduling window', () => {
+            render(< Scheduling />);
+
             expect(screen.getByTestId('SchedulingWindow')).toBeInTheDocument();
-        });
-    
-        it('renders the navbar', () => {
-            expect(screen.getByTestId('ScheduleList')).toBeInTheDocument();
         });
     })
 });

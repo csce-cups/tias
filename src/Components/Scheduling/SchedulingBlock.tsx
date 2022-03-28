@@ -1,32 +1,40 @@
 import React, { FC } from 'react'
-import uuid from '../../uuid';
-import { Dot } from '../Misc/Dot'
+import { Hat } from '../Misc/Hat';
+import { APICourseBlock } from '../../modules/API';
 
-const colors = new Map()
-colors.set(121, '#0086B6');
-colors.set(221, '#434F6F');
-colors.set(312, 'white');
-colors.set(313, '#405AB9');
-colors.set(314, 'white');
-colors.set(315, '#009489');
-
-interface CourseInstance { // Results of a join between course, course_section, and section_meetings
-  course: number,   // Course_Number from Course
-  section: number,  // Section_Number from Course_Section
-  start: Date,      // Start_Time from Section_Meeting
-  end: Date         // End_Time from Section_Meeting 
-  // If the API returns more information from this I can add them to the interface here
-}
+const colors = new Map();
+colors.set(110, '#4F405A');
+colors.set(111, '#826a94');
+colors.set(120, '#0e544f');
+colors.set(121, '#0e544f');
+colors.set(206, '#006b47');
+colors.set(221, '#009489');
+colors.set(222, '#5358AE');
+colors.set(312, '#0086B6');
+colors.set(313, '#434F6F');
+colors.set(314, '#807391');
+colors.set(315, '#6e438c');
 
 interface Props {
-  course_instance: CourseInstance,
-  visible: boolean
+  course_instance?: APICourseBlock,
+  visible: boolean,
+  linkIDs: number[] | null,
+  spacer?: boolean,
+  size?: string,
+  inline?: boolean,
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, visible}) => {
+export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, spacer, size, inline}) => {
+  let flex: string | undefined = '0 0 0';
+  if (!visible && inline === true) flex = '0 0 auto';
+  else if (size && visible && size === 'auto') flex = `1 1 auto`
+  else if (size && visible) flex = `0 0 ${size}`
+  else if (visible && spacer) flex = '1 1 auto'
+  else if (visible) flex = undefined
+
   const isVisible = {
-    width: visible? undefined : 0,
-    flex: visible? undefined : '0 0 auto',
+    width: (visible)? undefined : 0,
+    flex: flex,
     margin: visible? undefined : 0
   }
 
@@ -35,13 +43,50 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible}) => {
     display: visible? undefined : 'none'
   }
 
+  if (spacer === true) return <div className="block spacer" style={isVisible}/>
+
+  const body = () => {
+    if (linkIDs === null) return <></>
+    else if (linkIDs.length === 0) {
+      return (
+        <div className="hat-container alert">
+          < Hat linkID={-1} />
+        </div>
+      )
+    } else {
+      return (
+        <div className="hat-container">
+          {linkIDs?.map(id => (< Hat key={id} linkID={id} />))}
+        </div>
+      )
+    }
+  }
+
+  let color = {background: 'red'};
+  if (linkIDs === null || linkIDs.length !== 0) {
+    color.background = colors.get(course_instance!.course_number)
+    if (color.background === undefined) console.error('Color not defined for:', JSON.stringify(course_instance))
+  } else {
+    color.background = '#800000';
+  }
+
   return (
-    <div className="block" style={{backgroundColor: colors.get(course_instance.course), ...isVisible}}>
-      <div className="block-indicator slim" style={isContentVisible}>
-        < Dot linkID={Math.floor(Math.random()*20)}/> {/* TODO: Random Keys to be replaced }*/}
+    <div className={`block ${(linkIDs !== null && linkIDs.length === 0)? 'alert' : ''}`}
+      title={`${course_instance!.course_number}-${course_instance!.section_number}`} 
+      style={{...color, ...isVisible}}
+    >
+      { body() }
+      <div className="fill"/>
+      <div className="block-text">
+        {course_instance!.course_number} {course_instance!.section_number}
       </div>
-      <div className="block-text" style={isContentVisible}>
-        {course_instance.course}-{course_instance.section}
+      <div className="vstack block-detail">
+        <div>
+          {course_instance!.department} {course_instance!.course_number}-{course_instance!.section_number}
+        </div>
+        <div>
+          {course_instance!.place}
+        </div>
       </div>
     </div>
   )

@@ -4,9 +4,9 @@ import { SchedulingFilter } from '../../../Components/Scheduling/SchedulingFilte
 
 
 describe('SchedulingFilter', () => {
-    beforeEach(() => render(< SchedulingFilter filter={{}} setFilter={() => {}}/>));
-    
     it('displays courses', () => {
+        render(< SchedulingFilter filter={{}} setFilter={() => {}}/>)
+
         expect(screen.getByText(/121/)).toBeInTheDocument();
         expect(screen.getByText(/221/)).toBeInTheDocument();
         expect(screen.getByText(/312/)).toBeInTheDocument();
