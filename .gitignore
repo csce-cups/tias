@@ -105,3 +105,6 @@ dist
 
 # OSX Ignores
 .DS_Store
+
+# Node
+package-lock.json

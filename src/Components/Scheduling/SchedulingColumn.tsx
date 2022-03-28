@@ -243,6 +243,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
 
 export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   const [detailed, setDetailed] = useState(false);
+  const [hatsHidden, setHatsHidden] = useState(false);
   const id = uuid();
   if (hours !== undefined) numHours = hours;
 
@@ -264,6 +265,12 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     setDetailed(false);
     modifyColumns(id, 'detailed', false, true);
     modifyColumns(id, 'undetailed', true, true);
+    modifyHatContainers('shrunk', true);
+  }
+
+  const toggleHats = () => {
+    modifyHatContainers('shrunk', hatsHidden);
+    setHatsHidden(!hatsHidden);
   }
 
   const modifyColumns = (id: string, newClass: string, inverted: boolean = false, remove: boolean = false) => {
@@ -273,19 +280,41 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     else linked.forEach(e => e.classList.add(newClass));
   }
 
+  const modifyHatContainers = (newClass: string, remove: boolean = false) => {
+    const selector = `div.hat-container`;
+    let linked = Array.from(document.querySelectorAll(selector));
+    if (remove) linked.forEach(e => e.classList.remove(newClass));
+    else linked.forEach(e => e.classList.add(newClass));
+  }
+
   return (
     <div className="vstack grow-h day column" id={id} onClick={select}>
       { (detailed) ? 
-        <div className="day-label hstack exit" style={{padding: 0}}>
-          <div className="exit left element detailed hstack" onClick={deselect}>
-            <div className="vstack" style={{justifyContent: 'center'}}>
+        <div className="day-label hstack detailed" style={{padding: 0}}>
+          <div className="exit btn element detailed hstack" onClick={deselect}>
+            <div className="fill"/>
+            <div className="vstack" style={{justifyContent: 'center', width: '0', flex: '0 0 0'}}>
               <img className="back-arrow" src={back_arrow} alt=""/>
             </div>
-            <div className="exit-text">BACK</div>
+            <div>BACK</div>
+            <div className="fill"/>
           </div>
-          <div className="center element detailed" style={{padding: '3px'}} onClick={deselect}>
+          <div className="center element detailed" style={{padding: '3px'}}>
             {day}
           </div>
+          {
+            (blocks !== null && blocks.length > 0 && blocks[0].scheduled !== null) ?
+              (hatsHidden)?
+                <div className="hide btn element detailed hstack" onClick={toggleHats}>
+                  <div className="center">SHOW HATS (name pending also)™</div>
+                </div>
+                :
+                <div className="hide btn element detailed hstack" onClick={toggleHats}>
+                  <div className="center">HIDE THE HATS (name pending)™</div>
+                </div>
+              :
+              <div className="btn element detailed hstack"/>
+          }
         </div>
       : 
         <div className="day-label hstack">

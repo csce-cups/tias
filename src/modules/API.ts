@@ -13,7 +13,7 @@ export interface APIPerson {
 	teaching_assistant: boolean
 	administrator: boolean
 	professor: boolean
-	isScheduled: null | [boolean | null, React.Dispatch<React.SetStateAction<boolean | null>>]
+	isScheduled: null | boolean
 }
 
 export interface APIPTListResponse {

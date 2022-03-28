@@ -196,23 +196,39 @@ $day_divider_size : 1.5px;
 
 	.day-label .exit {
 		background-color: red;
-		border-radius: 5px;
-		border: 1px solid $render_background;
-		color: $render_background;
-		padding: 2px 2em;
 	}
 
-	.day-label.exit {
-		color: red;
-		border-radius: 5px;
-		border: 1px solid red;
-		z-index: 3;
-	}
-
-	.day-label.exit:hover {
+	.day-label .exit:hover {
 		background-color: red;
 		color: $render_background;
 		opacity: 0.4;
+	}
+	
+	.day-label .hide {
+		background-color: blue;
+	}
+
+	.day-label .hide:hover {
+		background-color: blue;
+		color: $render_background;
+		opacity: 0.4;
+	}
+
+	.day-label .btn {
+		border-radius: 5px;
+		border: 1px solid $render_background;
+		color: $render_background;
+		padding: 2px 0;
+		width: 25%;
+
+		transition: all 0.1s ease-in;
+	}
+
+	.day-label.detailed {
+		color: $render_divider;
+		border-radius: 5px;
+		border: 1px solid $render_divider;
+		z-index: 3;
 	}
 
 	.day-label {
@@ -229,10 +245,6 @@ $day_divider_size : 1.5px;
 
 		.center.detailed {
 			color: $render_divider;
-		}
-		
-		.left.detailed {
-			position: absolute;
 		}
 	}
 	
@@ -412,6 +424,11 @@ $day_divider_size : 1.5px;
 	}
 }
 
+.column.detailed .block .hat-container.shrunk {
+	flex: 0 0 0.2em;
+	border-bottom: 2px solid black;
+}
+
 .column.detailed .block-text {
 	display: none;
 }
@@ -548,8 +565,13 @@ $day_divider_size : 1.5px;
 	color: black;
 }
 
+.hat-container.alert {
+	max-height: 0;
+}
+
 // https://css-tricks.com/stripes-css/
 .detailed .hat-container .hat.alert {
+	height: auto;
 	font-weight: bold;
 	text-align: center;
 	color: white;
@@ -628,13 +650,14 @@ $day_divider_size : 1.5px;
 }
 
 .hat-container.emphasized, .column.detailed .hat-container {
-	flex: 0 0 1.6em;
+	flex: 0 0 1.2em;
 	border-radius: 3px 3px 0 0;
 	border-bottom: 2px solid white;
 }
 
 .column.detailed .hat-container.alert {
 	flex: 0 0 1.2em;
+	max-height: 100%;
 }
 
 .hat-container.selected, .column.detailed .hat-container.selected {
