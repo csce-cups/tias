@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from '../../Components/App';
+import { Scheduling } from '../../../pages/Scheduling'
 
 jest.mock("../../Components/Misc/NavBar", () => {
     return {
@@ -32,19 +32,19 @@ jest.mock("../../Components/Scheduling/SchedulingWindow", () => {
 describe('App', () => {
     describe('scheduling page', () => {
         it('renders the navbar', () => {
-            render(< App />);
+            render(< Scheduling />);
 
             expect(screen.getByTestId('NavBar')).toBeInTheDocument();
         });
     
         it('renders the employee list', () => {
-            render(< App />);
+            render(< Scheduling />);
 
             expect(screen.getByTestId('EmployeeList')).toBeInTheDocument();
         });
     
         it('renders the scheduling window', () => {
-            render(< App />);
+            render(< Scheduling />);
 
             expect(screen.getByTestId('SchedulingWindow')).toBeInTheDocument();
         });

@@ -110,35 +110,38 @@ $google_bg: white;
 		border-right: 1px solid $light;
 	}
 
-	.hstack {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
-	
-		padding-top: 5px;
-	
-		.element {
-			padding-left: 5px;
-		}
+}
+.Profile {
+	flex: 1 1 auto;
+}
+.hstack {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
 
-		.left {
-			flex: 0 0 auto;
-		}
-		
-		.label {
-			flex: 0 1 auto;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			white-space: nowrap;
-			padding-right: 5px;
-		}
+	padding-top: 5px;
 
-		.center {
-			flex: 1 1 auto;
-			text-align: center;
-		}
-		
+	.element {
+		padding-left: 5px;
 	}
+
+	.left {
+		flex: 0 0 auto;
+	}
+	
+	.label {
+		flex: 0 1 auto;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		padding-right: 5px;
+	}
+
+	.center {
+		flex: 1 1 auto;
+		text-align: center;
+	}
+	
 }
 
 .right {
@@ -597,4 +600,114 @@ img.back-arrow {
 
 .sidebar {
 	max-width: 400px;
+}
+.profile-picture {
+	max-width: min(250px, 20vw);
+	flex: 1 1 auto;	
+	border: 2px solid;
+	margin: 0 20px;
+	border-radius: 50%;
+}
+
+.profile-sidebar {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	span {
+		font-weight: bold;
+		margin: 5px 0;
+	}
+}
+
+.profile-status-bar {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+
+	padding: 5px 0;
+	margin: 0 0 5px 0;
+
+	.button {
+		margin: 0 5px 0 0;
+	}
+
+	.profile-status {
+		display: flex;
+		align-items: center;
+
+		font-size: 1.2em;
+		font-weight: bold;
+		
+		border: 2px solid;
+		flex: 1 1 auto;
+
+		padding: 0 5px;
+
+	}
+}
+
+.profile-form {
+	display: flex;
+	flex-direction: column;
+
+	border: 2px solid;
+
+	.hstack {
+		align-items: center;
+	}
+
+	.form-row {
+		margin: 5px;
+
+		.fill {
+			padding: 0px 10px;
+		}
+		
+		.element {
+			margin-left: 15px;
+		}
+
+		.status {
+			margin-right: 10px;
+		}
+
+		.fail {
+			color: red;
+		}
+
+		.success {
+			color: $green;
+		}
+
+		select {
+			width: 100%;
+			// margin: 0 10px;
+		}
+	}
+
+	.header {
+		font-size: 1.2em;
+		font-weight: bold;
+	}
+
+	.submit {
+		width: 100%;
+		margin: 12px;
+	}
+
+	.dropdown-label {
+		margin: 0 5px;
+	}
+
+	input {
+		margin: 0 5px;
+	}
+}
+
+.class-render-container {
+	flex: 1 1 auto;
+	display: flex;
+	position: relative;
+	border: 2px solid black;
 }
