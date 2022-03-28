@@ -3,9 +3,10 @@ import API, { APICourseBlock, APIPerson } from '../../modules/API'
 import contexts from '../APIContext'
 
 export const GenerateButton = () => {
-  const runScheduler = (employees: APIPerson[], setBlocks: any, blocks: any) => {
+  const runScheduler = (employees: APIPerson[], blocks: any, setEmployees: any, setBlocks: any) => {
     const eIDs = employees.map(e => e.person_id);
     const btn = document.getElementById("generate-schedule-button");
+    
     if (btn !== null) btn.innerHTML = 'Generating...';
 
     API.runSchedulerDummy(eIDs).then((resp) => {
@@ -13,13 +14,22 @@ export const GenerateButton = () => {
       const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday]; // For easier iteration
       allBlocks.forEach((day: APICourseBlock[], oidx: number) => {
         day.forEach((block: APICourseBlock, iidx: number) => {
-          allBlocks[oidx][iidx].scheduled = (resp.scheduled.has(`${block.section_id}`))? resp.scheduled.get(`${block.section_id}`)! : [];
+          const pids = resp.scheduled.has(`${block.section_id}`)? resp.scheduled.get(`${block.section_id}`)! : [];
+          allBlocks[oidx][iidx].scheduled = pids;
         });
+      });
+
+      // Update if the employees are scheduled or not
+      console.log(blocks);
+      employees.forEach((e, i) => {
+        employees[i].isScheduled![1](resp.unscheduled.indexOf(e.person_id) === -1)
+        console.log({name: e.first_name, id: e.person_id, s: employees[i].isScheduled![0], r: resp.unscheduled});
       });
 
       setBlocks({Monday: allBlocks[0], Tuesday: allBlocks[1], Wednesday: allBlocks[2], Thursday: allBlocks[3], Friday: allBlocks[4]});
       if (btn !== null) btn.innerHTML = 'Done generating!';
-    }).catch(err => {
+
+    }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
     })
   }
@@ -29,7 +39,7 @@ export const GenerateButton = () => {
       {([blocks, setBlocks]) => (
         < contexts.employees.Consumer >
           {([employees, setEmployees]) => (
-            <button id="generate-schedule-button" className="blue button" onClick={() => runScheduler(employees, setBlocks, blocks)}>Generate</button>
+            <button id="generate-schedule-button" className="blue button" onClick={() => runScheduler(employees, blocks, setEmployees, setBlocks)}>Generate</button>
           )}
         </contexts.employees.Consumer>
       )}

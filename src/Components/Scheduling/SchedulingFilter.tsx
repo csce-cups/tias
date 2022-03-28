@@ -5,7 +5,11 @@ interface Props {
   setFilter: Function
 }
 const base = {
+  110: true,
+  111: true,
+  120: true,
   121: true,
+  206: true,
   221: true,
   222: true,
   312: true,
@@ -15,7 +19,7 @@ const base = {
 }
 
 export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
-  let filter_subjects = ['121', '221', '222', '312', '313', '314', '315'];
+  let filter_subjects = ['110', '111', '120', '121', '206', '221', '222', '312', '313', '314', '315'];
   const showAll = 'Show All'
   let filter_elements = [];
 

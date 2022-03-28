@@ -9,7 +9,11 @@ interface Props {
 
 export const SchedulingWindow: FC<Props> = () => {
   const [filter, setFilter] = useState({
+    110: true,
+    111: true,
+    120: true,
     121: true,
+    206: true,
     221: true,
     222: true,
     312: true,

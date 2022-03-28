@@ -10,7 +10,9 @@ interface Props {
 export const Hat: FC<Props> = ({linkID}) => {
   if (linkID === -1) {
     return (
-      <div className="hat alert"><span>UNSCHEDULED</span></div>
+      <div className="hat alert">
+        <span className="alert-text">UNSCHEDULED</span>
+      </div>
     )
   }
   

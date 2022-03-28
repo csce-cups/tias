@@ -3,6 +3,7 @@ import colorFromId from '../../modules/color'
 
 interface Props {
   linkID: number // An id that ties this dot corresponding dots elsewhere on the page
+  isScheduled: boolean | null
 }
 
 // Adds or removes a class from dots with or without a certain link ID
@@ -45,7 +46,7 @@ const modifyBlocks = (id: number, newClass: string, options: modifyBlocksOptions
 }
 
 
-export const Dot: FC<Props> = ({linkID}) => {
+export const Dot: FC<Props> = ({linkID, isScheduled}) => {
   const [selected, setSelected] = useState(false);
   const ref: any = useRef(null);
   
@@ -96,12 +97,18 @@ export const Dot: FC<Props> = ({linkID}) => {
 
   const {r, g, b} = colorFromId(linkID);
 
+  const className = (
+      (isScheduled === null)? ''
+    : (isScheduled === true)? 'dot'
+    : 'dot-failed'
+  )
+
   return (
     <div 
       ref={ref}
-      className="dot" 
+      className={className} 
       link-id={linkID} 
-      style={{backgroundColor: `rgb(${r}, ${g}, ${b})`}} 
+      style={{backgroundColor: (isScheduled === true)? `rgb(${r}, ${g}, ${b})` : 'transparent'}} 
       onMouseOver={emphasizeLinked} 
       onMouseOut={deemphasizeLinked}
       onClick={() => toggleSelect()}

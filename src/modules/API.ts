@@ -13,6 +13,7 @@ export interface APIPerson {
 	teaching_assistant: boolean
 	administrator: boolean
 	professor: boolean
+	isScheduled: null | [boolean | null, React.Dispatch<React.SetStateAction<boolean | null>>]
 }
 
 export interface APIPTListResponse {
@@ -247,7 +248,8 @@ class API {
 						peer_teacher: true,
 						teaching_assistant: false,
 						administrator: false,
-						professor: false
+						professor: false,
+						isScheduled: null
 					})
 				))
 			}, 1000)
@@ -299,7 +301,7 @@ class API {
 				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
 				resp.scheduled = map;
 				resolve(resp);
-			}, 1600);
+			}, 200);
 		})
 	}
 }
