@@ -196,23 +196,39 @@ $day_divider_size : 1.5px;
 
 	.day-label .exit {
 		background-color: red;
-		border-radius: 5px;
-		border: 1px solid $render_background;
-		color: $render_background;
-		padding: 2px 2em;
 	}
 
-	.day-label.exit {
-		color: red;
-		border-radius: 5px;
-		border: 1px solid red;
-		z-index: 3;
-	}
-
-	.day-label.exit:hover {
+	.day-label .exit:hover {
 		background-color: red;
 		color: $render_background;
 		opacity: 0.4;
+	}
+	
+	.day-label .hide {
+		background-color: blue;
+	}
+
+	.day-label .hide:hover {
+		background-color: blue;
+		color: $render_background;
+		opacity: 0.4;
+	}
+
+	.day-label .btn {
+		border-radius: 5px;
+		border: 1px solid $render_background;
+		color: $render_background;
+		padding: 2px 0;
+		width: 25%;
+
+		transition: all 0.1s ease-in;
+	}
+
+	.day-label.detailed {
+		color: $render_divider;
+		border-radius: 5px;
+		border: 1px solid $render_divider;
+		z-index: 3;
 	}
 
 	.day-label {
@@ -229,10 +245,6 @@ $day_divider_size : 1.5px;
 
 		.center.detailed {
 			color: $render_divider;
-		}
-		
-		.left.detailed {
-			position: absolute;
 		}
 	}
 	
@@ -410,6 +422,11 @@ $day_divider_size : 1.5px;
 		visibility: hidden;
 		max-height: 0;
 	}
+}
+
+.column.detailed .block .hat-container.shrunk {
+	flex: 0 0 0.2em;
+	border-bottom: 2px solid black;
 }
 
 .column.detailed .block-text {
