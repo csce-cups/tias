@@ -268,7 +268,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
     // Needs a key
     dividers[i] = <div className="divider" key={`divider-${i}`}/>;
   }
-
+  //TODO: Fix for reuse
   const select = () => {
     // if (!detailed) {
     //   setDetailed(true);
@@ -291,7 +291,8 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   }
 
   return (
-    <div className="vstack grow-h day column" id={id} onClick={select}>
+    <div className="vstack day column" id={id} onClick={select}>
+      {/*TODO: Fix grow-h on main div for reuse*/}
       { (detailed) ? 
         <div className="day-label hstack exit" style={{padding: 0}}>
           <div className="exit left element detailed hstack" onClick={deselect}>

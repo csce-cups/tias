@@ -51,16 +51,18 @@ const compressValid = (courses: Array<APICourseBlock> | null, debug: boolean) =>
   let fidx = -1;
   let cidx = 0;
   while(cidx<courses.length){
-    let c = courses[cidx];
+    let c:APICourseBlock = courses[cidx];
     filtered.push({ //make object from current section to push
       department: c.department,
       course_number: c.course_number,
       section_number: -1,
+      section_id: -1,
       section_numbers: [c.section_number],
       start_time: c.start_time,
       end_time: c.end_time,
       weekday: c.weekday,
-      place: c.place
+      place: c.place,
+      scheduled: null
     });
     fidx++; //update to the newly added index
     cidx++; //move to the next uncondensed section

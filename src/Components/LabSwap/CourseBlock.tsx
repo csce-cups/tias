@@ -67,7 +67,7 @@ export const CourseBlock: FC<Props> = ({course_instance, visible, size, inline})
 
   return (
     <FormControl 
-      className="block" 
+      className="block grow-h" 
       style={{
         backgroundColor: colors.get(c!.course_number),
         ...isVisible
