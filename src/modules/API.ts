@@ -13,8 +13,8 @@ export interface APIPerson {
 	teaching_assistant: boolean
 	administrator: boolean
 	professor: boolean
+	isScheduled: null | [boolean | null, React.Dispatch<React.SetStateAction<boolean | null>>]
 }
-
 
 export interface APIPTListResponse {
 	users: APIPerson[]
@@ -24,10 +24,12 @@ export interface APICourseBlock {
 	department: string
 	course_number: number
 	section_number: number
+	section_id: number
 	start_time: Date
 	end_time: Date
 	weekday: string
 	place: string
+	scheduled: number[] | null;
 }
 
 export interface APICourseBlockWeek {
@@ -42,6 +44,7 @@ interface raw_APICourseBlock {
 	department: string
 	course_number: string
 	section_number: string
+	section_id: number
 	start_time: string
 	end_time: string
 	weekday: string
@@ -62,10 +65,9 @@ export interface APIUserQualification {
 	qualified: boolean
 }
 
-export interface APIContents {
-	employees: APIPerson[]
-	blocks: APICourseBlockWeek,
-	userQuals: APIUserQualification[]
+export interface APIAlgoResponse {
+	scheduled: Map<string, number[]>
+	unscheduled: number[]
 }
 
 export interface APIReturn {
@@ -127,6 +129,7 @@ class API {
 	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
 			.then(({data}) => {
+				console.log({data})
 				let dataStrict: raw_APICourseBlockWeek = data;
 				const createDate = (datestring: string): Date => {
 					let d = new Date(0);
@@ -138,10 +141,12 @@ class API {
 					department: e.department,
 					course_number: parseInt(e.course_number),
 					section_number: parseInt(e.section_number),
+					section_id: e.section_id,
 					start_time: createDate(e.start_time),
 					end_time: createDate(e.end_time),
 					weekday: e.weekday,
-					place: e.place
+					place: e.place,
+					scheduled: null
 				})))
 
 				return ({
@@ -161,6 +166,19 @@ class API {
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`)
 			.then(({data}) => data.qualifications)
 			.catch(err => console.log(err));
+	}
+
+	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/schedule-peer-teachers', {
+			method: 'POST',
+			body: JSON.stringify({"peerTeachers": peer_teachers})
+		}).then(sessionResponse => sessionResponse.json())
+		  .then(responseData => {
+			let map = new Map<string, number[]>();
+			Object.keys(responseData.scheduled).map(key => map.set(key, responseData.scheduled[key]));
+			responseData.scheduled = map;
+			return responseData;
+		});
 	}
 
 	private static fetchPTListDummy = async (response?: APIPerson[]): Promise<APIPerson[]> => {
@@ -230,7 +248,8 @@ class API {
 						peer_teacher: true,
 						teaching_assistant: false,
 						administrator: false,
-						professor: false
+						professor: false,
+						isScheduled: null
 					})
 				))
 			}, 1000)
@@ -271,6 +290,18 @@ class API {
 
 				])
 			}, 800);
+		})
+	}
+
+	static runSchedulerDummy = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
+		return new Promise((resolve, _) => {
+			setTimeout(() => {
+				let resp = JSON.parse(`{ "scheduled": {"1":[17],"129":[9, 10],"66":[9, 10],"3":[14,16],"4":[14],"71":[4],"72":[12],"78":[8],"79":[8,12],"80":[2,15],"16":[3],"81":[2,15],"88":[17],"32":[1,16],"96":[5],"97":[5],"43":[1],"109":[6],"110":[6],"112":[13,10],"48":[11],"113":[13,10],"50":[11],"127":[3],"63":[4]}, "unscheduled": [7] }`)
+				let map = new Map<string, number[]>();
+				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
+				resp.scheduled = map;
+				resolve(resp);
+			}, 200);
 		})
 	}
 }

@@ -8,6 +8,13 @@ interface Props {
 }
 
 export const Hat: FC<Props> = ({linkID}) => {
+  if (linkID === -1) {
+    return (
+      <div className="hat alert">
+        <span className="alert-text">UNSCHEDULED</span>
+      </div>
+    )
+  }
   
   const getName = (employees: APIPerson[]) => {
     const target = employees.find(e => e.person_id === linkID);
@@ -17,19 +24,21 @@ export const Hat: FC<Props> = ({linkID}) => {
   const {r, g, b, l} = colorFromId(linkID);
   const colors = {
     backgroundColor: `rgb(${r}, ${g}, ${b})`,
-    color: (l <= 50)? 'white' : 'black'
+    // color: (l <= 50)? 'white' : 'black'
   }
+
 
   return (
     < contexts.employees.Consumer >
       {([employees, setEmployees]) => (
         <div 
-          className="hat" 
+          className={`hat ${(l <= 50)? 'white' : 'black'}-text`}
           link-id={linkID} 
           title={getName(employees)}
           style={colors} 
           data-testid="hat"
-          >{getName(employees)}
+          >
+            <span>{getName(employees)}</span>
         </div>
       )}
     </contexts.employees.Consumer>

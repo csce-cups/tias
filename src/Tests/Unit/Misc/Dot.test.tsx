@@ -8,12 +8,12 @@ describe('Dot', () => {
     const subjectID = 0;
 
     const generateDots = (count: number, similar: boolean) => {
-        for (let i = 0; i < count; i++) render(< Dot linkID={subjectID + (similar? 0 : i+1)} />);
+        for (let i = 0; i < count; i++) render(< Dot isScheduled={true} linkID={subjectID + (similar? 0 : i+1)} />);
     }
 
     describe('hover', () => {
         it('emphasizes dots with the same link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, true);
     
@@ -31,7 +31,7 @@ describe('Dot', () => {
         });
     
         it('doesn\'t emphasize dots with a different link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, false);
     
@@ -44,7 +44,7 @@ describe('Dot', () => {
         });
     
         it('deemphasizes dots with a different link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, false);
     
@@ -62,7 +62,7 @@ describe('Dot', () => {
         });
     
         it('doesn\'t deemphasize dots with the same link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, true);
     
@@ -77,7 +77,7 @@ describe('Dot', () => {
 
     describe('click', () => {
         it('selects dots with the same link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, true);
     
@@ -90,7 +90,7 @@ describe('Dot', () => {
         });
     
         it('doesn\'t select dots with a different link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, false);
     
@@ -103,7 +103,7 @@ describe('Dot', () => {
         });
     
         it('deselects dots with a different link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, false);
     
@@ -116,7 +116,7 @@ describe('Dot', () => {
         });
     
         it('doesn\'t deselect dots with the same link ID', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, true);
     
@@ -129,7 +129,7 @@ describe('Dot', () => {
         });
 
         it('is undone by clicking outside (dependent on above)', () => {
-            render(< Dot linkID={subjectID}/>);
+            render(< Dot isScheduled={true} linkID={subjectID}/>);
 
             generateDots(2, true);
             generateDots(2, false);
