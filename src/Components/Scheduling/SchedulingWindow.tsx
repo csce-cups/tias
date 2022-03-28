@@ -24,7 +24,7 @@ export const SchedulingWindow: FC<Props> = () => {
 
   return (
     <div className="vstack main">
-      < SchedulingHeader />
+      {/* < SchedulingHeader /> */}
       < SchedulingRender filter={filter} />
       < SchedulingFilter filter={filter} setFilter={setFilter}/>
     </div>

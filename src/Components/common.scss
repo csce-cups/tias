@@ -192,6 +192,8 @@ $day_divider_size : 1.5px;
 	display: flex;
 	position: relative;
 
+	margin-top: 1.5em;
+
 	.day-label .exit {
 		background-color: red;
 		border-radius: 5px;
@@ -560,7 +562,7 @@ $day_divider_size : 1.5px;
 	);
 }
 
-.hat.selected, .hat.emphasized, .column.detailed .hat {
+.hat.selected, .hat.emphasized, .column.detailed .hat, .hat-container.selected .hat {
 	flex: 1 1 0;
 	display: inline-block;
 	overflow: hidden;
