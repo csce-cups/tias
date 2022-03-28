@@ -548,8 +548,13 @@ $day_divider_size : 1.5px;
 	color: black;
 }
 
+.hat.alert {
+	height: 0;
+}
+
 // https://css-tricks.com/stripes-css/
 .detailed .hat-container .hat.alert {
+	height: auto;
 	font-weight: bold;
 	text-align: center;
 	color: white;
