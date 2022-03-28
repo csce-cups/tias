@@ -565,8 +565,8 @@ $day_divider_size : 1.5px;
 	color: black;
 }
 
-.hat.alert {
-	height: 0;
+.hat-container.alert {
+	max-height: 0;
 }
 
 // https://css-tricks.com/stripes-css/
@@ -657,6 +657,7 @@ $day_divider_size : 1.5px;
 
 .column.detailed .hat-container.alert {
 	flex: 0 0 1.2em;
+	max-height: 100%;
 }
 
 .hat-container.selected, .column.detailed .hat-container.selected {
