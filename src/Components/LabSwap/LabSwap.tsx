@@ -30,7 +30,7 @@ export const LabSwap = () => {
   }
   
   return (
-    <>
+    <div className='app-body'>
       <div className="vstack sidebar"> {/*for selection and submit button */}
         <div className="hstack" >
           {/*TODO: Better CSS for these*/}
@@ -42,6 +42,6 @@ export const LabSwap = () => {
       <selectFunction.Provider value={selectSection}>
         <SchedulingWindow/>
       </selectFunction.Provider>
-    </>
+    </div>
   )
 }

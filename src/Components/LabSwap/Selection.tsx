@@ -37,7 +37,7 @@ export const Selection: FC<Props> = ({title, sections}) => {
         Section: {sections.section_numbers[0]}
       </p>
       <p>
-        Meeting Time: {"gonna get better output"}
+        Meeting Time: {sections.start_time.toLocaleTimeString()}-{sections.end_time.toLocaleTimeString()}
       </p>
       <hr/>
     </div>

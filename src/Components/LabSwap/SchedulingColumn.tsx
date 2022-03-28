@@ -270,17 +270,17 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   }
 
   const select = () => {
-    if (!detailed) {
-      setDetailed(true);
-      modifyColumns(id, 'detailed');
-      modifyColumns(id, 'undetailed', true);
-    }
+    // if (!detailed) {
+    //   setDetailed(true);
+    //   modifyColumns(id, 'detailed');
+    //   modifyColumns(id, 'undetailed', true);
+    // }
   }
   
   const deselect = () => {
-    setDetailed(false);
-    modifyColumns(id, 'detailed', false, true);
-    modifyColumns(id, 'undetailed', true, true);
+    // setDetailed(false);
+    // modifyColumns(id, 'detailed', false, true);
+    // modifyColumns(id, 'undetailed', true, true);
   }
 
   const modifyColumns = (id: string, newClass: string, inverted: boolean = false, remove: boolean = false) => {
