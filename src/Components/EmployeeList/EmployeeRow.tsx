@@ -8,7 +8,6 @@ interface Props {
 }
 
 export const EmployeeRow: FC<Props> = ({employee, linkID}) => {
-  employee.isScheduled = useState<null| boolean>(null)
   return (
     <>
       <div className="hstack">
@@ -19,7 +18,7 @@ export const EmployeeRow: FC<Props> = ({employee, linkID}) => {
          {employee.first_name} {employee.last_name}
         </div>
         <div className="element right">
-          < Dot isScheduled={employee.isScheduled![0]} linkID={linkID} />
+          < Dot isScheduled={employee.isScheduled} linkID={linkID} />
         </div>
       </div>
       <div className="hr-container">
