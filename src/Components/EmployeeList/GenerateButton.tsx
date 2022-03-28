@@ -9,7 +9,12 @@ export const GenerateButton = () => {
     
     if (btn !== null) btn.innerHTML = 'Generating...';
 
+    const timer = setTimeout(() => {
+      if (btn !== null) btn.innerHTML = 'This may take a moment...';
+    }, 5000);
+
     API.runScheduler(eIDs).then((resp) => {
+      clearTimeout(timer);
       if (btn !== null) btn.innerHTML = 'Rendering...';
       const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday]; // For easier iteration
       allBlocks.forEach((day: APICourseBlock[], oidx: number) => {
