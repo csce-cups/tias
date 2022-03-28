@@ -7,6 +7,7 @@ import Scheduling from './Scheduling';
 import Landing from './Landing';
 import './../Components/common.scss';
 import { APIContext } from '../Components/APIContext';
+import { LabSwap } from '../Components/LabSwap/LabSwap';
 
 export const App = () => {
   return (
@@ -18,6 +19,7 @@ export const App = () => {
             <Route path='/' element={<Landing/>} />
             <Route path='/Scheduling' element={<Scheduling/>} />
             <Route path='/Profile' element={<Profile/>} />
+            <Route path='/Labswap' element={<LabSwap/>} />
           </Routes>
         </Router>
       </APIContext>

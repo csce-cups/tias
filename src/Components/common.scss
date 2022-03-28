@@ -694,6 +694,9 @@ img.back-arrow {
 	position: absolute;
 }
 
+.sidebar {
+	max-width: 400px;
+}
 .profile-picture {
 	max-width: min(250px, 20vw);
 	flex: 1 1 auto;	
