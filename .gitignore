@@ -105,3 +105,6 @@ dist
 
 # OSX Ignores
 .DS_Store
+
+# VS Code Ignores
+.vscode

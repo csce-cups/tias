@@ -3,7 +3,8 @@ param (
     [String] $pghost,
     [String] $pgpassword,
     [String] $pgdatabase,
-    [System.Int16] $pgport
+    [System.Int16] $pgport,
+    [String] $prog
 )
 
 $env:PGUSER = $pguser
@@ -12,7 +13,7 @@ $env:PGPASSWORD = $pgpassword
 $env:PGDATABASE = $pgdatabase
 $env:PGPORT = $pgport
 
-node loader.js
+node $prog
 
 Remove-Item Env:\PGUSER
 Remove-Item Env:\PGHOST

@@ -17,9 +17,13 @@ CREATE TYPE meeting_type AS ENUM
 DROP TABLE IF EXISTS person CASCADE;
 CREATE TABLE person (
 	person_id SERIAL PRIMARY KEY,
+	google_token_sub VARCHAR NOT NULL,
+	email VARCHAR NOT NULL,
 	first_name VARCHAR NOT NULL,
 	last_name VARCHAR NOT NULL,
-	peer_teacher BOOLEAN,
+	profile_photo_url VARCHAR NOT NULL,
+	desired_number_assignments INTEGER NOT NULL DEFAULT 2,
+	peer_teacher BOOLEAN DEFAULT 'true',
 	teaching_assistant BOOLEAN,
 	administrator BOOLEAN,
 	professor BOOLEAN
@@ -63,7 +67,7 @@ DROP TABLE IF EXISTS qualification CASCADE;
 CREATE TABLE qualification (
 	person_id INTEGER REFERENCES person(person_id),
 	course_id INTEGER REFERENCES course(course_id),
-	grade CHAR NOT NULL DEFAULT 'X',
+	qualified BOOLEAN NOT NULL DEFAULT 'false',
 	PRIMARY KEY(person_id, course_id)
 );
 
@@ -73,7 +77,9 @@ CREATE TABLE course_section (
 	course_id INTEGER REFERENCES course(course_id) NOT NULL,
     person_id_professor INTEGER REFERENCES course(course_id),
 	section_number CHAR(3) NOT NULL,
-    peer_teachable BOOLEAN
+	placeholder_professor_name VARCHAR,
+    capacity_peer_teachers INT DEFAULT 2,
+    capacity_teaching_assistants INT
 );
 
 DROP TABLE IF EXISTS section_meeting CASCADE;

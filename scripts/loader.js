@@ -83,6 +83,9 @@ const update_course_sections = (
     section_id: section_id,
     person_id_professor: null,
     section_number: section_number,
+    placeholder_professor_name: null,
+    capacity_peer_teachers: null,
+    capacity_teaching_assistants: null,
     weekday: weekday_map[weekday],
     start_time: to_db_time(start_time),
     end_time: to_db_time(end_time),
@@ -152,7 +155,7 @@ client
       `
         SELECT
           course.course_id, course.department, course.course_number, course.course_name,
-          course_section.section_id, course_section.person_id_professor, course_section.section_number,
+          course_section.section_id, course_section.person_id_professor, course_section.section_number, course_section.placeholder_professor_name, course_section.capacity_peer_teachers, course_section.capacity_teaching_assistants,
           section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, section_meeting.place, section_meeting.meeting_type
         FROM course
         LEFT OUTER JOIN course_section
