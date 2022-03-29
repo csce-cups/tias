@@ -17,7 +17,7 @@ public class Person implements Comparable<Person> {
     ArrayList<Availability> availabilities;
     HashMap<Integer, Preference> preferences;
     HashMap<Integer, Qualification> qualifications;
-    HashMap<Integer, Section> sections;
+    HashMap<Integer, Section> assignedSections;
 
     ArrayList<Integer> availableSections;
     float availabilityScore;
@@ -36,7 +36,7 @@ public class Person implements Comparable<Person> {
         this.availabilities = new ArrayList<Availability>();
         this.preferences = new HashMap<Integer, Preference>();
         this.qualifications = new HashMap<Integer, Qualification>();
-        this.sections = new HashMap<Integer, Section>();
+        this.assignedSections = new HashMap<Integer, Section>();
 
         availableSections = new ArrayList<>();
         availabilityScore = 0.f;
@@ -117,12 +117,12 @@ public class Person implements Comparable<Person> {
         return (ArrayList<Integer>) Collections.unmodifiableList(availableSections);
     }
 
-    public int getCurrentAssignments() {
-        return sections.size();
+    public int getNumberCurrentlyAssigned() {
+        return assignedSections.size();
     }
     
     public void addCurrentAssignment(Section section) {
-        sections.put(section.getSectionId(), section);
+        assignedSections.put(section.getSectionId(), section);
     }
 
     boolean isQualified(int courseId) {
@@ -162,7 +162,7 @@ public class Person implements Comparable<Person> {
     }
 
     public boolean alreadyAssigned(String weekday, Time start, Time end) {
-        for (Section section : sections.values()) {
+        for (Section section : assignedSections.values()) {
             for (Meeting meeting : section.getMeetings()) {
                 if (weekday.equals(meeting.getWeekday()) && !(meeting.getStartTime().after(end) || meeting.getEndTime().before(start))) {
                     return true;
@@ -219,7 +219,7 @@ public class Person implements Comparable<Person> {
                 + availabilityScore + ", availableSections=" + availableSections + ", desiredNumberAssignments="
                 + desiredNumberAssignments + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
                 + ", peerTeacher=" + peerTeacher + ", personId=" + personId + ", preferences=" + preferences
-                + ", professor=" + professor + ", qualifications=" + qualifications + ", sections=" + sections
+                + ", professor=" + professor + ", qualifications=" + qualifications + ", sections=" + assignedSections
                 + ", teachingAssistant=" + teachingAssistant + "]";
     }
 
