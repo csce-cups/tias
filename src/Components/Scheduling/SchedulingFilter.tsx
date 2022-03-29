@@ -1,49 +1,31 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 
 interface Props {
-  filter: any//object int:bool
+  filter: Map<number, boolean>
   setFilter: Function
-}
-const base = {
-  110: true,
-  111: true,
-  120: true,
-  121: true,
-  206: true,
-  221: true,
-  222: true,
-  312: true,
-  314: true,
-  313: true,
-  315: true
 }
 
 export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
-  let filter_subjects = ['110', '111', '120', '121', '206', '221', '222', '312', '313', '314', '315'];
+  let filter_subjects = Array.from(filter.keys()).map(key => `${key}`);
   const showAll = 'Show All'
   let filter_elements = [];
 
   const update = (target: string) => () => {
     if (target === showAll) {
-      setFilter(base); // All courses shown true
+      setFilter(new Map(filter_subjects.map(key => [parseInt(key), true]))) // All courses shown true
     } else {
       let n: number = parseInt(target);
-      setFilter((prev: any) => {
-        let temp = { ...prev }
-        temp[n] = !prev[n];
-        return temp;
-      });
+      setFilter(new Map(filter.set(n, !filter.get(n))));
     }   
   }
 
   const len = filter_subjects.length
 
-  for (let i = 0; i < len; i++) {
-    // Enabled filters are shown in black (monitored by filter[parseInt(filter_subjects[i])])
-    filter_elements[i] = <div onClick={update(filter_subjects[i])} className="center filter element" key={`filter-${filter_subjects[i]}`} style={{ 
-      textDecoration: filter[parseInt(filter_subjects[i])]? undefined : 'line-through'
-    }}>{filter_subjects[i]}</div>
-  }
+  filter_subjects.forEach((subject, i) => {
+    filter_elements[i] = <div onClick={update(subject)} className="center filter element" key={`filter-${subject}-${filter.get(parseInt(subject))}`} style={{ 
+      textDecoration: filter.get(parseInt(subject))? undefined : 'line-through'
+    }}>{subject}</div>
+  })
 
   // The last element is the toggle  
   filter_elements.push(<div onClick={update(showAll)} className="center filter element" key={`filter-showall`} style={{ 

@@ -5,7 +5,7 @@ import { SchedulingFilter } from '../../../Components/Scheduling/SchedulingFilte
 
 describe('SchedulingFilter', () => {
     it('displays courses', () => {
-        render(< SchedulingFilter filter={{}} setFilter={() => {}}/>)
+        render(< SchedulingFilter filter={new Map()} setFilter={() => {}}/>)
 
         expect(screen.getByText(/121/)).toBeInTheDocument();
         expect(screen.getByText(/221/)).toBeInTheDocument();

@@ -11,7 +11,7 @@ let start = new Date(0);
 start.setHours(8);
 
 interface Props {
-  filter: Object //int -> bool
+  filter: Map<number, boolean>
 }
 
 export const SchedulingRender: FC<Props> = ({filter}) => {
