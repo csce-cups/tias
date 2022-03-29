@@ -4,7 +4,9 @@ import { SchedulingFilter } from './SchedulingFilter'
 import contexts from '../APIContext'
 import { APICourseBlock, APICourseBlockWeek } from '../../modules/API'
 
-interface Props {}
+interface Props {
+  blocktype?: React.ElementType // What type of block to render
+}
 
 export const SchedulingWindow: FC<Props> = () => {
   const [blocks, _] = useContext(contexts.blocks);

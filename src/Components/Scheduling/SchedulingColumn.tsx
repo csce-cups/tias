@@ -3,6 +3,7 @@ import { SchedulingBlock } from './SchedulingBlock';
 import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
 import back_arrow from '../../assets/back_arrow_icon.svg'
+import { SpacerBlock } from './SpacerBlock';
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -180,14 +181,14 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, bool
     return ({
       collisionRatio: maxes[maxi].count,
       render: maxes[maxi].arr.map((_, idx: number) => (
-        < SchedulingBlock spacer={true} visible={maxes.some(e => {
+        < SpacerBlock visible={maxes.some(e => {
           if (idx >= e.arr.length || maxes[maxi].count === 0 || !filter.get(blocks[e.arr[idx]].course_number)) return false;
           else {
             maxes[maxi].count--;
             renderCount--;
             return true;
           }
-        })} linkIDs={[]} key={`${key}-${idx}`}/>
+        })} key={`${key}-${idx}`}/>
       ))
     })
   }
@@ -229,9 +230,9 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, bool
           { preparedBlock.collisions_left.map((collision: number, idx: number) => {
             collisionReferences.get(bidx).push(collision);
             if (blocks[bidx].start_time.getTime() === blocks[collision].start_time.getTime() && blocks[bidx].end_time.getTime() === blocks[collision].end_time.getTime()) {
-              return < SchedulingBlock spacer={true} size={'auto'} visible={filter.get(blocks[collision].course_number)!} linkIDs={[]} key={`left-spacer-${idx}`}/>
+              return < SpacerBlock size={'auto'} visible={filter.get(blocks[collision].course_number)!} key={`left-spacer-${idx}`}/>
             }
-            return < SchedulingBlock spacer={true} size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter.get(blocks[collision].course_number)!} linkIDs={[]} key={`left-spacer-${idx}`}/>
+            return < SpacerBlock size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter.get(blocks[collision].course_number)!} key={`left-spacer-${idx}`}/>
           })}
           < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter.get(block.course_number)!} linkIDs={block.scheduled} key={`block-${JSON.stringify(block)}`}/>
           { rightSpacers.render }
