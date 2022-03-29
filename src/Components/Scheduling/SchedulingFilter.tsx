@@ -6,7 +6,7 @@ interface Props {
 }
 
 export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
-  let filter_subjects = Array.from(filter.keys()).map(key => `${key}`);
+  let filter_subjects = Array.from(filter.keys()).map(key => `${key}`).sort();
   const showAll = 'Show All'
   let filter_elements = [];
 

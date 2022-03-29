@@ -396,6 +396,10 @@ $day_divider_size : 1.5px;
 		.block-detail {
 			display: none;
 		}
+		
+		.hidden {
+			display: none !important; // I don't care
+		}
 	}
 
 	.block.spacer {
@@ -633,15 +637,6 @@ $day_divider_size : 1.5px;
 	flex: 0 1 15px;
 	border-bottom: 0;
 }
-
-// .hat-container .hat.alert {
-// 	background: linear-gradient(135deg, red 8px, black 8px, black 9px, transparent 9px);//, #ffffff 15%, #5cbcb0 15%);
-//   /* Start #5cbcb0 from 0 and end at 5%, Start #fff at 5% and end at 15%, Start #5cbcb0 again at 15% and end at 100% */
-// 	background-size: 593.97px 593.97px;
-// 	background-repeat: no-repeat; /* To avoid multiple instances */
-	
-// 	color: transparent;
-// }
 
 .hat-container.selected {
 	flex: 0 0 0.2em;
