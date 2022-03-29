@@ -4,6 +4,7 @@ import uuid from '../../uuid';
 import { APICourseBlock } from '../../modules/API'
 import back_arrow from '../../assets/back_arrow_icon.svg'
 import { SpacerBlock } from './SpacerBlock';
+import RenderBlockProps from './BlockBase';
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -15,6 +16,7 @@ interface RenderCourseBlock extends APICourseBlock {
 }
 
 interface Props {
+  blocktype: React.FC<RenderBlockProps>
   blocks?: any // The blocks to be displayed for this day of the week
   filter: Map<number, boolean>
   day: string // The day of the week
@@ -35,15 +37,13 @@ const start_time_to_top = (start: Date, pstart: Date = startTime, parent: number
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: APICourseBlock[] | null, filter: Map<number, boolean>) => {
+const placeBlocks = (data: APICourseBlock[] | null, filter: Map<number, boolean>, blocktype: React.FC<RenderBlockProps>) => {
   // If no data, do nothing
-  if (data === null) {
-    return (
-      <div className="vstack absolute">
-        <div className="day-loading">Loading...</div>
-      </div>
-    )
-  }
+  if (data === null) return (
+    <div className="vstack absolute">
+      <div className="day-loading">Loading...</div>
+    </div>
+  )
 
   if (data.length === 0) return <></>;
   
@@ -68,11 +68,7 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: Map<number, boole
     // They're equal
     else return 0;
   });
-  
-  return placeBlocks(data, filter);
-}
 
-const placeBlocks = (data: APICourseBlock[], filter: Map<number, boolean>) => {
   let line: APICourseBlock[] = [];
   let layered: APICourseBlock[][] = [];
   
@@ -90,7 +86,7 @@ const placeBlocks = (data: APICourseBlock[], filter: Map<number, boolean>) => {
       inline = false;
     } else { // Not, staggered but different line
       if (!inline) { // Commit the staggered bits and flush the buffer
-        returns.push(...placeStaggeredBlocks(line, filter));
+        returns.push(...placeStaggeredBlocks(line, filter, blocktype));
         line = [];
         inline = true;
       } else {
@@ -104,16 +100,16 @@ const placeBlocks = (data: APICourseBlock[], filter: Map<number, boolean>) => {
     line.push(block);
   });
 
-  if (!inline) returns.push(...placeStaggeredBlocks(line, filter));
+  if (!inline) returns.push(...placeStaggeredBlocks(line, filter, blocktype));
   else if (line.length > 0) layered.push(line);
 
-  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter));
+  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter, blocktype));
 
   return returns;
 }
 
 // Requires input to be pre-layered
-const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: Map<number, boolean>): JSX.Element[] => {
+const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: Map<number, boolean>, blocktype: React.FC<RenderBlockProps>): JSX.Element[] => {
   return (
     layered_data.map((layer: APICourseBlock[]) => (
       <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(layer)}`} style={{ 
@@ -122,14 +118,20 @@ const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: Map<number,
         top: `${start_time_to_top(layer[0].start_time)}%`
       }}>
         { layer.map((block: APICourseBlock) => (
-          < SchedulingBlock course_instance={block} visible={filter.get(block.course_number)!} linkIDs={block.scheduled} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+          // < SchedulingBlock data={{course_instance: block, linkIDs: block.scheduled}} visible={filter.get(block.course_number)!} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+          React.createElement(blocktype, {
+            data: {course_instance: block, linkIDs: block.scheduled},
+            visible: filter.get(block.course_number)!,
+            inline: true,
+            key: `deep-unravel-block-${JSON.stringify(block)}`,
+          })
         ))}
       </div>
     )
   ))
 }
 
-const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, boolean>) => {
+const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, boolean>, blocktype: React.FC<RenderBlockProps>) => {
   // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
   const registerCollisions = (block: APICourseBlock, idx: number): RenderCourseBlock => ({...block, ...findCollisions(block.start_time, block.end_time, idx)});
   const findCollisions = (region_start: Date, region_end: Date, loc: number, arr_start: number = 0, arr_end: number = blocks.length-1) => {
@@ -237,7 +239,14 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, bool
             }
             return < SpacerBlock size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter.get(blocks[collision].course_number)!} key={`left-spacer-${idx}`}/>
           })}
-          < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter.get(block.course_number)!} linkIDs={block.scheduled} key={`block-${JSON.stringify(block)}`}/>
+          {/* < SchedulingBlock data={{course_instance: block, linkIDs: block.scheduled}} size={calcSelf()} visible={filter.get(block.course_number)!} key={`block-${JSON.stringify(block)}`}/> */}
+          { React.createElement(blocktype, {
+            data: {course_instance: block, linkIDs: block.scheduled},
+            size: calcSelf(),
+            visible: filter.get(block.course_number)!,
+            inline: true,
+            key: `block-${JSON.stringify(block)}`,
+          })}
           { rightSpacers.render }
         </div>
       )
@@ -245,9 +254,11 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, bool
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours, options}) => {
+export const SchedulingColumn: FC<Props> = ({blocktype, blocks, filter, day, hours, options}) => {
   const [detailed, setDetailed] = useState(false);
   const [hatsHidden, setHatsHidden] = useState(false);
+
+  const selectable = (options?.selectable === false)? false : true;
 
   const id = uuid();
   if (hours !== undefined) numHours = hours;
@@ -293,7 +304,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours, options
   }
 
   return (
-    <div className={`vstack day column ${options?.selectable? 'grow-h' : ''}`} id={id} onClick={options?.selectable? select : () => {}}>
+    <div className={`vstack day column ${selectable? 'grow-h' : ''}`} id={id} onClick={selectable? select : () => {}}>
       { (detailed) ? 
         <div className="day-label hstack detailed" style={{padding: 0}}>
           <div className="exit btn element detailed hstack" onClick={deselect}>
@@ -330,7 +341,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours, options
       }
       <div className="vstack day" >
         { dividers }
-        { generateBlocks(blocks, filter) }
+        { placeBlocks(blocks, filter, blocktype) }
       </div>
     </div>
   )

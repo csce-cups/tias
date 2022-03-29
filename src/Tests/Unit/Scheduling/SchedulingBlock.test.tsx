@@ -13,8 +13,8 @@ export interface APICourseBlock {
 }
 
 describe('SchedulingBlock', () => {
-    const renderSubject = () => render(< SchedulingBlock visible={true} course_instance={
-        {
+    const renderSubject = () => render(< SchedulingBlock visible={true} data={{
+        course_instance: {
             department: "CSCE",
             course_number: 121,
             section_number: 100,
@@ -24,8 +24,9 @@ describe('SchedulingBlock', () => {
             weekday: "none listed",
             place: "nowhere",
             scheduled: null
-        }
-    } linkIDs={[]}/>);
+        },
+        linkIDs: []
+    }} />);
 
     it('displays the course', () => {
         renderSubject();

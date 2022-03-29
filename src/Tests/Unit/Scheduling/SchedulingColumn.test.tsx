@@ -2,17 +2,18 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { SchedulingColumn } from '../../../Components/Scheduling/SchedulingColumn';
 import BlockFormer from '../../../modules/BlockFormer'
+import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock';
 
-describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
+describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependent)', () => {
     it('exists', () => {
-        render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+        render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
             {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
         ]} />);
     });
     
     describe('Single elements', () => {
         it('displays one short element', () => {
-            render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+            render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                 {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
             ]}/>)
             
@@ -21,7 +22,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
         });
         
         it('displays one medium element', () => {
-            render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+            render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                 {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
             ]}/>)
             
@@ -30,7 +31,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
         });
         
         it('displays one long element', () => {
-            render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+            render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                 {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
             ]}/>)
             
@@ -43,7 +44,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
         describe('Same starting time', () => {
             describe('Same Size', () => {
                 it('displays small elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
@@ -55,7 +56,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays medium elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
                         {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
@@ -67,7 +68,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays large elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
                         {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
@@ -82,7 +83,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
     
             describe('2 Different Sizes', () => {
                 it('displays small and medium elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
                         {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
@@ -98,7 +99,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays small and large elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
                         {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
@@ -114,7 +115,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays medium and large elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
                         {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
@@ -134,7 +135,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
         describe('Different starting times', () => {
             describe('Same Size', () => {
                 it('displays small elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
@@ -152,7 +153,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays medium elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
                         {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
@@ -170,7 +171,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays large elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
                         {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
@@ -190,7 +191,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
     
             describe('2 Different Sizes', () => {
                 it('displays small and medium elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
@@ -220,7 +221,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays small and large elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
@@ -249,7 +250,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays medium and large elements', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
                         {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
@@ -278,7 +279,7 @@ describe('SchedulingColumn (SchedulingBlock Dependent)', () => {
                 });
 
                 it('displays differently sized elements at different times', () => {
-                    render(< SchedulingColumn day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
                         {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
                         {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
                         

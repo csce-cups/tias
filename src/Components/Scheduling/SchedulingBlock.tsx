@@ -17,11 +17,14 @@ colors.set(314, '#807391');
 colors.set(315, '#6e438c');
 
 interface Props extends RenderBlockProps {
-  course_instance?: APICourseBlock
-  linkIDs: number[] | null
+  data: {
+    course_instance?: APICourseBlock
+    linkIDs: number[] | null
+  }
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, size, inline}) => {
+export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
+  const {course_instance, linkIDs} = data;
   let flex = calcFlex(visible, inline, size);
 
   const isVisible = {

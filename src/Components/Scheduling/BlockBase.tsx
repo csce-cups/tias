@@ -3,6 +3,7 @@ export default interface RenderBlockProps {
   visible: boolean
   size?: string
   inline?: boolean
+  data: any
 }
 
 export const calcFlex = (visible: boolean, inline?: boolean, size?: string) => {

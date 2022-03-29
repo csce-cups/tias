@@ -4,6 +4,7 @@ import { SchedulingTimes } from './SchedulingTimes';
 import BlockFormer from '../../modules/BlockFormer';
 import contexts from '../APIContext';
 import { APICourseBlockWeek } from '../../modules/API';
+import { SchedulingBlock } from './SchedulingBlock';
 
 const hours = 12;
 // const start = new Date(12*24*60*60*1000);
@@ -25,11 +26,11 @@ export const SchedulingRender: FC<Props> = ({filter, options}) => {
         < contexts.blocks.Consumer >
           {([blocks, setBlocks]) => (
             <>
-              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Monday'} blocks={blocks.Monday} />
-              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Tuesday'} blocks={blocks.Tuesday} />
-              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Wednesday'} blocks={blocks.Wednesday} />
-              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Thursday'} blocks={blocks.Thursday} />
-              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Friday'} blocks={blocks.Friday} />
+              < SchedulingColumn blocktype={SchedulingBlock} hours={hours} filter={filter} options={options} day={'Monday'} blocks={blocks.Monday} />
+              < SchedulingColumn blocktype={SchedulingBlock} hours={hours} filter={filter} options={options} day={'Tuesday'} blocks={blocks.Tuesday} />
+              < SchedulingColumn blocktype={SchedulingBlock} hours={hours} filter={filter} options={options} day={'Wednesday'} blocks={blocks.Wednesday} />
+              < SchedulingColumn blocktype={SchedulingBlock} hours={hours} filter={filter} options={options} day={'Thursday'} blocks={blocks.Thursday} />
+              < SchedulingColumn blocktype={SchedulingBlock} hours={hours} filter={filter} options={options} day={'Friday'} blocks={blocks.Friday} />
             </>
           )}
         </contexts.blocks.Consumer>
