@@ -19,6 +19,9 @@ interface Props {
   filter: Map<number, boolean>
   day: string // The day of the week
   hours?: number // The number of hours in a day
+  options?: {
+    selectable?: boolean
+  }
 }
 
 // Breaks for 3 different lengths in a block
@@ -242,9 +245,10 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, bool
   )
 }
 
-export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
+export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours, options}) => {
   const [detailed, setDetailed] = useState(false);
   const [hatsHidden, setHatsHidden] = useState(false);
+
   const id = uuid();
   if (hours !== undefined) numHours = hours;
 
@@ -289,7 +293,7 @@ export const SchedulingColumn: FC<Props> = ({blocks, filter, day, hours}) => {
   }
 
   return (
-    <div className="vstack grow-h day column" id={id} onClick={select}>
+    <div className={`vstack day column ${options?.selectable? 'grow-h' : ''}`} id={id} onClick={options?.selectable? select : () => {}}>
       { (detailed) ? 
         <div className="day-label hstack detailed" style={{padding: 0}}>
           <div className="exit btn element detailed hstack" onClick={deselect}>

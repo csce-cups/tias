@@ -12,9 +12,12 @@ start.setHours(8);
 
 interface Props {
   filter: Map<number, boolean>
+  options?: {
+    selectable?: boolean
+  }
 }
 
-export const SchedulingRender: FC<Props> = ({filter}) => {
+export const SchedulingRender: FC<Props> = ({filter, options}) => {
   return (
     <div className="render-container">
       < SchedulingTimes hours={hours} start={start}/>
@@ -22,11 +25,11 @@ export const SchedulingRender: FC<Props> = ({filter}) => {
         < contexts.blocks.Consumer >
           {([blocks, setBlocks]) => (
             <>
-              < SchedulingColumn hours={hours} filter={filter} day={'Monday'} blocks={blocks.Monday} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Tuesday'} blocks={blocks.Tuesday} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Wednesday'} blocks={blocks.Wednesday} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Thursday'} blocks={blocks.Thursday} />
-              < SchedulingColumn hours={hours} filter={filter} day={'Friday'} blocks={blocks.Friday} />
+              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Monday'} blocks={blocks.Monday} />
+              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Tuesday'} blocks={blocks.Tuesday} />
+              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Wednesday'} blocks={blocks.Wednesday} />
+              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Thursday'} blocks={blocks.Thursday} />
+              < SchedulingColumn hours={hours} filter={filter} options={options} day={'Friday'} blocks={blocks.Friday} />
             </>
           )}
         </contexts.blocks.Consumer>

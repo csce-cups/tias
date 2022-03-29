@@ -1,6 +1,4 @@
 import React, { FC } from 'react'
-import { Hat } from '../Misc/Hat';
-import { APICourseBlock } from '../../modules/API';
 
 interface Props {
   visible: boolean

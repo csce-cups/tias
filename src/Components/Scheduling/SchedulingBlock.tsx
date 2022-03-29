@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 import { Hat } from '../Misc/Hat';
 import { APICourseBlock } from '../../modules/API';
+import RenderBlockProps, { calcFlex } from './BlockBase';
 
 const colors = new Map();
 colors.set(110, '#4F405A');
@@ -15,36 +16,20 @@ colors.set(313, '#434F6F');
 colors.set(314, '#807391');
 colors.set(315, '#6e438c');
 
-interface Props {
-  course_instance?: APICourseBlock,
-  visible: boolean,
-  linkIDs: number[] | null,
-  spacer?: boolean,
-  size?: string,
-  inline?: boolean,
+interface Props extends RenderBlockProps {
+  course_instance?: APICourseBlock
+  linkIDs: number[] | null
 }
 
-export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, spacer, size, inline}) => {
-  let flex: string | undefined = '0 0 0';
-  if (!visible && inline === true) flex = '0 0 auto';
-  else if (size && visible && size === 'auto') flex = `1 1 auto`
-  else if (size && visible) flex = `0 0 ${size}`
-  else if (visible && spacer) flex = '1 1 auto'
-  else if (visible) flex = undefined
+export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, size, inline}) => {
+  let flex = calcFlex(visible, inline, size);
 
   const isVisible = {
     width: (visible)? undefined : 0,
     flex: flex,
     margin: visible? undefined : 0
   }
-
-  const isContentVisible = {
-    ...isVisible,
-    display: visible? undefined : 'none'
-  }
-
-  if (spacer === true) return <div className="block spacer" style={isVisible}/>
-
+  
   const body = () => {
     if (linkIDs === null) return <></>
     else if (linkIDs.length === 0) {

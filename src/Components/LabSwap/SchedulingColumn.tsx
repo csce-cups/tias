@@ -58,10 +58,6 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any, compress: bo
     // Sort by course number
     else if (a.course_number < b.course_number) return -1;
     else if (a.course_number > b.course_number) return 1;
-
-    // Sort by section number (N/A to courses)
-    // else if (a.section_number < b.section_number) return -1;
-    // else if (a.section_number > b.section_number) return 1;
     
     // They're equal
     else return 0;
@@ -110,9 +106,6 @@ const placeBlocks = (data: APICourseBlock[], filter: any, compress: boolean) => 
   return returns;
 }
 
-const r = () => Math.floor(Math.random() * 40);
-const randIDs = () => [r(), r(), r(), r()].filter((e, i, s) => s.indexOf(e) === i);
-
 // Requires input to be pre-layered
 const placeInlineBlocks = (layered_data: APICourseBlock[][] | CompressedCourseBlock[][], filter: any, compress: boolean): JSX.Element[] => {
   return (
@@ -128,7 +121,7 @@ const placeInlineBlocks = (layered_data: APICourseBlock[][] | CompressedCourseBl
           ))
           :
           layer.map((block: APICourseBlock) => (
-            < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+            < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={[]} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
           ))
         }
       </div>
@@ -247,7 +240,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any, compress: b
           { (compress)?
             < CourseBlock size={calcSelf()} course_instance={block as CompressedCourseBlock} visible={filter[block.course_number]} key={`block-${JSON.stringify(block)}`}/>
             :
-            < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={randIDs()} key={`block-${JSON.stringify(block)}`}/>
+            < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={[]} key={`block-${JSON.stringify(block)}`}/>
           }
           { rightSpacers.render }
         </div>
