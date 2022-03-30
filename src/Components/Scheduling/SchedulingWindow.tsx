@@ -13,7 +13,6 @@ export const SchedulingWindow: FC<Props> = () => {
   useEffect(() => {
     let filterMap = new Map<number, boolean>();
     const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
-    console.log(allBlocks)
     allBlocks.forEach((blocks: APICourseBlock[] | null) => {
       blocks?.forEach((block: APICourseBlock) => {
         filterMap.set(block.course_number, true)
