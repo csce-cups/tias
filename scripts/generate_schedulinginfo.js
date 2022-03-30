@@ -40,10 +40,26 @@ const preference_list = [
   "Prefer To Do"
 ]
 
-const float_hours_to_db_time = (time) => {
-  let hours = Math.floor(time);
+const qualified_probability = {
+  "CSCE 110": 1.0,
+  "CSCE 111": 0.4,
+  "CSCE 120": 0.95,
+  "CSCE 121": 0.95,
+  "CSCE 206": 0.3,
+  "CSCE 221": 0.65,
+  "CSCE 222": 0.2,
+  "CSCE 312": 0.4,
+  "CSCE 313": 0.35,
+  "CSCE 314": 0.2,
+  "CSCE 315": 0.35,
+  "CSCE 331": 0.35
+}
 
-  let minutes = Math.floor((time - hours) * 60);
+
+const date_to_db_time = (time) => {
+  let hours = Math.floor(time.getHours());
+
+  let minutes = Math.floor(time.getMinutes());
 
   return `${hours < 10 ? "0" : ""}${hours}:${
     minutes < 10 ? "0" : ""
@@ -51,6 +67,7 @@ const float_hours_to_db_time = (time) => {
 };
 
 let num_courses, num_sections
+const sections_to_be_busy = {}
 
 client
   .connect()
@@ -74,6 +91,33 @@ client
     )
   )
   .then((res) => (num_sections = res.rows[0].count))
+  .then(() => 
+    loader(
+      `
+        SELECT
+          course_section.section_id,
+          section_meeting.weekday, section_meeting.start_time, section_meeting.end_time
+        FROM course_section
+        JOIN section_meeting ON
+          course_section.section_id = section_meeting.section_id
+      `
+    ))
+  .then(res => {
+    for (let row of res.rows) {
+      if (sections_to_be_busy[row.section_id] === undefined) {
+        sections_to_be_busy[row.section_id] = []
+      }
+      let start_time = new Date(0);
+      let end_time = new Date(0);
+      let colon_index = row.start_time.indexOf(':')
+      start_time.setHours(+row.start_time.substring(0, colon_index))
+      start_time.setMinutes(+row.start_time.substring(colon_index + 1, row.start_time.indexOf(':', colon_index + 1)))
+      colon_index = row.end_time.indexOf(':')
+      end_time.setHours(+row.end_time.substring(0, colon_index))
+      end_time.setMinutes(+row.end_time.substring(colon_index + 1, row.end_time.indexOf(':', colon_index + 1)))
+      sections_to_be_busy[row.section_id].push({weekday: row.weekday, start_time, end_time})
+    }
+  })
   .then(() =>
     loader(
       `
@@ -84,105 +128,71 @@ client
     )
       .then((res) => res.rows)
       .then((people) => {
+        console.log(sections_to_be_busy)
         let modifications = [];
         for (let person of people) {
-          let num_qualifications = Math.floor(Math.random() * num_courses / 2) + 3;
-          if (num_qualifications > 0) {
-            let qualifications = new Set();
-            while (qualifications.size < num_qualifications) {
-              qualifications.add(Math.floor(Math.random() * num_courses) + 1);
-            }
-            let qualString = `
-              INSERT INTO qualification
-              VALUES\n
-            `;
-            let acc = 1;
-            let qualList = [];
-            let tempList = [];
-            for (let courseId of qualifications.values()) {
-              tempList.push(`($${acc++}, $${acc++}, $${acc++})`);
-              qualList.push(person.person_id);
-              qualList.push(courseId);
-              qualList.push(Math.random() < 0.9);
-            }
-            qualString += tempList.join(",\n");
-            qualString += "\nON CONFLICT DO NOTHING";
-            modifications.push(loader(qualString, qualList));
+          let qualString = `
+            INSERT INTO qualification
+            VALUES\n
+          `;
+          let courseId = 0, acc = 1;
+          let qualList = [];
+          let tempList = [];
+
+          for (let odds of Object.values(qualified_probability)) {
+            tempList.push(`($${acc++}, $${acc++}, $${acc++})`);
+            qualList.push(person.person_id);
+            qualList.push(++courseId);
+            qualList.push(Math.random() < odds);            
           }
+          qualString += tempList.join(",\n");
+          qualString += "\nON CONFLICT DO NOTHING";
+          modifications.push(loader(qualString, qualList));
 
-          for (let weekday of Math.random() < 0.1
-            ? Object.values(weekday_map)
-            : [
-                ["Monday", "Wednesday", "Friday"],
-                ["Tuesday", "Thursday"],
-              ]) {
-            console.log(weekday);
-            let num_availabilities = Math.floor(Math.random() * 5);
-
-            let window_size = 13 / num_availabilities;
-            for (let i = 0; i < num_availabilities; ++i) {
-              let window_start = i * window_size + 2;
-
-              let time1 = Math.random() * window_size + window_start;
-              let time2 = Math.random() * window_size + window_start;
-
-              let start_time = Math.min(time1, time2);
-              let end_time = Math.max(time1, time2);
-
-              if (typeof weekday === "string") {
-                console.table([
-                  person.person_id,
-                  weekday,
-                  float_hours_to_db_time(start_time),
-                  float_hours_to_db_time(end_time),
-                ]);
-                modifications.push(
-                  loader(
-                    `
-                      INSERT INTO person_availability
-                      VALUES
-                      ($1, $2, $3, $4)
-                      ON CONFLICT DO NOTHING
-                    `,
-                    [
-                      person.person_id,
-                      weekday,
-                      float_hours_to_db_time(start_time),
-                      float_hours_to_db_time(end_time),
-                    ]
-                  )
-                );
-              } else {
-                for (let day of weekday) {
-                  console.table([
-                    person.person_id,
-                    day,
-                    float_hours_to_db_time(start_time),
-                    float_hours_to_db_time(end_time),
-                  ]);
-                  modifications.push(
-                    loader(
-                      `
-                        INSERT INTO
-                        person_availability
-                        VALUES
-                        ($1, $2, $3, $4)
-                        ON CONFLICT DO NOTHING
-                      `,
-                      [
-                        person.person_id,
-                        day,
-                        float_hours_to_db_time(start_time),
-                        float_hours_to_db_time(end_time),
-                      ]
-                    )
-                  )
+          let person_courses = []
+          for (let i = 0; i < 5; ++i) {
+            let section_id = Math.floor(Math.random() * num_sections) + 1
+            let section = sections_to_be_busy[section_id]
+            if (section === undefined) {
+              --i;
+              continue;
+            }
+            let intersects = false
+            for (let course of person_courses) {
+              for (let meeting of course) {
+                if (section.weekday == meeting.weekday && !(section.end_time < meeting.start_time || section.start_time > meeting.end_time)) {
+                  intersects = true
+                  break
                 }
               }
+              if (intersects) break
+            }
+            if (!intersects) {
+              person_courses.push(section)
+            } else {
+              --i; // bad, very very bad
+            }
+          }
+          for (let course of person_courses) {
+            for (let meeting of course) {
+              loader(
+                `
+                  INSERT INTO person_unavailability
+                  VALUES
+                  ($1, $2, $3, $4)
+                  ON CONFLICT DO NOTHING
+                `,
+                [
+                  person.person_id,
+                  meeting.weekday,
+                  date_to_db_time(meeting.start_time),
+                  date_to_db_time(meeting.end_time)
+                ]
+              )
             }
           }
 
-          let num_preferences = Math.random() * 20;
+          let num_preferences = Math.random() * 35;
           if (num_preferences > 0) {
             let preferences = new Set();
             while (preferences.size < num_preferences) {

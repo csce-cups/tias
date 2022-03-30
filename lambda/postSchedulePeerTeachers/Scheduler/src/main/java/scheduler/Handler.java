@@ -24,7 +24,7 @@ import java.util.PriorityQueue;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import db.Availability;
+import db.Unavailability;
 import db.Course;
 import db.Meeting;
 import db.Person;
@@ -160,7 +160,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         while (rs.next())
         {
-            people.get(rs.getInt("person_id")).addAvailability(new Availability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
+            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
         }
 
         rs.close();
@@ -227,7 +227,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         while (rs.next())
         {
-            people.get(rs.getInt("person_id")).addAvailability(new Availability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
+            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
         }
 
         rs.close();

@@ -1,4 +1,4 @@
-CREATE FUNCTION public."ValidCourses"(IN "P_person_id" integer)
+CREATE FUNCTION public."ViableCourses"(IN "P_person_id" integer)
     RETURNS table (course_id course.course_id%TYPE, department course.department%TYPE, course_number course.course_number%TYPE, course_name course.course_name%TYPE,
 	section_id course_section.section_id%TYPE, section_number course_section.section_number%TYPE, placeholder_professor_name course_section.placeholder_professor_name%TYPE,
     preference section_assignment_preference.preference%TYPE,
@@ -13,11 +13,14 @@ SELECT DISTINCT
     section_assignment_preference.preference,
 	section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, section_meeting.place,
 	(section_meeting.end_time - section_meeting.start_time) AS duration
-FROM person_availability
+FROM person_unavailability
 JOIN section_meeting ON
-	person_availability.weekday = section_meeting.weekday
-	AND person_availability.start_time < section_meeting.start_time
-	AND person_availability.end_time > section_meeting.end_time
+	(
+		SELECT COUNT(*) FROM person_unavailability AS pb WHERE
+		pb.weekday = section_meeting.weekday
+		AND pb.start_time < section_meeting.start_time
+		AND pb.end_time > section_meeting.end_time
+	) = 0
 	AND section_meeting.meeting_type = 'Laboratory'
 JOIN course_section ON
 	course_section.section_id = section_meeting.section_id
@@ -30,6 +33,6 @@ JOIN course ON
 LEFT OUTER JOIN section_assignment_preference ON
 	section_assignment_preference.person_id = "P_person_id" AND
 	section_assignment_preference.section_id = section_meeting.section_id
-WHERE person_availability.person_id = "P_person_id"
+WHERE person_unavailability.person_id = "P_person_id"
 ORDER BY section_meeting.weekday, section_meeting.start_time, duration, course.department, course.course_number, course_section.section_number
 $BODY$;

@@ -29,8 +29,9 @@ CREATE TABLE person (
 	professor BOOLEAN
 );
 
-DROP TABLE IF EXISTS person_availability CASCADE;
-CREATE TABLE person_availability (
+DROP TABLE IF EXISTS person_availability CASCADE; -- TODO: Remove
+DROP TABLE IF EXISTS person_unavailability CASCADE;
+CREATE TABLE person_unavailability (
 	person_id INTEGER REFERENCES person(person_id),
 	weekday WEEKDAY,
 	start_time TIME,
