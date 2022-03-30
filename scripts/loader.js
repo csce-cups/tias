@@ -185,7 +185,7 @@ client
           const Room = 8;
           const Instructor = 9;
 
-          const time_zone = +6;
+          const time_zone = +0;
 
           let course_section_first_space = line[CourseSection].indexOf(" ");
           let course_section_slash = line[CourseSection].indexOf("/");
