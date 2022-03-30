@@ -5,16 +5,15 @@ interface Section extends CompressedCourseBlock {
   valid: boolean
 }
 
-interface Props{
+interface Props {
   sections: Section
-  title: String
+  title: string
 }
 
-const days = ["Sun", "M","T","W","H","F","Sat"];
 export const Selection: FC<Props> = ({title, sections}) => {
   //maybe make a colored box display depending on
   let info = (
-    <div>
+    <>
       <p>
         Course: 
       </p>
@@ -25,28 +24,30 @@ export const Selection: FC<Props> = ({title, sections}) => {
         Meeting Time: 
       </p>
       <hr/>
-    </div>
+    </>
   );
+
   if (sections.valid) {
     info = (
-    <div>
-      <p>
-        Course: {sections.course_number}
-      </p>
-      <p>
-        Section: {sections.section_numbers[0]}
-      </p>
-      <p>
-        Meeting Time: {sections.start_time.toLocaleTimeString()}-{sections.end_time.toLocaleTimeString()}
-      </p>
-      <hr/>
-    </div>
-  )
+      <>
+        <p>
+          Course: {sections.course_number}
+        </p>
+        <p>
+          Section: {sections.section_numbers[0]}
+        </p>
+        <p>
+          Meeting Time: {sections.start_time.toLocaleTimeString()}-{sections.end_time.toLocaleTimeString()}
+        </p>
+        <hr/>
+      </>
+    )
   }
+
   return (
     <div style={{width:"12vw"}}>
-        <h1>{title}</h1>
-        <div>{info}</div>
+      <h1>{title}</h1>
+      <div>{info}</div>
     </div>
   )
 }

@@ -7,9 +7,12 @@ import RenderBlockProps from "./BlockBase";
 
 interface Props {
   renderBlockType: React.FC<RenderBlockProps>
+  options?: {
+    selectable?: boolean
+  }
 }
 
-export const SchedulingWindow: FC<Props> = ({renderBlockType}) => {
+export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
   const [blocks, _] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
 
@@ -33,7 +36,7 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType}) => {
 
   return (
     <div className="vstack main">
-      <SchedulingRender renderBlockType={renderBlockType} filter={filter} />
+      <SchedulingRender renderBlockType={renderBlockType} filter={filter} options={options} />
       <SchedulingFilter filter={filter} setFilter={setFilter} />
     </div>
   );

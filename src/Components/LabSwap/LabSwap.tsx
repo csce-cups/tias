@@ -12,13 +12,12 @@ import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
 //render viewce: string
 
 export interface CompressedCourseBlock extends CourseBlock {
-  section_numbers: number[];
+  section_numbers: number[]
 }
 
 const cmp = (
   course1: CompressedCourseBlock,
-  course2: CourseBlock,
-  debug: boolean
+  course2: CourseBlock
 ) => {
   return (
     course1.course_number === course2.course_number &&
@@ -28,8 +27,7 @@ const cmp = (
 };
 
 const compressDay = (
-  courses: Array<CourseBlock> | null,
-  debug: boolean = false
+  courses: Array<CourseBlock> | null
 ) => {
   let compressed: Array<CompressedCourseBlock> = [];
   if (courses === null) return compressed;
@@ -50,13 +48,13 @@ const compressDay = (
     let c: CourseBlock = courses[cidx];
     compressed.push({
       ...c,
-      section_numbers: [c.section_number],
+      section_numbers: [c.section_number]
     });
 
     fidx++; //update to the newly added index
     cidx++; //move to the next uncondensed section
     //while the next course in the array is compatiable with the current one
-    while (cidx < courses.length && cmp(compressed[fidx], courses[cidx], debug)) {
+    while (cidx < courses.length && cmp(compressed[fidx], courses[cidx])) {
       compressed[fidx].section_numbers.push(courses[cidx].section_number);
       cidx++;
     }
@@ -74,11 +72,11 @@ const compressWeek = (week: CourseBlockWeek): CourseBlockWeek => {
   }
 }
 
-export const selectFunction = createContext<any>(null);
+export const selectFunction = createContext<any>(null); // TODO: These should be more strongly typed
 export const LabSwap = () => {
   const [blockWeek, setBlockWeek] = useContext(contexts.blocks);
-  const [requests, setRequests] = useState<any>({ valid: false });
-  const [offers, setOffers] = useState<any>({ valid: false });
+  const [requests, setRequests] = useState<any>({ valid: false }); // TODO: These should be more strongly typed
+  const [offers, setOffers] = useState<any>({ valid: false }); // TODO: These should be more strongly typed
   const selectSection = (course: CompressedCourseBlock, section: number) => {
     let data = {
       valid: true,
@@ -112,7 +110,7 @@ export const LabSwap = () => {
       </div>
       < contexts.blocks.Provider value={blocksPayload} >
         <selectFunction.Provider value={selectSection}>
-          <SchedulingWindow renderBlockType={LabSwapBlock} />
+          <SchedulingWindow renderBlockType={LabSwapBlock} options={{selectable: false}} />
         </selectFunction.Provider>
       </ contexts.blocks.Provider >
     </div>
