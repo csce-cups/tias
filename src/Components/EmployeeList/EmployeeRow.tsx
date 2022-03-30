@@ -17,17 +17,40 @@ export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID}) => {
     setEmployee(employee);
   }
 
+  const styles = () => {
+    let defaults = {
+      textDecoration: undefined as undefined | string,
+      color: undefined as undefined | string
+    }
+
+    if (employee.isScheduled === false) {
+      defaults.color = 'red';
+    } else if (!checked) {
+      defaults.textDecoration = 'line-through';
+    }
+
+    return defaults;
+  }
+
+  const title = () => {
+    if (!checked || employee.isScheduled === false) {
+      return 'This user was not scheduled for any labs';
+    } else {
+      return '';
+    }
+  }
+
   return (
     <>
       <div className="hstack">
         <div className="element left">
           {(checked)? 
-            <input type="checkbox" checked={true} name="employee-row-checkbox" person-id={linkID} onChange={() => handleCheck(false)}/>
+            <input type="checkbox" title="This peer teacher will be scheduled" checked={true} name="employee-row-checkbox" person-id={linkID} onChange={() => handleCheck(false)}/>
             :
-            <input type="checkbox" checked={false} name="employee-row-checkbox" person-id={linkID} onChange={() => handleCheck(true)}/>
+            <input type="checkbox" title="This peer teacher will not be scheduled" checked={false} name="employee-row-checkbox" person-id={linkID} onChange={() => handleCheck(true)}/>
           }
         </div>
-        <div className="element label">
+        <div title={title()} className="element label" style={styles()}>
          {employee.first_name} {employee.last_name}
         </div>
         <div className="element right">

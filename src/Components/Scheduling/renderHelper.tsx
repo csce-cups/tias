@@ -63,13 +63,15 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(data: DataCourseBlock[
   let region_end = data[0].end_time;
   let inline = true;
 
-  const startsDuring = (block: DataCourseBlock) => block.start_time > region_start && block.start_time < region_end;
-  const endsDuring = (block: DataCourseBlock) => block.end_time < region_end && block.end_time > region_start;
-  const isDuring = (block: DataCourseBlock) => block.start_time < region_start && block.end_time > region_end;
+  // const startsDuring = (block: DataCourseBlock) => block.start_time > region_start && block.start_time < region_end;
+  // const endsDuring = (block: DataCourseBlock) => block.end_time < region_end && block.end_time > region_start;
+  // const isDuring = (block: DataCourseBlock) => block.start_time < region_start && block.end_time > region_end;
+
+  const collides = (block: DataCourseBlock) => !(block.end_time < region_start || block.start_time > region_end);
   
   data.forEach((block: DataCourseBlock) => {
     if (inline && block.start_time.getTime() === region_start.getTime() && block.end_time.getTime() === region_end.getTime()) { // Same line as previous
-    } else if (startsDuring(block) || endsDuring(block) || isDuring(block)) { // Staggered
+    } else if (collides(block)) { // Staggered
       inline = false;
     } else { // Not, staggered but different line
       if (!inline) { // Commit the staggered bits and flush the buffer
