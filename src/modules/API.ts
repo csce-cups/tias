@@ -1,7 +1,7 @@
 import axios from 'axios'
 import BlockFormer from './BlockFormer'
 
-const timezone_offset = 6;
+const timezone_offset = 0;
 
 export interface Person {
 	person_id: number
@@ -129,7 +129,7 @@ class API {
 				let dataStrict: raw_APICourseBlockWeek = data;
 				const createDate = (datestring: string): Date => {
 					let d = new Date(0);
-					d.setHours(timezone_offset + parseInt(datestring.substring(0, 2))); // First two digits are the hours
+					d.setHours(parseInt(datestring.substring(0, 2)) - timezone_offset); // First two digits are the hours
 					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
 					return d;
 				}

@@ -1,10 +1,10 @@
 import { CourseBlock } from './API'
 
 const start = 1000 * 60 * 60 * 10;
-const timezone_offset = 6;
+const timezone_offset = 0;
 export const createDate = (datestring: string): Date => {
     let d = new Date(0);
-    d.setHours(timezone_offset + parseInt(datestring.substring(0, 2))); // First two digits are the hours
+    d.setHours(parseInt(datestring.substring(0, 2)) - timezone_offset); // First two digits are the hours
     d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
     return d;
 }
