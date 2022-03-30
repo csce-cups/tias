@@ -75,7 +75,7 @@ DROP TABLE IF EXISTS course_section CASCADE;
 CREATE TABLE course_section (
 	section_id SERIAL PRIMARY KEY,
 	course_id INTEGER REFERENCES course(course_id) NOT NULL,
-    person_id_professor INTEGER REFERENCES course(course_id),
+    person_id_professor INTEGER REFERENCES person(person_id),
 	section_number CHAR(3) NOT NULL,
 	placeholder_professor_name VARCHAR,
     capacity_peer_teachers INT DEFAULT 2,
