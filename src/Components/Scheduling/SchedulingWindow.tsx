@@ -1,30 +1,28 @@
-import React, { FC, useState } from 'react'
-import { SchedulingHeader } from './SchedulingHeader'
+import React, { FC, useContext, useEffect, useState } from 'react'
 import { SchedulingRender } from './SchedulingRender'
 import { SchedulingFilter } from './SchedulingFilter'
+import contexts from '../APIContext'
+import { APICourseBlock, APICourseBlockWeek } from '../../modules/API'
 
-interface Props {
-  
-}
+interface Props {}
 
 export const SchedulingWindow: FC<Props> = () => {
-  const [filter, setFilter] = useState({
-    110: true,
-    111: true,
-    120: true,
-    121: true,
-    206: true,
-    221: true,
-    222: true,
-    312: true,
-    314: true,
-    313: true,
-    315: true
-  });
+  const [blocks, _] = useContext(contexts.blocks);
+  const [filter, setFilter] = useState(new Map<number, boolean>());
+  
+  useEffect(() => {
+    let filterMap = new Map<number, boolean>();
+    const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
+    allBlocks.forEach((blocks: APICourseBlock[] | null) => {
+      blocks?.forEach((block: APICourseBlock) => {
+        filterMap.set(block.course_number, true)
+      })
+    })
+    setFilter(filterMap);
+  }, [blocks]);
 
   return (
     <div className="vstack main">
-      {/* < SchedulingHeader /> */}
       < SchedulingRender filter={filter} />
       < SchedulingFilter filter={filter} setFilter={setFilter}/>
     </div>

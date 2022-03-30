@@ -77,10 +77,10 @@ export const SchedulingBlock: FC<Props> = ({course_instance, visible, linkIDs, s
     >
       { body() }
       <div className="fill"/>
-      <div className="block-text">
+      <div className={`block-text ${visible? '' : 'hidden'}`}>
         {course_instance!.course_number} {course_instance!.section_number}
       </div>
-      <div className="vstack block-detail">
+      <div className={`vstack block-detail ${visible? '' : 'hidden'}`}>
         <div>
           {course_instance!.department} {course_instance!.course_number}-{course_instance!.section_number}
         </div>

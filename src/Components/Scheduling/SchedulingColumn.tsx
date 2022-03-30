@@ -14,10 +14,10 @@ interface RenderCourseBlock extends APICourseBlock {
 }
 
 interface Props {
-  blocks?: any, // The blocks to be displayed for this day of the week
-  filter: Object,
-  day: string, // The day of the week
-  hours?: number, // The number of hours in a day
+  blocks?: any // The blocks to be displayed for this day of the week
+  filter: Map<number, boolean>
+  day: string // The day of the week
+  hours?: number // The number of hours in a day
 }
 
 // Breaks for 3 different lengths in a block
@@ -31,7 +31,7 @@ const start_time_to_top = (start: Date, pstart: Date = startTime, parent: number
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
+const generateBlocks = (data: APICourseBlock[] | null, filter: Map<number, boolean>) => {
   // If no data, do nothing
   if (data === null) {
     return (
@@ -68,7 +68,7 @@ const generateBlocks = (data: APICourseBlock[] | null, filter: any) => {
   return placeBlocks(data, filter);
 }
 
-const placeBlocks = (data: APICourseBlock[], filter: any) => {
+const placeBlocks = (data: APICourseBlock[], filter: Map<number, boolean>) => {
   let line: APICourseBlock[] = [];
   let layered: APICourseBlock[][] = [];
   
@@ -109,7 +109,7 @@ const placeBlocks = (data: APICourseBlock[], filter: any) => {
 }
 
 // Requires input to be pre-layered
-const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: any): JSX.Element[] => {
+const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: Map<number, boolean>): JSX.Element[] => {
   return (
     layered_data.map((layer: APICourseBlock[]) => (
       <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(layer)}`} style={{ 
@@ -118,14 +118,14 @@ const placeInlineBlocks = (layered_data: APICourseBlock[][], filter: any): JSX.E
         top: `${start_time_to_top(layer[0].start_time)}%`
       }}>
         { layer.map((block: APICourseBlock) => (
-          < SchedulingBlock course_instance={block} visible={filter[block.course_number]} linkIDs={block.scheduled} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
+          < SchedulingBlock course_instance={block} visible={filter.get(block.course_number)!} linkIDs={block.scheduled} inline={true} key={`deep-unravel-block-${JSON.stringify(block)}`}/>
         ))}
       </div>
     )
   ))
 }
 
-const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
+const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: Map<number, boolean>) => {
   // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
   const registerCollisions = (block: APICourseBlock, idx: number): RenderCourseBlock => ({...block, ...findCollisions(block.start_time, block.end_time, idx)});
   const findCollisions = (region_start: Date, region_end: Date, loc: number, arr_start: number = 0, arr_end: number = blocks.length-1) => {
@@ -150,7 +150,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
       let spacerCount = 0;
       collisions.forEach((e: number) => {
         if (doesCollide(line, blocks[e])) {
-          if (filter[blocks[e].course_number]) spacerCount++;
+          if (filter.get(blocks[e].course_number)) spacerCount++;
           found.push(e);
         }
       })
@@ -181,7 +181,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
       collisionRatio: maxes[maxi].count,
       render: maxes[maxi].arr.map((_, idx: number) => (
         < SchedulingBlock spacer={true} visible={maxes.some(e => {
-          if (idx >= e.arr.length || maxes[maxi].count === 0 || !filter[blocks[e.arr[idx]].course_number]) return false;
+          if (idx >= e.arr.length || maxes[maxi].count === 0 || !filter.get(blocks[e.arr[idx]].course_number)) return false;
           else {
             maxes[maxi].count--;
             renderCount--;
@@ -199,7 +199,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
       const preparedBlock = registerCollisions(block, bidx);
       const rightSpacers = renderSpacers(preparedBlock, preparedBlock.collisions_right, 'right-spacer');
       const calcRatio = (collision: number) => {
-        let denominator = (ratios.get(collision) + collisionReferences.get(collision).reduce((p: number, e: number) => (filter[blocks[e].course_number])? p+1: p, 0));
+        let denominator = (ratios.get(collision) + collisionReferences.get(collision).reduce((p: number, e: number) => (filter.get(blocks[e].course_number))? p+1: p, 0));
         return 1/denominator*100;
       }
       const calcSelf = () => {
@@ -207,7 +207,7 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
         let first_ls = -1;
         let fail = false;
         preparedBlock.collisions_left.forEach((collision: number, idx: number) => {
-          const addend = (ratios.has(collision) && filter[blocks[collision].course_number])? calcRatio(collision) : 0;
+          const addend = (ratios.has(collision) && filter.get(blocks[collision].course_number))? calcRatio(collision) : 0;
           if (first_ls === -1) first_ls = addend;
           else if (first_ls !== addend) fail = true;
 
@@ -229,11 +229,11 @@ const placeStaggeredBlocks = (blocks: APICourseBlock[], filter: any) => {
           { preparedBlock.collisions_left.map((collision: number, idx: number) => {
             collisionReferences.get(bidx).push(collision);
             if (blocks[bidx].start_time.getTime() === blocks[collision].start_time.getTime() && blocks[bidx].end_time.getTime() === blocks[collision].end_time.getTime()) {
-              return < SchedulingBlock spacer={true} size={'auto'} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
+              return < SchedulingBlock spacer={true} size={'auto'} visible={filter.get(blocks[collision].course_number)!} linkIDs={[]} key={`left-spacer-${idx}`}/>
             }
-            return < SchedulingBlock spacer={true} size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter[blocks[collision].course_number]} linkIDs={[]} key={`left-spacer-${idx}`}/>
+            return < SchedulingBlock spacer={true} size={(ratios.has(collision))? `calc(${calcRatio(collision)}% - 4px)` : undefined} visible={filter.get(blocks[collision].course_number)!} linkIDs={[]} key={`left-spacer-${idx}`}/>
           })}
-          < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter[block.course_number]} linkIDs={block.scheduled} key={`block-${JSON.stringify(block)}`}/>
+          < SchedulingBlock size={calcSelf()} course_instance={block} visible={filter.get(block.course_number)!} linkIDs={block.scheduled} key={`block-${JSON.stringify(block)}`}/>
           { rightSpacers.render }
         </div>
       )
