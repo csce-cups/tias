@@ -1,27 +1,52 @@
-import React, { createContext, FC, ReactNode, useEffect, useState } from 'react'
-import API, { APIPerson, APICourseBlockWeek, APIUserQualification } from '../modules/API'
+import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
+import API, { Person, CourseBlockWeek, APIUserQualification} from "../modules/API";
 
 interface Props {
-	children: ReactNode,
-  args?: any,
-  test?: boolean
+  children: ReactNode;
+  args?: any;
+  test?: boolean;
 }
 
 export const contexts = {
-  employees: createContext([[] as APIPerson[], 0 as any]),
-  blocks: createContext([{Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as APICourseBlockWeek, 0 as any]),
-  userQuals: createContext([[{course_id: -1, course_number: "loading", qualified: false}] as APIUserQualification[], 0 as any]),
-  googleData: createContext({} as any)
-}
+  employees: createContext<
+    [Person[], React.Dispatch<React.SetStateAction<Person[]>>]
+  >([[] as Person[], 0 as any]),
 
-export const APIContext: FC<Props> = ({children, args, test}) => {
-  const employeeState = useState([] as APIPerson[]);
-  const blockState = useState({Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as APICourseBlockWeek);
-  const userQualState = useState([{course_id: -1, course_number: "loading", qualified: false}] as APIUserQualification[]);
+  blocks: createContext<
+    [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]
+  >([
+    { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
+    0 as any,
+  ]),
+
+  userQuals: createContext<
+    [APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]
+  >([
+    [{ course_id: -1, course_number: "loading", qualified: false }] as APIUserQualification[],
+    0 as any,
+  ]),
+
+  googleData: createContext({} as any),
+};
+
+export const APIContext: FC<Props> = ({ children, args, test }) => {
+  const employeeState = useState([] as Person[]);
+  const blockState = useState({
+    Monday: null,
+    Tuesday: null,
+    Wednesday: null,
+    Thursday: null,
+    Friday: null,
+  } as CourseBlockWeek);
+
+  const userQualState = useState([
+    { course_id: -1, course_number: "loading", qualified: false },
+  ] as APIUserQualification[]);
+
   const googleDataState = useState({} as any);
 
   useEffect(() => {
-    const APIPromises = (test)? API.fetchAllDummy() : API.fetchAll();
+    const APIPromises = test ? API.fetchAllDummy() : API.fetchAll();
     APIPromises.employees.then((resp) => {
       employeeState[1](resp);
     });
@@ -38,16 +63,16 @@ export const APIContext: FC<Props> = ({children, args, test}) => {
   }, []); // The empty array is so that this effect is ran only on render and not on "test" update.
 
   return (
-    < contexts.googleData.Provider value={googleDataState} >
-      < contexts.employees.Provider value={employeeState} >
-        < contexts.blocks.Provider value={blockState} >
-          < contexts.userQuals.Provider value={userQualState} >
+    <contexts.googleData.Provider value={googleDataState}>
+      <contexts.employees.Provider value={employeeState}>
+        <contexts.blocks.Provider value={blockState}>
+          <contexts.userQuals.Provider value={userQualState}>
             {children}
           </contexts.userQuals.Provider>
         </contexts.blocks.Provider>
-      </ contexts.employees.Provider>
+      </contexts.employees.Provider>
     </contexts.googleData.Provider>
-  )
-}
+  );
+};
 
-export default contexts
+export default contexts;
