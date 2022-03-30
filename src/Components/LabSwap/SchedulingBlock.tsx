@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { Hat } from '../Misc/Hat';
-import { APICourseBlock } from '../../modules/API';
+import { CourseBlock } from '../../modules/API';
 
 const colors = new Map()
 colors.set(121, '#713275');
@@ -19,7 +19,7 @@ colors.set(315, '#394708');
 // colors.set(315, '#009489');
 
 interface Props {
-  course_instance?: APICourseBlock,
+  course_instance?: CourseBlock,
   visible: boolean,
   linkIDs: number[],
   spacer?: boolean,

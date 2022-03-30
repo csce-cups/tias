@@ -1,28 +1,19 @@
 import { FormControl, InputLabel, Menu, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import React, { FC, useState, useContext } from 'react'
-import { selectFunction } from './LabSwap';
-import { CompressedCourseBlock } from './SchedulingRender'; 
+import { selectFunction, CompressedCourseBlock } from './LabSwap';
+import RenderBlockProps, { blockColors } from '../Scheduling/BlockBase';
 import "../common.scss"
 
-const colors = new Map()
-colors.set(121, '#713275');
-colors.set(221, '#443989');
-colors.set(222, '#4C698A');
-colors.set(312, '#4F8970');
-colors.set(313, '#2B6737');
-colors.set(314, '#677D5D');
-colors.set(315, '#394708');
-
-interface Props {
-  size?: string,
-  inline?: boolean,
-  course_instance: CompressedCourseBlock,
-  visible: boolean,
+interface Props extends RenderBlockProps {
+  data: {
+    course_instance: CompressedCourseBlock
+  }
 }
 
 type stringEvent = SelectChangeEvent<string>;
-export const CourseBlock: FC<Props> = ({course_instance, visible, size, inline}) => {
+export const LabSwapBlock: FC<Props> = ({visible, size, inline, data}) => {
+  const {course_instance} = data;
   
   //need onclick to store selection in parent class
   const select = useContext(selectFunction);
@@ -69,7 +60,7 @@ export const CourseBlock: FC<Props> = ({course_instance, visible, size, inline})
     <FormControl 
       className="block grow-h" 
       style={{
-        backgroundColor: colors.get(c!.course_number),
+        backgroundColor: blockColors.get(c!.course_number),
         ...isVisible
       }} 
       onClick={()=>setOpen(!open)}

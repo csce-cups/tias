@@ -1,9 +1,9 @@
 import React, { FC, useState } from 'react'
-import { APIPerson } from '../../modules/API'
+import { Person } from '../../modules/API'
 import { Dot } from '../Misc/Dot'
 
 interface Props {
-	employee: APIPerson
+	employee: Person
   linkID: number
 }
 

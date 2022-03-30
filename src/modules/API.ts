@@ -3,7 +3,7 @@ import BlockFormer from './BlockFormer'
 
 const timezone_offset = 6;
 
-export interface APIPerson {
+export interface Person {
 	person_id: number
 	email: string
 	first_name: string
@@ -16,11 +16,7 @@ export interface APIPerson {
 	isScheduled: null | boolean
 }
 
-export interface APIPTListResponse {
-	users: APIPerson[]
-}
-
-export interface APICourseBlock {
+export interface CourseBlock {
 	department: string
 	course_number: number
 	section_number: number
@@ -32,12 +28,12 @@ export interface APICourseBlock {
 	scheduled: number[] | null;
 }
 
-export interface APICourseBlockWeek {
-	Monday: APICourseBlock[] | null
-	Tuesday: APICourseBlock[] | null
-	Wednesday: APICourseBlock[] | null
-	Thursday: APICourseBlock[] | null
-	Friday: APICourseBlock[] | null
+export interface CourseBlockWeek {
+	Monday: CourseBlock[] | null
+	Tuesday: CourseBlock[] | null
+	Wednesday: CourseBlock[] | null
+	Thursday: CourseBlock[] | null
+	Friday: CourseBlock[] | null
 }
 
 interface raw_APICourseBlock {
@@ -71,8 +67,8 @@ export interface APIAlgoResponse {
 }
 
 export interface APIReturn {
-	employees: Promise<APIPerson[]>
-	blocks: Promise<APICourseBlockWeek>,
+	employees: Promise<Person[]>
+	blocks: Promise<CourseBlockWeek>,
 	userQuals: Promise<APIUserQualification[]>
 }
 
@@ -104,7 +100,7 @@ class API {
 		}
 	}
 
-	static fetchAllDummy = (args?: {employees?: APIPerson[]}): APIReturn => {
+	static fetchAllDummy = (args?: {employees?: Person[]}): APIReturn => {
 		let id = undefined;
 		try {
 			id = parseCookie(document.cookie).tias_user_id;
@@ -119,14 +115,14 @@ class API {
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher
-	private static fetchPTList = async (): Promise<APIPerson[]> => {
+	private static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
 			.then(({data}) => data.users)
 			.catch(err => console.log(err));
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings
-	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
+	private static fetchCourseBlocks = async (): Promise<CourseBlockWeek> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
 			.then(({data}) => {
 				console.log({data})
@@ -137,7 +133,7 @@ class API {
 					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
 					return d;
 				}
-				const convert = (input: raw_APICourseBlock[]): APICourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
+				const convert = (input: raw_APICourseBlock[]): CourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
 					department: e.department,
 					course_number: parseInt(e.course_number),
 					section_number: parseInt(e.section_number),
@@ -181,7 +177,7 @@ class API {
 		});
 	}
 
-	private static fetchPTListDummy = async (response?: APIPerson[]): Promise<APIPerson[]> => {
+	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve(response || [
@@ -256,7 +252,7 @@ class API {
 		})
 	}
 
-	private static fetchCourseBlocksDummy = async (): Promise<APICourseBlockWeek> => {
+	private static fetchCourseBlocksDummy = async (): Promise<CourseBlockWeek> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve({

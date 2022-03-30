@@ -3,18 +3,24 @@ import { render, screen } from '@testing-library/react';
 import { SchedulingColumn } from '../../../Components/Scheduling/SchedulingColumn';
 import BlockFormer from '../../../modules/BlockFormer'
 import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock';
+import { CourseBlock } from '../../../modules/API';
 
-describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependent)', () => {
+const builder = (department: string, course_number: number, section_number: number, section_id: number, start_time: Date, end_time: Date, weekday: string, place: string,
+    scheduled: number[] | null): CourseBlock => {
+    return { department, course_number, section_number, section_id, start_time, end_time, weekday, place, scheduled}
+}
+
+describe('SchedulingColumn renderBlockType={SchedulingBlock} (SchedulingBlock Dependent)', () => {
     it('exists', () => {
-        render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-            {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+        render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+            builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null)
         ]} />);
     });
     
     describe('Single elements', () => {
         it('displays one short element', () => {
-            render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+            render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null)
             ]}/>)
             
             const element = screen.getByText(/101/);
@@ -22,8 +28,8 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
         });
         
         it('displays one medium element', () => {
-            render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
+            render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null)
             ]}/>)
             
             const element = screen.getByText(/101/);
@@ -31,8 +37,8 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
         });
         
         it('displays one long element', () => {
-            render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+            render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null)
             ]}/>)
             
             const element = screen.getByText(/101/);
@@ -44,10 +50,10 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
         describe('Same starting time', () => {
             describe('Same Size', () => {
                 it('displays small elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -56,10 +62,10 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays medium elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -68,10 +74,10 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays large elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
                     ]}/>)
                     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -83,12 +89,12 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
     
             describe('2 Different Sizes', () => {
                 it('displays small and medium elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
                     ]}/>)
                     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -99,12 +105,12 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays small and large elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -115,12 +121,12 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays medium and large elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -135,13 +141,13 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
         describe('Different starting times', () => {
             describe('Same Size', () => {
                 it('displays small elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 106, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 106, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -153,13 +159,13 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays medium elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 106, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 106, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -171,13 +177,13 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays large elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 106, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 106, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
                     ]}/>)
                     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -191,19 +197,19 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
     
             describe('2 Different Sizes', () => {
                 it('displays small and medium elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 106, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 107, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 108, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
-                        {course: 121, section: 109, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 110, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
-                        {course: 121, section: 111, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 112, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 106, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 107, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 108, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 109, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 110, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 111, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 112, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -221,19 +227,19 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays small and large elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 106, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 107, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 108, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
-                        {course: 121, section: 109, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 110, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
-                        {course: 121, section: 111, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 112, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 106, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 107, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 108, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 109, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 110, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 111, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 112, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
                     ]}/>)
     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -250,19 +256,19 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays medium and large elements', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_extralong},
-                        {course: 121, section: 106, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
-                        {course: 121, section: 107, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 108, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
-                        {course: 121, section: 109, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 110, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
-                        {course: 121, section: 111, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
-                        {course: 121, section: 112, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 106, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 107, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 108, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 109, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 110, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 111, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 112, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
                     ]}/>)
                     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
@@ -279,15 +285,15 @@ describe('SchedulingColumn blocktype={SchedulingBlock} (SchedulingBlock Dependen
                 });
 
                 it('displays differently sized elements at different times', () => {
-                    render(< SchedulingColumn blocktype={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
-                        {course: 121, section: 101, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_short},
-                        {course: 121, section: 102, start: BlockFormer.starts.MW_A, end: BlockFormer.setTimes.MW_A_long},
+                    render(< SchedulingColumn renderBlockType={SchedulingBlock} day={'Mon'} filter={new Map([[121, true]])} blocks={[
+                        builder('CSCE', 121, 101, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 102, 1, BlockFormer.starts.MW_A, BlockFormer.setTimes.MW_A_long, 'none', 'nowhere', null),
                         
-                        {course: 121, section: 103, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_short},
-                        {course: 121, section: 104, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
+                        builder('CSCE', 121, 103, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_short, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 104, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
 
-                        {course: 121, section: 105, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_long},
-                        {course: 121, section: 106, start: BlockFormer.starts.MW_A2, end: BlockFormer.setTimes.MW_A2_extralong},
+                        builder('CSCE', 121, 105, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_long, 'none', 'nowhere', null),
+                        builder('CSCE', 121, 106, 1, BlockFormer.starts.MW_A2, BlockFormer.setTimes.MW_A2_extralong, 'none', 'nowhere', null),
                     ]}/>)
                     
                     expect(screen.getByText(/101/)).toBeInTheDocument();
