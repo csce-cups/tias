@@ -8,11 +8,16 @@ interface Props {
 }
 
 export const EmployeeRow: FC<Props> = ({employee, linkID}) => {
+  const [checked, setChecked] = useState<boolean>(true);
   return (
     <>
       <div className="hstack">
         <div className="element left">
-          <input type="checkbox"/>
+          {(checked)? 
+            <input type="checkbox" checked={true} name="employee-row-checkbox" person-id={linkID} onChange={() => setChecked(false)}/>
+            :
+            <input type="checkbox" checked={false} name="employee-row-checkbox" person-id={linkID} onChange={() => setChecked(true)}/>
+          }
         </div>
         <div className="element label">
          {employee.first_name} {employee.last_name}

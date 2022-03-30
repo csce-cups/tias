@@ -1,4 +1,5 @@
 import axios from 'axios'
+import React from 'react';
 import BlockFormer from './BlockFormer'
 
 const timezone_offset = 6;
@@ -13,6 +14,7 @@ export interface APIPerson {
 	teaching_assistant: boolean
 	administrator: boolean
 	professor: boolean
+	// isScheduled: null | boolean
 	isScheduled: null | boolean
 }
 
@@ -129,7 +131,6 @@ class API {
 	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
 			.then(({data}) => {
-				console.log({data})
 				let dataStrict: raw_APICourseBlockWeek = data;
 				const createDate = (datestring: string): Date => {
 					let d = new Date(0);
