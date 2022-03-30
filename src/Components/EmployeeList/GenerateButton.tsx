@@ -1,9 +1,9 @@
 import React from 'react'
-import API, { APICourseBlock, APIPerson } from '../../modules/API'
+import API, { CourseBlock, Person } from '../../modules/API'
 import contexts from '../APIContext'
 
 export const GenerateButton = () => {
-  const runScheduler = (employees: APIPerson[], blocks: any, setEmployees: any, setBlocks: any) => {
+  const runScheduler = (employees: Person[], blocks: any, setEmployees: any, setBlocks: any) => {
     
     employees.forEach((e, i) => { // At the start of scheduling, nobody is scheduled.
       employees[i].isScheduled = false;
@@ -12,7 +12,6 @@ export const GenerateButton = () => {
 
     const dropdowns: HTMLInputElement[] = Array.from(document.querySelectorAll('input[type=checkbox][name="employee-row-checkbox"]:checked'));
     const eIDs = dropdowns.filter(e => e.checked).map(e => parseInt(e.getAttribute('person-id')!));
-
     const btn = document.getElementById("generate-schedule-button");
     
     if (btn !== null) btn.innerHTML = 'Generating...';
@@ -25,8 +24,8 @@ export const GenerateButton = () => {
       clearTimeout(timer);
       if (btn !== null) btn.innerHTML = 'Rendering...';
       const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday]; // For easier iteration
-      allBlocks.forEach((day: APICourseBlock[], oidx: number) => {
-        day.forEach((block: APICourseBlock, iidx: number) => {
+      allBlocks.forEach((day: CourseBlock[], oidx: number) => {
+        day.forEach((block: CourseBlock, iidx: number) => {
           const pids = resp.scheduled.has(`${block.section_id}`)? resp.scheduled.get(`${block.section_id}`)! : [];
           allBlocks[oidx][iidx].scheduled = pids;
         });

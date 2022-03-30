@@ -1,4 +1,4 @@
-import { APICourseBlock } from './API'
+import { CourseBlock } from './API'
 
 const start = 1000 * 60 * 60 * 10;
 const timezone_offset = 6;
@@ -15,7 +15,7 @@ class BlockFormer {
     static TH_classlength = 75;
     static breaklength = 20;
 
-    static generateBlock = (course: number, section: number, start: Date, end: Date, day: string, place: string): APICourseBlock => ({
+    static generateBlock = (course: number, section: number, start: Date, end: Date, day: string, place: string): CourseBlock => ({
         department: "CSCE",
         course_number: course,
         section_number: section,

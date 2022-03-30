@@ -112,5 +112,5 @@ package-lock.json
 # VS Code Ignores
 .vscode
 
-# my prettier file
+# My prettier file
 .prettierrc

@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
-import { APIPerson } from '../../modules/API'
+import { Person } from '../../modules/API'
 import contexts from '../APIContext'
 
 interface Props {
@@ -20,8 +20,8 @@ export const EmployeeList: FC<Props> = () => {
         {([employees, setEmployees]) => (
             (employees.length > 0)?
               <div className="scrollable">
-                {employees.map((e: APIPerson, index: number) => (
-                  < EmployeeRow employee={employees[index]} key={`employee-row-${JSON.stringify(e)}`} linkID={e.person_id} />
+                {employees.map((e: Person, index: number) => (
+                  < EmployeeRow employee={employees[index]} key={index} linkID={e.person_id} />
                 ))}
               </div>
 
