@@ -135,17 +135,12 @@ public class Person implements Comparable<Person> {
 
     boolean isAvailable(ArrayList<Meeting> meetings) {
         for (Meeting meeting : meetings) {
-            boolean quit = true;
             for (Unavailability unavailability : unavailabilities) {
                 if (unavailability.getWeekday().equals(meeting.getWeekday()) && !(unavailability.getEndTime().before(meeting.getStartTime()) || unavailability.getStartTime().after(meeting.getEndTime()))) {
-                    quit = false;
+                    return false;
                 }
             }
-            if (quit) {
-                return false;
-            }
         }
-
         return true;
     }
 

@@ -150,7 +150,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         rs.close();
         st.close();
 
-        st = conn.prepareStatement(constructPersonQuery("person_availability", peopleIds.length));
+        st = conn.prepareStatement(constructPersonQuery("person_unavailability", peopleIds.length));
 
         for (int i = 0; i < peopleIds.length; ++i) {
             st.setInt(i + 1, peopleIds[i]);
@@ -223,7 +223,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         st = conn.createStatement();
 
-        rs = st.executeQuery(constructPersonQuery("person_availability"));
+        rs = st.executeQuery(constructPersonQuery("person_unavailability"));
 
         while (rs.next())
         {
