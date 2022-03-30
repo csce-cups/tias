@@ -1,5 +1,4 @@
 import axios from 'axios'
-import React from 'react';
 import BlockFormer from './BlockFormer'
 
 const timezone_offset = 6;
@@ -14,8 +13,8 @@ export interface Person {
 	teaching_assistant: boolean
 	administrator: boolean
 	professor: boolean
-	// isScheduled: null | boolean
 	isScheduled: null | boolean
+	isChecked: boolean
 }
 
 export interface CourseBlock {
@@ -119,8 +118,8 @@ class API {
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher
 	private static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
-			.then(({data}) => data.users)
-			.catch(err => console.log(err));
+			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
+			.catch((err: any) => console.log(err));
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings
@@ -246,7 +245,8 @@ class API {
 						teaching_assistant: false,
 						administrator: false,
 						professor: false,
-						isScheduled: null
+						isScheduled: null,
+						isChecked: false
 					})
 				))
 			}, 1000)
