@@ -19,8 +19,8 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
   useEffect(() => {
     let filterMap = new Map<number, boolean>();
     const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
-    allBlocks.forEach((blocks: APICourseBlock[] | null) => {
-      blocks?.forEach((block: APICourseBlock) => {
+    allBlocks.forEach((blocks: CourseBlock[] | null) => {
+      blocks?.forEach((block: CourseBlock) => {
         filterMap.set(block.course_number, true)
       })
     })

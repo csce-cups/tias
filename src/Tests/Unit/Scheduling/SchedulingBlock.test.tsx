@@ -2,16 +2,6 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock';
 
-export interface APICourseBlock {
-	department: string
-	course_number: number
-	section_number: number
-	start_time: Date
-	end_time: Date
-	weekday: string
-	place: string
-}
-
 describe('SchedulingBlock', () => {
     const renderSubject = () => render(< SchedulingBlock visible={true} data={{
         course_instance: {
