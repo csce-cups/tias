@@ -33,7 +33,7 @@ export const GenerateButton = () => {
 
       // Update if the employees are scheduled or not
       employees.forEach((e, i) => {
-        employees[i].isScheduled = resp.unscheduled.indexOf(e.person_id) === -1
+        employees[i].isScheduled = resp.unscheduled.indexOf(e.person_id) === -1 && eIDs.findIndex(id => id === e.person_id) !== -1;
       });
 
       setEmployees(employees);
