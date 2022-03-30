@@ -849,9 +849,10 @@ img#landing {
 .landing-container2 {
 	display: flex;
 	flex-direction: row;
-	justify-content: flex-start;
-	margin-left: 43em;
-	margin-top: 20em;
+	justify-content: center;
+	align-items: center;
+	height: 95vh;
+	
 }
 
 .background-image {
