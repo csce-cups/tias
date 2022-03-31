@@ -9,6 +9,7 @@ export interface OptionsProps {
   selectable?: boolean
   noHeader?: boolean
   noBorder?: boolean
+  noFilter?: boolean
 }
 
 interface Props {
@@ -31,10 +32,15 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
     setFilter(filterMap);
   }, [blocks]);
 
+  const styles = {
+    border: (options?.noBorder)? '0' : undefined,
+  }
+
   return (
-    <div className="vstack main" style={{border: (options?.noBorder)? '0' : undefined}}>
+    <div className="vstack main" style={styles}>
       <SchedulingRender renderBlockType={renderBlockType} filter={filter} options={options} />
-      <SchedulingFilter filter={filter} setFilter={setFilter} />
+      {!options?.noFilter && <SchedulingFilter filter={filter} setFilter={setFilter} />}
+      {/* <SchedulingFilter filter={filter} setFilter={setFilter} /> */}
     </div>
   );
 };
