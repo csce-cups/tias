@@ -2,7 +2,7 @@ import React, { FC, useContext, useEffect, useState } from "react";
 import { SchedulingRender } from "./SchedulingRender";
 import { SchedulingFilter } from "./SchedulingFilter";
 import contexts from "../APIContext";
-import { CourseBlock, CourseBlockWeek } from "../../modules/API";
+import { CourseBlock } from "../../modules/API";
 import RenderBlockProps from "./BlockBase";
 
 export interface OptionsProps {
