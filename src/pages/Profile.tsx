@@ -3,6 +3,7 @@ import './../Components/common.scss';
 import { ProfileSidebar } from '../Components/Profile/ProfileSidebar';
 import { ProfileStatusBar } from '../Components/Profile/ProfileStatusBar';
 import { ProfileForm } from '../Components/Profile/ProfileForm';
+import { PreferenceSelector } from '../Components/Profile/PreferenceSelector';
 
 export const Profile = () => {
   return (
@@ -11,6 +12,7 @@ export const Profile = () => {
       <div className="vstack main">
         < ProfileStatusBar />
         < ProfileForm />
+        < PreferenceSelector />
       </div>
     </div>
   );

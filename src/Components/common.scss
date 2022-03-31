@@ -111,9 +111,7 @@ $google_bg: white;
 	}
 
 }
-.Profile {
-	flex: 1 1 auto;
-}
+
 .hstack {
 	display: flex;
 	flex-direction: row;
@@ -693,55 +691,55 @@ img.back-arrow {
 .sidebar {
 	max-width: 400px;
 }
-.profile-picture {
-	max-width: min(250px, 20vw);
-	flex: 1 1 auto;	
-	border: 2px solid;
-	margin: 0 20px;
-	border-radius: 50%;
-}
 
-.profile-sidebar {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+.Profile {
+	flex: 1 1 auto;
 
-	span {
-		font-weight: bold;
-		margin: 5px 15px;
-	}
-}
-
-.profile-status-bar {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-
-	padding: 5px 0;
-	margin: 0 0 5px 0;
-
-	.button {
-		margin: 0 5px 0 0;
+	.profile-picture {
+		max-width: min(250px, 20vw);
+		flex: 1 1 auto;	
+		border: 2px solid;
+		margin: 0 20px;
+		border-radius: 50%;
 	}
 
-	.profile-status {
+	.profile-sidebar {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 
-		font-size: 1.2em;
-		font-weight: bold;
-		
-		border: 2px solid;
-		flex: 1 1 auto;
-
-		padding: 0 5px;
-
+		span {
+			font-weight: bold;
+			margin: 5px 15px;
+		}
 	}
-}
 
-.profile-form {
-	display: flex;
-	flex-direction: column;
+	.profile-status-bar {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+
+		padding: 5px 0;
+		margin: 0 0 5px 0;
+
+		.button {
+			margin: 0 5px 0 0;
+		}
+
+		.profile-status {
+			display: flex;
+			align-items: center;
+
+			font-size: 1.2em;
+			font-weight: bold;
+			
+			border: 2px solid;
+			flex: 1 1 auto;
+
+			padding: 0 5px;
+
+		}
+	}
 
 	.hstack {
 		align-items: center;
@@ -750,6 +748,10 @@ img.back-arrow {
 	.header {
 		border: 2px solid black;
 		border-bottom: 0;
+		transition: all 0.1s ease-in-out;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0;
 
 	}
 
@@ -767,75 +769,116 @@ img.back-arrow {
 		transition-delay: 0.3s;
 	}
 
-	.form-border {
-		border: 2px solid black;
+	.header:hover {
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 
-	.form-body {
-		overflow: hidden;
-		transition: all 0.4s ease-in-out;
-
+	.abs-wrapper {
+		position: absolute;
+		width: 100%;
 		height: 100%;
+	}
 
+	.profile-form.collapsed {
+		flex: 0 1 0;
+	}
+
+	.profile-form {
 		display: flex;
 		flex-direction: column;
-		justify-content: flex-end;
+		margin-bottom: 10px;
+		flex: 0 1 content;
+		transition: all 0.4s ease-in-out;
 
-		.scrollable .hstack:first-child {
-			margin-top: 5px;
-		}
-	}
-
-	.form-body.hidden {
-		height: 2px; // So that the border is still visible
-	}
-
-	.form-row {
-		margin: 5px;
-
-		.fill {
-			padding: 0px 10px;
-		}
-		
-		.element {
-			margin-left: 15px;
+		.form-border {
+			border: 2px solid black;
 		}
 
-		.status {
-			margin-right: 10px;
+		.form-body {
+			overflow: hidden;
+			transition: all 0.4s ease-in-out;
+
+			height: 100%;
+
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
+
+			position: relative;
+
+			.scrollable .hstack:first-child {
+				margin-top: 5px;
+			}
 		}
 
-		.fail {
-			color: red;
+		.form-body.collapsed {
+			height: 2px; // So that the border is still visible
 		}
 
-		.success {
-			color: $green;
+		.form-row {
+			margin: 5px;
+
+			.fill {
+				padding: 0px 10px;
+			}
+			
+			.element {
+				margin-left: 15px;
+			}
+
+			.status {
+				margin-right: 10px;
+			}
+
+			.fail {
+				color: red;
+			}
+
+			.success {
+				color: $green;
+			}
+
+			select {
+				width: 100%;
+				// margin: 0 10px;
+			}
 		}
 
-		select {
+		.submit {
 			width: 100%;
-			// margin: 0 10px;
+			margin: 12px;
+		}
+
+		.dropdown-label {
+			margin: 0 5px;
+		}
+
+		input {
+			margin: 0 5px;
 		}
 	}
 
-	.header {
-		font-size: 1.2em;
-		font-weight: bold;
-		margin-bottom: 0;
+	.preferences-container {
+		flex: 1 1 100%;
+		display: flex;
+		flex-direction: column;
+		transition: all 0.4s ease-in-out;
 	}
 
-	.submit {
-		width: 100%;
-		margin: 12px;
+	.preferences-container.collapsed {
+		flex: 0 1 0;
+	}
+	
+	.profile-render {
+		border-top: 2px solid black;
+		display: flex;
+		height: 100%;
+		overflow: hidden;
+		transition: all 0.4s ease-in-out;
 	}
 
-	.dropdown-label {
-		margin: 0 5px;
-	}
-
-	input {
-		margin: 0 5px;
+	.profile-render.collapsed {
+		height: 0;
 	}
 }
 
