@@ -3,7 +3,7 @@ import { SchedulingBlock } from '../Scheduling/SchedulingBlock'
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow'
 
 export const PreferenceSelector = () => {
-  const [collapsed, setCollapsed] = React.useState<boolean>(false);
+  const [collapsed, setCollapsed] = React.useState<boolean>(true);
 
   return (
     <div className={`preferences-container ${collapsed? 'collapsed' : ''}`}>
@@ -15,7 +15,16 @@ export const PreferenceSelector = () => {
         </div>
       </div>
       <div className={`${collapsed? "collapsed " : ""}profile-render`}>
-        < SchedulingWindow renderBlockType={SchedulingBlock}/>
+        <div className="hstack">
+          <div className="dropdown-label">
+            Preferred Number of Lab Sections:  
+          </div>
+          <input className="fill" type="number" placeholder="2" style={{marginRight: '5px'}}/>
+        </div>
+        < SchedulingWindow renderBlockType={SchedulingBlock} options={{
+          noHeader: true,
+          noBorder: true
+        }}/>
       </div>
     </div>
   )

@@ -361,6 +361,8 @@ $day_divider_size : 1.5px;
 		display: flex;
 		flex-direction: column;
 		background-color: red;
+
+		height: 100%;
 	
 		margin: 0 $block_margin_amount;
 		width: 3.3em;
@@ -442,7 +444,7 @@ $day_divider_size : 1.5px;
 	flex: 1 1 auto;
 	display: flex;
 	align-items: flex-start;
-	justify-content: flex-end;
+	justify-content: flex-start;
 }
 
 .fill {
@@ -849,13 +851,14 @@ img.back-arrow {
 			margin: 12px;
 		}
 
-		.dropdown-label {
-			margin: 0 5px;
-		}
-
+		
 		input {
 			margin: 0 5px;
 		}
+	}
+
+	.dropdown-label {
+		margin: 0 5px;
 	}
 
 	.preferences-container {
@@ -870,8 +873,9 @@ img.back-arrow {
 	}
 	
 	.profile-render {
-		border-top: 2px solid black;
+		border: 2px solid black;
 		display: flex;
+		flex-direction: column;
 		height: 100%;
 		overflow: hidden;
 		transition: all 0.4s ease-in-out;
@@ -879,6 +883,7 @@ img.back-arrow {
 
 	.profile-render.collapsed {
 		height: 0;
+		border-top: 0;
 	}
 }
 

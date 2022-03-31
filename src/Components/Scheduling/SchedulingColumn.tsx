@@ -4,6 +4,7 @@ import { CourseBlock } from '../../modules/API'
 import back_arrow from '../../assets/back_arrow_icon.svg'
 import RenderBlockProps from './BlockBase';
 import placeBlocks from './renderHelper';
+import { OptionsProps } from './SchedulingWindow';
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -15,9 +16,7 @@ interface Props<DataCourseBlock> {
   filter: Map<number, boolean>
   day: string // The day of the week
   hours?: number // The number of hours in a day
-  options?: {
-    selectable?: boolean
-  }
+  options?: OptionsProps
 }
 
 export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: React.PropsWithChildren<Props<DataCourseBlock>>) => {

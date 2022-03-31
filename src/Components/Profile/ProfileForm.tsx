@@ -62,14 +62,6 @@ export const ProfileForm = () => {
               <div className="form-border">
                 <form onSubmit={(e: any) => submit(e, setQuals)}>
                   <div className="scrollable">
-                    <div className="hstack">
-                      <div className="dropdown-label">
-                        Preferred Number of Lab Sections:  
-                      </div>
-                      <input className="fill" type="number" placeholder="2"/>
-                    </div>
-                    <div className="hr-container"><hr/></div>
-
                     { (quals.length > 0)? 
                       quals.map((qual: APIUserQualification, idx: number) => (
                         <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${qual.course_id}`}/>
