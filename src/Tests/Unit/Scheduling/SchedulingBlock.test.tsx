@@ -7,7 +7,7 @@ describe('SchedulingBlock', () => {
         course_instance: {
             department: "CSCE",
             course_number: 121,
-            section_number: 100,
+            section_number: '100',
             section_id: 1,
             start_time: new Date(0),
             end_time: new Date(1000*60*50), // 50 minutes long

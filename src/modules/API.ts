@@ -19,7 +19,7 @@ export interface Person {
 export interface CourseBlock {
 	department: string
 	course_number: number
-	section_number: number
+	section_number: string
 	section_id: number
 	start_time: Date
 	end_time: Date
@@ -136,7 +136,7 @@ class API {
 				const convert = (input: raw_APICourseBlock[]): CourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
 					department: e.department,
 					course_number: parseInt(e.course_number),
-					section_number: parseInt(e.section_number),
+					section_number: e.section_number,
 					section_id: e.section_id,
 					start_time: createDate(e.start_time),
 					end_time: createDate(e.end_time),
