@@ -26,7 +26,6 @@ export const LabSwapBlock: FC<Props> = ({visible, size, inline, data}) => {
   //magic taken from https://medium.com/@david.zhao.blog/typescript-error-argument-of-type-unknown-is-not-assignable-to-parameter-of-type-or-6b89f429cf1e
   const update = (ev: stringEvent)  => {
     let sec: String = (typeof ev.target.value === 'string' ? ev.target.value : ''); 
-    console.log("SEC: |"+sec+"|")
     if (sec === '') {
       setTitle(`${c.course_number}`)
       setSection('');

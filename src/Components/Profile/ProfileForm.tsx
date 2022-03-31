@@ -4,6 +4,8 @@ import contexts from '../APIContext'
 import { APIUserQualification, parseCookie } from '../../modules/API';
 
 export const ProfileForm = () => {
+  const [coursesCollapsed, setCoursesCollapsed] = React.useState<boolean>(false);
+
   let updateOnDismount = () => {};
   const submit = (event: any, setQuals: any) => {
     const selections = Array.from(document.querySelectorAll(`select[id$="-prefs"]`));
@@ -45,35 +47,44 @@ export const ProfileForm = () => {
 
   return (
     <div className="profile-form" >
-      <div className="header">
-        Courses
+      <div className={`hstack header ${coursesCollapsed? 'collapsed' : ''}`} onClick={() => setCoursesCollapsed(!coursesCollapsed)}>
+        <div className="header-content">Courses</div>
+        <div className="fill" />
+        <div className="arrow-container">
+          <div className={`arrow ${coursesCollapsed? 'left': 'down'}`} />
+        </div>
+          
       </div>
 
       < contexts.userQuals.Consumer >
         {([quals, setQuals]) => (
-          <form onSubmit={(e: any) => submit(e, setQuals)}>
-            <div className="scrollable">
-              <div className="hstack">
-                <div className="dropdown-label">
-                  Preferred Number of Lab Sections:  
+          <div className={`${coursesCollapsed? "hidden " : ""}form-body`}>
+            <div className="form-border">
+              <form onSubmit={(e: any) => submit(e, setQuals)}>
+                <div className="scrollable">
+                  <div className="hstack">
+                    <div className="dropdown-label">
+                      Preferred Number of Lab Sections:  
+                    </div>
+                    <input className="fill" type="number" placeholder="2"/>
+                  </div>
+                  <div className="hr-container"><hr/></div>
+
+                  { (quals.length > 0)? 
+                    quals.map((qual: APIUserQualification, idx: number) => (
+                      <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${qual.course_id}`}/>
+                      ))
+                      :
+                      <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
+                    }
                 </div>
-                <input className="fill" type="number" placeholder="2"/>
-              </div>
-              <div className="hr-container"><hr/></div>
 
-              { (quals.length > 0)? 
-                quals.map((qual: APIUserQualification, idx: number) => (
-                  <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${qual.course_id}`}/>
-                ))
-                :
-                <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
-              }
+                <div className="hstack">
+                  <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
+                </div>
+              </form>
             </div>
-
-            <div className="hstack">
-              <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
-            </div>
-          </form>
+          </div>
         )}
       </contexts.userQuals.Consumer>
     </div>

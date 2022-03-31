@@ -33,9 +33,6 @@ export const ProfileSidebar = () => {
           </>
         )}
       </contexts.googleData.Consumer>
-
-      <div className="fill"/>
-      <span style={{padding: '20px'}}>Some Preferences Go Here</span>
     </div>
   )
 }
