@@ -73,9 +73,9 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
   let seenDots: APIUserPreferenceEnum[] = [];
   course_instance.section_ids.forEach((section_id, i) => {
     formElements.push(
-      <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row" onClick={() => toggleCheck(section_id)} >
+      <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
         <input type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
-        <div style={{color: resStatusColor(section_id)}}>
+        <div style={{color: resStatusColor(section_id)}} onClick={() => toggleCheck(section_id)}>
           {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
         </div>
       </div>
