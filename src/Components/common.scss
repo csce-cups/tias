@@ -907,6 +907,40 @@ img.back-arrow {
 			color: $light;
 			white-space: nowrap;
     		overflow: hidden;
+
+			button {
+				border-radius: 2px;
+				border: 1px solid $render_divider;
+				transition: all 0.05s ease-in-out;
+			}
+
+			button.cantdo {
+				background-color: #FFBDBD;
+			}
+
+			button.cantdo:hover {
+				background-color: #FF8C8C;
+			}
+
+			button.prefernot {
+				background-color: #FBFFBD
+			}
+
+			button.prefernot:hover {
+				background-color: #F1FF28
+			}
+
+			button.indiff:hover {
+				background-color: $render_background;
+			}
+
+			button.prefer {
+				background-color: #BFFFBD;
+			}
+
+			button.prefer:hover {
+				background-color: #75FF70;
+			}
 		}
 
 		.pref-pane-title {
@@ -917,6 +951,7 @@ img.back-arrow {
 
 		.pref-row {
 			display: flex;
+			align-items: center;
 		}
 	}
 

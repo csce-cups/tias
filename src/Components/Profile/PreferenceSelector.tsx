@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { SchedulingBlock } from '../Scheduling/SchedulingBlock'
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow'
 import contexts from '../APIContext'
-import { CourseBlockWeek } from '../../modules/API'
+import { CourseBlock, CourseBlockWeek } from '../../modules/API'
 import { compressWeek } from '../../modules/BlockManipulation'
 import { PreferenceBlock } from './PreferenceBlock'
 
 export const PreferenceSelector = () => {
-  const [collapsed, setCollapsed] = React.useState<boolean>(true);
+  const [collapsed, setCollapsed] = React.useState<boolean>(false);
   const [blockWeek, setBlockWeek] = useContext(contexts.blocks);
   const [userQuals, setUserQuals] = useContext(contexts.userQuals);
   const [filter, setFilter] = useState(new Map<number, boolean>());

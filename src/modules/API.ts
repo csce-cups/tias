@@ -61,6 +61,9 @@ export interface APIUserQualification {
 	qualified: boolean
 }
 
+export type APIUserPreferenceEnum = "Can't Do" | "Prefer Not To Do" | "Indifferent" | "Prefer To Do"
+export type APIUserPreferences = Map<number, APIUserPreferenceEnum>
+
 export interface APIAlgoResponse {
 	scheduled: Map<string, number[]>
 	unscheduled: number[]
@@ -70,6 +73,7 @@ export interface APIReturn {
 	employees: Promise<Person[]>
 	blocks: Promise<CourseBlockWeek>,
 	userQuals: Promise<APIUserQualification[]>
+	userPrefs: Promise<APIUserPreferences>
 }
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
@@ -96,7 +100,8 @@ class API {
 		return {
 			employees: API.fetchPTList(),
 			blocks: API.fetchCourseBlocks(),
-			userQuals: API.fetchUserQualifications(id)
+			userQuals: API.fetchUserQualifications(id),
+			userPrefs: API.fetchUserPreferencesDummy(id)
 		}
 	}
 
@@ -110,7 +115,8 @@ class API {
 		return {
 			employees: API.fetchPTListDummy(args?.employees),
 			blocks: API.fetchCourseBlocksDummy(),
-			userQuals: API.fetchUserQualificationsDummy(id)
+			userQuals: API.fetchUserQualificationsDummy(id),
+			userPrefs: API.fetchUserPreferencesDummy(id)
 		}
 	}
 
@@ -271,20 +277,44 @@ class API {
 			setTimeout(() => {
 				resolve([
 					{course_id: 1, course_number: "110", qualified: true},
-					{course_id: 2, course_number: "111", qualified: false},
-					{course_id: 3, course_number: "120", qualified: false},
-					{course_id: 4, course_number: "121", qualified: false},
-					{course_id: 5, course_number: "206", qualified: false},
-					{course_id: 6, course_number: "221", qualified: false},
-					{course_id: 7, course_number: "222", qualified: false},
-					{course_id: 8, course_number: "312", qualified: false},
-					{course_id: 9, course_number: "313", qualified: false},
+					{course_id: 2, course_number: "111", qualified: true},
+					{course_id: 3, course_number: "120", qualified: true},
+					{course_id: 4, course_number: "121", qualified: true},
+					{course_id: 5, course_number: "206", qualified: true},
+					{course_id: 6, course_number: "221", qualified: true},
+					{course_id: 7, course_number: "222", qualified: true},
+					{course_id: 8, course_number: "312", qualified: true},
+					{course_id: 9, course_number: "313", qualified: true},
 					{course_id: 10, course_number: "314", qualified: true},
 					{course_id: 11, course_number: "315", qualified: true},
 					{course_id: 11, course_number: "331", qualified: true}
-
 				])
 			}, 800);
+		})
+	}
+
+	private static fetchUserPreferencesDummy = async (user_id?: number): Promise<APIUserPreferences> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
+		return API.fetchCourseBlocksDummy().then(blocks => {
+			const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
+			const choose = () => {
+				const possiblePrefs: APIUserPreferenceEnum[] = ["Can't Do", "Prefer Not To Do", "Indifferent", "Prefer To Do"];
+				const r = Math.random();
+				if (r < 0.20) return possiblePrefs[0];
+				if (r < 0.60) return possiblePrefs[1];
+				if (r < 0.80) return possiblePrefs[2];
+				return possiblePrefs[3];
+			}
+
+			let resp = new Map<number, APIUserPreferenceEnum>();
+
+			allBlocks.forEach(day => {
+				day?.forEach(block => {
+					resp.set(block.section_id, choose());
+				});
+			});
+
+			return resp;
 		})
 	}
 

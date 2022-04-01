@@ -1,3 +1,5 @@
+import { APIUserPreferenceEnum } from "../../modules/API";
+
 // An interface that every block's props must follow
 export default interface RenderBlockProps {
   visible: boolean
@@ -19,6 +21,13 @@ export const blockColors = new Map([
   [314, '#807391'],
   [315, '#6e438c']
 ]);
+
+export const statusColors = new Map<APIUserPreferenceEnum, string>([
+  ["Can't Do",         '#FF8C8C'],
+  ["Prefer Not To Do", '#F1FF28'],
+  ["Indifferent",      'white'],
+  ["Prefer To Do",     '#75FF70']
+])
 
 export const calcFlex = (visible: boolean, inline?: boolean, size?: string) => {
   if (!visible && inline === true) return '0 0 auto';
