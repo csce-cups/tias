@@ -885,11 +885,11 @@ img.back-arrow {
 
 		height: 100%;
 		max-height: 100%;
+		min-height: 300px;
 
 		max-width: 100%;
 
-		overflow: hidden;
-		transition: all 0.4s ease-in-out, min-width 0s linear, min-height 0s linear;
+		transition: all 0.4s ease-in-out;//, min-width 0s linear, min-height 0s linear;
 
 		margin-bottom: 5px;
 
@@ -900,7 +900,7 @@ img.back-arrow {
 		.block.interacted {
 			position: absolute;
 			right: 0;
-			top: 0;
+			top: -10px;
 
 			display: flex;
 
@@ -1018,6 +1018,7 @@ img.back-arrow {
 	.profile-render.collapsed {
 		height: 0;
 		border-top: 0;
+		min-height: 0;
 	}
 }
 
