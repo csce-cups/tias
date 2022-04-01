@@ -1,4 +1,5 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react'
+import { APIUserPreferenceEnum } from '../../modules/API';
 import { CompressedCourseBlock } from '../../modules/BlockManipulation';
 import contexts from '../APIContext';
 import RenderBlockProps, { calcFlex, blockColors, statusColors } from '../Scheduling/BlockBase';
@@ -30,26 +31,25 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
     };
   });
 
-  let flex = calcFlex(visible, inline, size);
-  const isVisible = {
-    width: (visible)? undefined : 0,
-    flex: flex,
-    margin: visible? undefined : 0
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const value = e.currentTarget.getAttribute('name')! as APIUserPreferenceEnum;
+    Array.from(
+      document.querySelectorAll(`input[type=checkbox][name="course-checkbox-${course_instance.section_id}"]:checked`)).map(
+        (e: Element) => parseInt(e.getAttribute('data-sid')!
+      )
+    ).forEach(id => {
+      userPrefs.set(id, value);
+    })
+    
+    setUserPrefs(new Map(userPrefs));
   }
-
-  let color = { background: blockColors.get(course_instance.course_number)! };
-
-  let classes = "block";
-  if (linkIDs !== null && linkIDs.length === 0) classes += " alert";
-  if (interacted) classes += " interacted";
-  else classes += " grow-h";
 
   const resStatusColor = (section_id: number) => {
     const status = userPrefs.get(section_id);
     if (status === undefined) return statusColors.get("Indifferent")!;
     return statusColors.get(status)!;
   }
-
+  
   const resStatusText = (section_id: number) => {
     const status = userPrefs.get(section_id);
     switch (status) {
@@ -59,6 +59,19 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
       case "Prefer To Do": return "(Want)";
     }
   }
+
+  let flex = calcFlex(visible, inline, size);
+  const isVisible = {
+    width: (visible)? undefined : 0,
+    flex: flex,
+    margin: visible? undefined : 0
+  }
+  
+  let color = { background: blockColors.get(course_instance.course_number)! };
+  let classes = "block";
+  if (linkIDs !== null && linkIDs.length === 0) classes += " alert";
+  if (interacted) classes += " interacted";
+  else classes += " grow-h";
 
   return (
     <div ref={ref} className={classes} onClick={() => setInteracted(true)}
@@ -70,7 +83,7 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
           <div className="pref-pane-title">Select courses</div>
           { course_instance.section_ids.map((section_id, i) => (
             <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
-              <input type="checkbox"/>
+              <input type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
               <div style={{color: resStatusColor(section_id)}}>
                 {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
               </div>
@@ -84,10 +97,10 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
           <button className="prefernot">Prefer not to do</button>
           <button className="indiff">No Preference</button>
           <button className="prefer">Prefer to do</button> */}
-          <button className="cantdo">I Can't Do These</button>
-          <button className="prefernot">I Don't Want These</button>
-          <button className="indiff">No Preference</button>
-          <button className="prefer">I Want These</button>
+          <button onClick={handleClick} name="Can't Do" className="cantdo">I Can't Do These</button>
+          <button onClick={handleClick} name="Prefer Not To Do" className="prefernot">I Don't Want These</button>
+          <button onClick={handleClick} name="Indifferent" className="indiff">No Preference</button>
+          <button onClick={handleClick} name="Prefer To Do" className="prefer">I Want These</button>
         </div>
         : 
         <>
