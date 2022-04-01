@@ -9,7 +9,9 @@ export interface OptionsProps {
   selectable?: boolean
   noHeader?: boolean
   noBorder?: boolean
-  noFilter?: boolean
+
+  // Lets you specify an externally controlled filter
+  filter?: [Map<number, boolean>, React.Dispatch<React.SetStateAction<Map<number, boolean>>>]
 }
 
 interface Props {
@@ -20,8 +22,10 @@ interface Props {
 export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
   const [blocks, _] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
+  const filterActual = options?.filter?.[0] ?? filter;
 
   useEffect(() => {
+    if (options?.filter) return; // Externally controlled filter shouldn't be handled
     let filterMap = new Map<number, boolean>();
     const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
     allBlocks.forEach((blocks: CourseBlock[] | null) => {
@@ -38,9 +42,8 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
 
   return (
     <div className="vstack main" style={styles}>
-      <SchedulingRender renderBlockType={renderBlockType} filter={filter} options={options} />
-      {!options?.noFilter && <SchedulingFilter filter={filter} setFilter={setFilter} />}
-      {/* <SchedulingFilter filter={filter} setFilter={setFilter} /> */}
+      <SchedulingRender renderBlockType={renderBlockType} filter={filterActual} options={options} />
+      {!options?.filter && <SchedulingFilter filter={filter} setFilter={setFilter} />}
     </div>
   );
 };

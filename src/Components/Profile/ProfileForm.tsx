@@ -31,19 +31,14 @@ export const ProfileForm = () => {
         if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
           document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
         } else {
-          document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!')
+          document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
+          setQuals(newQuals);
         }
       })
       .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
-    
-    updateOnDismount = () => setQuals(newQuals);
 
     event.preventDefault();
   }
-
-  useEffect(() => {
-    return () => updateOnDismount();
-  }, [])
 
   return (
     <div className={`profile-form ${collapsed? 'collapsed' : ''}`} >

@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useRef } from 'react'
 import { CompressedCourseBlock } from '../../modules/BlockManipulation';
 import RenderBlockProps, { calcFlex, blockColors } from '../Scheduling/BlockBase';
 
@@ -12,8 +12,23 @@ interface Props extends RenderBlockProps {
 export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
   const [interacted, setInteracted] = React.useState<boolean>(false);
   const {course_instance, linkIDs} = data;
-  let flex = calcFlex(visible, inline, size);
+  const ref: any = useRef(null);
+  
+  // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
+  useEffect(() => { // Disables focus view on mouse click outside
+    const handleClickOutside = (event: any) => {
+      if (ref.current && !ref.current.contains(event.target) && interacted) {
+        setInteracted(false);
+      }
+    };
 
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  });
+
+  let flex = calcFlex(visible, inline, size);
   const isVisible = {
     width: (visible)? undefined : 0,
     flex: flex,
@@ -34,7 +49,7 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
   else classes += " grow-h";
 
   return (
-    <div className={classes} onClick={() => setInteracted(!interacted)}
+    <div ref={ref} className={classes} onClick={() => setInteracted(true)}
       title={`${course_instance.course_number}-${course_instance.section_number}`} 
       style={{...color, ...isVisible}}
     >

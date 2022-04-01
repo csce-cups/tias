@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { SchedulingBlock } from '../Scheduling/SchedulingBlock'
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow'
 import contexts from '../APIContext'
@@ -9,7 +9,17 @@ import { PreferenceBlock } from './PreferenceBlock'
 export const PreferenceSelector = () => {
   const [collapsed, setCollapsed] = React.useState<boolean>(true);
   const [blockWeek, setBlockWeek] = useContext(contexts.blocks);
+  const [userQuals, setUserQuals] = useContext(contexts.userQuals);
+  const [filter, setFilter] = useState(new Map<number, boolean>());
   const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(blockWeek), setBlockWeek];
+
+  useEffect(() => {
+    let filterMap = new Map<number, boolean>();
+    userQuals.forEach(qual => {
+      filterMap.set(parseInt(qual.course_number), qual.qualified);
+    })
+    setFilter(filterMap);
+  }, [userQuals]);
 
   return (
     <div className={`preferences-container ${collapsed? 'collapsed' : ''}`}>
@@ -31,8 +41,8 @@ export const PreferenceSelector = () => {
           < SchedulingWindow renderBlockType={PreferenceBlock} options={{
             noHeader: true,
             noBorder: true,
-            noFilter: true,
-            selectable: false
+            selectable: false,
+            filter: [filter, setFilter]
           }}/>
         </ contexts.blocks.Provider >
       </div>
