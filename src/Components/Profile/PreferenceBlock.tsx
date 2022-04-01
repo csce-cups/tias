@@ -33,13 +33,17 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const value = e.currentTarget.getAttribute('name')! as APIUserPreferenceEnum;
-    Array.from(
-      document.querySelectorAll(`input[type=checkbox][name="course-checkbox-${course_instance.section_id}"]:checked`)).map(
-        (e: Element) => parseInt(e.getAttribute('data-sid')!
-      )
-    ).forEach(id => {
-      userPrefs.set(id, value);
-    })
+    const checked = Array.from(
+      document.querySelectorAll(`input[type=checkbox][name="course-checkbox-${course_instance.section_id}"]:checked`)
+    )
+    
+    checked
+      .map((e: Element) => parseInt(e.getAttribute('data-sid')!))
+      .forEach(id => {
+        userPrefs.set(id, value);
+      })
+
+    checked.forEach((e: any) => e.checked = false);
     
     setUserPrefs(new Map(userPrefs));
   }
