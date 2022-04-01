@@ -214,6 +214,22 @@ client
             prefString += tempList.join(",\n");
             prefString += "\nON CONFLICT DO NOTHING";
             modifications.push(loader(prefString, prefList));
+            let query = `
+              INSERT INTO section_assignment_preference
+              VALUES\n
+            `
+            acc = 1;
+            prefList = [];
+            tempList = [];
+            for (let i = 1; i <= num_sections; ++i) {
+              tempList.push(`($${acc++}, $${acc++}, $${acc++})`);
+              prefList.push(person.person_id);
+              prefList.push(i);
+              prefList.push('Indifferent');
+            }
+            query += tempList.join(",\n");
+            query += "\nON CONFLICT DO NOTHING";
+            modifications.push(loader(query, prefList));
           }
         }
         return modifications;
