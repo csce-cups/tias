@@ -53,10 +53,10 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
   const resStatusText = (section_id: number) => {
     const status = userPrefs.get(section_id);
     switch (status) {
-      case "Can't Do": return "(Can't Do)";
-      case "Prefer Not To Do": return "(Prefer No)";
+      case "Can't Do": return "(Can't)";
+      case "Prefer Not To Do": return "(Don't Want)";
       case "Indifferent": return "";
-      case "Prefer To Do": return "(Prefer Yes)";
+      case "Prefer To Do": return "(Want)";
     }
   }
 
@@ -69,20 +69,25 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
         <div className="pref-pane">
           <div className="pref-pane-title">Select courses</div>
           { course_instance.section_ids.map((section_id, i) => (
-            <div className="pref-row">
+            <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
               <input type="checkbox"/>
-              <div key={`pref-row-${section_id}`} style={{color: resStatusColor(section_id)}}>
+              <div style={{color: resStatusColor(section_id)}}>
                 {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
               </div>
             </div>
           ))}
 
+          <div className="fill"/>
           <div style={{marginBottom: '5px'}}/>
-          <div className="pref-pane-title">Set preference</div>
-          <button className="cantdo">Can't do</button>
+          <div className="pref-pane-title">Set preferences for selected sections</div>
+          {/* <button className="cantdo">Can't do</button>
           <button className="prefernot">Prefer not to do</button>
           <button className="indiff">No Preference</button>
-          <button className="prefer">Prefer to do</button>
+          <button className="prefer">Prefer to do</button> */}
+          <button className="cantdo">I Can't Do These</button>
+          <button className="prefernot">I Don't Want These</button>
+          <button className="indiff">No Preference</button>
+          <button className="prefer">I Want These</button>
         </div>
         : 
         <>

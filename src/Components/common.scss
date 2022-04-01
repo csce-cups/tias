@@ -882,9 +882,14 @@ img.back-arrow {
 		border: 2px solid black;
 		display: flex;
 		flex-direction: column;
+
 		height: 100%;
+		max-height: 100%;
+
+		max-width: 100%;
+
 		overflow: hidden;
-		transition: all 0.4s ease-in-out;
+		transition: all 0.4s ease-in-out, min-width 0s linear, min-height 0s linear;
 
 		margin-bottom: 5px;
 
@@ -894,9 +899,17 @@ img.back-arrow {
 
 		.block.interacted {
 			position: absolute;
-			width: calc(100% - 4px);
+			right: 0;
+			top: 0;
+
+			display: flex;
+
 			height: fit-content;
 			min-height: 100%;
+
+			width: fit-content;
+			min-width: 100%;
+			
 			z-index: 3;
 			box-shadow: 0 0 10px 0;
 		}
@@ -907,6 +920,8 @@ img.back-arrow {
 			color: $light;
 			white-space: nowrap;
     		overflow: hidden;
+
+			flex: 1 1 auto;
 
 			button {
 				border-radius: 2px;
@@ -944,7 +959,7 @@ img.back-arrow {
 		}
 
 		.pref-pane-title {
-			margin: 0 0 5px 0;
+			margin: 0 3px 5px 3px;
 			color: $render_background;
 			text-align: center;
 		}
