@@ -702,6 +702,7 @@ img.back-arrow {
 
 .Profile {
 	flex: 1 1 auto;
+	overflow: hidden;
 
 	.profile-picture {
 		max-width: min(250px, 20vw);
