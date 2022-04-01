@@ -69,6 +69,8 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
     else linked.forEach(e => e.classList.add(newClass));
   }
 
+  const edge: "left" | "right" | "center" = (day === "Monday" || day === "Tuesday")? "left" : (day === "Friday")? "right" : "center"; 
+
   return (
     <div className={`vstack day column ${selectable? 'grow-h' : ''}`} id={id} onClick={selectable? select : () => {}}>
       { (detailed) ? 
@@ -107,7 +109,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
       }
       <div className="vstack day" >
         { dividers }
-        { placeBlocks(blocks, filter, renderBlockType) }
+        { placeBlocks(blocks, filter, renderBlockType, edge, startTime, new Date(startTime.getTime() + numHours*60*60*1000)) }
       </div>
     </div>
   )

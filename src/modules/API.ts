@@ -262,10 +262,10 @@ class API {
 			setTimeout(() => {
 				resolve({
 					Monday: BlockFormer.samples.Test_schedule2,
-					Tuesday: BlockFormer.samples.Test_schedule,
-					Wednesday: BlockFormer.samples.TH_schedule,
-					Thursday: BlockFormer.samples.W_schedule,
-					Friday: BlockFormer.samples.F_schedule
+					Tuesday: [],//BlockFormer.samples.Test_schedule,
+					Wednesday: [],//BlockFormer.samples.TH_schedule,
+					Thursday: [],//BlockFormer.samples.W_schedule,
+					Friday: [],//BlockFormer.samples.F_schedule
 				})
 			}, 1500);
 		})

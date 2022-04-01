@@ -11,7 +11,7 @@ interface Props extends RenderBlockProps {
   }
 }
 
-export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
+export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom, data}) => {
   const [interacted, setInteracted] = useState<boolean>(false);
   const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const {course_instance, linkIDs} = data;
@@ -105,7 +105,10 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
   let color = { background: blockColors.get(course_instance.course_number)! };
   let classes = "block";
   if (linkIDs !== null && linkIDs.length === 0) classes += " alert";
-  if (interacted) classes += " interacted";
+  if (interacted) {
+    classes += " interacted " + edge;
+    classes += (bottom)? ' bottom' : '';
+  }
   else classes += " grow-h";
 
   return (

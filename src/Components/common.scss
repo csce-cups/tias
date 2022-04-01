@@ -909,9 +909,22 @@ img.back-arrow {
 
 			width: fit-content;
 			min-width: 100%;
+
+			padding: 0;
 			
 			z-index: 5;
 			box-shadow: 0 0 10px 0;
+
+			transform: translateY(-5px);
+		}
+
+		.block.interacted.left {
+			left: 0;
+		}
+
+		.block.interacted.bottom {
+			top: auto;
+			bottom: 0;
 		}
 
 		.block {

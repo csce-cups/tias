@@ -5,6 +5,8 @@ export default interface RenderBlockProps {
   visible: boolean
   size?: string
   inline?: boolean
+  edge?: "left" | "right" | "center"
+  bottom?: boolean
   data: any
 }
 
