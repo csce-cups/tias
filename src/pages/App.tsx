@@ -12,7 +12,7 @@ import { LabSwap } from '../Components/LabSwap/LabSwap';
 export const App = () => {
   return (
     <div className="App">
-      < APIContext test={true}>
+      < APIContext test={false}>
         <Router>
           < NavBar />
           <Routes>
