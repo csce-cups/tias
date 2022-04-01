@@ -1,6 +1,7 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react'
 import { APIUserPreferenceEnum } from '../../modules/API';
 import { CompressedCourseBlock } from '../../modules/BlockManipulation';
+import uuid from '../../uuid';
 import contexts from '../APIContext';
 import RenderBlockProps, { calcFlex, blockColors, statusColors } from '../Scheduling/BlockBase';
 
@@ -16,6 +17,7 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
   const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const {course_instance, linkIDs} = data;
   const ref: any = useRef(null);
+  const id = uuid();
   
   // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
   useEffect(() => { // Disables focus view on mouse click outside
@@ -64,10 +66,6 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
     }
   }
 
-  const toggleCheck = (id: number) => {
-    Array.from(document.querySelectorAll(`input[type=checkbox][data-sid="${id}"]`)).forEach((e: any) => e.checked = !e.checked);
-  }
-
   const checkAll = (id: number) => {
     Array.from(document.querySelectorAll(`input[type=checkbox][name="course-checkbox-${id}"]`)).forEach((e: any) => e.checked = true);
   }
@@ -78,10 +76,10 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
   course_instance.section_ids.forEach((section_id, i) => {
     formElements.push(
       <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
-        <input type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
-        <div style={{color: resStatusColor(section_id)}} onClick={() => toggleCheck(section_id)}>
+        <input id={id} type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
+        <label htmlFor={id} style={{color: resStatusColor(section_id)}} >
           {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
-        </div>
+        </label>
       </div>
     )
 
