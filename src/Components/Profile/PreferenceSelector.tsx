@@ -10,8 +10,32 @@ export const PreferenceSelector = () => {
   const [collapsed, setCollapsed] = React.useState<boolean>(false);
   const [blockWeek, setBlockWeek] = useContext(contexts.blocks);
   const [userQuals, setUserQuals] = useContext(contexts.userQuals);
+  const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const [filter, setFilter] = useState(new Map<number, boolean>());
   const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(blockWeek), setBlockWeek];
+
+  const submit = (event: any) => {
+    const requestBody: any = {"preferences": Object.fromEntries(userPrefs)}
+
+    document.getElementById("submit-prefs")?.setAttribute('value', 'Saving...');
+    console.log(requestBody);
+    // fetch('a link', {
+    //   method: 'PUT',
+    //   body: JSON.stringify(requestBody)
+    // }).then(response => response.json())
+    //   .then(responseJSON => {
+    //     if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
+    //       document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
+    //     } else {
+    //       document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
+    //       setQuals(newQuals);
+    //     }
+    //   })
+    //   .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
+    document.getElementById("submit-prefs")?.setAttribute('value', 'Lmao haven\'t written it yet');
+
+    event.preventDefault();
+  }
 
   useEffect(() => {
     let filterMap = new Map<number, boolean>();
@@ -45,6 +69,7 @@ export const PreferenceSelector = () => {
             filter: [filter, setFilter]
           }}/>
         </ contexts.blocks.Provider >
+        <input id="submit-prefs" onClick={submit} type="submit" className="blue button submit" value="Save Preferences"/>
       </div>
     </div>
   )

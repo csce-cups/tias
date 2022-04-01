@@ -100,7 +100,6 @@ const placeInlineBlocks = (layered_data: CourseBlock[][], filter: Map<number, bo
   const isBottom = (st: Date) => {
     const diffSt = st.getTime() - start.getTime();
     const diffEnd = end.getTime() - st.getTime();
-    console.log({diffSt, diffEnd});
     if (diffSt > diffEnd) return true;
     else return false;
   } 
@@ -149,7 +148,7 @@ const placeStaggeredBlocks = (blocks: CourseBlock[], filter: Map<number, boolean
     const diffSt = st.getTime() - start.getTime();
     const diffEnd = end.getTime() - st.getTime();
     if (diffSt > diffEnd) return true;
-    else return true;
+    else return false;
   } 
 
   const renderSpacers = (target: RenderCourseBlock, collisions: number[], key: string) => {

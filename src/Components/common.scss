@@ -172,6 +172,7 @@ $google_bg: white;
 
 
 .button {
+	border-radius: 3px;
 	border: 1px solid black;
 	margin: 5px;
 
@@ -274,6 +275,10 @@ $day_divider_size : 1.5px;
 		.day {
 			background-color: $render_background;
 			border-right: $day_divider_size solid $render_divider;
+		}
+
+		.day:last-child {
+			border-right: 0;
 		}
 
 		.day-error {
@@ -887,9 +892,9 @@ img.back-arrow {
 		max-height: 100%;
 		min-height: 300px;
 
-		max-width: 100%;
+		overflow: hidden;
 
-		transition: all 0.4s ease-in-out;//, min-width 0s linear, min-height 0s linear;
+		max-width: 100%;
 
 		margin-bottom: 5px;
 
@@ -898,9 +903,11 @@ img.back-arrow {
 		}
 
 		.block.interacted {
+			transition: all 0.2s ease-in-out, min-width 0s linear, min-height 0s linear;
+
 			position: absolute;
 			right: 0;
-			top: -10px;
+			top: 0;
 
 			display: flex;
 
@@ -917,19 +924,21 @@ img.back-arrow {
 
 			transform: translateY(-5px);
 		}
-
+		
 		.block.interacted.left {
 			left: 0;
 		}
-
+		
 		.block.interacted.bottom {
 			top: auto;
 			bottom: 0;
+			transform: translateY(5px);
 		}
 
 		.block {
 			display: flex;
 			position: relative;
+			transition: all 0.2s ease-in-out;
 		}
 
 		.pref-pane {
