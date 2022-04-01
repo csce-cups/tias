@@ -914,6 +914,11 @@ img.back-arrow {
 			box-shadow: 0 0 10px 0;
 		}
 
+		.block {
+			display: flex;
+			position: relative;
+		}
+
 		.pref-pane {
 			display: flex;
 			flex-direction: column;
@@ -967,6 +972,33 @@ img.back-arrow {
 		.pref-row {
 			display: flex;
 			align-items: center;
+		}
+
+		.check-all {
+			text-decoration: underline;
+			margin-left: 5px;
+		}
+
+		.check-all:hover {
+			color: $render_background
+		}
+
+		.pref-dot {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			margin: 2px;
+		}
+
+		.dot-hstack {
+			position: absolute;
+			width: 100%;
+
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			flex-wrap: wrap;
+			margin: 4px 0;
 		}
 	}
 

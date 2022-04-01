@@ -60,6 +60,37 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
     }
   }
 
+  const toggleCheck = (id: number) => {
+    Array.from(document.querySelectorAll(`input[type=checkbox][data-sid="${id}"]`)).forEach((e: any) => e.checked = !e.checked);
+  }
+
+  const checkAll = (id: number) => {
+    Array.from(document.querySelectorAll(`input[type=checkbox][name="course-checkbox-${id}"]`)).forEach((e: any) => e.checked = true);
+  }
+
+  let formElements: JSX.Element[] = [];
+  let dotElements: JSX.Element[] = [];
+  let seenDots: APIUserPreferenceEnum[] = [];
+  course_instance.section_ids.forEach((section_id, i) => {
+    formElements.push(
+      <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row" onClick={() => toggleCheck(section_id)} >
+        <input type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
+        <div style={{color: resStatusColor(section_id)}}>
+          {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
+        </div>
+      </div>
+    )
+
+    const pref = userPrefs.get(section_id);
+    if (pref === "Indifferent" || pref === undefined || seenDots.includes(pref)) return;
+    
+    dotElements.push(
+      <div key={`pref-dot-${JSON.stringify(course_instance)}-${section_id}`} className="pref-dot" style={{backgroundColor: resStatusColor(section_id)}}/>
+    )
+    seenDots.push(userPrefs.get(section_id)!);
+  })
+  
+
   let flex = calcFlex(visible, inline, size);
   const isVisible = {
     width: (visible)? undefined : 0,
@@ -81,14 +112,10 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
       { interacted? 
         <div className="pref-pane">
           <div className="pref-pane-title">Select courses</div>
-          { course_instance.section_ids.map((section_id, i) => (
-            <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
-              <input type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
-              <div style={{color: resStatusColor(section_id)}}>
-                {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
-              </div>
-            </div>
-          ))}
+          <div key={`pref-row-checkall`} className="pref-row">
+            <div className="check-all" onClick={() => checkAll(course_instance.section_id)}>Select All</div>
+          </div>
+          { formElements }
 
           <div className="fill"/>
           <div style={{marginBottom: '5px'}}/>
@@ -104,6 +131,9 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, data}) => {
         </div>
         : 
         <>
+          <div className="dot-hstack">
+            { dotElements }
+          </div>
           <div className="fill"/>
           <div className={`block-text centered ${visible? '' : 'hidden'}`}>
             {course_instance.course_number}

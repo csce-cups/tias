@@ -299,6 +299,7 @@ class API {
 			const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
 			const choose = () => {
 				const possiblePrefs: APIUserPreferenceEnum[] = ["Can't Do", "Prefer Not To Do", "Indifferent", "Prefer To Do"];
+				return possiblePrefs[2];
 				const r = Math.random();
 				if (r < 0.20) return possiblePrefs[0];
 				if (r < 0.60) return possiblePrefs[1];
