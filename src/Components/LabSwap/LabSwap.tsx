@@ -12,7 +12,7 @@ import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
 //render viewce: string
 
 export interface CompressedCourseBlock extends CourseBlock {
-  section_numbers: number[]
+  section_numbers: string[]
 }
 
 const cmp = (
@@ -77,7 +77,7 @@ export const LabSwap = () => {
   const [blockWeek, setBlockWeek] = useContext(contexts.blocks);
   const [requests, setRequests] = useState<any>({ valid: false }); // TODO: These should be more strongly typed
   const [offers, setOffers] = useState<any>({ valid: false }); // TODO: These should be more strongly typed
-  const selectSection = (course: CompressedCourseBlock, section: number) => {
+  const selectSection = (course: CompressedCourseBlock, section: string) => {
     let data = {
       valid: true,
       ...course,
