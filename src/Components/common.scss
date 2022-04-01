@@ -129,12 +129,13 @@ $google_bg: white;
 		flex: 0 0 auto;
 	}
 	
-	.label {
+	label {
 		flex: 0 1 auto;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
 		padding-right: 5px;
+		user-select: none;
 	}
 
 	.center {
