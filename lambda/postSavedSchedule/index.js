@@ -15,25 +15,29 @@ exports.handler = async (event) => {
 
     await helper_functions.queryDB(dbQuery, params).catch(err => {
         response.statusCode = 500;
-        response.body = JSON.stringify({err});
+        response.body = JSON.stringify({err: "Failed to delete the old schedule."});
     })
     
     dbQuery = `INSERT INTO section_assignment
                 VALUES
                 `;
     
+    let dbParams = []
+
     let paramIndex = 1;
     for (let sectionId of Object.keys(scheduledObj)) {
         for (let personId of scheduledObj[sectionId]) {
-            dbQuery += `($${paramIndex++}, $${paramIndex++})`;
+            dbParams.push(`($${paramIndex++}, $${paramIndex++})`);
             params.push(personId);
             params.push(sectionId);
         }
     }
+
+    dbQuery += dbParams.join(', ');
     
     let dbRows = await helper_functions.queryDB(dbQuery, params).catch(err => {
         response.statusCode = 500;
-        response.body = JSON.stringify({err});
+        response.body = JSON.stringify({err: "Failed to save the new schedule."});
     });
     
     console.log(dbRows);
