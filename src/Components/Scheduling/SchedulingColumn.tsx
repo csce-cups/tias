@@ -49,6 +49,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
     modifyColumns(id, 'detailed', false, true);
     modifyColumns(id, 'undetailed', true, true);
     modifyHatContainers('shrunk', true);
+    setHatsHidden(false);
   }
 
   const toggleHats = () => {

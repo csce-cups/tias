@@ -21,20 +21,23 @@ export const EmployeeList: FC<Props> = () => {
     <div className="vstack">
       <div className="header hstack" style={{marginBottom: '0'}}>
         <h2 className="slim">Peer Teachers</h2>
-        {(notScheduled > 0)? 
-          <h2 title={`${notScheduled} peer teacher${(notScheduled > 1)? 's weren\'t' : ' wasn\'t'} scheduled`} className="slim right alert">({notScheduled})</h2>
-          :
-          <></>
-        }
       </div>
 
-      <div className="sorter">
+      <div className="header-bar">
         <div className="hstack">
           <div className="element left">Sort By:</div>
           <div className="element center" onClick={() => setSortLast(false)}>First Name</div>
           <div className="element center" onClick={() => setSortLast(true)}>Last Name</div>
         </div>
       </div>
+
+      {(notScheduled > 0)? 
+          <div className='header-bar'>
+            <div title={`${notScheduled} peer teacher${(notScheduled > 1)? 's weren\'t' : ' wasn\'t'} scheduled`} className="slim unscheduled">{notScheduled} unscheduled peer teachers</div>
+          </div>
+          :
+          <></>
+        }
 
 
       {(employees.length > 0)?

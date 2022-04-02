@@ -75,8 +75,12 @@ $google_bg: white;
 		margin-bottom: 5px;
 	}
 
-	.alert {
+	.unscheduled {
+		font-weight: bold;
+		font-size: 0.9em;
 		color: red;
+		flex: 0 1 auto;
+		text-align: center;
 	}
 
 	.hstack.filter {
@@ -849,7 +853,7 @@ img.back-arrow {
 	border-radius: 3px;
 }
 
-.sorter {
+.header-bar {
 	border-bottom: 2px solid black;
 
 	.hstack {
