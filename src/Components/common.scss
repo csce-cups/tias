@@ -836,3 +836,31 @@ img.back-arrow {
 	outline: 2px solid red;
 	border-radius: 3px;
 }
+
+.sorter {
+	border-bottom: 2px solid black;
+
+	.hstack {
+		padding: 0;
+		// padding-bottom: 2px;
+
+		.left {
+			padding: 0px 4px;
+		}
+
+		.right {
+			background-color: $render_background;
+			user-select: none;
+			transition: all 0.1s ease-in-out;
+		}
+
+		.right:last-child {
+			border-left: 1px solid $render_divider;
+		}
+		
+		.right:hover, .right.selected {
+			box-shadow: inset 0 0 2px 0;
+			cursor: pointer;
+		}
+	}
+}
