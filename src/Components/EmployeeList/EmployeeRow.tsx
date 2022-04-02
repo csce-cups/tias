@@ -9,7 +9,7 @@ interface Props {
 
 export const EmployeeRow: FC<Props> = ({employee, linkID}) => {
   return (
-    <>
+    <div className="employee-row">
       <div className="hstack">
         <div className="element left">
           <input type="checkbox"/>
@@ -21,9 +21,7 @@ export const EmployeeRow: FC<Props> = ({employee, linkID}) => {
           < Dot isScheduled={employee.isScheduled} linkID={linkID} />
         </div>
       </div>
-      <div className="hr-container">
-        <hr/>
-      </div>
-    </>
+      <div className="divider"/>
+    </div>
   )
 }
