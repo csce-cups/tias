@@ -13,7 +13,8 @@ describe('SchedulingBlock', () => {
             end_time: new Date(1000*60*50), // 50 minutes long
             weekday: "none listed",
             place: "nowhere",
-            scheduled: null
+            scheduled: null,
+            placeholder_professor_name: ""
         },
         linkIDs: []
     }} />);
