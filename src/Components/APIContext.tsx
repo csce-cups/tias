@@ -1,5 +1,5 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum} from "../modules/API";
+import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie} from "../modules/API";
 
 interface Props {
   children: ReactNode;
@@ -47,25 +47,30 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   const userPrefState = useState(new Map<number, APIUserPreferenceEnum>());
 
   useEffect(() => {
-    const APIPromises = test ? API.fetchAllDummy() : API.fetchAll();
-    APIPromises.employees.then((resp) => {
+    const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
+    dataPromises.employees.then((resp) => {
       employeeState[1](resp);
     });
 
-    APIPromises.blocks.then((resp) => {
+    dataPromises.blocks.then((resp) => {
       blockState[1](resp);
     });
 
-    APIPromises.userQuals.then((resp) => {
+    // eslint-disable-next-line
+  }, []); // Fetch static data right away
+
+  useEffect(() => {
+    const userPromises = test ? API.fetchAllUserDummy(parseCookie().tias_user_id) : API.fetchAllUser(parseCookie().tias_user_id);
+
+    userPromises.userQuals.then((resp) => {
       userQualState[1](resp);
     });
 
-    APIPromises.userPrefs.then((resp) => {
+    userPromises.userPrefs.then((resp) => {
       userPrefState[1](resp);
     });
 
-    // eslint-disable-next-line
-  }, []); // The empty array is so that this effect is ran only on render and not on "test" update.
+  }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
   return (
     <contexts.googleData.Provider value={googleDataState}>

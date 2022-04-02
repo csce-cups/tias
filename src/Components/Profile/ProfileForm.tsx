@@ -53,7 +53,6 @@ export const ProfileForm = () => {
       < contexts.userQuals.Consumer >
         {([quals, setQuals]) => (
           <div className={`${collapsed? "collapsed " : ""}form-body`}>
-            {/* <div className="abs-wrapper"> */}
               <div className="form-border">
                 <form onSubmit={(e: any) => submit(e, setQuals)}>
                   <div className="scrollable">
@@ -71,7 +70,6 @@ export const ProfileForm = () => {
                   </div>
                 </form>
               </div>
-            {/* </div> */}
           </div>
         )}
       </contexts.userQuals.Consumer>

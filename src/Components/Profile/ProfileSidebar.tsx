@@ -16,8 +16,6 @@ export const ProfileSidebar = () => {
     const days = [week.Monday, week.Tuesday, week.Wednesday, week.Thursday, week.Friday];
     days.forEach(day => {
       day?.forEach(block => {
-        console.log(block);
-        console.log(block.scheduled?.includes(+id))
         if (block.scheduled?.includes(+id)) retData.push(block)
       })
     })

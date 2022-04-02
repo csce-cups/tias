@@ -105,6 +105,34 @@ class API {
 		}
 	}
 
+	static fetchAllStatic = () => {
+		return {
+			employees: API.fetchPTList(),
+			blocks: API.fetchCourseBlocks()
+		}
+	}
+
+	static fetchAllUser = (user_id: number | undefined) => {
+		return {
+			userQuals: API.fetchUserQualifications(user_id),
+			userPrefs: API.fetchUserPreferences(user_id)
+		}
+	}
+
+	static fetchAllStaticDummy = () => {
+		return {
+			employees: API.fetchPTListDummy(),
+			blocks: API.fetchCourseBlocksDummy()
+		}
+	}
+
+	static fetchAllUserDummy = (user_id: number | undefined) => {
+		return {
+			userQuals: API.fetchUserQualificationsDummy(user_id),
+			userPrefs: API.fetchUserPreferencesDummy(user_id)
+		}
+	}
+
 	static fetchAllDummy = (args?: {employees?: Person[]}): APIReturn => {
 		let id = undefined;
 		try {
