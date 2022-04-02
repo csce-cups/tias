@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useContext, useState } from 'react'
 import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
 import { AcceptButton } from './AcceptButton'
@@ -12,13 +12,20 @@ interface Props {
 export const EmployeeList: FC<Props> = () => {
   const sortLastAlg = ((a: Person, b: Person) => a.last_name.localeCompare(b.last_name));
   const sortFirstAlg = ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name));
+  const [employees, setEmployees] = useContext(contexts.employees);
+  const notScheduled = employees.filter(e => e.isScheduled === false).length;
 
   const [sortLast, setSortLast] = useState<boolean>(true);
 
   return (
     <div className="vstack">
-      <div className="header" style={{marginBottom: '0'}}>
+      <div className="header hstack" style={{marginBottom: '0'}}>
         <h2 className="slim">Peer Teachers</h2>
+        {(notScheduled > 0)? 
+          <h2 title={`${notScheduled} peer teacher${(notScheduled > 1)? 's weren\'t' : ' wasn\'t'} scheduled`} className="slim right alert">({notScheduled})</h2>
+          :
+          <></>
+        }
       </div>
 
       <div className="sorter">
@@ -29,21 +36,19 @@ export const EmployeeList: FC<Props> = () => {
         </div>
       </div>
 
-      < contexts.employees.Consumer >
-        {([employees, setEmployees]) => (
-            (employees.length > 0)?
-              <div className="scrollable">
-                {employees.sort((sortLast)? sortLastAlg : sortFirstAlg).map((e: Person, index: number) => (
-                  < EmployeeRow employee={employees[index]} setEmployee={(e: Person) => {
-                    employees[index] = e;
-                    setEmployees(employees);
-                  }} key={index} linkID={e.person_id} />
-                ))}
-              </div>
 
-            : <div className="loading">Loading...</div>
-        )}
-      </contexts.employees.Consumer>
+      {(employees.length > 0)?
+          <div className="scrollable">
+            {employees.sort((sortLast)? sortLastAlg : sortFirstAlg).map((e: Person, index: number) => (
+              < EmployeeRow employee={employees[index]} setEmployee={(e: Person) => {
+                employees[index] = e;
+                setEmployees(employees);
+              }} key={index} linkID={e.person_id} />
+            ))}
+          </div>
+
+        : <div className="loading">Loading...</div>
+      }
 
       <div className="vstack top-border">
         < GenerateButton />
