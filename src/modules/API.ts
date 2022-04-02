@@ -118,7 +118,7 @@ class API {
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher
 	private static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
-			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
+			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})).sort((a: Person, b: Person) => a.first_name.localeCompare(b.first_name)))
 			.catch((err: any) => console.log(err));
 	}
 
