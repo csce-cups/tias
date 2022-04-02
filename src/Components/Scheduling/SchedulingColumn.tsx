@@ -48,6 +48,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
     modifyColumns(id, 'detailed', false, true);
     modifyColumns(id, 'undetailed', true, true);
     modifyHatContainers('shrunk', true);
+    setHatsHidden(false);
   }
 
   const toggleHats = () => {
@@ -90,11 +91,11 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
             (blocks !== null && blocks.length > 0 && blocks[0].scheduled !== null) ?
               (hatsHidden)?
                 <div className="hide btn element detailed hstack" onClick={toggleHats}>
-                  <div className="center">SHOW HATS (name pending also)™</div>
+                  <div className="center">SHOW LABELS</div>
                 </div>
                 :
                 <div className="hide btn element detailed hstack" onClick={toggleHats}>
-                  <div className="center">HIDE THE HATS (name pending)™</div>
+                  <div className="center">HIDE LABELS</div>
                 </div>
               :
               <div className="btn element detailed hstack"/>

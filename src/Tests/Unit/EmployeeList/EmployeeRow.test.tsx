@@ -7,13 +7,13 @@ configure({testIdAttribute: 't-id'});
 
 describe('EmployeeRow', () => {
     it('has a checkbox', () => {
-        render(< EmployeeRow employee={{} as Person} linkID={1} />);
+        render(< EmployeeRow employee={{} as Person} setEmployee={(e: any) => {}} linkID={1} />);
         const element = screen.getByRole('checkbox');
         expect(element).toBeInTheDocument();
     });
     
     it('displays the name', () => {
-        render(< EmployeeRow employee={{} as Person} linkID={1} />);
+        render(< EmployeeRow employee={{} as Person} setEmployee={(e: any) => {}} linkID={1} />);
         const text = screen.getByText(/John Doe/i);
         expect(text).toBeInTheDocument();
     });

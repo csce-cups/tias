@@ -4,7 +4,14 @@ import contexts from '../APIContext'
 
 export const GenerateButton = () => {
   const runScheduler = (employees: Person[], blocks: any, setEmployees: any, setBlocks: any) => {
-    const eIDs = employees.map(e => e.person_id);
+    
+    employees.forEach((e, i) => { // At the start of scheduling, nobody is scheduled.
+      employees[i].isScheduled = false;
+    });
+    setEmployees(employees);
+
+    const dropdowns: HTMLInputElement[] = Array.from(document.querySelectorAll('input[type=checkbox][name="employee-row-checkbox"]:checked'));
+    const eIDs = dropdowns.filter(e => e.checked).map(e => parseInt(e.getAttribute('person-id')!));
     const btn = document.getElementById("generate-schedule-button");
     
     if (btn !== null) btn.innerHTML = 'Generating...';
@@ -26,7 +33,7 @@ export const GenerateButton = () => {
 
       // Update if the employees are scheduled or not
       employees.forEach((e, i) => {
-        employees[i].isScheduled = resp.unscheduled.indexOf(e.person_id) === -1
+        employees[i].isScheduled = resp.unscheduled.indexOf(e.person_id) === -1 && eIDs.findIndex(id => id === e.person_id) !== -1;
       });
 
       setEmployees(employees);

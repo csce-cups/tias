@@ -23,16 +23,34 @@ export const Hat: FC<Props> = ({linkID}) => {
 
   const {r, g, b, l} = colorFromId(linkID);
   const colors = {
-    backgroundColor: `rgb(${r}, ${g}, ${b})`,
-    // color: (l <= 50)? 'white' : 'black'
+    backgroundColor: `rgb(${r}, ${g}, ${b})`
   }
 
+  const scrollToDot = (e: any) => {
+    const target = document.querySelector(`div.dot[link-id="${linkID}"]`);
+    if (target !== null) {
+      target.scrollIntoView({behavior: 'smooth', block: 'center'});
+      let isWhite = false;
+      const targetContainer = target.parentElement?.parentElement;
+      const flash = setInterval(() => {
+        if (isWhite) targetContainer?.classList.remove('flash-on');
+        else targetContainer?.classList.add('flash-on');
+        isWhite = !isWhite
+      }, 250);
+
+      setTimeout(() => {
+        targetContainer?.classList.remove('flash-on');
+        clearInterval(flash);
+      }, 2000);
+    }
+  }
 
   return (
     < contexts.employees.Consumer >
       {([employees, setEmployees]) => (
         <div 
           className={`hat ${(l <= 50)? 'white' : 'black'}-text`}
+          onClick={scrollToDot}
           link-id={linkID} 
           title={getName(employees)}
           style={colors} 
