@@ -10,8 +10,6 @@ export const ProfileSidebar = () => {
   const findScheduled = (week: CourseBlockWeek) => {
     const id = parseCookie().tias_user_id;
     let retData: CourseBlock[] = [];
-    let retFormat: DisplayBlock[] = [];
-    let ret: JSX.Element[] = [];
 
     const days = [week.Monday, week.Tuesday, week.Wednesday, week.Thursday, week.Friday];
     days.forEach(day => {
@@ -19,6 +17,13 @@ export const ProfileSidebar = () => {
         if (block.scheduled?.includes(+id)) retData.push(block)
       })
     })
+
+    return retData;
+  }
+
+  const renderScheduled = (retData: CourseBlock[]) => {    
+    let retFormat: DisplayBlock[] = [];
+    let ret: JSX.Element[] = [];
 
     const dayMap = new Map(
       [
@@ -88,12 +93,21 @@ export const ProfileSidebar = () => {
           </>
         )}
       </contexts.googleData.Consumer>
-      <div className="schedule-info-container">
-        <div className="schedule-info-title">Currently Scheduled For:</div>
-        < contexts.blocks.Consumer >
-          {([week,]) => findScheduled(week)}
-        </contexts.blocks.Consumer>
-      </div>
+      < contexts.blocks.Consumer >
+      {([week,]) => {
+        const retData = findScheduled(week);
+        if (retData.length === 0) {
+          return <></>
+        } else {
+          return (
+            <div className="schedule-info-container">
+              <div className="schedule-info-title">Currently Scheduled For:</div>
+              { renderScheduled(retData) }
+            </div>
+          )
+        }
+      }}
+      </contexts.blocks.Consumer>
     </div>
   )
 }
