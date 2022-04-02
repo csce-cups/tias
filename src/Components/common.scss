@@ -1037,3 +1037,21 @@ img.back-arrow {
 	position: relative;
 	border: 2px solid black;
 }
+
+.schedule-info-container {
+	padding-top: 15px;
+	padding-right: 10px;
+	border-top: 2px solid $render_divider;
+	margin: 15px 10px 10px 10px;
+
+	.schedule-info-title {
+		font-weight: bold;
+	}
+
+	.schedule-info-element {
+		margin-left: 15px;
+		margin-bottom: 10px;
+	}
+
+
+}
