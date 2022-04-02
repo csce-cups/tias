@@ -46,7 +46,7 @@ export const EmployeeList: FC<Props> = () => {
               < EmployeeRow employee={employees[index]} setEmployee={(e: Person) => {
                 employees[index] = e;
                 setEmployees(employees);
-              }} key={index} linkID={e.person_id} />
+              }} key={`employee-row-${e.person_id}`} linkID={e.person_id} />
             ))}
           </div>
 
