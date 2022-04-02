@@ -45,7 +45,7 @@ export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID}) => {
   }
 
   return (
-    <>
+    <div className="employee-row">
       <div className="hstack">
         <div className="element left">
           {(checked)? 
@@ -61,9 +61,7 @@ export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID}) => {
           < Dot isScheduled={employee.isScheduled} linkID={linkID} />
         </div>
       </div>
-      <div className="hr-container">
-        <hr/>
-      </div>
-    </>
+      <div className="divider"/>
+    </div>
   )
 }
