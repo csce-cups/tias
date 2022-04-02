@@ -33,7 +33,7 @@ export const EmployeeList: FC<Props> = () => {
 
       {(notScheduled > 0)? 
           <div className='header-bar'>
-            <div title={`${notScheduled} peer teacher${(notScheduled > 1)? 's weren\'t' : ' wasn\'t'} scheduled`} className="slim unscheduled">{notScheduled} unscheduled peer teachers</div>
+            <div className="slim unscheduled">{notScheduled} unscheduled peer teachers</div>
           </div>
           :
           <></>
