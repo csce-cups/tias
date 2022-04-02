@@ -3,7 +3,7 @@ const helper_functions = require("./helper_functions");
 exports.handler = async (event) => {
     const dbQuery = 
     `
-        SELECT course.department, course.course_number, course_section.section_number, 
+        SELECT course.department, course.course_number, course_section.section_number, course_section.placeholder_professor_name
                section_meeting.start_time, section_meeting.end_time, section_meeting.weekday, 
                section_meeting.place
             FROM section_meeting
