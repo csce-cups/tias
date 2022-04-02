@@ -9,6 +9,7 @@ exports.handler = async (event) => {
             FROM section_meeting
             LEFT OUTER JOIN course_section ON course_section.section_id = section_meeting.section_id
             LEFT OUTER JOIN course ON course.course_id = course_section.course_id
+            WHERE section_meeting.meeting_type = 'Laboratory'
             ORDER BY section_meeting.weekday, section_meeting.start_time, (section_meeting.end_time - section_meeting.start_time),
                      course.course_number, course_section.section_number
     `;
@@ -31,7 +32,7 @@ exports.handler = async (event) => {
     const response = {
         "isBase64Encoded": false,
         "statusCode": 200,
-        "headers": { "Content-Type": "application/json" },
+        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:3000" },
         "body": JSON.stringify(responseBody)
     };
 
