@@ -398,6 +398,14 @@ $day_divider_size : 1.5px;
 
 		.block-detail {
 			display: none;
+
+			span {
+				white-space: nowrap;
+			}
+
+			div {
+				overflow-wrap: anywhere;
+			}
 		}
 		
 		.hidden {

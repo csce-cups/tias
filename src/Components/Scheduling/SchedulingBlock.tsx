@@ -11,6 +11,15 @@ interface Props extends RenderBlockProps {
 }
 
 export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
+  const formatDate = (date: Date) => {
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const ampm = hour >= 12 ? 'pm' : 'am';
+    const hour12 = (hour === 12) ? 12 : hour % 12;
+    const minutes = minute < 10 ? `0${minute}` : minute;
+    return `${hour12}:${minutes} ${ampm}`;
+  }
+
   const {course_instance, linkIDs} = data;
   let flex = calcFlex(visible, inline, size);
 
@@ -57,7 +66,8 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
       </div>
       <div className={`vstack block-detail ${visible? '' : 'hidden'}`}>
         <div>
-          {course_instance.department} {course_instance.course_number}-{course_instance.section_number}
+          <span>{course_instance.department} {course_instance.course_number}-{course_instance.section_number}&nbsp;</span>
+          <span>{formatDate(course_instance.start_time)}-{formatDate(course_instance.end_time)}</span>
         </div>
         <div>
           {course_instance.place}
