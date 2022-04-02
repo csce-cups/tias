@@ -94,7 +94,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
                 </div>
                 :
                 <div className="hide btn element detailed hstack" onClick={toggleHats}>
-                  <div className="center">SHOW BLOCKS</div>
+                  <div className="center">HIDE LABELS</div>
                 </div>
               :
               <div className="btn element detailed hstack"/>
