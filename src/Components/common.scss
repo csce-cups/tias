@@ -448,11 +448,11 @@ $day_divider_size : 1.5px;
 	border-bottom: 2px solid black;
 }
 
-.column.detailed .block-text {
+.column.detailed .block-text, .block-container .block.selected .block-text {
 	display: none;
 }
 
-.column.detailed .block-detail {
+.column.detailed .block-detail, .block-container .block.selected .block-detail {
 	color: $light;
 	overflow: hidden;
 	padding: 0 0 5px 5px;
