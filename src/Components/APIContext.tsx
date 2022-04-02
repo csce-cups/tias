@@ -8,20 +8,16 @@ interface Props {
 }
 
 export const contexts = {
-  employees: createContext<
-    [Person[], React.Dispatch<React.SetStateAction<Person[]>>]
-  >([[] as Person[], 0 as any]),
+  employees: createContext<[Person[], React.Dispatch<React.SetStateAction<Person[]>>]>([[] as Person[], 0 as any]),
 
-  blocks: createContext<
-    [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]
-  >([
+  blocks: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>(
+  [
     { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
     0 as any,
   ]),
 
-  userQuals: createContext<
-    [APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]
-  >([
+  userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
+  [
     [{ course_id: -1, course_number: "loading", qualified: false }] as APIUserQualification[],
     0 as any,
   ]),

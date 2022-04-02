@@ -129,7 +129,7 @@ $google_bg: white;
 		flex: 0 0 auto;
 	}
 	
-	.label {
+	label {
 		flex: 0 1 auto;
 		text-overflow: ellipsis;
 		overflow: hidden;
@@ -137,6 +137,7 @@ $google_bg: white;
 		padding-right: 5px;
 
 		text-decoration: inherit;
+		user-select: none;
 	}
 
 	.center {

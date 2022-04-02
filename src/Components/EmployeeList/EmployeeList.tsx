@@ -21,7 +21,10 @@ export const EmployeeList: FC<Props> = () => {
             (employees.length > 0)?
               <div className="scrollable">
                 {employees.map((e: Person, index: number) => (
-                  < EmployeeRow employee={employees[index]} key={index} linkID={e.person_id} />
+                  < EmployeeRow employee={employees[index]} setEmployee={(e: Person) => {
+                    employees[index] = e;
+                    setEmployees(employees);
+                  }} key={index} linkID={e.person_id} />
                 ))}
               </div>
 

@@ -38,7 +38,7 @@ export const Hat: FC<Props> = ({linkID}) => {
         isWhite = !isWhite
       }, 250);
 
-      setTimeout(() => clearInterval(flash), 1500);
+      setTimeout(() => clearInterval(flash), 2000);
     }
   }
 
