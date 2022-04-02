@@ -11,7 +11,8 @@ interface Props {
 
 export const EmployeeList: FC<Props> = () => {
   const sortLastAlg = ((a: Person, b: Person) => a.last_name.localeCompare(b.last_name));
-  const sortFirstAlg = ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name));;
+  const sortFirstAlg = ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name));
+
   const [sortLast, setSortLast] = useState<boolean>(true);
 
   return (
@@ -23,8 +24,8 @@ export const EmployeeList: FC<Props> = () => {
       <div className="sorter">
         <div className="hstack">
           <div className="element left">Sort By:</div>
-          <div className="element right" onClick={() => setSortLast(false)}>First Name</div>
-          <div className="element right" onClick={() => setSortLast(true)}>Last Name</div>
+          <div className="element center" onClick={() => setSortLast(false)}>First Name</div>
+          <div className="element center" onClick={() => setSortLast(true)}>Last Name</div>
         </div>
       </div>
 

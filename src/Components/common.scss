@@ -845,20 +845,21 @@ img.back-arrow {
 		// padding-bottom: 2px;
 
 		.left {
-			padding: 0px 4px;
+			padding: 0 4px 2px 4px;
 		}
 
-		.right {
+		.center {
 			background-color: $render_background;
 			user-select: none;
 			transition: all 0.1s ease-in-out;
+			padding: 0 4px;
 		}
 
-		.right:last-child {
+		.center:last-child {
 			border-left: 1px solid $render_divider;
 		}
 		
-		.right:hover, .right.selected {
+		.center:hover, .center.selected {
 			box-shadow: inset 0 0 2px 0;
 			cursor: pointer;
 		}
