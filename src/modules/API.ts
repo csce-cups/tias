@@ -15,6 +15,7 @@ export interface Person {
 	professor: boolean
 	isScheduled: null | boolean
 	isChecked: boolean
+	desired_number_assignments: number
 }
 
 export interface CourseBlock {
@@ -27,7 +28,7 @@ export interface CourseBlock {
 	weekday: string
 	place: string
 	scheduled: number[] | null;
-	placeholder_professor_name: string
+	professor: string
 }
 
 export interface CourseBlockWeek {
@@ -155,7 +156,7 @@ class API {
 	private static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
 			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
-			.catch((err: any) => console.log(err));
+			.catch(err => [{person_id: -2} as Person]);
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings
@@ -179,7 +180,7 @@ class API {
 					weekday: e.weekday,
 					place: e.place,
 					scheduled: null,
-					placeholder_professor_name: e.placeholder_professor_name
+					professor: e.placeholder_professor_name
 				})))
 
 				return ({
@@ -221,13 +222,27 @@ class API {
 			.catch(err => console.log(err));
 	}
 
-	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>): Promise<void> => {
-		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`, {
-			method: "PUT",
-			body: JSON.stringify({
-				preferences: Array.from(prefs.entries()).map(arr => ({section_id: arr[0], preference: arr[1]}))
-			}),
-		}).then(() => {});
+	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
+		let rets: Promise<void>[] = [];
+		if (pref_num !== undefined) {
+			rets.push(
+					fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}`, {
+					method: "PUT",
+					body: JSON.stringify({"desired_number_assignments": pref_num})
+				}).then(() => {})
+			)
+		} 
+
+		rets.push(
+			fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`, {
+				method: "PUT",
+				body: JSON.stringify({
+					preferences: Array.from(prefs.entries()).map(arr => ({section_id: arr[0], preference: arr[1]}))
+				}),
+			}).then(() => {})
+		)
+
+		return Promise.all(rets).then(() => {});
 	}
 
 	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
@@ -312,7 +327,8 @@ class API {
 						administrator: false,
 						professor: false,
 						isScheduled: null,
-						isChecked: false
+						isChecked: false,
+						desired_number_assignments: 2
 					})
 				))
 			}, 1000)

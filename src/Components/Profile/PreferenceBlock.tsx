@@ -65,6 +65,14 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
     }
   }
 
+  const resName = (prof: string) => {
+    if (prof !== "") {
+      return `with ${prof} `;
+    } else {
+      return '';
+    }
+  }
+
   const checkAll = (id: number) => {
     Array.from(document.querySelectorAll(`input[type=checkbox][name="course-checkbox-${id}"]`)).forEach((e: any) => e.checked = true);
   }
@@ -77,7 +85,7 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
       <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
         <input id={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
         <label htmlFor={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} style={{color: resStatusColor(section_id)}} >
-          {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
+          {course_instance.course_number}-{course_instance.section_numbers[i]} {resName(course_instance.professors[i])}{resStatusText(section_id)}
         </label>
       </div>
     )

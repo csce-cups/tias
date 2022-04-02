@@ -2,6 +2,7 @@ import { CourseBlock, CourseBlockWeek } from "./API";
 
 export interface CompressedCourseBlock extends CourseBlock {
 	section_numbers: string[]
+	professors: string[]
 	section_ids: number[]
 }
 
@@ -39,7 +40,8 @@ export const compressDay = (
 		compressed.push({
 			...c,
 			section_numbers: [c.section_number],
-			section_ids: [c.section_id]
+			section_ids: [c.section_id],
+			professors: [c.professor],
 		});
 
 		fidx++; //update to the newly added index
@@ -48,6 +50,7 @@ export const compressDay = (
 		while (cidx < courses.length && cmp(compressed[fidx], courses[cidx])) {
 			compressed[fidx].section_numbers.push(courses[cidx].section_number);
 			compressed[fidx].section_ids.push(courses[cidx].section_id);
+			compressed[fidx].professors.push(courses[cidx].professor);
 			cidx++;
 		}
 	}

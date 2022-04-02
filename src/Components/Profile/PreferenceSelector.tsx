@@ -5,21 +5,30 @@ import contexts from '../APIContext'
 import API, { CourseBlock, CourseBlockWeek, parseCookie } from '../../modules/API'
 import { compressWeek } from '../../modules/BlockManipulation'
 import { PreferenceBlock } from './PreferenceBlock'
+import uuid from '../../uuid'
 
 export const PreferenceSelector = () => {
+  const input_id = uuid();
   const [collapsed, setCollapsed] = React.useState<boolean>(false);
   const [blockWeek, setBlockWeek] = useContext(contexts.blocks);
   const [userQuals, setUserQuals] = useContext(contexts.userQuals);
   const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const [filter, setFilter] = useState(new Map<number, boolean>());
+  const [employees, setEmployees] = useContext(contexts.employees);
+  const thisEmployee = employees.find(e => e.person_id === +parseCookie().tias_user_id);
   const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(blockWeek), setBlockWeek];
 
   const submit = (event: any) => {
-    const requestBody: any = {"preferences": Object.fromEntries(userPrefs)}
 
+    const newPrefSections = +(document.getElementById(input_id)! as HTMLInputElement).value;
+    let updatePrefSectionVal = undefined;
+    if (thisEmployee && newPrefSections !== thisEmployee.desired_number_assignments) {
+      updatePrefSectionVal = newPrefSections;
+    }
+    
     document.getElementById("submit-prefs")?.setAttribute('value', 'Saving...');
     
-    API.sendUserPreferences(parseCookie().tias_user_id, userPrefs).then(() => {
+    API.sendUserPreferences(parseCookie().tias_user_id, userPrefs, updatePrefSectionVal).then(() => {
       document.getElementById("submit-prefs")?.setAttribute('value', 'Saved!');
     }).catch(err => {
       document.getElementById("submit-prefs")?.setAttribute('value', 'Preferences could not be saved.');
@@ -50,7 +59,7 @@ export const PreferenceSelector = () => {
           <div className="dropdown-label">
             Preferred Number of Lab Sections:  
           </div>
-          <input className="fill" type="number" placeholder="2" style={{marginRight: '5px'}}/>
+          <input id={input_id} className="fill" type="number" placeholder={thisEmployee? `${thisEmployee.desired_number_assignments}` : '2'} style={{marginRight: '5px'}}/>
         </div>
         < contexts.blocks.Provider value={blocksPayload} >
           < SchedulingWindow renderBlockType={PreferenceBlock} options={{

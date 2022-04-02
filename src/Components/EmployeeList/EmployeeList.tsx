@@ -32,23 +32,26 @@ export const EmployeeList: FC<Props> = () => {
       </div>
 
       {(notScheduled > 0)? 
-          <div className='header-bar'>
-            <div className="slim unscheduled">{notScheduled} unscheduled peer teachers</div>
-          </div>
-          :
-          <></>
-        }
+        <div className='header-bar'>
+          <div className="slim unscheduled">{notScheduled} unscheduled peer teachers</div>
+        </div>
+        :
+        <></>
+      }
 
 
       {(employees.length > 0)?
-          <div className="scrollable">
-            {employees.sort((sortLast)? sortLastAlg : sortFirstAlg).map((e: Person, index: number) => (
-              < EmployeeRow employee={employees[index]} setEmployee={(e: Person) => {
-                employees[index] = e;
-                setEmployees(employees);
-              }} key={`employee-row-${e.person_id}`} linkID={e.person_id} />
-            ))}
-          </div>
+          (employees[0].person_id !== -2)?
+            <div className="scrollable">
+              {employees.sort((sortLast)? sortLastAlg : sortFirstAlg).map((e: Person, index: number) => (
+                < EmployeeRow employee={employees[index]} setEmployee={(e: Person) => {
+                  employees[index] = e;
+                  setEmployees(employees);
+                }} key={`employee-row-${e.person_id}`} linkID={e.person_id} />
+              ))}
+            </div>
+            :
+            <div className="loading">An error occurred.</div>
 
         : <div className="loading">Loading...</div>
       }
