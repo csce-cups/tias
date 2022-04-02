@@ -21,6 +21,15 @@ export const ProfileSidebar = () => {
     return retData;
   }
 
+  const formatDate = (date: Date) => {
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const ampm = hour >= 12 ? 'pm' : 'am';
+    const hour12 = (hour === 12) ? 12 : hour % 12;
+    const minutes = minute < 10 ? `0${minute}` : minute;
+    return `${hour12}:${minutes} ${ampm}`;
+  }
+
   const renderScheduled = (retData: CourseBlock[]) => {    
     let retFormat: DisplayBlock[] = [];
     let ret: JSX.Element[] = [];
@@ -51,7 +60,10 @@ export const ProfileSidebar = () => {
       ret.push(
         <div className="schedule-info-element" key={`sie-${JSON.stringify(block)}`}>
           <div>
-            {block.course_number}-{block.section_number} on {block.days.join('')}
+            {block.department}: {block.course_number}-{block.section_number}
+          </div>
+          <div>
+            {formatDate(block.start_time)}-{formatDate(block.end_time)} {block.days.join('')}
           </div>
           <div>
             {block.place}
