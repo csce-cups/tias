@@ -75,6 +75,14 @@ $google_bg: white;
 		margin-bottom: 5px;
 	}
 
+	.unscheduled {
+		font-weight: bold;
+		font-size: 0.9em;
+		color: red;
+		flex: 0 1 auto;
+		text-align: center;
+	}
+
 	.hstack.filter {
 		border: 2px solid;
 		margin-top: 10px;
@@ -129,12 +137,15 @@ $google_bg: white;
 		flex: 0 0 auto;
 	}
 	
-	.label {
+	label {
 		flex: 0 1 auto;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
 		padding-right: 5px;
+
+		text-decoration: inherit;
+		user-select: none;
 	}
 
 	.center {
@@ -147,7 +158,7 @@ $google_bg: white;
 .right {
 	flex: 1 0 auto;
 	text-align: right;
-	padding-right: 10px;
+	padding-right: 5px;
 }
 
 .top-border {
@@ -395,6 +406,14 @@ $day_divider_size : 1.5px;
 
 		.block-detail {
 			display: none;
+
+			span {
+				white-space: nowrap;
+			}
+
+			div {
+				overflow-wrap: anywhere;
+			}
 		}
 		
 		.hidden {
@@ -433,11 +452,11 @@ $day_divider_size : 1.5px;
 	border-bottom: 2px solid black;
 }
 
-.column.detailed .block-text {
+.column.detailed .block-text, .block-container .block.selected .block-text {
 	display: none;
 }
 
-.column.detailed .block-detail {
+.column.detailed .block-detail, .block-container .block.selected .block-detail {
 	color: $light;
 	overflow: hidden;
 	padding: 0 0 5px 5px;
@@ -599,6 +618,10 @@ $day_divider_size : 1.5px;
 	}
 }
 
+.column.detailed .hat:hover {
+	box-shadow: inset 0 0 5px 0;
+}
+
 .hat:first-child {
 	border-left: none;
 }
@@ -648,6 +671,10 @@ $day_divider_size : 1.5px;
 	flex: 0 0 1.2em;
 	border-radius: 3px 3px 0 0;
 	border-bottom: 2px solid white;
+}
+
+.column.detailed .hat-container:hover {
+	flex: 0 0 1.4em;
 }
 
 .column.detailed .hat-container.alert {
@@ -802,4 +829,54 @@ img.back-arrow {
 	display: flex;
 	position: relative;
 	border: 2px solid black;
+}
+
+.employee-row {
+	margin: 15px 5px;
+	
+	.divider {
+		height: 0px;
+		margin-top: 7.5px;
+		border-radius: 5px;
+		outline: 1px solid $render_divider;
+	}
+}
+
+.employee-row:first-child {
+	margin-top: 0px;
+}
+
+.flash-on {
+	background: $render_background;
+	outline: 2px solid red;
+	border-radius: 3px;
+}
+
+.header-bar {
+	border-bottom: 2px solid black;
+
+	.hstack {
+		padding: 0;
+		// padding-bottom: 2px;
+
+		.left {
+			padding: 0 4px 2px 4px;
+		}
+
+		.center {
+			background-color: $render_background;
+			user-select: none;
+			transition: all 0.1s ease-in-out;
+			padding: 0 4px;
+		}
+
+		.center:last-child {
+			border-left: 1px solid $render_divider;
+		}
+		
+		.center:hover, .center.selected {
+			box-shadow: inset 0 0 2px 0;
+			cursor: pointer;
+		}
+	}
 }

@@ -66,6 +66,8 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(data: DataCourseBlock[
   const startsDuring = (block: DataCourseBlock) => block.start_time > region_start && block.start_time < region_end;
   const endsDuring = (block: DataCourseBlock) => block.end_time < region_end && block.end_time > region_start;
   const isDuring = (block: DataCourseBlock) => block.start_time < region_start && block.end_time > region_end;
+
+  // const collides = (block: DataCourseBlock) => !(block.end_time < region_start || block.start_time > region_end)
   
   data.forEach((block: DataCourseBlock) => {
     if (inline && block.start_time.getTime() === region_start.getTime() && block.end_time.getTime() === region_end.getTime()) { // Same line as previous
