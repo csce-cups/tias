@@ -7,7 +7,7 @@ import { CourseBlock } from '../../../modules/API';
 
 const builder = (department: string, course_number: number, section_number: string, section_id: number, start_time: Date, end_time: Date, weekday: string, place: string,
     scheduled: number[] | null): CourseBlock => {
-    return { department, course_number, section_number, section_id, start_time, end_time, weekday, place, scheduled}
+    return { department, course_number, section_number, section_id, start_time, end_time, weekday, place, scheduled, placeholder_professor_name: ""}
 }
 
 describe('SchedulingColumn renderBlockType={SchedulingBlock} (SchedulingBlock Dependent)', () => {

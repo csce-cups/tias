@@ -3,6 +3,7 @@ import { SchedulingColumn } from './SchedulingColumn';
 import { SchedulingTimes } from './SchedulingTimes';
 import contexts from '../APIContext';
 import RenderBlockProps from './BlockBase';
+import { CourseBlock } from '../../modules/API';
 
 const hours = 12;
 // const start = new Date(12*24*60*60*1000);
@@ -25,11 +26,11 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
         < contexts.blocks.Consumer >
           {([blocks, setBlocks]) => (
             <>
-              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Monday'} blocks={blocks.Monday} />
-              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Tuesday'} blocks={blocks.Tuesday} />
-              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Wednesday'} blocks={blocks.Wednesday} />
-              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Thursday'} blocks={blocks.Thursday} />
-              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Friday'} blocks={blocks.Friday} />
+              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Monday'} blocks={blocks? blocks.Monday : [{course_number: -1} as CourseBlock]} />
+              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Tuesday'} blocks={blocks? blocks.Tuesday : [{course_number: -1} as CourseBlock]} />
+              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Wednesday'} blocks={blocks? blocks.Wednesday : [{course_number: -1} as CourseBlock]} />
+              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Thursday'} blocks={blocks? blocks.Thursday : [{course_number: -1} as CourseBlock]} />
+              < SchedulingColumn renderBlockType={renderBlockType} hours={hours} filter={filter} options={options} day={'Friday'} blocks={blocks? blocks.Friday : [{course_number: -1} as CourseBlock]} />
             </>
           )}
         </contexts.blocks.Consumer>
