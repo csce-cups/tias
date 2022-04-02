@@ -36,10 +36,8 @@ export const GenerateButton = () => {
         employees[i].isScheduled = resp.unscheduled.indexOf(e.person_id) === -1 && eIDs.findIndex(id => id === e.person_id) !== -1;
       });
 
-      console.log(blocks);
       setEmployees(employees);
       setBlocks({Monday: allBlocks[0], Tuesday: allBlocks[1], Wednesday: allBlocks[2], Thursday: allBlocks[3], Friday: allBlocks[4]});
-      console.log(blocks);
       if (btn !== null) btn.innerHTML = 'Done generating!';
 
     }).catch(() => {
