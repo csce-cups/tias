@@ -27,6 +27,7 @@ export interface CourseBlock {
 	weekday: string
 	place: string
 	scheduled: number[] | null;
+	placeholder_professor_name: string
 }
 
 export interface CourseBlockWeek {
@@ -46,6 +47,7 @@ interface raw_APICourseBlock {
 	end_time: string
 	weekday: string
 	place: string
+	placeholder_professor_name: string
 }
 
 interface raw_APICourseBlockWeek {
@@ -176,7 +178,8 @@ class API {
 					end_time: createDate(e.end_time),
 					weekday: e.weekday,
 					place: e.place,
-					scheduled: null
+					scheduled: null,
+					placeholder_professor_name: e.placeholder_professor_name
 				})))
 
 				return ({
@@ -187,7 +190,15 @@ class API {
 					Friday: convert(dataStrict.Friday)
 				} as any)
 			})
-			.catch(err => console.log(err));
+			.catch(err => {
+				return ({
+					Monday: [{course_number: -1} as CourseBlock],
+					Tuesday: [{course_number: -1} as CourseBlock],
+					Wednesday: [{course_number: -1} as CourseBlock],
+					Thursday: [{course_number: -1} as CourseBlock],
+					Friday: [{course_number: -1} as CourseBlock]
+				} as any)
+			});
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/qualifications

@@ -30,6 +30,11 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(data: DataCourseBlock[
       <div className="day-loading">Loading...</div>
     </div>
   )
+  if (data.length > 0 && data[0].course_number === -1) return (
+    <div className="vstack absolute">
+      <div className="day-loading">An error occurred.</div>
+    </div>
+  )
 
   if (data.length === 0) return <></>;
   
