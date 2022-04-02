@@ -14,7 +14,7 @@ public class Person implements Comparable<Person> {
     String email, firstName, lastName;
     int desiredNumberAssignments;
     boolean peerTeacher, teachingAssistant, administrator, professor;
-    ArrayList<Availability> availabilities;
+    ArrayList<Unavailability> unavailabilities;
     HashMap<Integer, Preference> preferences;
     HashMap<Integer, Qualification> qualifications;
     HashMap<Integer, Section> assignedSections;
@@ -33,7 +33,7 @@ public class Person implements Comparable<Person> {
         this.teachingAssistant = teachingAssistant;
         this.administrator = administrator;
         this.professor = professor;
-        this.availabilities = new ArrayList<Availability>();
+        this.unavailabilities = new ArrayList<Unavailability>();
         this.preferences = new HashMap<Integer, Preference>();
         this.qualifications = new HashMap<Integer, Qualification>();
         this.assignedSections = new HashMap<Integer, Section>();
@@ -78,12 +78,12 @@ public class Person implements Comparable<Person> {
         return professor;
     }
 
-    public ArrayList<Availability> getAvailabilities() {
-        return (ArrayList<Availability>) Collections.unmodifiableList(availabilities);
+    public ArrayList<Unavailability> getUnavailabilities() {
+        return (ArrayList<Unavailability>) Collections.unmodifiableList(unavailabilities);
     }
 
-    public void addAvailability(Availability availability) {
-        availabilities.add(availability);
+    public void addUnavailability(Unavailability availability) {
+        unavailabilities.add(availability);
     }
 
     public Collection<Preference> getPreferences() {
@@ -135,17 +135,12 @@ public class Person implements Comparable<Person> {
 
     boolean isAvailable(ArrayList<Meeting> meetings) {
         for (Meeting meeting : meetings) {
-            boolean quit = true;
-            for (Availability availability : availabilities) {
-                if (availability.getWeekday().equals(meeting.getWeekday()) && timeContains(availability.startTime, availability.endTime, meeting.startTime, meeting.endTime)) {
-                    quit = false;
+            for (Unavailability unavailability : unavailabilities) {
+                if (unavailability.getWeekday().equals(meeting.getWeekday()) && !(unavailability.getEndTime().before(meeting.getStartTime()) || unavailability.getStartTime().after(meeting.getEndTime()))) {
+                    return false;
                 }
             }
-            if (quit) {
-                return false;
-            }
         }
-
         return true;
     }
 
@@ -215,7 +210,7 @@ public class Person implements Comparable<Person> {
 
     @Override
     public String toString() {
-        return "Person [administrator=" + administrator + ", availabilities=" + availabilities + ", availabilityScore="
+        return "Person [administrator=" + administrator + ", availabilities=" + unavailabilities + ", availabilityScore="
                 + availabilityScore + ", availableSections=" + availableSections + ", desiredNumberAssignments="
                 + desiredNumberAssignments + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
                 + ", peerTeacher=" + peerTeacher + ", personId=" + personId + ", preferences=" + preferences

@@ -2,11 +2,11 @@ package db;
 
 import java.sql.Time;
 
-public class Availability {
+public class Unavailability {
     String weekday;
     Time startTime, endTime;
     
-    public Availability(String weekday, Time startTime, Time endTime) {
+    public Unavailability(String weekday, Time startTime, Time endTime) {
         this.weekday = weekday;
         this.startTime = startTime;
         this.endTime = endTime;

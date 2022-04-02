@@ -2,9 +2,9 @@ const helper_functions = require("./helper_functions");
 
 const constructDBQuery = (userId, userTypes, params) => {
     let baseQuery = `
-        SELECT person_id, first_name, last_name, profile_photo_url,
-               peer_teacher, teaching_assistant, administrator, professor
-            FROM person`;
+        SELECT person_id, email, first_name, last_name, profile_photo_url,
+            peer_teacher, teaching_assistant, administrator, professor
+        FROM person`;
     
     let whereClause = " WHERE ";
     let conditions = [];

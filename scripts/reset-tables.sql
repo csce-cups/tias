@@ -29,22 +29,12 @@ CREATE TABLE person (
 	professor BOOLEAN
 );
 
-DROP TABLE IF EXISTS person_availability CASCADE;
-CREATE TABLE person_availability (
+DROP TABLE IF EXISTS person_unavailability CASCADE;
+CREATE TABLE person_unavailability (
 	person_id INTEGER REFERENCES person(person_id),
 	weekday WEEKDAY,
 	start_time TIME,
 	end_time TIME,
-	PRIMARY KEY(person_id, weekday, start_time, end_time)
-);
-
-DROP TABLE IF EXISTS office_hours CASCADE;
-CREATE TABLE office_hours (
-	person_id INTEGER REFERENCES person(person_id),
-	weekday WEEKDAY,
-	start_time TIME,
-	end_time TIME,
-	place VARCHAR,
 	PRIMARY KEY(person_id, weekday, start_time, end_time)
 );
 
