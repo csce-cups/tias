@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { SchedulingBlock } from '../Scheduling/SchedulingBlock'
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow'
 import contexts from '../APIContext'
-import { CourseBlock, CourseBlockWeek } from '../../modules/API'
+import API, { CourseBlock, CourseBlockWeek, parseCookie } from '../../modules/API'
 import { compressWeek } from '../../modules/BlockManipulation'
 import { PreferenceBlock } from './PreferenceBlock'
 
@@ -18,21 +18,10 @@ export const PreferenceSelector = () => {
     const requestBody: any = {"preferences": Object.fromEntries(userPrefs)}
 
     document.getElementById("submit-prefs")?.setAttribute('value', 'Saving...');
-    console.log(requestBody);
-    // fetch('a link', {
-    //   method: 'PUT',
-    //   body: JSON.stringify(requestBody)
-    // }).then(response => response.json())
-    //   .then(responseJSON => {
-    //     if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
-    //       document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
-    //     } else {
-    //       document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
-    //       setQuals(newQuals);
-    //     }
-    //   })
-    //   .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
-    document.getElementById("submit-prefs")?.setAttribute('value', 'Lmao haven\'t written it yet');
+    
+    API.sendUserPreferences(parseCookie().tias_user_id, userPrefs).then(() => {
+      document.getElementById("submit-prefs")?.setAttribute('value', 'Saved!');
+    });
 
     event.preventDefault();
   }

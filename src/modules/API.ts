@@ -101,7 +101,7 @@ class API {
 			employees: API.fetchPTList(),
 			blocks: API.fetchCourseBlocks(),
 			userQuals: API.fetchUserQualifications(id),
-			userPrefs: API.fetchUserPreferencesDummy(id)
+			userPrefs: API.fetchUserPreferences(id)
 		}
 	}
 
@@ -167,6 +167,25 @@ class API {
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`)
 			.then(({data}) => data.qualifications)
 			.catch(err => console.log(err));
+	}
+
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/preferences
+	private static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`)
+			.then(({data}) => (
+				new Map<number, APIUserPreferenceEnum>(
+					data.preferences.map((pref: {section_id: number, preference: APIUserPreferenceEnum}) => ([pref.section_id, pref.preference]))
+				) as any
+			))
+			.catch(err => console.log(err));
+	}
+
+	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`, {
+			method: "POST",
+			body: JSON.stringify({preferences: Object.fromEntries(prefs)}),
+		}).then(() => {}).catch(err => console.log(err));
 	}
 
 	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
