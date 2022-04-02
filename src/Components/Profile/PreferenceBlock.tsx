@@ -17,7 +17,6 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
   const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const {course_instance, linkIDs} = data;
   const ref: any = useRef(null);
-  const id = uuid();
   
   // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
   useEffect(() => { // Disables focus view on mouse click outside
@@ -76,8 +75,8 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
   course_instance.section_ids.forEach((section_id, i) => {
     formElements.push(
       <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
-        <input id={id} type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
-        <label htmlFor={id} style={{color: resStatusColor(section_id)}} >
+        <input id={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
+        <label htmlFor={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} style={{color: resStatusColor(section_id)}} >
           {course_instance.course_number}-{course_instance.section_numbers[i]} {resStatusText(section_id)}
         </label>
       </div>

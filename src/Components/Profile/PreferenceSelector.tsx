@@ -21,6 +21,8 @@ export const PreferenceSelector = () => {
     
     API.sendUserPreferences(parseCookie().tias_user_id, userPrefs).then(() => {
       document.getElementById("submit-prefs")?.setAttribute('value', 'Saved!');
+    }).catch(err => {
+      document.getElementById("submit-prefs")?.setAttribute('value', 'Preferences could not be saved.');
     });
 
     event.preventDefault();

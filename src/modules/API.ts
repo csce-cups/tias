@@ -183,9 +183,11 @@ class API {
 
 	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>): Promise<void> => {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`, {
-			method: "POST",
-			body: JSON.stringify({preferences: Object.fromEntries(prefs)}),
-		}).then(() => {}).catch(err => console.log(err));
+			method: "PUT",
+			body: JSON.stringify({
+				preferences: Array.from(prefs.entries()).map(arr => ({section_id: arr[0], preference: arr[1]}))
+			}),
+		}).then(() => {});
 	}
 
 	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
