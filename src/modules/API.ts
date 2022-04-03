@@ -73,12 +73,19 @@ export interface APIAlgoResponse {
 	unscheduled: number[]
 }
 
+export interface APIStudentUnavailability {
+	DTSTART: string,
+	DTEND: string,
+	BYDAY: string,
+}
+
 export interface APIReturn {
 	employees: Promise<Person[]>
 	blocks: Promise<CourseBlockWeek>,
 	userQuals: Promise<APIUserQualification[]>
 	userPrefs: Promise<APIUserPreferences>
 }
+
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
 export const parseCookie: any = () => {
@@ -285,8 +292,16 @@ class API {
 		}).then(() => {});
 	}
 
+	static saveUserUnavailability = async (user_unavailability_arr: APIStudentUnavailability[]) => {
+		let currentDateObj = new Date();
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/unavailability`, {
+			method: 'POST',
+			body: JSON.stringify({"timezoneOffsetHours": (currentDateObj.getTimezoneOffset() / 60), "unavailability": user_unavailability_arr})
+		}).then(() => {});
+	}
 
 
+	
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
