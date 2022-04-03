@@ -16,6 +16,11 @@ export const contexts = {
     0 as any,
   ]),
 
+  loadedSchedule: createContext<[Map<string, number[]>, React.Dispatch<React.SetStateAction<Map<string, number[]>>>]>([
+    new Map<string, number[]>(),
+    0 as any
+  ]),
+
   userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
   [
     [{ course_id: -1, course_number: "loading", qualified: false }] as APIUserQualification[],
@@ -34,6 +39,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     Thursday: null,
     Friday: null,
   } as CourseBlockWeek);
+
+  const loadedScheduleState = useState(new Map<string, number[]>());
 
   const userQualState = useState([
     { course_id: -1, course_number: "loading", qualified: false },
@@ -62,9 +69,11 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     <contexts.googleData.Provider value={googleDataState}>
       <contexts.employees.Provider value={employeeState}>
         <contexts.blocks.Provider value={blockState}>
-          <contexts.userQuals.Provider value={userQualState}>
-            {children}
-          </contexts.userQuals.Provider>
+          <contexts.loadedSchedule.Provider value={loadedScheduleState}>
+            <contexts.userQuals.Provider value={userQualState}>
+              {children}
+            </contexts.userQuals.Provider>
+          </contexts.loadedSchedule.Provider>
         </contexts.blocks.Provider>
       </contexts.employees.Provider>
     </contexts.googleData.Provider>

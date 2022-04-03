@@ -182,10 +182,28 @@ class API {
 		}).then(sessionResponse => sessionResponse.json())
 		  .then(responseData => {
 			let map = new Map<string, number[]>();
-			Object.keys(responseData.scheduled).map(key => map.set(key, responseData.scheduled[key]));
+			Object.keys(responseData.scheduled).forEach(key => map.set(key, responseData.scheduled[key]));
 			responseData.scheduled = map;
 			return responseData;
 		});
+	}
+
+	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
+			method: 'GET'
+		}).then(sessionResponse => sessionResponse.json())
+		  .then(responseData => {
+			let map = new Map<string, number[]>();
+			Object.keys(responseData.scheduled).forEach(key => map.set(key, responseData.scheduled[key]));
+			return map;
+		});
+	}
+
+	static sendSavedSchedule = async (scheduled: Map<string, number[]>): Promise<void> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
+			method: 'POST',
+			body: JSON.stringify({"scheduled": Object.fromEntries(scheduled)})
+		}).then(() => {});
 	}
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
