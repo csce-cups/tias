@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ProfileFormRow } from './ProfileFormRow'
 import contexts from '../APIContext'
-import { APIUserQualification, parseCookie } from '../../modules/API';
+import API, { APIUserQualification, parseCookie } from '../../modules/API';
 
 export const ProfileForm = () => {
-  const [collapsed, setCollapsed] = React.useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses); 
 
-  let updateOnDismount = () => {};
   const submit = (event: any, setQuals: any) => {
     const selections = Array.from(document.querySelectorAll(`select[id$="-prefs"]`));
     let newQuals: APIUserQualification[] = [];
@@ -31,8 +31,12 @@ export const ProfileForm = () => {
         if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
           document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
         } else {
-          document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
-          setQuals(newQuals);
+          document.getElementById("submit-button")?.setAttribute('value', 'Updating Preferences...');
+          API.fetchUserViableCourses(parseCookie().tias_user_id).then((resp) => {
+            setQuals(newQuals);
+            setUserViableCourses(resp);
+            document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
+          })
         }
       })
       .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
