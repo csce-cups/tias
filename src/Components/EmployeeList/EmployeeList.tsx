@@ -1,9 +1,10 @@
 import React, { FC, useContext, useState } from 'react'
 import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
-import { AcceptButton } from './AcceptButton'
+import { SaveButton } from './SaveButton'
 import { Person } from '../../modules/API'
 import contexts from '../APIContext'
+import { LoadButton } from './LoadButton'
 
 interface Props {
   
@@ -58,8 +59,9 @@ export const EmployeeList: FC<Props> = () => {
       }
 
       <div className="vstack top-border">
+        < LoadButton />
         < GenerateButton genState={genState} />
-        < AcceptButton />
+        < SaveButton />
       </div>
     </div>
   )
