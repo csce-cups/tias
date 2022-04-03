@@ -119,7 +119,8 @@ class API {
 	static fetchAllUser = (user_id: number | undefined) => {
 		return {
 			userQuals: API.fetchUserQualifications(user_id),
-			userPrefs: API.fetchUserPreferences(user_id)
+			userPrefs: API.fetchUserPreferences(user_id),
+			userViableCourses: API.fetchUserViableCourses(user_id)
 		}
 	}
 
@@ -133,7 +134,8 @@ class API {
 	static fetchAllUserDummy = (user_id: number | undefined) => {
 		return {
 			userQuals: API.fetchUserQualificationsDummy(user_id),
-			userPrefs: API.fetchUserPreferencesDummy(user_id)
+			userPrefs: API.fetchUserPreferencesDummy(user_id),
+			userViableCourses: API.fetchUserViableCourses(undefined)
 		}
 	}
 
@@ -222,6 +224,13 @@ class API {
 			.catch(err => console.log(err));
 	}
 
+	// We get a ton of data back from this, but I really only care about the section_id so I reduce the data here
+	static fetchUserViableCourses = async (user_id?: number): Promise<number[]> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve([]);});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/viable-courses`)
+			.then(({data}) => data.viableCourses.map((b: raw_APICourseBlock) => b.section_id));
+	}
+
 	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
 		let rets: Promise<void>[] = [];
 		if (pref_num !== undefined) {
@@ -275,6 +284,8 @@ class API {
 			body: JSON.stringify({"scheduled": Object.fromEntries(scheduled)})
 		}).then(() => {});
 	}
+
+
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {

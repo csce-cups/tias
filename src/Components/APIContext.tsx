@@ -32,6 +32,10 @@ export const contexts = {
 
   userPrefs: createContext<[APIUserPreferences, React.Dispatch<React.SetStateAction<APIUserPreferences>>]>(
     [new Map<number, APIUserPreferenceEnum>(), 0 as any]
+  ),
+
+  userViableCourses: createContext<[number[], React.Dispatch<React.SetStateAction<number[]>>]>(
+    [[] as number[], 0 as any]
   )
 };
 
@@ -53,6 +57,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   ] as APIUserQualification[]);
 
   const userPrefState = useState(new Map<number, APIUserPreferenceEnum>());
+  const userViableCourses = useState<number[]>([]);
 
   useEffect(() => {
     const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
@@ -78,6 +83,10 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       userPrefState[1](resp);
     });
 
+    userPromises.userViableCourses.then((resp) => {
+      userViableCourses[1](resp);
+    });
+
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
   return (
@@ -87,7 +96,9 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
           <contexts.loadedSchedule.Provider value={loadedScheduleState}>
             <contexts.userQuals.Provider value={userQualState}>
               <contexts.userPrefs.Provider value={userPrefState}>
-                {children}
+                <contexts.userViableCourses.Provider value={userViableCourses}>
+                  {children}
+                </contexts.userViableCourses.Provider>
               </contexts.userPrefs.Provider>
             </contexts.userQuals.Provider>
           </contexts.loadedSchedule.Provider>
