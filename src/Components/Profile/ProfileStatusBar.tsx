@@ -6,7 +6,7 @@
 */
 
 import React, { MutableRefObject } from 'react'
-import { APIStudentUnavailabilityRequest } from '../../modules/API';
+import { APIStudentUnavailability } from '../../modules/API';
 import API from '../../modules/API';
 
 export const ProfileStatusBar = () => {
@@ -14,6 +14,9 @@ export const ProfileStatusBar = () => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const parseICSFile = (icsFileAsText: any) => {
+    const btn = document.getElementById('upload-schedule-button') as HTMLButtonElement;
+    if (btn !== null) btn.innerHTML = 'Uploading...';
+
     let icsdata = icsFileAsText.split("\n");
     //ASSUMPTIONS:
     //EVERY event has the same number of lines
@@ -43,7 +46,7 @@ export const ProfileStatusBar = () => {
     if (r) {
       icsdata = icsFileAsText.split("\r\n");
     }
-    let data: APIStudentUnavailabilityRequest[] = [];
+    let data: APIStudentUnavailability[] = [];
     while (line < icsdata.length - 1) {
       let byday = icsdata[line + dayLine];
       let start = icsdata[line + startLine];
@@ -52,7 +55,7 @@ export const ProfileStatusBar = () => {
       if (lastchr !== "=") {
         //then this is a good event
         let days = byday.split("=");
-        let event: APIStudentUnavailabilityRequest = {
+        let event: APIStudentUnavailability = {
           DTSTART: start.split(":")[1],
           DTEND: end.split(":")[1],
           BYDAY: days[days.length - 1],
@@ -61,7 +64,12 @@ export const ProfileStatusBar = () => {
       }
       line += len;
     }
-    API.saveUserUnavailability(data);
+
+    API.saveUserUnavailability(data).then(() => {
+      if (btn !== null) btn.innerHTML = 'Upload Successful!';
+    }).catch(() => {
+      if (btn !== null) btn.innerHTML = 'An error occurred.';
+    })
   };
 
   const readInputICSFile = (icsFile: any) => {
@@ -94,7 +102,7 @@ export const ProfileStatusBar = () => {
   return (
     <div className="profile-status-bar">
       <input type="file" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
-      <button className="blue button" onClick={handleClick}>Upload Schedule</button>
+      <button id="upload-schedule-button" className="blue button" onClick={handleClick}>Upload Schedule</button>
       <div className="profile-status">
         <div className="left element">Last Updated: </div>
         <div className="fill element" />
