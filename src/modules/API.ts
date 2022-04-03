@@ -76,6 +76,12 @@ export interface APIReturn {
 	userQuals: Promise<APIUserQualification[]>
 }
 
+export interface APIStudentUnavailabilityRequest {
+	DTSTART: string,
+    DTEND: string,
+    BYDAY: string,
+}
+
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
 export const parseCookie: any = () => {
 	return (
@@ -178,6 +184,17 @@ class API {
 			Object.keys(responseData.scheduled).map(key => map.set(key, responseData.scheduled[key]));
 			responseData.scheduled = map;
 			return responseData;
+		});
+	}
+
+	static saveUserUnavailability = async (user_unavailability_arr: APIStudentUnavailabilityRequest[]) => {
+		let currentDateObj = new Date();
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/unavailability`, {
+			method: 'POST',
+			body: JSON.stringify({"timezoneOffsetHours": (currentDateObj.getTimezoneOffset() / 60), "unavailability": user_unavailability_arr})
+		}).then(sessionResponse => sessionResponse.json())
+		  .then(responseData => {
+			// I shall leave this at Ben's discretion.
 		});
 	}
 
