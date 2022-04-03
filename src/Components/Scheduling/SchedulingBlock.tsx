@@ -46,12 +46,12 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
     }
   }
 
-  let color = { background: 'red' };
+  let color = { backgroundColor: 'red' };
   if (linkIDs === null || linkIDs.length !== 0) {
-    color.background = blockColors.get(course_instance.course_number)!
-    if (color.background === undefined) console.error('Color not defined for:', JSON.stringify(course_instance))
+    color.backgroundColor = blockColors.get(course_instance.course_number)!
+    if (color.backgroundColor === undefined) console.error('Color not defined for:', JSON.stringify(course_instance))
   } else {
-    color.background = '#800000';
+    color.backgroundColor = '#800000';
   }
 
   return (

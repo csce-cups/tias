@@ -645,6 +645,20 @@ $day_divider_size : 1.5px;
 	);
 }
 
+.block.alert {
+	background: repeating-linear-gradient(
+		-45deg,
+		rgba(255, 255, 0, 0.5),
+		rgba(255, 255, 0, 0.5) 20px,
+		rgba(0, 0, 0, 0.5) 20px,
+		rgba(0, 0, 0, 0.5) 40px
+	);
+}
+
+.detailed .block.alert {
+	background: $accent;
+}
+
 .hat.selected, .hat.emphasized, .column.detailed .hat, .hat-container.selected .hat {
 	flex: 1 1 0;
 	display: inline-block;
