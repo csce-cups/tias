@@ -71,4 +71,11 @@ const queryDB = async (dbQuery, params) => {
     .catch((error) => console.error(error));
 };
 
-module.exports = { prefetchDBInfo, queryDB };
+const GenerateErrorResponseAndLog = (err, response, msg) => {
+    console.error('error: ', err);
+    console.error('trace: ', err.stack);
+    response.statusCode = 500;
+    response.body = JSON.stringify({err: msg});
+};
+
+module.exports = { prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };

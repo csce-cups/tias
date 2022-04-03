@@ -22,11 +22,22 @@ exports.handler = async (event) => {
     let requestBody = JSON.parse(event.body);
     let id = event?.pathParameters?.userId;
     
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json", 
+                     "Access-Control-Allow-Origin": "http://localhost:3000"}
+    };
+    
+    
     let dbQuery = `DELETE FROM person_unavailability
                    WHERE person_id = $1`;
     let params = [id];
     
-    let dbResponse = await helper_functions.queryDB(dbQuery, params);
+    await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 'Update to user unavailability has failed.');
+        return response;
+    });
     
     
     dbQuery = `INSERT INTO person_unavailability
@@ -58,19 +69,9 @@ exports.handler = async (event) => {
         }
     }
     
-    console.log(dbQuery);
-    console.log(params);
-    
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
-    
-    console.log(dbRows);
-    
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify({})
-    };
+    await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 'Update to user unavailability has failed.');
+    });
 
     return response;
 };
