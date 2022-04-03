@@ -4,6 +4,7 @@ import { CourseBlock } from '../../modules/API'
 import back_arrow from '../../assets/back_arrow_icon.svg'
 import RenderBlockProps from './BlockBase';
 import placeBlocks from './renderHelper';
+import { OptionsProps } from './SchedulingWindow';
 
 let numHours = 13;
 let startTime = new Date(0);
@@ -15,9 +16,7 @@ interface Props<DataCourseBlock> {
   filter: Map<number, boolean>
   day: string // The day of the week
   hours?: number // The number of hours in a day
-  options?: {
-    selectable?: boolean
-  }
+  options?: OptionsProps
 }
 
 export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: React.PropsWithChildren<Props<DataCourseBlock>>) => {
@@ -71,6 +70,8 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
     else linked.forEach(e => e.classList.add(newClass));
   }
 
+  const edge: "left" | "right" | "center" = (day === "Monday" || day === "Tuesday")? "left" : (day === "Friday")? "right" : "center"; 
+
   return (
     <div className={`vstack day column ${selectable? 'grow-h' : ''}`} id={id} onClick={selectable? select : () => {}}>
       { (detailed) ? 
@@ -109,7 +110,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
       }
       <div className="vstack day" >
         { dividers }
-        { placeBlocks(blocks, filter, renderBlockType) }
+        { placeBlocks(blocks, filter, renderBlockType, edge, startTime, new Date(startTime.getTime() + numHours*60*60*1000)) }
       </div>
     </div>
   )

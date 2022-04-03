@@ -2,21 +2,30 @@ import React, { FC, useContext, useEffect, useState } from "react";
 import { SchedulingRender } from "./SchedulingRender";
 import { SchedulingFilter } from "./SchedulingFilter";
 import contexts from "../APIContext";
-import { CourseBlock, CourseBlockWeek } from "../../modules/API";
+import { CourseBlock } from "../../modules/API";
 import RenderBlockProps from "./BlockBase";
+
+export interface OptionsProps {
+  selectable?: boolean
+  noHeader?: boolean
+  noBorder?: boolean
+
+  // Lets you specify an externally controlled filter
+  filter?: [Map<number, boolean>, React.Dispatch<React.SetStateAction<Map<number, boolean>>>]
+}
 
 interface Props {
   renderBlockType: React.FC<RenderBlockProps>
-  options?: {
-    selectable?: boolean
-  }
+  options?: OptionsProps
 }
 
 export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
   const [blocks, _] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
+  const filterActual = options?.filter?.[0] ?? filter;
 
   useEffect(() => {
+    if (options?.filter) return; // Externally controlled filter shouldn't be handled
     let filterMap = new Map<number, boolean>();
     const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
     allBlocks.forEach((blocks: CourseBlock[] | null) => {
@@ -27,10 +36,14 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
     setFilter(filterMap);
   }, [blocks]);
 
+  const styles = {
+    border: (options?.noBorder)? '0' : undefined,
+  }
+
   return (
-    <div className="vstack main">
-      <SchedulingRender renderBlockType={renderBlockType} filter={filter} options={options} />
-      <SchedulingFilter filter={filter} setFilter={setFilter} />
+    <div className="vstack main" style={styles}>
+      <SchedulingRender renderBlockType={renderBlockType} filter={filterActual} options={options} />
+      {!options?.filter && <SchedulingFilter filter={filter} setFilter={setFilter} />}
     </div>
   );
 };

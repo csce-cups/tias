@@ -15,6 +15,7 @@ export interface Person {
 	professor: boolean
 	isScheduled: null | boolean
 	isChecked: boolean
+	desired_number_assignments: number
 }
 
 export interface CourseBlock {
@@ -27,7 +28,7 @@ export interface CourseBlock {
 	weekday: string
 	place: string
 	scheduled: number[] | null;
-	placeholder_professor_name: string
+	professor: string
 }
 
 export interface CourseBlockWeek {
@@ -64,6 +65,9 @@ export interface APIUserQualification {
 	qualified: boolean
 }
 
+export type APIUserPreferenceEnum = "Can't Do" | "Prefer Not To Do" | "Indifferent" | "Prefer To Do"
+export type APIUserPreferences = Map<number, APIUserPreferenceEnum>
+
 export interface APIAlgoResponse {
 	scheduled: Map<string, number[]>
 	unscheduled: number[]
@@ -79,6 +83,7 @@ export interface APIReturn {
 	employees: Promise<Person[]>
 	blocks: Promise<CourseBlockWeek>,
 	userQuals: Promise<APIUserQualification[]>
+	userPrefs: Promise<APIUserPreferences>
 }
 
 
@@ -106,7 +111,38 @@ class API {
 		return {
 			employees: API.fetchPTList(),
 			blocks: API.fetchCourseBlocks(),
-			userQuals: API.fetchUserQualifications(id)
+			userQuals: API.fetchUserQualifications(id),
+			userPrefs: API.fetchUserPreferences(id)
+		}
+	}
+
+	static fetchAllStatic = () => {
+		return {
+			employees: API.fetchPTList(),
+			blocks: API.fetchCourseBlocks()
+		}
+	}
+
+	static fetchAllUser = (user_id: number | undefined) => {
+		return {
+			userQuals: API.fetchUserQualifications(user_id),
+			userPrefs: API.fetchUserPreferences(user_id),
+			userViableCourses: API.fetchUserViableCourses(user_id)
+		}
+	}
+
+	static fetchAllStaticDummy = () => {
+		return {
+			employees: API.fetchPTListDummy(),
+			blocks: API.fetchCourseBlocksDummy()
+		}
+	}
+
+	static fetchAllUserDummy = (user_id: number | undefined) => {
+		return {
+			userQuals: API.fetchUserQualificationsDummy(user_id),
+			userPrefs: API.fetchUserPreferencesDummy(user_id),
+			userViableCourses: API.fetchUserViableCourses(undefined)
 		}
 	}
 
@@ -120,7 +156,8 @@ class API {
 		return {
 			employees: API.fetchPTListDummy(args?.employees),
 			blocks: API.fetchCourseBlocksDummy(),
-			userQuals: API.fetchUserQualificationsDummy(id)
+			userQuals: API.fetchUserQualificationsDummy(id),
+			userPrefs: API.fetchUserPreferencesDummy(id)
 		}
 	}
 
@@ -128,7 +165,7 @@ class API {
 	private static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
 			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
-			.catch((err: any) => console.log(err));
+			.catch(err => [{person_id: -2} as Person]);
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings
@@ -152,7 +189,7 @@ class API {
 					weekday: e.weekday,
 					place: e.place,
 					scheduled: null,
-					placeholder_professor_name: e.placeholder_professor_name
+					professor: e.placeholder_professor_name
 				})))
 
 				return ({
@@ -182,6 +219,98 @@ class API {
 			.catch(err => console.log(err));
 	}
 
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/preferences
+	private static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`)
+			.then(({data}) => (
+				new Map<number, APIUserPreferenceEnum>(
+					data.preferences.map((pref: {section_id: number, preference: APIUserPreferenceEnum}) => ([pref.section_id, pref.preference]))
+				) as any
+			))
+			.catch(err => console.log(err));
+	}
+
+	// We get a ton of data back from this, but I really only care about the section_id so I reduce the data here
+	static fetchUserViableCourses = async (user_id?: number): Promise<CourseBlockWeek> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve({} as CourseBlockWeek);});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/viable-courses`)
+			.then(({data}) => {
+				let dataStrict: raw_APICourseBlock[] = data.viableCourses;
+				let ret = {
+					Monday: [] as CourseBlock[],
+					Tuesday: [] as CourseBlock[],
+					Wednesday: [] as CourseBlock[],
+					Thursday: [] as CourseBlock[],
+					Friday: [] as CourseBlock[]
+				} as CourseBlockWeek;
+
+				const createDate = (datestring: string): Date => {
+					let d = new Date(0);
+					d.setHours(parseInt(datestring.substring(0, 2)) - timezone_offset); // First two digits are the hours
+					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
+					return d;
+				}
+
+				const convertOne = (e: raw_APICourseBlock): CourseBlock => ({
+					department: e.department,
+					course_number: parseInt(e.course_number),
+					section_number: e.section_number,
+					section_id: e.section_id,
+					start_time: createDate(e.start_time),
+					end_time: createDate(e.end_time),
+					weekday: e.weekday,
+					place: e.place,
+					scheduled: null,
+					professor: e.placeholder_professor_name
+				})
+
+				dataStrict.forEach((b: raw_APICourseBlock) => {
+					switch (b.weekday) {
+						case "Monday": ret.Monday!.push(convertOne(b)); break;
+						case "Tuesday": ret.Tuesday!.push(convertOne(b)); break;
+						case "Wednesday": ret.Wednesday!.push(convertOne(b)); break;
+						case "Thursday": ret.Thursday!.push(convertOne(b)); break;
+						case "Friday": ret.Friday!.push(convertOne(b)); break;
+					}
+				});
+
+				return ret;
+			})
+			.catch(err => {
+				return ({
+					Monday: [{course_number: -1} as CourseBlock],
+					Tuesday: [{course_number: -1} as CourseBlock],
+					Wednesday: [{course_number: -1} as CourseBlock],
+					Thursday: [{course_number: -1} as CourseBlock],
+					Friday: [{course_number: -1} as CourseBlock]
+				} as any)
+			});
+		}
+
+	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
+		let rets: Promise<void>[] = [];
+		if (pref_num !== undefined) {
+			rets.push(
+					fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}`, {
+					method: "PUT",
+					body: JSON.stringify({"desired_number_assignments": pref_num})
+				}).then(() => {})
+			)
+		} 
+
+		rets.push(
+			fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`, {
+				method: "PUT",
+				body: JSON.stringify({
+					preferences: Array.from(prefs.entries()).map(arr => ({section_id: arr[0], preference: arr[1]}))
+				}),
+			}).then(() => {})
+		)
+
+		return Promise.all(rets).then(() => {});
+	}
+
 	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
 		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/schedule-peer-teachers', {
 			method: 'POST',
@@ -189,10 +318,28 @@ class API {
 		}).then(sessionResponse => sessionResponse.json())
 		  .then(responseData => {
 			let map = new Map<string, number[]>();
-			Object.keys(responseData.scheduled).map(key => map.set(key, responseData.scheduled[key]));
+			Object.keys(responseData.scheduled).forEach(key => map.set(key, responseData.scheduled[key]));
 			responseData.scheduled = map;
 			return responseData;
 		});
+	}
+
+	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
+			method: 'GET'
+		}).then(sessionResponse => sessionResponse.json())
+		  .then(responseData => {
+			let map = new Map<string, number[]>();
+			Object.keys(responseData.scheduled).forEach(key => map.set(key, responseData.scheduled[key]));
+			return map;
+		});
+	}
+
+	static sendSavedSchedule = async (scheduled: Map<string, number[]>): Promise<void> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
+			method: 'POST',
+			body: JSON.stringify({"scheduled": Object.fromEntries(scheduled)})
+		}).then(() => {});
 	}
 
 	static saveUserUnavailability = async (user_unavailability_arr: APIStudentUnavailability[]) => {
@@ -202,6 +349,8 @@ class API {
 			body: JSON.stringify({"timezoneOffsetHours": (currentDateObj.getTimezoneOffset() / 60), "unavailability": user_unavailability_arr})
 		}).then(() => {});
 	}
+
+
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {
@@ -272,7 +421,8 @@ class API {
 						administrator: false,
 						professor: false,
 						isScheduled: null,
-						isChecked: false
+						isChecked: false,
+						desired_number_assignments: 2
 					})
 				))
 			}, 1000)
@@ -299,20 +449,45 @@ class API {
 			setTimeout(() => {
 				resolve([
 					{course_id: 1, course_number: "110", qualified: true},
-					{course_id: 2, course_number: "111", qualified: false},
-					{course_id: 3, course_number: "120", qualified: false},
-					{course_id: 4, course_number: "121", qualified: false},
-					{course_id: 5, course_number: "206", qualified: false},
-					{course_id: 6, course_number: "221", qualified: false},
-					{course_id: 7, course_number: "222", qualified: false},
-					{course_id: 8, course_number: "312", qualified: false},
-					{course_id: 9, course_number: "313", qualified: false},
+					{course_id: 2, course_number: "111", qualified: true},
+					{course_id: 3, course_number: "120", qualified: true},
+					{course_id: 4, course_number: "121", qualified: true},
+					{course_id: 5, course_number: "206", qualified: true},
+					{course_id: 6, course_number: "221", qualified: true},
+					{course_id: 7, course_number: "222", qualified: true},
+					{course_id: 8, course_number: "312", qualified: true},
+					{course_id: 9, course_number: "313", qualified: true},
 					{course_id: 10, course_number: "314", qualified: true},
 					{course_id: 11, course_number: "315", qualified: true},
 					{course_id: 11, course_number: "331", qualified: true}
-
 				])
 			}, 800);
+		})
+	}
+
+	private static fetchUserPreferencesDummy = async (user_id?: number): Promise<APIUserPreferences> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
+		return API.fetchCourseBlocksDummy().then(blocks => {
+			const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
+			const choose = () => {
+				const possiblePrefs: APIUserPreferenceEnum[] = ["Can't Do", "Prefer Not To Do", "Indifferent", "Prefer To Do"];
+				return possiblePrefs[2];
+				const r = Math.random();
+				if (r < 0.20) return possiblePrefs[0];
+				if (r < 0.60) return possiblePrefs[1];
+				if (r < 0.80) return possiblePrefs[2];
+				return possiblePrefs[3];
+			}
+
+			let resp = new Map<number, APIUserPreferenceEnum>();
+
+			allBlocks.forEach(day => {
+				day?.forEach(block => {
+					resp.set(block.section_id, choose());
+				});
+			});
+
+			return resp;
 		})
 	}
 
@@ -324,7 +499,7 @@ class API {
 				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
 				resp.scheduled = map;
 				resolve(resp);
-			}, 200);
+			}, 10000);
 		})
 	}
 }

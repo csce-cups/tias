@@ -5,12 +5,13 @@
    https://medium.com/web-dev-survey-from-kyoto/how-to-customize-the-file-upload-button-in-react-b3866a5973d8 
 */
 
-import React, { MutableRefObject } from 'react'
-import { APIStudentUnavailability } from '../../modules/API';
+import React, { useContext } from 'react'
+import { APIStudentUnavailability, parseCookie } from '../../modules/API';
 import API from '../../modules/API';
+import contexts from '../APIContext';
 
 export const ProfileStatusBar = () => {
-
+  const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const parseICSFile = (icsFileAsText: any) => {
@@ -67,7 +68,11 @@ export const ProfileStatusBar = () => {
       }
   
       API.saveUserUnavailability(data).then(() => {
-        if (btn !== null) btn.innerHTML = 'Upload Successful!';
+        if (btn !== null) btn.innerHTML = 'Updating Preferences...'
+          API.fetchUserViableCourses(parseCookie().tias_user_id).then((resp) => {
+            setUserViableCourses(resp);
+            if (btn !== null) btn.innerHTML = 'Upload Successful!';
+          })
       }).catch(() => {
         if (btn !== null) btn.innerHTML = 'An error occurred.';
       })
