@@ -1,20 +1,26 @@
-import React, { FC, useContext, useEffect, useState } from 'react'
-import { SchedulingRender } from './SchedulingRender'
-import { SchedulingFilter } from './SchedulingFilter'
-import contexts from '../APIContext'
-import { APICourseBlock, APICourseBlockWeek } from '../../modules/API'
+import React, { FC, useContext, useEffect, useState } from "react";
+import { SchedulingRender } from "./SchedulingRender";
+import { SchedulingFilter } from "./SchedulingFilter";
+import contexts from "../APIContext";
+import { CourseBlock, CourseBlockWeek } from "../../modules/API";
+import RenderBlockProps from "./BlockBase";
 
-interface Props {}
+interface Props {
+  renderBlockType: React.FC<RenderBlockProps>
+  options?: {
+    selectable?: boolean
+  }
+}
 
-export const SchedulingWindow: FC<Props> = () => {
+export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
   const [blocks, _] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
-  
+
   useEffect(() => {
     let filterMap = new Map<number, boolean>();
     const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
-    allBlocks.forEach((blocks: APICourseBlock[] | null) => {
-      blocks?.forEach((block: APICourseBlock) => {
+    allBlocks.forEach((blocks: CourseBlock[] | null) => {
+      blocks?.forEach((block: CourseBlock) => {
         filterMap.set(block.course_number, true)
       })
     })
@@ -23,8 +29,8 @@ export const SchedulingWindow: FC<Props> = () => {
 
   return (
     <div className="vstack main">
-      < SchedulingRender filter={filter} />
-      < SchedulingFilter filter={filter} setFilter={setFilter}/>
+      <SchedulingRender renderBlockType={renderBlockType} filter={filter} options={options} />
+      <SchedulingFilter filter={filter} setFilter={setFilter} />
     </div>
-  )
-}
+  );
+};
