@@ -9,7 +9,7 @@ exports.handler = async (event) => {
     let dbRows = await helper_functions.queryDB(dbQuery, params);
     
     const responseBody = {
-        "ViableCourses": dbRows
+        "viableCourses": dbRows
     };
 
     const response = {
