@@ -80,21 +80,25 @@ exports.handler = async (event) => {
     let userLastName  = event?.queryStringParameters?.lastname;
     let userEmail     = event?.queryStringParameters?.email;
     
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json", 
+                     "Access-Control-Allow-Origin": "http://localhost:3000" },
+    };
+    
     params = [];
     let dbQuery = constructDBQuery(userId, userEmail, userFirstName, userLastName, userTypes);
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
+    let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, "Unable to retrieve specified user.");
+        return response;
+    });
     
     const responseBody = {
         "users": dbRows
     };
 
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:3000" },
-        "body": JSON.stringify(responseBody)
-    };
-
+    response.body = JSON.stringify(responseBody);
     return response;
 };
