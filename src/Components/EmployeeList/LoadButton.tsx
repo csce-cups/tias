@@ -24,7 +24,6 @@ export const LoadButton = () => {
     if (btn !== null) btn.innerHTML = 'Loading...';
 
     API.getSavedSchedule().then((resp) => {
-      console.log(resp)
       if (btn !== null) btn.innerHTML = 'Rendering...';
       const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday] as any; // For easier iteration
       allBlocks.forEach((day: any, oidx: number) => {
