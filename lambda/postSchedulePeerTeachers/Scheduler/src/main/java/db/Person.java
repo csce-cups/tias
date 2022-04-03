@@ -220,7 +220,7 @@ public class Person implements Comparable<Person> {
 
     @Override
     public int compareTo(Person other) {
-        return availabilityScore < other.availabilityScore ? 1 : other.availabilityScore < availabilityScore ? -1 : 0;
+        return availabilityScore < other.availabilityScore ? -1 : other.availabilityScore < availabilityScore ? 1 : 0;
     }
 
     static boolean timeContains(Time outer_start, Time outer_end, Time inner_start, Time inner_end) {
