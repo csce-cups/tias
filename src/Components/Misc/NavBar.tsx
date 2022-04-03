@@ -1,15 +1,18 @@
-import React from 'react'
+import React, { FC, useContext, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import { parseCookie } from '../../modules/API';
+import contexts from '../APIContext';
 import { GoogleButton } from "./GoogleButton"
 
 export const NavBar = () => {
+  const {doShowScheduling, doShowProfile, doShowLabSwap} = useContext(contexts.user);
+
   return (
     <div className="navbar">
       <Link to='/' className="left element major" style={{textDecoration: 'none'}}>TIAS</Link>
-      <Link to='Profile' className="left element">Profile</Link>
-      <Link to='Scheduling' className="left element">Scheduling</Link>
-      <Link to='Labswap' className="left element">LabSwap™</Link>
+      {doShowScheduling && <Link to='Scheduling' className="left element">Scheduling</Link>}
+      {doShowProfile && <Link to='Profile' className="left element">Profile</Link>}
+      {doShowLabSwap && <Link to='Labswap' className="left element">LabSwap™</Link>}
       <div className="fill element"></div>
       < GoogleButton />
     </div>

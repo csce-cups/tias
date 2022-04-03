@@ -7,8 +7,6 @@ export const SaveButton = () => {
   const saveSchedule = () => {
     const btn = document.getElementById("save-schedule-button");
 
-    console.log(loadedSchedule)
-
     if (loadedSchedule.size === 0) {
       if (btn !== null) btn.innerHTML = 'Nothing to save!';
       setTimeout(() => {

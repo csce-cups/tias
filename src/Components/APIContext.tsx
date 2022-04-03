@@ -1,10 +1,19 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
 import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie} from "../modules/API";
 
+const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
+
 interface Props {
   children: ReactNode;
   args?: any;
   test?: boolean;
+}
+
+interface UserPerson {
+  user: Person | null
+  doShowProfile: boolean | null
+  doShowScheduling: boolean | null
+  doShowLabSwap: boolean | null
 }
 
 export const contexts = {
@@ -23,6 +32,13 @@ export const contexts = {
     new Map<string, number[]>(),
     0 as any
   ]),
+
+  user: createContext<UserPerson>({
+    user: null,
+    doShowProfile: null,
+    doShowScheduling: null,
+    doShowLabSwap: null
+  }),
 
   userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
   [
@@ -52,6 +68,12 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   } as CourseBlockWeek);
 
   const loadedScheduleState = useState(new Map<string, number[]>());
+  const [user, setUser] = useState<UserPerson>({
+    user: null,
+    doShowProfile: null,
+    doShowScheduling: null,
+    doShowLabSwap: null
+  })
 
   const userQualState = useState([
     { course_id: -1, course_number: "loading", qualified: false },
@@ -76,6 +98,14 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       blockState[1](resp);
     });
 
+    const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
+    setUser({
+      user: user,
+      doShowProfile: user && (user.peer_teacher || user.administrator),
+      doShowScheduling: user && user.administrator,
+      doShowLabSwap: user && (user.peer_teacher || user.administrator)
+    })
+
     // eslint-disable-next-line
   }, []); // Fetch static data right away
 
@@ -91,26 +121,46 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     });
 
     userPromises.userViableCourses.then((resp) => {
-      console.log(resp);
       userViableCourses[1](resp);
     });
+
+    const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
+    const isPermAdmin = permAdmin && googleDataState[0].tv === permAdmin;
+    if (isPermAdmin) {
+      setUser({
+        user: user,
+        doShowProfile: true,
+        doShowScheduling: true,
+        doShowLabSwap: true
+      })
+    } else {
+      setUser({
+        user: user,
+        doShowProfile: (user && (user.peer_teacher || user.administrator)),
+        doShowScheduling: (user && user.administrator),
+        doShowLabSwap: (user && (user.peer_teacher || user.administrator))
+      })
+    }
+
 
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
   return (
     <contexts.googleData.Provider value={googleDataState}>
       <contexts.employees.Provider value={employeeState}>
-        <contexts.blocks.Provider value={blockState}>
-          <contexts.loadedSchedule.Provider value={loadedScheduleState}>
-            <contexts.userQuals.Provider value={userQualState}>
-              <contexts.userPrefs.Provider value={userPrefState}>
-                <contexts.userViableCourses.Provider value={userViableCourses}>
-                  {children}
-                </contexts.userViableCourses.Provider>
-              </contexts.userPrefs.Provider>
-            </contexts.userQuals.Provider>
-          </contexts.loadedSchedule.Provider>
-        </contexts.blocks.Provider>
+        <contexts.user.Provider value={user}>
+          <contexts.blocks.Provider value={blockState}>
+            <contexts.loadedSchedule.Provider value={loadedScheduleState}>
+              <contexts.userQuals.Provider value={userQualState}>
+                <contexts.userPrefs.Provider value={userPrefState}>
+                  <contexts.userViableCourses.Provider value={userViableCourses}>
+                    {children}
+                  </contexts.userViableCourses.Provider>
+                </contexts.userPrefs.Provider>
+              </contexts.userQuals.Provider>
+            </contexts.loadedSchedule.Provider>
+          </contexts.blocks.Provider>
+        </contexts.user.Provider>
       </contexts.employees.Provider>
     </contexts.googleData.Provider>
   );
