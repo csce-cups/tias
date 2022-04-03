@@ -34,9 +34,10 @@ export const contexts = {
     [new Map<number, APIUserPreferenceEnum>(), 0 as any]
   ),
 
-  userViableCourses: createContext<[number[], React.Dispatch<React.SetStateAction<number[]>>]>(
-    [[] as number[], 0 as any]
-  )
+  userViableCourses: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
+    { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
+    0 as any,
+  ]),
 };
 
 export const APIContext: FC<Props> = ({ children, args, test }) => {
@@ -57,7 +58,13 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   ] as APIUserQualification[]);
 
   const userPrefState = useState(new Map<number, APIUserPreferenceEnum>());
-  const userViableCourses = useState<number[]>([]);
+  const userViableCourses = useState({
+    Monday: null,
+    Tuesday: null,
+    Wednesday: null,
+    Thursday: null,
+    Friday: null,
+  } as CourseBlockWeek);
 
   useEffect(() => {
     const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
@@ -84,6 +91,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     });
 
     userPromises.userViableCourses.then((resp) => {
+      console.log(resp);
       userViableCourses[1](resp);
     });
 

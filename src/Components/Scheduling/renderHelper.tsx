@@ -30,13 +30,18 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(data: DataCourseBlock[
       <div className="day-loading">Loading...</div>
     </div>
   )
-  if (data.length > 0 && data[0].course_number === -1) return (
+
+  if (data.length === 0) return (
+    <div className="vstack absolute">
+      <div className="day-loading">Nothing to show.</div>
+    </div>
+  )
+
+  if (data[0].course_number === -1) return (
     <div className="vstack absolute">
       <div className="day-loading">An error occurred.</div>
     </div>
   )
-
-  if (data.length === 0) return <></>;
   
   // Data should be sorted by start time, class length, course number, and then by section number
   data.sort((a, b) => {

@@ -232,11 +232,61 @@ class API {
 	}
 
 	// We get a ton of data back from this, but I really only care about the section_id so I reduce the data here
-	static fetchUserViableCourses = async (user_id?: number): Promise<number[]> => {
-		if (user_id === undefined) return new Promise((resolve) => {resolve([]);});
+	static fetchUserViableCourses = async (user_id?: number): Promise<CourseBlockWeek> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve({} as CourseBlockWeek);});
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/viable-courses`)
-			.then(({data}) => data.viableCourses.map((b: raw_APICourseBlock) => b.section_id));
-	}
+			.then(({data}) => {
+				let dataStrict: raw_APICourseBlock[] = data.viableCourses;
+				let ret = {
+					Monday: [] as CourseBlock[],
+					Tuesday: [] as CourseBlock[],
+					Wednesday: [] as CourseBlock[],
+					Thursday: [] as CourseBlock[],
+					Friday: [] as CourseBlock[]
+				} as CourseBlockWeek;
+
+				const createDate = (datestring: string): Date => {
+					let d = new Date(0);
+					d.setHours(parseInt(datestring.substring(0, 2)) - timezone_offset); // First two digits are the hours
+					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
+					return d;
+				}
+
+				const convertOne = (e: raw_APICourseBlock): CourseBlock => ({
+					department: e.department,
+					course_number: parseInt(e.course_number),
+					section_number: e.section_number,
+					section_id: e.section_id,
+					start_time: createDate(e.start_time),
+					end_time: createDate(e.end_time),
+					weekday: e.weekday,
+					place: e.place,
+					scheduled: null,
+					professor: e.placeholder_professor_name
+				})
+
+				dataStrict.forEach((b: raw_APICourseBlock) => {
+					switch (b.weekday) {
+						case "Monday": ret.Monday!.push(convertOne(b)); break;
+						case "Tuesday": ret.Tuesday!.push(convertOne(b)); break;
+						case "Wednesday": ret.Wednesday!.push(convertOne(b)); break;
+						case "Thursday": ret.Thursday!.push(convertOne(b)); break;
+						case "Friday": ret.Friday!.push(convertOne(b)); break;
+					}
+				});
+
+				return ret;
+			})
+			.catch(err => {
+				return ({
+					Monday: [{course_number: -1} as CourseBlock],
+					Tuesday: [{course_number: -1} as CourseBlock],
+					Wednesday: [{course_number: -1} as CourseBlock],
+					Thursday: [{course_number: -1} as CourseBlock],
+					Friday: [{course_number: -1} as CourseBlock]
+				} as any)
+			});
+		}
 
 	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
 		let rets: Promise<void>[] = [];
@@ -301,7 +351,7 @@ class API {
 	}
 
 
-	
+
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {

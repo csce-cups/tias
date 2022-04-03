@@ -10,7 +10,6 @@ import uuid from '../../uuid'
 export const PreferenceSelector = () => {
   const input_id = uuid();
   const [collapsed, setCollapsed] = React.useState<boolean>(false);
-  const [blockWeek, setBlockWeek] = useContext(contexts.blocks);
   const [userQuals, setUserQuals] = useContext(contexts.userQuals);
   const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
@@ -18,22 +17,7 @@ export const PreferenceSelector = () => {
   const [employees, setEmployees] = useContext(contexts.employees);
   const thisEmployee = employees.find(e => e.person_id === +parseCookie().tias_user_id);
 
-  const filterWeek = (week: CourseBlockWeek) => {
-    const allDays = [week.Monday, week.Tuesday, week.Wednesday, week.Thursday, week.Friday];
-    allDays.forEach((day, i) => {
-      if (day) allDays[i] = day.filter(b => userViableCourses.includes(b.section_id));
-    })
-
-    return {
-      Monday: allDays[0],
-      Tuesday: allDays[1],
-      Wednesday: allDays[2],
-      Thursday: allDays[3],
-      Friday: allDays[4]
-    } as CourseBlockWeek;
-  }
-
-  const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(filterWeek(blockWeek)), setBlockWeek];
+  const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(userViableCourses), setUserViableCourses];
 
   const submit = (event: any) => {
 
