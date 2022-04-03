@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { EmployeeList } from '../Components/EmployeeList/EmployeeList';
 import { SchedulingWindow } from '../Components/Scheduling/SchedulingWindow';
 import '../Components/common.scss';
