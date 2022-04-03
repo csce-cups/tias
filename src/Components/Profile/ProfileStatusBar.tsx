@@ -105,7 +105,7 @@ export const ProfileStatusBar = () => {
 
   return (
     <div className="profile-status-bar">
-      <input type="file" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
+      <input type="file" accept=".ics" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
       <button id="upload-schedule-button" className="blue button" onClick={handleClick}>Upload Schedule</button>
     </div>
   );
