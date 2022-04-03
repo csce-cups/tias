@@ -35,12 +35,10 @@ exports.handler = async (event) => {
 
     dbQuery += dbParams.join(', ');
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params).catch(err => {
+    await helper_functions.queryDB(dbQuery, params).catch(err => {
         response.statusCode = 500;
         response.body = JSON.stringify({err: "Failed to save the new schedule."});
     });
-    
-    console.log(dbRows);
 
     return response;
 };
