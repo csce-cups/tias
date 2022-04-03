@@ -14,7 +14,7 @@ describe('SchedulingBlock', () => {
             weekday: "none listed",
             place: "nowhere",
             scheduled: null,
-            placeholder_professor_name: ""
+            professor: ""
         },
         linkIDs: []
     }} />);

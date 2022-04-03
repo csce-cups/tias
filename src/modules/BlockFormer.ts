@@ -25,7 +25,7 @@ class BlockFormer {
         weekday: day,
         place: place,
         scheduled: null,
-        placeholder_professor_name: ""
+        professor: ""
     })
 
     static starts = {
@@ -133,7 +133,7 @@ class BlockFormer {
                 weekday: "none",
                 place: "nowhere",
                 scheduled: null,
-                placeholder_professor_name: ''
+                professor: ''
             },
 
             {
@@ -146,17 +146,17 @@ class BlockFormer {
                 weekday: "none",
                 place: "nowhere",
                 scheduled: null,
-                placeholder_professor_name: ''
+                professor: ''
             },
 
             BlockFormer.generateBlock(315, '104', BlockFormer.starts.MW_A3, BlockFormer.setTimes.MW_A3_extralong, "none", "nowhere"),
         ],
         Test_schedule2: [
-            { department: "CSCE", course_number: 121, section_number: '101', start_time: createDate("08:00:00"), end_time: createDate("09:00:00"), weekday: "Friday", place: "ZACH 590", section_id: 10000, scheduled: null, placeholder_professor_name: "fun" },
+            { department: "CSCE", course_number: 121, section_number: '101', start_time: createDate("08:00:00"), end_time: createDate("09:00:00"), weekday: "Friday", place: "ZACH 590", section_id: 10000, scheduled: null, professor: "fun" },
             // { department: "CSCE", course_number: 121, section_number: '103', start_time: createDate("14:00:00"), end_time: createDate("15:00:00"), weekday: "Friday", place: "ZACH 590", section_id: 10001, scheduled: null },
             // { department: "CSCE", course_number: 121, section_number: '102', start_time: createDate("16:00:00"), end_time: createDate("17:00:00"), weekday: "Friday", place: "ZACH 590", section_id: 10002, scheduled: null },
             // { department: "CSCE", course_number: 121, section_number: '104', start_time: createDate("16:00:00"), end_time: createDate("17:00:00"), weekday: "Friday", place: "ZACH 590", section_id: 10002, scheduled: null },
-            { department: "CSCE", course_number: 121, section_number: '104', start_time: createDate("18:00:00"), end_time: createDate("19:00:00"), weekday: "Monday", place: "ZACH 590", section_id: 10002, scheduled: null, placeholder_professor_name: "foo" },
+            { department: "CSCE", course_number: 121, section_number: '104', start_time: createDate("18:00:00"), end_time: createDate("19:00:00"), weekday: "Monday", place: "ZACH 590", section_id: 10002, scheduled: null, professor: "foo" },
             // { department: "CSCE", course_number: 121, section_number: '104', start_time: createDate("20:00:00"), end_time: createDate("21:00:00"), weekday: "Friday", place: "ZACH 590", section_id: 10002, scheduled: null },
             // { department: "CSCE", course_number: 312, section_number: '104', start_time: createDate("02:00:00"), end_time: createDate("04:00:00"), weekday: "Friday", place: "ZACH 590" },
 

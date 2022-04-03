@@ -61,11 +61,11 @@ export const GoogleButton = () => {
     }).then(sessionResponse => sessionResponse.json())
       .then(responseData => {
         document.cookie = `tias_user_id=${responseData.id}`
+        setLoggedIn(true);
+        setGoogleData(userBasicInfo);
       });
 
     clientUsername = response.Du.VX
-    setLoggedIn(true);
-    setGoogleData(userBasicInfo);
   };
 
   const logout = () => {

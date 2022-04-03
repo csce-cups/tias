@@ -1,5 +1,6 @@
 import React, { FC } from 'react'
-import { CompressedCourseBlock } from './LabSwap'
+import { CompressedCourseBlock } from '../../modules/BlockManipulation'
+
 
 interface Section extends CompressedCourseBlock {
   valid: boolean

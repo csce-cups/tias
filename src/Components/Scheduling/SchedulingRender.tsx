@@ -3,6 +3,7 @@ import { SchedulingColumn } from './SchedulingColumn';
 import { SchedulingTimes } from './SchedulingTimes';
 import contexts from '../APIContext';
 import RenderBlockProps from './BlockBase';
+import { OptionsProps } from './SchedulingWindow';
 import { CourseBlock } from '../../modules/API';
 
 const hours = 12;
@@ -13,14 +14,12 @@ start.setHours(8);
 interface Props {
   renderBlockType: React.FC<RenderBlockProps>
   filter: Map<number, boolean>
-  options?: {
-    selectable?: boolean
-  }
+  options?: OptionsProps;
 }
 
 export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) => {
   return (
-    <div className="render-container">
+    <div className="render-container" style={{marginTop: (options?.noHeader)? '8px' : undefined}}>
       < SchedulingTimes hours={hours} start={start}/>
       <div className="render-content">
         < contexts.blocks.Consumer >
