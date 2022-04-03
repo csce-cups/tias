@@ -926,6 +926,8 @@ img.back-arrow {
 
 		margin-bottom: 5px;
 
+		transition: all 0.4s ease-in-out;
+
 		.render-container {
 			margin: 8px 0;
 		}
@@ -1069,16 +1071,19 @@ img.back-arrow {
 .schedule-info-container {
 	padding-top: 15px;
 	padding-right: 10px;
-	border-top: 2px solid $render_divider;
+	border-top: 2px solid black;
 	margin: 15px 10px 10px 10px;
 
 	.schedule-info-title {
 		font-weight: bold;
+		margin-bottom: 10px;
 	}
 
 	.schedule-info-element {
 		margin-left: 15px;
 		margin-bottom: 10px;
+		padding-bottom: 10px;
+		border-bottom: 2px solid $render_divider;
 	}
 }
 

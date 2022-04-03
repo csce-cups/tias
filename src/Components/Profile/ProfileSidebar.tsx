@@ -34,7 +34,8 @@ export const ProfileSidebar = () => {
     let retFormat: DisplayBlock[] = [];
     let ret: JSX.Element[] = [];
 
-    const dayMap = new Map(
+    const shortDays = ['M', 'T', 'W', 'R', 'F'];
+    const dayMap = new Map<string, 'M' | 'T' | 'W' | 'R' | 'F'>(
       [
         ['Monday', 'M'],
         ['Tuesday', 'T'],
@@ -44,8 +45,17 @@ export const ProfileSidebar = () => {
       ]
     )
 
+    const cmpDay = (a: 'M' | 'T' | 'W' | 'R' | 'F', b: 'M' | 'T' | 'W' | 'R' | 'F') => {
+      if (shortDays.indexOf(a) < shortDays.indexOf(b)) return -1;
+      else if (shortDays.indexOf(a) > shortDays.indexOf(b)) return 1;
+      return 0;
+    }
+
     retData.sort((a, b) => {
-      if (a.course_number < b.course_number) return -1;
+      if (cmpDay(dayMap.get(a.weekday)!, dayMap.get(b.weekday)!) !== 0) return cmpDay(dayMap.get(a.weekday)!, dayMap.get(b.weekday)!);
+      else if (a.start_time < b.start_time) return -1;
+      else if (a.start_time > b.start_time) return 1;
+      else if (a.course_number < b.course_number) return -1;
       else if (a.course_number > b.course_number) return 1;
       else if (a.section_number < b.section_number) return -1;
       else if (a.section_number > b.section_number) return 1;
@@ -64,6 +74,9 @@ export const ProfileSidebar = () => {
           </div>
           <div>
             {formatDate(block.start_time)}-{formatDate(block.end_time)} {block.days.join('')}
+          </div>
+          <div>
+            Professor {block.professor}
           </div>
           <div>
             {block.place}

@@ -24,12 +24,14 @@ export const PreferenceSelector = () => {
     let updatePrefSectionVal = undefined;
     if (thisEmployee && newPrefSections !== thisEmployee.desired_number_assignments) {
       updatePrefSectionVal = newPrefSections;
+      employees[employees.findIndex(e => e.person_id === +parseCookie().tias_user_id)!].desired_number_assignments = newPrefSections;
     }
     
     document.getElementById("submit-prefs")?.setAttribute('value', 'Saving...');
     
     API.sendUserPreferences(parseCookie().tias_user_id, userPrefs, updatePrefSectionVal).then(() => {
       document.getElementById("submit-prefs")?.setAttribute('value', 'Saved!');
+      setEmployees(employees);
     }).catch(err => {
       document.getElementById("submit-prefs")?.setAttribute('value', 'Preferences could not be saved.');
     });
@@ -59,7 +61,7 @@ export const PreferenceSelector = () => {
           <div className="dropdown-label">
             Preferred Number of Lab Sections:  
           </div>
-          <input id={input_id} className="fill" type="number" placeholder={thisEmployee? `${thisEmployee.desired_number_assignments}` : '2'} style={{marginRight: '5px'}}/>
+          <input id={input_id} type="number" placeholder={thisEmployee? `${thisEmployee.desired_number_assignments}` : '2'} style={{margin: '0 5px'}}/>
         </div>
         < contexts.blocks.Provider value={blocksPayload} >
           < SchedulingWindow renderBlockType={PreferenceBlock} options={{
