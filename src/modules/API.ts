@@ -405,7 +405,7 @@ class API {
 				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
 				resp.scheduled = map;
 				resolve(resp);
-			}, 200);
+			}, 10000);
 		})
 	}
 }

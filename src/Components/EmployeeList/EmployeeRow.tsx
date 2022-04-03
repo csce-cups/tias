@@ -7,9 +7,11 @@ interface Props {
 	employee: Person
   setEmployee: (e: Person) => void
   linkID: number
+  genState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
 }
 
-export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID}) => {
+export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID, genState}) => {
+  const [isGenerating, ] = genState;
   const [checked, setChecked] = useState<boolean>(employee.isChecked);
   const id = uuid();
 
@@ -25,7 +27,7 @@ export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID}) => {
       color: undefined as undefined | string
     }
 
-    if (employee.isScheduled === false) {
+    if (!isGenerating && employee.isScheduled === false) {
       defaults.color = 'red';
     } else if (!checked) {
       defaults.textDecoration = 'line-through';

@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { FC } from 'react'
 import API, { CourseBlock, Person } from '../../modules/API'
 import contexts from '../APIContext'
 
-export const GenerateButton = () => {
+interface Props {
+  genState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
+}
+
+export const GenerateButton: FC<Props> = ({genState}) => {
   const runScheduler = (employees: Person[], blocks: any, setEmployees: any, setBlocks: any) => {
+    genState[1](true);
     
     employees.forEach((e, i) => { // At the start of scheduling, nobody is scheduled.
       employees[i].isScheduled = false;
@@ -39,6 +44,7 @@ export const GenerateButton = () => {
       setEmployees(employees);
       setBlocks({Monday: allBlocks[0], Tuesday: allBlocks[1], Wednesday: allBlocks[2], Thursday: allBlocks[3], Friday: allBlocks[4]});
       if (btn !== null) btn.innerHTML = 'Done generating!';
+      genState[1](false);
 
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
