@@ -35,24 +35,15 @@ const getStoredParameter = (parameterName) => {
 
 const prefetchDBInfo = async () => {
     let paramResponse = null;
-    
-    /* The commented-out queries to parameter store below are better
-      practice, but aren't viable under AWS free tier. Feel free
-      to reinclude them and discontinue use of env variables if
-      free tier restrictions become irrelevant. */
-    
-    // paramResponse = await getStoredParameter('/tias/prod/db-endpoint');
-    // dbEndpoint = paramResponse.Parameter.Value;
 
-    // paramResponse = await getStoredParameter('/tias/prod/db-name');
-    // dbName = paramResponse.Parameter.Value;
+    paramResponse = await getStoredParameter('/tias/prod/db-endpoint');
+    dbEndpoint = paramResponse.Parameter.Value;
 
-    // paramResponse = await getStoredParameter('/tias/prod/db-username');
-    // dbUsername = paramResponse.Parameter.Value;
-    
-    dbEndpoint = process.env.DB_ENDPOINT;
-    dbName     = process.env.DB_NAME;
-    dbUsername = process.env.DB_USERNAME;
+    paramResponse = await getStoredParameter('/tias/prod/db-name');
+    dbName = paramResponse.Parameter.Value;
+
+    paramResponse = await getStoredParameter('/tias/prod/db-username');
+    dbUsername = paramResponse.Parameter.Value;
 
     paramResponse = await getStoredParameter('/tias/prod/db-password');
     dbPass = paramResponse.Parameter.Value;
@@ -80,11 +71,4 @@ const queryDB = async (dbQuery, params) => {
     .catch((error) => console.error(error));
 };
 
-const GenerateErrorResponseAndLog = (err, response, msg) => {
-    console.error('error: ', err);
-    console.error('trace: ', err.stack);
-    response.statusCode = 500;
-    response.body = JSON.stringify({err: msg});
-};
-
-module.exports = { prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };
+module.exports = { prefetchDBInfo, queryDB };

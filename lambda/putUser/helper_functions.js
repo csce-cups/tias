@@ -65,7 +65,6 @@ const queryDB = async (dbQuery, params) => {
   return await client
     .query(dbQuery, params)
     .then((dbResponse) => {
-		client.end();
         return dbResponse.rows;
     })
     .catch((error) => console.error(error));

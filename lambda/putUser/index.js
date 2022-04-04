@@ -18,6 +18,8 @@ exports.handler = async (event) => {
                     updates.push("teaching_assistant = true");
                 }
                 break;
+            case 'desired_number_assignments':
+                updates.push(`desired_number_assignments = ${+updateData[fieldToUpdate]}`);
         }
     }
     
@@ -48,7 +50,7 @@ exports.handler = async (event) => {
     const response = {
         "isBase64Encoded": false,
         "statusCode": 200,
-        "headers": { "Content-Type": "application/json" },
+        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:3000" },
         "body": JSON.stringify({})
     };
 

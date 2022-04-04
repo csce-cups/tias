@@ -65,10 +65,17 @@ const queryDB = async (dbQuery, params) => {
   return await client
     .query(dbQuery, params)
     .then((dbResponse) => {
-		client.end();
+        client.end();
         return dbResponse.rows;
     })
     .catch((error) => console.error(error));
 };
 
-module.exports = { prefetchDBInfo, queryDB };
+const GenerateErrorResponseAndLog = (err, response, msg) => {
+    console.error('error: ', err);
+    console.error('trace: ', err.stack);
+    response.statusCode = 500;
+    response.body = JSON.stringify({err: msg});
+};
+
+module.exports = { prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };
