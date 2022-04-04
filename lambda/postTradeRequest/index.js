@@ -14,25 +14,16 @@ exports.handler = async (event) => {
         "body": JSON.stringify({})
     };
 
-    const people_in_offered = await helper_functions.queryDB(`SELECT person_id FROM section_assignment WHERE section_id = $1`, [offered_id]).catch(err => {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "Failed to get the number of people assigned to the offered section."});
-    })
+    const people_in_offered = await helper_functions.queryDB(`SELECT person_id FROM section_assignment WHERE section_id = $1`, [offered_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the number of people assigned to the offered section."))
 
-    const people_in_requested = await helper_functions.queryDB(`SELECT person_id FROM section_assignment WHERE section_id = $1`, [requested_id]).catch(err => {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "Failed to get the number of people assigned to the requested section."});
-    })
+    const people_in_requested = await helper_functions.queryDB(`SELECT person_id FROM section_assignment WHERE section_id = $1`, [requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the number of people assigned to the requested section."))
 
     // const offered_section = await helper_functions.queryDB(`SELECT * FROM course_section WHERE section_id = $1`, [offered_id]).catch(err => {
     //     response.statusCode = 500;
     //     response.body = JSON.stringify({err: "Failed to get the offered section."});
     // })
 
-    const requested_section = await helper_functions.queryDB(`SELECT * FROM course_section WHERE section_id = $1`, [offered_id]).catch(err => {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "Failed to get the requested section."});
-    })
+    const requested_section = await helper_functions.queryDB(`SELECT * FROM course_section WHERE section_id = $1`, [offered_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the requested section."))
 
     let requester_in_offered = false
     for (let record of people_in_offered) {
@@ -42,8 +33,7 @@ exports.handler = async (event) => {
         }
     }
     if (!requester_in_offered) {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "The person who requested the trade offered a section to which they are not assigned."});
+        helper_functions.GenerateErrorResponseAndLog({stack: ""}, response, "The person who requested the trade offered a section to which they are not assigned.")
         return response;
     }
 
@@ -55,19 +45,14 @@ exports.handler = async (event) => {
         }
     }
     if (requester_in_requested) {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "The person who requested the trade requested a section to which they are already assigned."});
+        helper_functions.GenerateErrorResponseAndLog({stack: ""}, response, "The person who requested the trade requested a section to which they are already assigned.")
         return response;
     }
 
-    const viableCourses = await helper_functions.queryDB(`SELECT * FROM "ViableCourses"($1) WHERE section_id = $2`, [requester_id, requested_id]).catch(err => {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "Failed to get the viable courses for the requester."});
-    })
+    const viableCourses = await helper_functions.queryDB(`SELECT * FROM "ViableCourses"($1) WHERE section_id = $2`, [requester_id, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the viable courses for the requester."))
 
     if (viableCourses.length === 0) {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "The requested course is not viable."});
+        helper_functions.GenerateErrorResponseAndLog(err, response, "The requested course is not viable.")
         return response;
     }
 
@@ -77,10 +62,7 @@ exports.handler = async (event) => {
         .then(res => {
             response.body = JSON.stringify({msg: "Automatically changed the course assignment."});
         })
-        .catch(err => {
-            response.statusCode = 500;
-            response.body = JSON.stringify({err: "Failed to change the assignment from the offered section to the requested section automatically."});
-        })
+        .catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to change the assignment from the offered section to the requested section automatically."))
         return response;
     }
     
@@ -93,10 +75,7 @@ exports.handler = async (event) => {
         })
         if (viableCourses.length === 0) continue;
         traded_people.push(person_id)
-        await helper_functions.queryDB(`INSERT INTO trade_request VALUES ($1, $2, $3, $4)`, [requester_id, offered_id, person_id, requested_id]).catch(err => {
-            response.statusCode = 500;
-            response.body = JSON.stringify({err: "Failed to create the trade request for at least one person in the requested section."});
-        })
+        await helper_functions.queryDB(`INSERT INTO trade_request VALUES ($1, $2, $3, $4)`, [requester_id, offered_id, person_id, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to create the trade request for at least one person in the requested section."))
         // TODO: Send an email or something I guess...
     }
 
