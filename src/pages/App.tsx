@@ -7,7 +7,7 @@ import Scheduling from './Scheduling';
 import Landing from './Landing';
 import './../Components/common.scss';
 import { APIContext } from '../Components/APIContext';
-import { LabSwap } from '../Components/LabSwap/LabSwap';
+import { LabSwapPage } from './LabSwapPage';
 
 export const App = () => {
   return (
@@ -19,7 +19,7 @@ export const App = () => {
             <Route path='/' element={<Landing/>} />
             <Route path='/Scheduling' element={<Scheduling/>} />
             <Route path='/Profile' element={<Profile/>} />
-            <Route path='/Labswap' element={<LabSwap/>} />
+            <Route path='/Labswap' element={<LabSwapPage/>} />
           </Routes>
         </Router>
       </APIContext>
