@@ -16,7 +16,7 @@ export const SaveButton = () => {
     }
     
     if (btn !== null) btn.innerHTML = 'Saving...';
-    API.sendSavedSchedule(loadedSchedule).then((resp) => {
+    API.sendSavedSchedule(loadedSchedule).then(() => {
       if (btn !== null) btn.innerHTML = 'Saved!';
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred.';
