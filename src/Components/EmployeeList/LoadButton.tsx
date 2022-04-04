@@ -17,8 +17,6 @@ export const LoadButton = () => {
     });
     setEmployees(employees);
 
-    const dropdowns: HTMLInputElement[] = Array.from(document.querySelectorAll('input[type=checkbox][name="employee-row-checkbox"]:checked'));
-    const eIDs = dropdowns.filter(e => e.checked).map(e => parseInt(e.getAttribute('person-id')!));
     const btn = document.getElementById("load-schedule-button");
     
     if (btn !== null) btn.innerHTML = 'Loading...';

@@ -112,7 +112,7 @@ export const Dot: FC<Props> = ({linkID, isScheduled}) => {
       onMouseOver={emphasizeLinked} 
       onMouseOut={deemphasizeLinked}
       onClick={() => toggleSelect()}
-      data-testid="dot"
+      t-id="dot"
     />
   )
 }

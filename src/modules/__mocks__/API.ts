@@ -25,7 +25,7 @@ const createDate = (datestring: string): Date => {
 
 class API {
 	static fetchAll = (): APIReturn => {
-		console.log("MOCK API: fetchAll");
+		// console.log("MOCK API: fetchAll");
 		let id = undefined;
 		try {
 			id = parseCookie().tias_user_id;
@@ -41,7 +41,7 @@ class API {
 	}
 
 	static fetchAllStatic = () => {
-		console.log("MOCK API: fetchAllStatic");
+		// console.log("MOCK API: fetchAllStatic");
 		return {
 			employees: API.fetchPTList(),
 			blocks: API.fetchCourseBlocks()
@@ -49,7 +49,7 @@ class API {
 	}
 
 	static fetchAllUser = (user_id: number | undefined) => {
-		console.log("MOCK API: fetchAllUser");
+		// console.log("MOCK API: fetchAllUser");
 		return {
 			userQuals: API.fetchUserQualifications(user_id),
 			userPrefs: API.fetchUserPreferences(user_id),
@@ -58,7 +58,7 @@ class API {
 	}
 
 	static fetchUserViableCourses = async (user_id?: number): Promise<CourseBlockWeek> => {
-		console.log("MOCK API: fetchUserViableCourses");
+		// console.log("MOCK API: fetchUserViableCourses");
 		if (user_id === undefined) return new Promise((resolve) => {resolve({} as CourseBlockWeek);});
 		return API.fetchCourseBlocks().then(week => {
 			return {
@@ -72,7 +72,7 @@ class API {
 	}
 
 	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
-		console.log("MOCK API: sendUserPreferences");
+		// console.log("MOCK API: sendUserPreferences");
 		let rets: Promise<void>[] = [];
 		if (pref_num !== undefined) {
 			rets.push(
@@ -102,12 +102,12 @@ class API {
 	}
 
 	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
-		console.log("MOCK API: getSavedSchedule");
+		// console.log("MOCK API: getSavedSchedule");
 		return API.runScheduler([], true).then(resp => resp.scheduled);
 	}
 
 	static sendSavedSchedule = async (scheduled: Map<string, number[]>): Promise<void> => {
-		console.log("MOCK API: sendSavedSchedule");
+		// console.log("MOCK API: sendSavedSchedule");
 		return new Promise(resolve => {
 			setTimeout(() => {
 				console.log(JSON.stringify({scheduled: Array.from(scheduled.entries())}));
@@ -117,7 +117,7 @@ class API {
 	}
 
 	static saveUserUnavailability = async (user_unavailability_arr: APIStudentUnavailability[]): Promise<void> => {
-		console.log("MOCK API: saveUserUnavailability");
+		// console.log("MOCK API: saveUserUnavailability");
 		const currentDateObj = new Date();
 		return new Promise(resolve => {
 			setTimeout(() => {
@@ -128,7 +128,7 @@ class API {
 	}
 
 	private static fetchPTList = async (): Promise<Person[]> => {
-		console.log("MOCK API: static");
+		// console.log("MOCK API: static");
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve([
@@ -155,7 +155,7 @@ class API {
 	}
 
 	private static fetchCourseBlocks = async (): Promise<CourseBlockWeek> => {
-		console.log("MOCK API: static");
+		// console.log("MOCK API: static");
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve({
@@ -170,7 +170,7 @@ class API {
 	}
 
 	private static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
-		console.log("MOCK API: static");
+		// console.log("MOCK API: static");
 		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
@@ -184,7 +184,7 @@ class API {
 	}
 
 	private static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
-		console.log("MOCK API: static");
+		// console.log("MOCK API: static");
 		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
 		return API.fetchCourseBlocks().then(blocks => {
 			const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
@@ -201,7 +201,7 @@ class API {
 	}
 
 	static runScheduler = async (peer_teachers: number[], silent?: boolean): Promise<APIAlgoResponse> => {
-		if (silent !== true) console.log("MOCK API: runScheduler");
+		// if (silent !== true) console.log("MOCK API: runScheduler");
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				let resp = JSON.parse(`{"scheduled": {"1":[1],"2":[1, 2],"3":[2]}, "unscheduled": [3]}`)
