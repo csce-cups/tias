@@ -33,11 +33,14 @@ export const GenerateButton: FC<Props> = ({genState}) => {
 
     API.runScheduler(eIDs).then((resp) => {
       clearTimeout(timer);
+      
       if (btn !== null) btn.innerHTML = 'Rendering...';
-      document.getElementById("load-schedule-button")!.innerHTML = 'Load Saved Schedule';
+      const loadBtn = document.getElementById("load-schedule-button")
+      if (loadBtn !== null) loadBtn.innerHTML = 'Load Saved Schedule';
+
       const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday]; // For easier iteration
       allBlocks.forEach((day: CourseBlock[], oidx: number) => {
-        day.forEach((block: CourseBlock, iidx: number) => {
+        day?.forEach((block: CourseBlock, iidx: number) => {
           const pids = resp.scheduled.has(`${block.section_id}`)? resp.scheduled.get(`${block.section_id}`)! : [];
           allBlocks[oidx][iidx].scheduled = pids;
         });
@@ -54,7 +57,7 @@ export const GenerateButton: FC<Props> = ({genState}) => {
       if (btn !== null) btn.innerHTML = 'Done generating!';
       genState[1](false);
 
-    }).catch(() => {
+    }).catch((err) => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
     })
   }

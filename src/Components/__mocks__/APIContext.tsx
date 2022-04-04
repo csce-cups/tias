@@ -18,17 +18,17 @@ export const contexts = {
   googleData: createContext({} as any),
 
   employees: createContext<[Person[], React.Dispatch<React.SetStateAction<Person[]>>]>(
-    [[] as Person[], 0 as any]
+    [[] as Person[], () => {}]
   ),
 
   blocks: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
     { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
-    0 as any,
+    () => {},
   ]),
 
   loadedSchedule: createContext<[Map<string, number[]>, React.Dispatch<React.SetStateAction<Map<string, number[]>>>]>([
     new Map<string, number[]>(),
-    0 as any
+    () => {}
   ]),
 
   user: createContext<UserPerson>({
@@ -41,16 +41,16 @@ export const contexts = {
   userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
   [
     [{ course_id: -1, course_number: "loading", qualified: false }] as APIUserQualification[],
-    0 as any,
+    () => {},
   ]),
 
   userPrefs: createContext<[APIUserPreferences, React.Dispatch<React.SetStateAction<APIUserPreferences>>]>(
-    [new Map<number, APIUserPreferenceEnum>(), 0 as any]
+    [new Map<number, APIUserPreferenceEnum>(), () => {}]
   ),
 
   userViableCourses: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
     { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
-    0 as any,
+    () => {},
   ]),
 };
 

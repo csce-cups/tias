@@ -103,7 +103,7 @@ class API {
 
 	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
 		console.log("MOCK API: getSavedSchedule");
-		return API.runScheduler([]).then(resp => resp.scheduled);
+		return API.runScheduler([], true).then(resp => resp.scheduled);
 	}
 
 	static sendSavedSchedule = async (scheduled: Map<string, number[]>): Promise<void> => {
@@ -200,8 +200,8 @@ class API {
 		})
 	}
 
-	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
-		console.log("MOCK API: runScheduler");
+	static runScheduler = async (peer_teachers: number[], silent?: boolean): Promise<APIAlgoResponse> => {
+		if (silent !== true) console.log("MOCK API: runScheduler");
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				let resp = JSON.parse(`{"scheduled": {"1":[1],"2":[1, 2],"3":[2]}, "unscheduled": [3]}`)

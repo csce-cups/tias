@@ -1,67 +1,69 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { GenerateButton } from '../../../Components/EmployeeList/GenerateButton';
 import contexts from '../../../Components/APIContext';
 import API, { CourseBlockWeek } from '../../../modules/API';
+import { LoadButton } from '../../../Components/EmployeeList/LoadButton';
 
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
 
-describe('GenerateButton', () => {
-    it('should say generate schedule', () => {
-        render(<GenerateButton genState={0 as any}/>);
-        expect(screen.getByText('Generate Schedule')).toBeInTheDocument();
+describe('LoadButton', () => {
+    it('should say load schedule', () => {
+        render(
+            < contexts.loadedSchedule.Provider value={[new Map<string, number[]>(), () => {}]}>
+                < LoadButton />
+            </ contexts.loadedSchedule.Provider >
+        )
+        expect(screen.getByText('Load Saved Schedule')).toBeInTheDocument();
     });
 
-    it('should run the scheduler when clicked', () => {
-        const spy = jest.spyOn(API, 'runScheduler');
+    it('should load a schedule from server when clicked', () => {
+        const spy = jest.spyOn(API, 'getSavedSchedule');
         render(
-            <contexts.employees.Provider value={[[], () => {}]}>
-                <GenerateButton genState={[false, () => {}]}/>
-            </contexts.employees.Provider>
-        );
+            < contexts.loadedSchedule.Provider value={[new Map<string, number[]>(), () => {}]}>
+                < LoadButton />
+            </ contexts.loadedSchedule.Provider >
+        )
 
         const button = screen.getByRole('button');
         button.click();
         expect(spy).toHaveBeenCalled();
         spy.mockReset();
         spy.mockRestore();
-    });
+    }); 
 
-    it('should change it\'s text while the scheduler runs', () => {
+    it('should change it\'s text when clicked', () => {
         render(
-            <contexts.employees.Provider value={[[], () => {}]}>
-                <GenerateButton genState={[false, () => {}]}/>
-            </contexts.employees.Provider>
-        );
+            < contexts.loadedSchedule.Provider value={[new Map<string, number[]>(), () => {}]}>
+                < LoadButton />
+            </ contexts.loadedSchedule.Provider >
+        )
 
         const button = screen.getByRole('button');
         button.click();
-        expect(screen.getByText('Generating...')).toBeInTheDocument();
-    });
+        expect(screen.getByText('Loading...')).toBeInTheDocument();
+    }); 
 
-    it('should change it\'s text after the scheduler runs', (done) => {
+    it('should change it\'s text when finished', (done) => { // I don't know why the button doesn't change, so we go slow
         render(
-            <contexts.employees.Provider value={[[], () => {}]}>
-                <GenerateButton genState={[false, () => {}]}/>
-            </contexts.employees.Provider>
-        );
-
+            < contexts.loadedSchedule.Provider value={[new Map<string, number[]>(), () => {}]}>
+                < LoadButton />
+            </ contexts.loadedSchedule.Provider >
+        )
+        
         const button = screen.getByRole('button');
         button.click();
         setTimeout(() => {
-            expect(screen.getByText('Done generating!')).toBeInTheDocument();
+            expect(screen.getByText('Schedule Loaded!')).toBeInTheDocument();
             done();
         }, 100);
-    });
+    }); 
 
     it('should present a warning if a schedule is present', () => {
         const spy = jest.spyOn(window, 'confirm').mockImplementation(() => false);
         render(
             <contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2]]]), () => {}]}>
-                <contexts.employees.Provider value={[[], () => {}]}>
-                    <GenerateButton genState={[false, () => {}]}/>
-                </contexts.employees.Provider>
+                < LoadButton />
             </contexts.loadedSchedule.Provider>
         )
 
@@ -77,7 +79,7 @@ describe('GenerateButton', () => {
         render(
             <contexts.loadedSchedule.Provider value={[new Map<string, number[]>(), fn]}>
                 <contexts.employees.Provider value={[[], () => {}]}>
-                    <GenerateButton genState={[false, () => {}]}/>
+                    < LoadButton />
                 </contexts.employees.Provider>
             </contexts.loadedSchedule.Provider>
         );
@@ -95,7 +97,7 @@ describe('GenerateButton', () => {
         render(
             <contexts.blocks.Provider value={[{ Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek, fn]}>
                 <contexts.employees.Provider value={[[], () => {}]}>
-                    <GenerateButton genState={[false, () => {}]}/>
+                    < LoadButton />
                 </contexts.employees.Provider>
             </contexts.blocks.Provider>
         );
@@ -112,7 +114,7 @@ describe('GenerateButton', () => {
         const fn = jest.fn();
         render(
             <contexts.employees.Provider value={[[], fn]}>
-                <GenerateButton genState={[false, () => {}]}/>
+                < LoadButton />
             </contexts.employees.Provider>
         );
 
@@ -123,4 +125,5 @@ describe('GenerateButton', () => {
             done();
         }, 100);
     })
+
 });

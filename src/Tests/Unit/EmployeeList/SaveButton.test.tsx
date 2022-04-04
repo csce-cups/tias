@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { SaveButton } from '../../../Components/EmployeeList/SaveButton';
 import contexts from '../../../Components/APIContext';
 import API from '../../../modules/API';
-import { doesNotReject } from 'assert';
 
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
