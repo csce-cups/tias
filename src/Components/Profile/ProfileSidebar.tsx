@@ -90,7 +90,7 @@ export const ProfileSidebar = () => {
 
   const img = (googleData: any) => {
     try {
-      return <img alt="" src={(googleData !== {})? googleData.getImageUrl() : undefined} className="profile-picture"/>
+      return <img alt="" src={(googleData !== {})? googleData.getImageUrl() : undefined} className="profile-picture" referrerPolicy="no-referrer"/>
     } catch (TypeError) {
       return <div>No Image</div>
     }
