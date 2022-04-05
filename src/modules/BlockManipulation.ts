@@ -4,6 +4,7 @@ export interface CompressedCourseBlock extends CourseBlock {
 	section_numbers: string[]
 	professors: string[]
 	section_ids: number[]
+	scheduled: number[]
 }
 
 export const cmp = (
@@ -42,6 +43,7 @@ export const compressDay = (
 			section_numbers: [c.section_number],
 			section_ids: [c.section_id],
 			professors: [c.professor],
+			scheduled: (c.scheduled)? [...c.scheduled] : [],
 		});
 
 		fidx++; //update to the newly added index

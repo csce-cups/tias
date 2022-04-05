@@ -773,6 +773,136 @@ img.back-arrow {
 	max-width: 400px;
 }
 
+.nowrap {
+	white-space: nowrap;
+}
+
+.interact-blocks {
+	label {
+		color: white;
+	}
+
+	.block {
+		display: flex;
+		position: relative;
+		transition: all 0.2s ease-in-out;
+	}
+
+	.block.frosted {
+		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .6), 0 2px 2px 0 rgba(0, 0, 0, 0.25);
+		backdrop-filter: blur(5px);
+	}
+
+	.block.frosted:hover {
+		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .7), 0 2px 5px 0 rgba(0, 0, 0, 1);
+		backdrop-filter: blur(5px);
+	}
+
+	.block.interacted {
+		transition: all 0.2s ease-in-out, min-width 0s linear, min-height 0s linear;
+
+		position: absolute;
+		right: 0;
+		top: 0;
+
+		display: flex;
+
+		height: fit-content;
+		min-height: 100%;
+
+		width: fit-content;
+		min-width: 100%;
+
+		padding: 0;
+		
+		z-index: 5;
+		box-shadow: 0 0 10px 0;
+
+		transform: translateY(-5px);
+	}
+
+	.block.interacted.frosted {
+		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .2), 0 0 10px 0 black;
+		backdrop-filter: blur(5px);
+	}
+	
+	.block.interacted.left {
+		left: 0;
+	}
+	
+	.block.interacted.bottom {
+		top: auto;
+		bottom: 0;
+		transform: translateY(5px);
+	}
+
+	.pref-pane-title {
+		margin: 0 3px 5px 3px;
+		color: $render_background;
+		text-align: center;
+	}
+
+	.pref-row {
+		display: flex;
+		align-items: center;
+	}
+
+	button {
+		border-radius: 2px;
+		border: 1px solid $render_divider;
+		transition: all 0.05s ease-in-out;
+		width: 100%;
+	}
+
+	button:hover {
+		background-color: $render_background;
+	}
+
+	.pref-pane {
+		display: flex;
+		flex-direction: column;
+		color: $light;
+		white-space: nowrap;
+		overflow: hidden;
+
+		flex: 1 1 auto;
+
+		button {
+			border-radius: 2px;
+			border: 1px solid $render_divider;
+			transition: all 0.05s ease-in-out;
+		}
+
+		button.cantdo {
+			background-color: #FFBDBD;
+		}
+
+		button.cantdo:hover {
+			background-color: #FF8C8C;
+		}
+
+		button.prefernot {
+			background-color: #FBFFBD
+		}
+
+		button.prefernot:hover {
+			background-color: #F1FF28
+		}
+
+		button.indiff:hover {
+			background-color: $render_background;
+		}
+
+		button.prefer {
+			background-color: #BFFFBD;
+		}
+
+		button.prefer:hover {
+			background-color: #75FF70;
+		}
+	}
+}
+
 .Profile {
 	flex: 1 1 auto;
 
@@ -970,100 +1100,6 @@ img.back-arrow {
 
 		.render-container {
 			margin: 8px 0;
-		}
-
-		.block.interacted {
-			transition: all 0.2s ease-in-out, min-width 0s linear, min-height 0s linear;
-
-			position: absolute;
-			right: 0;
-			top: 0;
-
-			display: flex;
-
-			height: fit-content;
-			min-height: 100%;
-
-			width: fit-content;
-			min-width: 100%;
-
-			padding: 0;
-			
-			z-index: 5;
-			box-shadow: 0 0 10px 0;
-
-			transform: translateY(-5px);
-		}
-		
-		.block.interacted.left {
-			left: 0;
-		}
-		
-		.block.interacted.bottom {
-			top: auto;
-			bottom: 0;
-			transform: translateY(5px);
-		}
-
-		.block {
-			display: flex;
-			position: relative;
-			transition: all 0.2s ease-in-out;
-		}
-
-		.pref-pane {
-			display: flex;
-			flex-direction: column;
-			color: $light;
-			white-space: nowrap;
-    		overflow: hidden;
-
-			flex: 1 1 auto;
-
-			button {
-				border-radius: 2px;
-				border: 1px solid $render_divider;
-				transition: all 0.05s ease-in-out;
-			}
-
-			button.cantdo {
-				background-color: #FFBDBD;
-			}
-
-			button.cantdo:hover {
-				background-color: #FF8C8C;
-			}
-
-			button.prefernot {
-				background-color: #FBFFBD
-			}
-
-			button.prefernot:hover {
-				background-color: #F1FF28
-			}
-
-			button.indiff:hover {
-				background-color: $render_background;
-			}
-
-			button.prefer {
-				background-color: #BFFFBD;
-			}
-
-			button.prefer:hover {
-				background-color: #75FF70;
-			}
-		}
-
-		.pref-pane-title {
-			margin: 0 3px 5px 3px;
-			color: $render_background;
-			text-align: center;
-		}
-
-		.pref-row {
-			display: flex;
-			align-items: center;
 		}
 
 		.check-all {

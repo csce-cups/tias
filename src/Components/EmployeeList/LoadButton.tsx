@@ -6,6 +6,7 @@ export const LoadButton = () => {
   const [loadedSchedule, setLoadedSchedule] = useContext(contexts.loadedSchedule);
   const [employees, setEmployees] = useContext(contexts.employees);
   const [blocks, setBlocks] = useContext(contexts.blocks);
+  const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
   const loadSchedule = () => {
     if (loadedSchedule.size !== 0) {
       if (!window.confirm("This will overwrite your current schedule. Are you sure you want to continue?")) return;
@@ -42,6 +43,13 @@ export const LoadButton = () => {
       setEmployees(employees);
       setLoadedSchedule(new Map(resp));
       setBlocks({Monday: allBlocks[0], Tuesday: allBlocks[1], Wednesday: allBlocks[2], Thursday: allBlocks[3], Friday: allBlocks[4]});
+      setUserViableCourses({
+        Monday: allBlocks[0].filter((b: CourseBlock) => userViableCourses?.Monday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Tuesday: allBlocks[1].filter((b: CourseBlock) => userViableCourses?.Tuesday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Wednesday: allBlocks[2].filter((b: CourseBlock) => userViableCourses?.Wednesday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Thursday: allBlocks[3].filter((b: CourseBlock) => userViableCourses?.Thursday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Friday: allBlocks[4].filter((b: CourseBlock) => userViableCourses?.Friday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined )
+      });
       if (btn !== null) btn.innerHTML = 'Schedule Loaded!';
 
     }).catch(() => {
