@@ -867,22 +867,25 @@ img.back-arrow {
 
 	.block.frosted {
 		outline: 1px solid $render_divider;
-		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .6), 0 2px 2px 0 rgba(0, 0, 0, 0.25);
+		opacity: 0.5;
 		backdrop-filter: blur(5px);
 	}
 
 	.block.frosted:not(.standalone, .interacted):hover {
-		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .7), 0 2px 5px 0 rgba(0, 0, 0, 1);
+		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .3), 0 2px 5px 0 rgba(0, 0, 0, 1);
+		opacity: 1;
 		backdrop-filter: blur(5px);
 	}
 
 	.block.frosted.interacted:hover {
 		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .3), 0 0 10px 0 black;
+		opacity: 1;
 		backdrop-filter: blur(5px);
 	}
 
 	.block.interacted {
 		transition: all 0.2s ease-in-out, min-width 0s linear, min-height 0s linear;
+		opacity: 1;
 
 		position: absolute;
 		right: 0;
