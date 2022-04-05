@@ -1,7 +1,7 @@
 const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
-    const person_id = JSON.parse(event.body).person_id;
+    const person_id = event?.pathParameters?.userId;
 
     const response = {
         "isBase64Encoded": false,

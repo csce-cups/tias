@@ -1,9 +1,10 @@
 const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
+    const requester_id = event?.pathParameters?.userId;
+
     const eventBody = JSON.parse(event.body);
 
-    const requester_id = eventBody.requester;
     const offered_id = eventBody.offer;
     const requested_id = eventBody.request;
 
