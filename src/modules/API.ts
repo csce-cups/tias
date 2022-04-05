@@ -3,6 +3,31 @@ import BlockFormer from './BlockFormer'
 
 const timezone_offset = 0;
 
+export interface TradeRequest {
+	person_id_sender: number
+	section_id_sender: number
+	person_id_receiver: number
+	section_id_receiver: number
+	status: string
+}
+
+interface GetTradeRequestHTTPRequest {
+	person_id: number
+}
+
+interface PutTradeRequestHTTPRequest {
+	person_id_sender: number
+	section_id_sender: number
+	person_id_receiver: number
+	section_id_receiver: number
+	updated_status: string
+}
+
+interface PostTradeRequestHTTPRequest {
+	requester: number // person_id of sender
+
+}
+
 export interface Person {
 	person_id: number
 	email: string

@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, Menu, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import React, { FC, useState, useContext } from 'react'
-import { selectFunction } from './LabSwap';
+import { SelectData } from './LabSwap';
 import RenderBlockProps, { blockColors } from '../Scheduling/BlockBase';
 import "../common.scss"
 import { CompressedCourseBlock } from '../../modules/BlockManipulation';
@@ -17,7 +17,7 @@ export const LabSwapBlock: FC<Props> = ({visible, size, inline, data}) => {
   const {course_instance} = data;
   
   //need onclick to store selection in parent class
-  const select = useContext(selectFunction);
+  const select = useContext(SelectData);
   const [section, setSection] = useState<String>("");
   const c = course_instance;
   const [title, setTitle] = useState<String>(`${c.course_number}`);
@@ -33,7 +33,6 @@ export const LabSwapBlock: FC<Props> = ({visible, size, inline, data}) => {
     } else {
       setSection(sec);
       setTitle(`${c.course_number}-${sec}`)
-      select(c, sec);
     }
   }
 

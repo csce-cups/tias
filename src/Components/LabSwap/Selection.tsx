@@ -2,48 +2,29 @@ import React, { FC } from 'react'
 import { CompressedCourseBlock } from '../../modules/BlockManipulation'
 
 
-interface Section extends CompressedCourseBlock {
-  valid: boolean
-}
+
 
 interface Props {
-  sections: Section
   title: string
 }
 
-export const Selection: FC<Props> = ({title, sections}) => {
+export const Selection: FC<Props> = ({title}) => {
   //maybe make a colored box display depending on
   let info = (
     <>
       <p>
-        Course: 
+        Course: TBD
       </p>
       <p>
-        Section:
+        Section:TBD
       </p>
       <p>
-        Meeting Time: 
+        Meeting Time: TBD!
       </p>
-      <hr/>
     </>
   );
 
-  if (sections.valid) {
-    info = (
-      <>
-        <p>
-          Course: {sections.course_number}
-        </p>
-        <p>
-          Section: {sections.section_numbers[0]}
-        </p>
-        <p>
-          Meeting Time: {sections.start_time.toLocaleTimeString()}-{sections.end_time.toLocaleTimeString()}
-        </p>
-        <hr/>
-      </>
-    )
-  }
+  
 
   return (
     <div style={{width:"12vw"}}>
