@@ -1,5 +1,5 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie} from "../modules/API";
+import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest} from "../modules/API";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
 
@@ -54,6 +54,11 @@ export const contexts = {
     { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
     0 as any,
   ]),
+
+  userTrades: createContext<[TradeRequest[], React.Dispatch<React.SetStateAction<TradeRequest[]>>]>([
+    [] as TradeRequest[],
+    0 as any,
+  ]),
 };
 
 export const APIContext: FC<Props> = ({ children, args, test }) => {
@@ -87,6 +92,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     Thursday: null,
     Friday: null,
   } as CourseBlockWeek);
+
+  const userTrades = useState([] as TradeRequest[]);
 
   useEffect(() => {
     const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
@@ -124,6 +131,10 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       userViableCourses[1](resp);
     });
 
+    userPromises.userTrades.then((resp) => {
+      userTrades[1](resp);
+    });
+
     const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
     const isPermAdmin = permAdmin && googleDataState[0].tv === permAdmin;
     if (isPermAdmin) {
@@ -154,7 +165,9 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
               <contexts.userQuals.Provider value={userQualState}>
                 <contexts.userPrefs.Provider value={userPrefState}>
                   <contexts.userViableCourses.Provider value={userViableCourses}>
-                    {children}
+                    <contexts.userTrades.Provider value={userTrades}>
+                      {children}
+                    </contexts.userTrades.Provider>
                   </contexts.userViableCourses.Provider>
                 </contexts.userPrefs.Provider>
               </contexts.userQuals.Provider>

@@ -136,7 +136,8 @@ class API {
 		return {
 			userQuals: API.fetchUserQualifications(user_id),
 			userPrefs: API.fetchUserPreferences(user_id),
-			userViableCourses: API.fetchUserViableCourses(user_id)
+			userViableCourses: API.fetchUserViableCourses(user_id),
+			userTrades: API.fetchUserTrades(user_id)
 		}
 	}
 
@@ -151,7 +152,8 @@ class API {
 		return {
 			userQuals: API.fetchUserQualificationsDummy(user_id),
 			userPrefs: API.fetchUserPreferencesDummy(user_id),
-			userViableCourses: API.fetchUserViableCourses(undefined)
+			userViableCourses: API.fetchUserViableCourses(undefined),
+			userTrades: API.fetchUserTrades(undefined)
 		}
 	}
 

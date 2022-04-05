@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { CourseBlock, CourseBlockWeek } from "../../modules/API";
+import { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
 import { compressWeek } from "../../modules/BlockManipulation";
 import contexts from '../APIContext';
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
@@ -32,6 +32,26 @@ export const LabSwap = () => {
     if (btn !== null) btn.innerHTML = 'Done!';
   };
 
+  const userId = +parseCookie().tias_user_id;
+
+  const renderSent = (retData: TradeRequest[]) => retData.filter(request => request.person_id_sender === userId).map((request) => (
+    <div>
+      <div>Sender ID: {request.person_id_sender}</div>
+      <div>Sent Section ID: {request.section_id_sender}</div>
+      <div>Receiver ID: {request.person_id_receiver}</div>
+      <div>Received Section ID: {request.section_id_receiver}</div>
+    </div>
+  ))
+
+  const renderReceived = (retData: TradeRequest[]) => retData.filter(request => request.person_id_receiver === userId).map((request) => (
+    <div>
+      <div>Sender ID: {request.person_id_sender}</div>
+      <div>Sent Section ID: {request.section_id_sender}</div>
+      <div>Receiver ID: {request.person_id_receiver}</div>
+      <div>Received Section ID: {request.section_id_receiver}</div>
+    </div>
+  ))
+
   const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(viableBlockWeek), setBlockWeek];
 
   return (
@@ -44,6 +64,26 @@ export const LabSwap = () => {
             Request Trade
           </button>
         </div>
+        <contexts.userTrades.Consumer>
+          {([trades,]) => {
+            if (trades.length === 0) {
+              return <></>
+            } else {
+              return (
+                <>
+                  <div className="schedule-info-container">
+                    <div className="schedule-info-title">Outstanding:</div>
+                    { renderReceived(trades) }
+                  </div>
+                  <div className="schedule-info-container">
+                    <div className="schedule-info-title">Sent:</div>
+                    { renderSent(trades) }
+                  </div>
+                </>
+              )
+            }
+          }}
+        </contexts.userTrades.Consumer>
         <div className="swap-divider"/>
 
         <div className="scrollable">
