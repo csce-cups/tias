@@ -52,7 +52,7 @@ exports.handler = async (event) => {
     const viableCourses = await helper_functions.queryDB(`SELECT * FROM "ViableCourses"($1) WHERE section_id = $2`, [requester_id, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the viable courses for the requester."))
 
     if (viableCourses.length === 0) {
-        helper_functions.GenerateErrorResponseAndLog(err, response, "The requested course is not viable.")
+        helper_functions.GenerateErrorResponseAndLog({stack: ""}, response, "The requested course is not viable.")
         return response;
     }
 
@@ -76,7 +76,7 @@ exports.handler = async (event) => {
         })
         if (viableCourses.length === 0) continue;
         traded_people.push(person_id)
-        await helper_functions.queryDB(`INSERT INTO trade_request VALUES ($1, $2, $3, $4)`, [requester_id, offered_id, person_id, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to create the trade request for at least one person in the requested section."))
+        await helper_functions.queryDB(`INSERT INTO trade_request VALUES ($1, $2, $3, $4) ON CONFLICT (person_id_sender, section_id_sender, person_id_receiver, section_id_receiver) DO UPDATE SET request_status = 'Pending'`, [requester_id, offered_id, person_id, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to create the trade request for at least one person in the requested section."))
         // TODO: Send an email or something I guess...
     }
 
