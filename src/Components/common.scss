@@ -396,93 +396,93 @@ $day_divider_size : 1.5px;
 	.vstack {
 		padding: 0;
 	}
+}
 
-	$block_margin_amount : 2px;
-	.block {
+$block_margin_amount : 2px;
+.block {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	background-color: red;
+
+	top: 0;
+
+	height: 100%;
+
+	margin: 0 $block_margin_amount;
+	width: 3.3em;
+
+	min-width: 0;
+
+	border-radius: 3px;
+	z-index: 1;
+
+	transition: all 0.2s ease-in-out;
+
+	.block-indicator {
+		text-align: center;
+		margin-top: 5px;
+
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.block-text {
+		color: $light;
+		overflow: hidden;
+		padding-bottom: 5px;
 		flex: 1 1 auto;
 		display: flex;
-		flex-direction: column;
-		background-color: red;
-
-		top: 0;
-
-		height: 100%;
-	
-		margin: 0 $block_margin_amount;
-		width: 3.3em;
-
-		min-width: 0;
-	
-		border-radius: 3px;
-		z-index: 1;
-
-		transition: all 0.2s ease-in-out;
-
-		.block-indicator {
-			text-align: center;
-			margin-top: 5px;
-
-			display: flex;
-			align-items: center;
-			flex-wrap: wrap;
-			justify-content: center;
-		}
-
-		.block-text {
-			color: $light;
-			overflow: hidden;
-			padding-bottom: 5px;
-			flex: 1 1 auto;
-			display: flex;
-			align-items: flex-end;
-		}
-
-		.block-text.centered {
-			justify-content: center;
-			z-index: 2;
-		}
-
-		.block-detail {
-			display: none;
-
-			span {
-				white-space: nowrap;
-			}
-
-			div {
-				overflow-wrap: anywhere;
-			}
-		}
-		
-		.hidden {
-			display: none !important; // I don't care
-		}
+		align-items: flex-end;
 	}
 
-	.block.spacer {
-		height: 0;
-		visibility: hidden;
-		// margin-right: 0;
-	}
-
-	.block.selected {
-		position: absolute;
-		height: 100%;
-		width: calc(100% - 14px);
-		margin-left: 7px;
+	.block-text.centered {
+		justify-content: center;
 		z-index: 2;
-		
-		box-shadow: 0 0 10px 0;
 	}
 
-	.block.deselected {
-		filter: brightness(50%);
-	}
+	.block-detail {
+		display: none;
 
-	.block.invisible {
-		visibility: hidden;
-		max-height: 0;
+		span {
+			white-space: nowrap;
+		}
+
+		div {
+			overflow-wrap: anywhere;
+		}
 	}
+	
+	.hidden {
+		display: none !important; // I don't care
+	}
+}
+
+.block.spacer {
+	height: 0;
+	visibility: hidden;
+	// margin-right: 0;
+}
+
+.block.selected {
+	position: absolute;
+	height: 100%;
+	width: calc(100% - 14px);
+	margin-left: 7px;
+	z-index: 2;
+	
+	box-shadow: 0 0 10px 0;
+}
+
+.block.deselected {
+	filter: brightness(50%);
+}
+
+.block.invisible {
+	visibility: hidden;
+	max-height: 0;
 }
 
 .column.detailed .block .hat-container.shrunk {
@@ -777,6 +777,83 @@ img.back-arrow {
 	white-space: nowrap;
 }
 
+.interact-blocks.standalone {
+	display: flex;
+	flex-direction: column;
+
+	position: relative;
+
+	.block.viewed {
+		height: 6em;
+		width: 180%;
+		z-index: 100;
+
+		box-shadow: 0 0 5px 0 black;
+		
+		.pref-pane {
+			padding: 5px;
+		}
+	}
+
+	.block.viewed.right {
+		transform: translateX(-50%);
+	}
+
+	.block.viewed.left {
+		transform: translateX(5%);
+	}
+}
+
+.arrow-container {
+	display: flex;
+}
+
+.arrow {
+	display: flex;
+	padding: 2px;
+	font-size: 1.1em;
+	flex: 1 1 auto;
+	align-items: center;
+}
+
+.arrow.hidden {
+	color: rgba(0, 0, 0, 0);
+}
+
+.arrow::after {
+	content: "\25b6";
+	// transform: rotate(-180deg);
+}
+
+.new-trade-col {	
+	.new-trade-col-title {
+		text-align: center;
+		font-weight: bold;
+		font-size: 1.2em;
+		margin-bottom: 5px;
+	}
+}
+
+.new-trade-col-content {
+	position: relative;
+}
+
+.block.standalone {
+	text-align: left;
+	width: calc(100% - $block_margin_amount);
+	height: 2em;
+}
+
+.block.frosted.standalone {
+	background-color: $render_background;
+	color: $render_divider;
+	text-align: center;
+}
+
+.hstack.reqoff-col {
+	margin: 0 7px 0 5px;
+}
+
 .interact-blocks {
 	label {
 		color: white;
@@ -789,12 +866,18 @@ img.back-arrow {
 	}
 
 	.block.frosted {
+		outline: 1px solid $render_divider;
 		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .6), 0 2px 2px 0 rgba(0, 0, 0, 0.25);
 		backdrop-filter: blur(5px);
 	}
 
-	.block.frosted:hover {
+	.block.frosted:not(.standalone, .interacted):hover {
 		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .7), 0 2px 5px 0 rgba(0, 0, 0, 1);
+		backdrop-filter: blur(5px);
+	}
+
+	.block.frosted.interacted:hover {
+		box-shadow: inset 0 0 2000px rgba(255, 255, 255, .3), 0 0 10px 0 black;
 		backdrop-filter: blur(5px);
 	}
 
@@ -847,14 +930,14 @@ img.back-arrow {
 		align-items: center;
 	}
 
-	button {
+	button:not(.button) {
 		border-radius: 2px;
 		border: 1px solid $render_divider;
 		transition: all 0.05s ease-in-out;
 		width: 100%;
 	}
 
-	button:hover {
+	button:hover:not([disabled], .button) {
 		background-color: $render_background;
 	}
 
