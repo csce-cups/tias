@@ -37,11 +37,28 @@ export const LabSwap = () => {
   return (
     <div className="app-body interact-blocks">
       <div className="vstack sidebar">
-        < TitleSet titles={["Offer", "Request"]} />
-        < SwapSet selected={[selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested]} />
-        <button disabled={selectedTradeBlocksState[0].offered === null || selectedTradeBlocksState[0].requested === null} id={'request-trade-btn'} className="blue button" onClick={submitTrade}>
-          Request Trade
-        </button>
+        <div className="swap-section vstack">
+          < TitleSet titles={["Offer", "Request"]} />
+          < SwapSet selected={[selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested]} />
+          <button disabled={selectedTradeBlocksState[0].offered === null || selectedTradeBlocksState[0].requested === null} id={'request-trade-btn'} className="blue button" onClick={submitTrade}>
+            Request Trade
+          </button>
+        </div>
+        <div className="swap-divider"/>
+
+        <div className="scrollable">
+          <div className="swap-section vstack">
+            <div className="swap-section-title"> Awaiting Action</div>
+            < SwapSet selected={[selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested]} />
+          </div>
+
+          <div className="swap-divider"/>
+
+          <div className="swap-section vstack">
+            <div className="swap-section-title">Pending</div>
+            < SwapSet selected={[selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested]} />
+          </div>
+        </div>
       </div>
       <selectedTradeBlocksContext.Provider value={selectedTradeBlocksState}>
         < contexts.blocks.Provider value={blocksPayload} >
