@@ -795,11 +795,11 @@ img.back-arrow {
 		}
 	}
 
-	.block.viewed.right {
+	.block.viewed.block-right {
 		transform: translateX(-50%);
 	}
 
-	.block.viewed.left {
+	.block.viewed.block-left {
 		transform: translateX(5%);
 	}
 }
@@ -852,6 +852,22 @@ img.back-arrow {
 
 .hstack.reqoff-col {
 	margin: 0 7px 0 5px;
+}
+
+.swap-section {
+	margin-top: 10px;
+}
+
+.swap-section-title {
+	font-weight: bold;
+	font-size: 1.2em;
+	margin-bottom: 5px;
+	margin-left: 10px;
+}
+
+.swap-divider {
+	border-top: 2px solid $render_background;
+	margin: 10px 10px 0px 10px;
 }
 
 .interact-blocks {

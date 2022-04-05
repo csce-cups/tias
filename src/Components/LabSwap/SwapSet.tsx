@@ -10,7 +10,7 @@ export const SwapSet: FC<Props> = ({selected}) => {
   return (
     <div className="hstack reqoff-col">
       <div className='interact-blocks standalone new-trade-col' style={{width:"12vw"}}>
-        <div className="new-trade-col-content left">
+        <div className="new-trade-col-content trade-left">
           < DisplayBlock visible={true} data={{course_instance: selected[0], shift: false}}/>
         </div>
       </div>
@@ -20,7 +20,7 @@ export const SwapSet: FC<Props> = ({selected}) => {
       </div>
 
       <div className='interact-blocks standalone new-trade-col' style={{width:"12vw"}}>
-        <div className="new-trade-col-content right">
+        <div className="new-trade-col-content trade-right">
           < DisplayBlock visible={true} data={{course_instance: selected[1], shift: true}}/>
         </div>
       </div>

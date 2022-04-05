@@ -110,7 +110,7 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
 
   if (course_instance === null) {
       return (
-        <div className="block frosted standalone">
+        <div className="block frosted standalone" style={{outline: '0'}}>
           <div className="fill"/>
           <div style={{margin: '5px'}}>
             None selected
@@ -124,8 +124,8 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
   if (interacted) classes += " viewed";
   else classes += " grow-h";
 
-  if (shift) classes += " right";
-  else classes += " left";
+  if (shift) classes += " block-right";
+  else classes += " block-left";
 
   return (
     <div ref={ref} className={classes} onClick={() => setInteracted(true)}
