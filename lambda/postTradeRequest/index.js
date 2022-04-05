@@ -69,6 +69,7 @@ exports.handler = async (event) => {
     // Construct a Fill of Trade Requests -- Hits the trade_request Table
     const traded_people = []
     for (let {person_id} of people_in_requested) {
+        if (people_in_offered.includes(person_id)) continue;
         const viableCourses = await helper_functions.queryDB(`SELECT * FROM "ViableCourses"($1) WHERE section_id = $2`, [person_id, offered_id]).catch(err => {
             response.statusCode = 500;
             response.body = JSON.stringify({err: "Failed to get the viable courses for at least one person in the requested section."});

@@ -11,23 +11,6 @@ export interface TradeRequest {
 	status: string
 }
 
-interface GetTradeRequestHTTPRequest {
-	person_id: number
-}
-
-interface PutTradeRequestHTTPRequest {
-	person_id_sender: number
-	section_id_sender: number
-	person_id_receiver: number
-	section_id_receiver: number
-	updated_status: string
-}
-
-interface PostTradeRequestHTTPRequest {
-	requester: number // person_id of sender
-
-}
-
 export interface Person {
 	person_id: number
 	email: string
@@ -109,8 +92,8 @@ export interface APIReturn {
 	blocks: Promise<CourseBlockWeek>,
 	userQuals: Promise<APIUserQualification[]>
 	userPrefs: Promise<APIUserPreferences>
+	userTrades: Promise<TradeRequest[]>
 }
-
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
 export const parseCookie: any = () => {
@@ -137,7 +120,8 @@ class API {
 			employees: API.fetchPTList(),
 			blocks: API.fetchCourseBlocks(),
 			userQuals: API.fetchUserQualifications(id),
-			userPrefs: API.fetchUserPreferences(id)
+			userPrefs: API.fetchUserPreferences(id),
+			userTrades: API.fetchUserTrades(id)
 		}
 	}
 
@@ -182,7 +166,8 @@ class API {
 			employees: API.fetchPTListDummy(args?.employees),
 			blocks: API.fetchCourseBlocksDummy(),
 			userQuals: API.fetchUserQualificationsDummy(id),
-			userPrefs: API.fetchUserPreferencesDummy(id)
+			userPrefs: API.fetchUserPreferencesDummy(id),
+			userTrades: API.fetchUserTrades(id)
 		}
 	}
 
@@ -311,7 +296,13 @@ class API {
 					Friday: [{course_number: -1} as CourseBlock]
 				} as any)
 			});
-		}
+	}
+
+	static fetchUserTrades = async (user_id?: number): Promise<TradeRequest[]> => {
+		if (user_id === undefined) return [] as TradeRequest[];
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/trade-requests`)
+			.then(({data}) => data.trade_requests as TradeRequest[]);
+	}
 
 	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
 		let rets: Promise<void>[] = [];
