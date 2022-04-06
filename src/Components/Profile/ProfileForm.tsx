@@ -49,9 +49,7 @@ export const ProfileForm = () => {
       <div className={`hstack header ${collapsed? 'collapsed' : ''}`} onClick={() => setCollapsed(!collapsed)}>
         <div className="header-content">Course Qualifications</div>
         <div className="fill" />
-        <div className="arrow-container">
-          <div className={`arrow ${collapsed? 'left': 'down'}`} />
-        </div>
+        <div className="arrow-container"/>
       </div>
 
       < contexts.userQuals.Consumer >
