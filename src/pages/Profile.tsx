@@ -9,7 +9,7 @@ import './../Components/common.scss';
 export const Profile = () => {
   const {doShowProfile} = useContext(contexts.user);
 
-  if (doShowProfile || true) {
+  if (doShowProfile) {
     return (
       <>
         <div className="Profile hstack">
