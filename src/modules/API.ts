@@ -89,33 +89,22 @@ export interface APIReturn {
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
 export const parseCookie: any = () => {
-	return (
-		document.cookie
-			?.split(';')
-			?.map(v => v.split('='))
-			?.reduce((acc: any, v) => {
-				acc[decodeURIComponent(v[0]?.trim())] = decodeURIComponent(v[1]?.trim());
-				return acc;
-			}, {})
-	)
+	try {
+		return (
+			document.cookie
+				.split(';')
+				.map(v => v.split('='))
+				.reduce((acc: any, v) => {
+					acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+					return acc;
+				}, {})
+		)
+	} catch (e) {
+		return ({})
+	}
 }
 
 class API {
-	static fetchAll = (): APIReturn => {
-		let id = undefined;
-		try {
-			id = parseCookie().tias_user_id;
-			if (id === -1) id = undefined;
-		} catch (SyntaxError) {};
-
-		return {
-			employees: API.fetchPTList(),
-			blocks: API.fetchCourseBlocks(),
-			userQuals: API.fetchUserQualifications(id),
-			userPrefs: API.fetchUserPreferences(id)
-		}
-	}
-
 	static fetchAllStatic = () => {
 		return {
 			employees: API.fetchPTList(),
@@ -143,21 +132,6 @@ class API {
 			userQuals: API.fetchUserQualificationsDummy(user_id),
 			userPrefs: API.fetchUserPreferencesDummy(user_id),
 			userViableCourses: API.fetchUserViableCourses(undefined)
-		}
-	}
-
-	static fetchAllDummy = (args?: {employees?: Person[]}): APIReturn => {
-		let id = undefined;
-		try {
-			id = parseCookie(document.cookie).tias_user_id;
-			if (id === -1) id = undefined;
-		} catch (SyntaxError) {};
-
-		return {
-			employees: API.fetchPTListDummy(args?.employees),
-			blocks: API.fetchCourseBlocksDummy(),
-			userQuals: API.fetchUserQualificationsDummy(id),
-			userPrefs: API.fetchUserPreferencesDummy(id)
 		}
 	}
 
@@ -286,9 +260,10 @@ class API {
 					Friday: [{course_number: -1} as CourseBlock]
 				} as any)
 			});
-		}
+	}
 
-	static sendUserPreferences = async (user_id: number, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
+	static sendUserPreferences = async (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve()});
 		let rets: Promise<void>[] = [];
 		if (pref_num !== undefined) {
 			rets.push(
@@ -342,9 +317,9 @@ class API {
 		}).then(() => {});
 	}
 
-	static saveUserUnavailability = async (user_unavailability_arr: APIStudentUnavailability[]) => {
+	static saveUserUnavailability = async (uid: number | undefined, user_unavailability_arr: APIStudentUnavailability[]) => {
 		let currentDateObj = new Date();
-		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/unavailability`, {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${uid}/unavailability`, {
 			method: 'POST',
 			body: JSON.stringify({"timezoneOffsetHours": (currentDateObj.getTimezoneOffset() / 60), "unavailability": user_unavailability_arr})
 		}).then(() => {});
