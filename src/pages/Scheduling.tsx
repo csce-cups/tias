@@ -15,8 +15,10 @@ export const Scheduling = () => {
       < SchedulingWindow renderBlockType={SchedulingBlock}/>
     </div>
     );
+  } else if (doShowScheduling === false) {
+    return <div className="page-text">You do not have permission to visit this page.</div>
   } else {
-    return <div>You do not have permission to visit this page.</div>
+    return <div className="page-text">Loading...</div>
   }
 }
 

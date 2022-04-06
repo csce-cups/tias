@@ -20,8 +20,10 @@ export const Profile = () => {
         </div>
       </div>
     );
+  } else if (doShowProfile === false) {
+    return <div className="page-text">You do not have permission to visit this page.</div>
   } else {
-    return <div>You do not have permission to visit this page.</div>
+    return <div className="page-text">Loading...</div>
   }
 }
 
