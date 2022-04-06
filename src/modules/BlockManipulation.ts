@@ -15,9 +15,9 @@ export const cmp = (course1: CompressedCourseBlock, course2: CourseBlock) => {
   );
 };
 
-export const compressDay = (courses: Array<CourseBlock> | null) => {
+export const compressDay = (courses: Array<CourseBlock> | null | undefined) => {
   let compressed: Array<CompressedCourseBlock> = [];
-  if (courses === null) return compressed;
+  if (courses === null || courses === undefined) return compressed;
 
   courses.sort((a, b) => {
     if (a.start_time.getTime() < b.start_time.getTime()) return -1;
