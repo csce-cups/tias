@@ -1,11 +1,11 @@
-import React, { useState, createContext, useContext } from "react";
+import { Button } from "@material-ui/core";
+import React, { createContext, useContext, useState } from "react";
+import { CourseBlockWeek } from "../../modules/API";
+import { CompressedCourseBlock, compressWeek } from "../../modules/BlockManipulation";
+import contexts from '../APIContext';
+import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
 import { LabSwapBlock } from "./LabSwapBlock";
 import { Selection } from "./Selection";
-import { Button } from "@material-ui/core";
-import { CourseBlockWeek } from "../../modules/API";
-import contexts from '../APIContext'
-import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
-import { CompressedCourseBlock, compressWeek } from "../../modules/BlockManipulation";
 //for main component
 //needs selection confirmation window
 //submition ability

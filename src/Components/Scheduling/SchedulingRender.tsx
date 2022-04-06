@@ -1,10 +1,10 @@
-import React, { FC } from 'react'
-import { SchedulingColumn } from './SchedulingColumn';
-import { SchedulingTimes } from './SchedulingTimes';
+import React, { FC } from 'react';
+import { CourseBlock } from '../../modules/API';
 import contexts from '../APIContext';
 import RenderBlockProps from './BlockBase';
+import { SchedulingColumn } from './SchedulingColumn';
+import { SchedulingTimes } from './SchedulingTimes';
 import { OptionsProps } from './SchedulingWindow';
-import { CourseBlock } from '../../modules/API';
 
 const hours = 12;
 // const start = new Date(12*24*60*60*1000);

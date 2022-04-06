@@ -1,5 +1,5 @@
-import React from 'react'
-import { CourseBlock, CourseBlockWeek, parseCookie } from '../../modules/API'
+import React, { useContext } from 'react'
+import { CourseBlock, CourseBlockWeek } from '../../modules/API'
 import contexts from '../APIContext'
 
 interface DisplayBlock extends CourseBlock {
@@ -7,14 +7,15 @@ interface DisplayBlock extends CourseBlock {
 }
 
 export const ProfileSidebar = () => {
+  const user = useContext(contexts.user);
   const findScheduled = (week: CourseBlockWeek) => {
-    const id = parseCookie().tias_user_id;
+    const id = user.user?.person_id;
     let retData: CourseBlock[] = [];
 
     const days = [week.Monday, week.Tuesday, week.Wednesday, week.Thursday, week.Friday];
     days.forEach(day => {
       day?.forEach(block => {
-        if (block.scheduled?.includes(+id)) retData.push(block)
+        if (block.scheduled?.includes(id? id : -2)) retData.push(block)
       })
     })
 
@@ -90,7 +91,7 @@ export const ProfileSidebar = () => {
 
   const img = (googleData: any) => {
     try {
-      return <img alt="" src={(googleData !== {})? googleData.getImageUrl() : undefined} className="profile-picture"/>
+      return <img alt="" src={(googleData !== {})? googleData.getImageUrl() : undefined} className="profile-picture" referrerPolicy="no-referrer"/>
     } catch (TypeError) {
       return <div>No Image</div>
     }

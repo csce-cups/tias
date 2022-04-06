@@ -1,10 +1,9 @@
-import { FormControl, InputLabel, Menu, MenuItem, Select, SelectChangeEvent } from '@mui/material'
-import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
-import React, { FC, useState, useContext } from 'react'
-import { selectFunction } from './LabSwap';
-import RenderBlockProps, { blockColors } from '../Scheduling/BlockBase';
-import "../common.scss"
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import React, { FC, useContext, useState } from 'react';
 import { CompressedCourseBlock } from '../../modules/BlockManipulation';
+import "../common.scss";
+import RenderBlockProps, { blockColors } from '../Scheduling/BlockBase';
+import { selectFunction } from './LabSwap';
 
 interface Props extends RenderBlockProps {
   data: {

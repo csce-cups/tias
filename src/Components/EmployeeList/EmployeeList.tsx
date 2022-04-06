@@ -1,10 +1,10 @@
 import React, { FC, useContext, useState } from 'react'
-import { EmployeeRow } from './EmployeeRow'
-import { GenerateButton } from './GenerateButton'
-import { SaveButton } from './SaveButton'
 import { Person } from '../../modules/API'
 import contexts from '../APIContext'
+import { EmployeeRow } from './EmployeeRow'
+import { GenerateButton } from './GenerateButton'
 import { LoadButton } from './LoadButton'
+import { SaveButton } from './SaveButton'
 
 interface Props {
   

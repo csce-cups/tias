@@ -1,4 +1,4 @@
-import { CourseBlock } from './API'
+import { CourseBlock } from './API';
 
 const start = 1000 * 60 * 60 * 10;
 const timezone_offset = 0;

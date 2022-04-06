@@ -1,9 +1,9 @@
 import React, { FC, useContext, useEffect, useState } from "react";
-import { SchedulingRender } from "./SchedulingRender";
-import { SchedulingFilter } from "./SchedulingFilter";
-import contexts from "../APIContext";
 import { CourseBlock } from "../../modules/API";
+import contexts from "../APIContext";
 import RenderBlockProps from "./BlockBase";
+import { SchedulingFilter } from "./SchedulingFilter";
+import { SchedulingRender } from "./SchedulingRender";
 
 export interface OptionsProps {
   selectable?: boolean
