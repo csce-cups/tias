@@ -12,6 +12,7 @@ export const NavBar = () => {
       {doShowScheduling && <Link to='Scheduling' className="left element">Scheduling</Link>}
       {doShowProfile && <Link to='Profile' className="left element">Profile</Link>}
       {doShowLabSwap && <Link to='Labswap' className="left element">LabSwap™</Link>}
+      <Link to='Tutorial' className="left element">Tutorial</Link>
       <div className="fill element"></div>
       < GoogleButton />
     </div>
