@@ -34,23 +34,71 @@ export const LabSwap = () => {
 
   const userId = +parseCookie().tias_user_id;
 
-  const renderSent = (retData: TradeRequest[]) => retData.filter(request => request.person_id_sender === userId).map((request) => (
-    <div>
-      <div>Sender ID: {request.person_id_sender}</div>
-      <div>Sent Section ID: {request.section_id_sender}</div>
-      <div>Receiver ID: {request.person_id_receiver}</div>
-      <div>Received Section ID: {request.section_id_receiver}</div>
-    </div>
-  ))
+  interface DisplayBlock extends CourseBlock {
+    days: ('M' | 'T' | 'W' | 'R' | 'F')[]
+  }
 
-  const renderReceived = (retData: TradeRequest[]) => retData.filter(request => request.person_id_receiver === userId).map((request) => (
-    <div>
-      <div>Sender ID: {request.person_id_sender}</div>
-      <div>Sent Section ID: {request.section_id_sender}</div>
-      <div>Receiver ID: {request.person_id_receiver}</div>
-      <div>Received Section ID: {request.section_id_receiver}</div>
-    </div>
-  ))
+  const renderScheduled = (retData: CourseBlockWeek) => {
+    const inputVal = [retData.Monday, retData.Tuesday, retData.Wednesday, retData.Thursday, retData.Friday].filter(day => day !== null)
+    const flat = inputVal.flat() as CourseBlock[]
+    
+    let retFormat: DisplayBlock[] = [];
+
+    const shortDays = ['M', 'T', 'W', 'R', 'F'];
+    const dayMap = new Map<string, 'M' | 'T' | 'W' | 'R' | 'F'>(
+      [
+        ['Monday', 'M'],
+        ['Tuesday', 'T'],
+        ['Wednesday', 'W'],
+        ['Thursday', 'R'],
+        ['Friday', 'F']
+      ]
+    )
+
+    const cmpDay = (a: 'M' | 'T' | 'W' | 'R' | 'F', b: 'M' | 'T' | 'W' | 'R' | 'F') => {
+      if (shortDays.indexOf(a) < shortDays.indexOf(b)) return -1;
+      else if (shortDays.indexOf(a) > shortDays.indexOf(b)) return 1;
+      return 0;
+    }
+
+    flat.sort((a, b) => {
+      if (cmpDay(dayMap.get(a.weekday)!, dayMap.get(b.weekday)!) !== 0) return cmpDay(dayMap.get(a.weekday)!, dayMap.get(b.weekday)!);
+      else if (a.start_time < b.start_time) return -1;
+      else if (a.start_time > b.start_time) return 1;
+      else if (a.course_number < b.course_number) return -1;
+      else if (a.course_number > b.course_number) return 1;
+      else if (a.section_number < b.section_number) return -1;
+      else if (a.section_number > b.section_number) return 1;
+      return 0;
+    }).forEach(block => {
+      const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
+      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F']})
+      else retFormat[where].days.push(dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F');
+    })
+
+    return retFormat;
+  }
+
+  const renderSwapSets = (retData: TradeRequest[], filter: (request: TradeRequest) => boolean) => retData.filter(filter).map((request) => {
+    const allBlocks = renderScheduled(viableBlockWeek); // For easier iteration
+    let sent: DisplayBlock | null = null
+    let received: DisplayBlock | null = null
+    allBlocks.forEach((block: DisplayBlock, _oidx: number) => {
+        if (block.section_id === request.section_id_sender) {
+          sent = block
+        }
+        if (block.section_id === request.section_id_receiver) {
+          received = block
+        }
+        if (sent && received) return;
+    });
+    if (request.person_id_receiver === userId) {
+      [received, sent] = [sent, received]
+    }
+    return (
+      < SwapSet selected={[sent, received]} />
+    )
+    })
 
   const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(viableBlockWeek), setBlockWeek];
 
@@ -70,35 +118,33 @@ export const LabSwap = () => {
               return <></>
             } else {
               return (
-                <>
-                  <div className="schedule-info-container">
-                    <div className="schedule-info-title">Outstanding:</div>
-                    { renderReceived(trades) }
+                <div className="scrollable">
+                  <div className="swap-section vstack">
+                    <div className="swap-section-title"> Outstanding Requests </div>
+                      {renderSwapSets(trades, request => request.person_id_receiver === userId && request.request_status === 'Pending')}
                   </div>
-                  <div className="schedule-info-container">
-                    <div className="schedule-info-title">Sent:</div>
-                    { renderSent(trades) }
+
+                  <div className="swap-divider"/>
+
+                  <div className="swap-section vstack">
+                    <div className="swap-section-title"> Sent Requests </div>
+                      {renderSwapSets(trades, request => request.person_id_sender === userId && request.request_status === 'Pending')}
                   </div>
-                </>
+
+                  <div className="swap-divider"/>
+
+                  <div className="swap-section vstack">
+                    <div className="swap-section-title"> Past Requests </div>
+                      {renderSwapSets(trades, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status !== 'Pending')}
+                  </div>
+                </div>
               )
             }
           }}
         </contexts.userTrades.Consumer>
         <div className="swap-divider"/>
 
-        <div className="scrollable">
-          <div className="swap-section vstack">
-            <div className="swap-section-title"> Awaiting Action</div>
-            < SwapSet selected={[selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested]} />
-          </div>
-
-          <div className="swap-divider"/>
-
-          <div className="swap-section vstack">
-            <div className="swap-section-title">Pending</div>
-            < SwapSet selected={[selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested]} />
-          </div>
-        </div>
+        
       </div>
       <selectedTradeBlocksContext.Provider value={selectedTradeBlocksState}>
         < contexts.blocks.Provider value={blocksPayload} >

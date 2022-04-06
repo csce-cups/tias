@@ -8,7 +8,7 @@ export interface TradeRequest {
 	section_id_sender: number
 	person_id_receiver: number
 	section_id_receiver: number
-	status: string
+	request_status: "Rejected" | "Accepted" | "Pending" | "Cancelled"
 }
 
 export interface Person {
@@ -301,7 +301,7 @@ class API {
 	}
 
 	static fetchUserTrades = async (user_id?: number): Promise<TradeRequest[]> => {
-		if (user_id === undefined) return [] as TradeRequest[];
+		if (user_id === undefined) return new Promise((resolve) => resolve([] as TradeRequest[]));
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/trade-requests`)
 			.then(({data}) => data.trade_requests as TradeRequest[]);
 	}
