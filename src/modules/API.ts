@@ -1,5 +1,5 @@
-import axios from 'axios'
-import BlockFormer from './BlockFormer'
+import axios from 'axios';
+import BlockFormer from './BlockFormer';
 
 const timezone_offset = 0;
 

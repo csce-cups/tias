@@ -5,9 +5,8 @@
    https://medium.com/web-dev-survey-from-kyoto/how-to-customize-the-file-upload-button-in-react-b3866a5973d8 
 */
 
-import React, { useContext } from 'react'
-import { APIStudentUnavailability, parseCookie } from '../../modules/API';
-import API from '../../modules/API';
+import React, { useContext } from 'react';
+import API, { APIStudentUnavailability, parseCookie } from '../../modules/API';
 import contexts from '../APIContext';
 
 export const ProfileStatusBar = () => {

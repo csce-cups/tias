@@ -1,13 +1,12 @@
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { APIContext } from '../Components/APIContext';
 import { NavBar } from '../Components/Misc/NavBar';
-import { BrowserRouter as Router, Routes, Route}
-    from 'react-router-dom';
+import './../Components/common.scss';
+import { LabSwapPage } from './LabSwapPage';
+import Landing from './Landing';
 import Profile from './Profile';
 import Scheduling from './Scheduling';
-import Landing from './Landing';
-import './../Components/common.scss';
-import { APIContext } from '../Components/APIContext';
-import { LabSwapPage } from './LabSwapPage';
 
 export const App = () => {
   return (

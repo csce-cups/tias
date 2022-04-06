@@ -1,5 +1,6 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie} from "../modules/API";
+import API, { APIUserPreferenceEnum, APIUserPreferences, APIUserQualification, CourseBlockWeek, parseCookie, Person } from "../modules/API";
+import { loadSchedule } from "../modules/BlockManipulation";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
 
@@ -56,6 +57,8 @@ export const contexts = {
   ]),
 };
 
+
+
 export const APIContext: FC<Props> = ({ children, args, test }) => {
   const googleDataState = useState({} as any);
   const employeeState = useState([] as Person[]);
@@ -90,13 +93,21 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
 
   useEffect(() => {
     const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
-    dataPromises.employees.then((resp) => {
-      employeeState[1](resp);
-    });
+    let employees: Person[];
+    let blocks: CourseBlockWeek;
 
-    dataPromises.blocks.then((resp) => {
-      blockState[1](resp);
-    });
+    Promise.all([
+      new Promise<void>(resolve => dataPromises.employees.then((resp) => employees = resp).then(() => resolve())),
+      new Promise<void>(resolve => dataPromises.blocks.then((resp) => blocks = resp).then(() => resolve()))
+    ]).then(() => {
+      loadSchedule({
+        employees: employees,
+        setEmployees: employeeState[1],
+        blocks: blocks,
+        setBlocks: blockState[1],
+        setLoadedSchedule: loadedScheduleState[1]
+      });
+    })
 
     const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
     setUser({

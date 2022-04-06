@@ -774,6 +774,11 @@ img.back-arrow {
 	max-width: 400px;
 }
 
+.main-profile {
+	position: relative;
+	overflow: hidden;
+}
+
 .Profile {
 	flex: 1 1 auto;
 
@@ -882,6 +887,8 @@ img.back-arrow {
 		.form-body {
 			overflow: hidden;
 			transition: all 0.4s ease-in-out;
+
+			background-color: $light;
 
 			height: 100%;
 
@@ -1068,6 +1075,15 @@ img.back-arrow {
 		.pref-row {
 			display: flex;
 			align-items: center;
+
+			input[type="checkbox"] {
+				margin-top: 6px;
+				align-self: flex-start;
+			}
+
+			label {
+				text-align: left;
+			}
 		}
 
 		.check-all {
@@ -1131,7 +1147,6 @@ img.back-arrow {
 	}
 }
 
-
 .employee-row {
 	margin: 15px 5px;
 	
@@ -1180,4 +1195,22 @@ img.back-arrow {
 			cursor: pointer;
 		}
 	}
+}
+
+.page-text {
+	height: 100%;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+
+	font-size: 2em;
+	font-weight: bold;
+	color: $render_divider;
+}
+
+.backdrop {
+	position: absolute;
+	height: 40%;
+	width: 100%;
+	z-index: -2;
 }
