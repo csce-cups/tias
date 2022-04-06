@@ -6,11 +6,8 @@
 */
 
 import React, { useContext } from 'react'
-// import neatCsv  from 'neat-csv';
-import { parse } from 'csv-parse';
 import API, { Meeting, Weekday } from '../../modules/API';
 import axios from 'axios';
-import { finished } from 'stream/promises';
 
 interface Course {
   course_id: number
@@ -50,8 +47,6 @@ const parse_time = (time: string, time_zone_offset: number = 0): string => {
 
   return `${(hour + time_zone_offset) % 24}:${minute}`;
 };
-
-const to_db_time = (time: string): string => `${time}:00`;
 
 export const ChangeoverFileUpload = () => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
