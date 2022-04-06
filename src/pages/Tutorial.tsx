@@ -3,10 +3,8 @@ import './../Components/common.scss';
 
 export const Tutorial = () => {
   return (
-    <div className="app-body vstack background-image">
-      <div className="landing-container">
-        <button className="maroon button2">Link to Tutorial</button>
-      </div>
+    <div className="app-body vstack">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
     </div>
   );
 }
