@@ -14,6 +14,7 @@ export interface TradeRequest {
 export type Weekday = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday"
 
 export interface Meeting {
+	course_id: number
 	department: string
 	course_number: string
 	section_number: string

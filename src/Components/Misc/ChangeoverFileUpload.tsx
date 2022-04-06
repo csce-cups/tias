@@ -58,7 +58,7 @@ export const ChangeoverFileUpload = () => {
     const courses: Course[] = (await axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses")).data
 
     const meetings: Meeting[] = []
-    for (let row of icsFileAsText.split('\n')) {
+    for (let row of icsFileAsText.split('\n').map(col => col.trim())) {
       if (row.length === 0) continue;
       let elements = row.split(',')
       const parsedRow: CSCECSVRow = {
@@ -82,6 +82,7 @@ export const ChangeoverFileUpload = () => {
       );
 
       const meeting: Meeting = {
+        course_id: -1,
         department: parsedRow.course_section.slice(
           0,
           course_section_first_space
@@ -98,8 +99,8 @@ export const ChangeoverFileUpload = () => {
           course_section_second_space + 1
         ) as MeetingType) as string,
         days_met: [...parsedRow.days_met.split('')].map(char => weekday.get(char) as Weekday),
-        start_time: parse_time(parsedRow.start_date),
-        end_time: parse_time(parsedRow.end_date),
+        start_time: parse_time(parsedRow.start_time),
+        end_time: parse_time(parsedRow.end_time),
       }
       if (parsedRow.room.length) {
         meeting.room = parsedRow.room
@@ -112,12 +113,17 @@ export const ChangeoverFileUpload = () => {
 
       if (filtered_sections.length === 0) continue;
 
+      meeting.course_id = filtered_sections[0].course_id
+
       meetings.push(meeting)
     }
 
+    console.log(JSON.stringify(meetings))
+
     if (window.confirm('If you upload this schedule, all of the data related to the current semester will be irrevocably destroyed.\n\nDo you wish to continue?')) {
-      API.sendNewMeetings(meetings).then(() => {
+      API.sendNewMeetings(meetings).then(async (response) => {
         if (btn !== null) btn.innerHTML = 'Sending Courses...'
+        // setTimeout(window.location.reload, 3000)
       }).catch(() => {
         if (btn !== null) btn.innerHTML = 'An error occurred.';
       })
