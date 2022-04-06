@@ -9,7 +9,7 @@ import contexts from '../Components/APIContext';
 export const Profile = () => {
   const {doShowProfile} = useContext(contexts.user);
 
-  if (doShowProfile) {
+  if (doShowProfile || true) {
     return (
       <div className="Profile hstack">
         < ProfileSidebar />
