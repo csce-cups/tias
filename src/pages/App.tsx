@@ -7,6 +7,7 @@ import { LabSwapPage } from './LabSwapPage';
 import Landing from './Landing';
 import Profile from './Profile';
 import Scheduling from './Scheduling';
+import Tutorial from './Tutorial';
 
 export const App = () => {
   return (
@@ -19,6 +20,7 @@ export const App = () => {
             <Route path='/Scheduling' element={<Scheduling/>} />
             <Route path='/Profile' element={<Profile/>} />
             <Route path='/Labswap' element={<LabSwapPage/>} />
+            <Route path='/Tutorial' element={<Tutorial/>} />
           </Routes>
         </Router>
       </APIContext>
