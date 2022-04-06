@@ -1,6 +1,6 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import contexts from '../Components/APIContext';
-import { LabSwap } from '../Components/LabSwap/LabSwap'
+import { LabSwap } from '../Components/LabSwap/LabSwap';
 
 export const LabSwapPage = () => {
     const {doShowLabSwap} = useContext(contexts.user);

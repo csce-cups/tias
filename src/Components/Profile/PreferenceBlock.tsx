@@ -1,9 +1,8 @@
-import React, { FC, useContext, useEffect, useRef, useState } from 'react'
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { APIUserPreferenceEnum } from '../../modules/API';
 import { CompressedCourseBlock } from '../../modules/BlockManipulation';
-import uuid from '../../uuid';
 import contexts from '../APIContext';
-import RenderBlockProps, { calcFlex, blockColors, statusColors } from '../Scheduling/BlockBase';
+import RenderBlockProps, { blockColors, calcFlex, statusColors } from '../Scheduling/BlockBase';
 
 interface Props extends RenderBlockProps {
   data: {

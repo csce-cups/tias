@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect } from 'react';
 import { loadSchedule } from '../../modules/BlockManipulation';
 import contexts from '../APIContext';
 

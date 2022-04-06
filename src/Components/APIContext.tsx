@@ -1,5 +1,5 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie} from "../modules/API";
+import API, { APIUserPreferenceEnum, APIUserPreferences, APIUserQualification, CourseBlockWeek, parseCookie, Person } from "../modules/API";
 import { loadSchedule } from "../modules/BlockManipulation";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL

@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { SchedulingBlock } from '../Scheduling/SchedulingBlock'
-import { SchedulingWindow } from '../Scheduling/SchedulingWindow'
-import contexts from '../APIContext'
-import API, { CourseBlock, CourseBlockWeek, parseCookie } from '../../modules/API'
+import React, { useContext, useEffect, useState } from 'react'
+import API, { CourseBlockWeek, parseCookie } from '../../modules/API'
 import { compressWeek } from '../../modules/BlockManipulation'
-import { PreferenceBlock } from './PreferenceBlock'
 import uuid from '../../uuid'
+import contexts from '../APIContext'
+import { SchedulingWindow } from '../Scheduling/SchedulingWindow'
+import { PreferenceBlock } from './PreferenceBlock'
 
 export const PreferenceSelector = () => {
   const input_id = uuid();

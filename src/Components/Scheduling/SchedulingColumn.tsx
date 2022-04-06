@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import back_arrow from '../../assets/back_arrow_icon.svg';
+import { CourseBlock } from '../../modules/API';
 import uuid from '../../uuid';
-import { CourseBlock } from '../../modules/API'
-import back_arrow from '../../assets/back_arrow_icon.svg'
 import RenderBlockProps from './BlockBase';
 import placeBlocks from './renderHelper';
 import { OptionsProps } from './SchedulingWindow';

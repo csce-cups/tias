@@ -1,8 +1,7 @@
-import React, { FC, useContext, useEffect } from 'react'
+import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
-import { parseCookie } from '../../modules/API';
 import contexts from '../APIContext';
-import { GoogleButton } from "./GoogleButton"
+import { GoogleButton } from "./GoogleButton";
 
 export const NavBar = () => {
   const {doShowScheduling, doShowProfile, doShowLabSwap} = useContext(contexts.user);

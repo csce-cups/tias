@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import contexts from '../APIContext';
 

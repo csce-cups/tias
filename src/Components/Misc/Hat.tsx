@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
+import { Person } from '../../modules/API'
 import colorFromId from '../../modules/color'
 import contexts from '../APIContext'
-import { Person } from '../../modules/API'
 
 interface Props {
   linkID: number, // An id that ties this dot corresponding dots elsewhere on the page

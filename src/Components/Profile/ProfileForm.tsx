@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { ProfileFormRow } from './ProfileFormRow'
-import contexts from '../APIContext'
+import React, { useContext, useState } from 'react';
 import API, { APIUserQualification, parseCookie } from '../../modules/API';
+import contexts from '../APIContext';
+import { ProfileFormRow } from './ProfileFormRow';
 
 export const ProfileForm = () => {
   const [collapsed, setCollapsed] = useState<boolean>(true);

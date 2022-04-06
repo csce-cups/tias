@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import './../Components/common.scss';
+import contexts from '../Components/APIContext';
+import { PreferenceSelector } from '../Components/Profile/PreferenceSelector';
+import { ProfileForm } from '../Components/Profile/ProfileForm';
 import { ProfileSidebar } from '../Components/Profile/ProfileSidebar';
 import { ProfileStatusBar } from '../Components/Profile/ProfileStatusBar';
-import { ProfileForm } from '../Components/Profile/ProfileForm';
-import { PreferenceSelector } from '../Components/Profile/PreferenceSelector';
-import contexts from '../Components/APIContext';
+import './../Components/common.scss';
 
 export const Profile = () => {
   const {doShowProfile} = useContext(contexts.user);
