@@ -9,7 +9,7 @@ import uuid from '../../uuid'
 
 export const PreferenceSelector = () => {
   const input_id = uuid();
-  const [collapsed, setCollapsed] = React.useState<boolean>(false);
+  const [collapsed, setCollapsed] = React.useState<boolean>(true);
   const [userQuals, setUserQuals] = useContext(contexts.userQuals);
   const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);

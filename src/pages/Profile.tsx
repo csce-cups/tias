@@ -11,14 +11,19 @@ export const Profile = () => {
 
   if (doShowProfile) {
     return (
-      <div className="Profile hstack">
-        < ProfileSidebar />
-        <div className="vstack main">
-          < ProfileStatusBar />
-          < ProfileForm />
-          < PreferenceSelector />
+      <>
+        <div className="Profile hstack">
+          < ProfileSidebar />
+          <div className="vstack main main-profile" style={{overflow: 'hidden'}}>
+            < ProfileStatusBar />
+            < ProfileForm />
+            < PreferenceSelector />
+            <div className='backdrop'>
+              <div className="page-text">Select a dropdown menu to begin.</div>
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     );
   } else if (doShowProfile === false) {
     return <div className="page-text">You do not have permission to visit this page.</div>

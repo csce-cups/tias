@@ -773,6 +773,11 @@ img.back-arrow {
 	max-width: 400px;
 }
 
+.main-profile {
+	position: relative;
+	overflow: hidden;
+}
+
 .Profile {
 	flex: 1 1 auto;
 
@@ -878,6 +883,8 @@ img.back-arrow {
 		.form-body {
 			overflow: hidden;
 			transition: all 0.4s ease-in-out;
+
+			background-color: $light;
 
 			height: 100%;
 
@@ -1195,4 +1202,11 @@ img.back-arrow {
 	font-size: 2em;
 	font-weight: bold;
 	color: $render_divider;
+}
+
+.backdrop {
+	position: absolute;
+	height: 40%;
+	width: 100%;
+	z-index: -2;
 }
