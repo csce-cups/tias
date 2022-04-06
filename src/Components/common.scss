@@ -1064,6 +1064,15 @@ img.back-arrow {
 		.pref-row {
 			display: flex;
 			align-items: center;
+
+			input[type="checkbox"] {
+				margin-top: 6px;
+				align-self: flex-start;
+			}
+
+			label {
+				text-align: left;
+			}
 		}
 
 		.check-all {
