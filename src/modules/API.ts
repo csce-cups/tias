@@ -11,6 +11,20 @@ export interface TradeRequest {
 	request_status: "Rejected" | "Accepted" | "Pending" | "Cancelled"
 }
 
+export type Weekday = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday"
+
+export interface Meeting {
+	department: string
+	course_number: string
+	section_number: string
+	meeting_type: string
+	days_met: Weekday[]
+	start_time: string
+	end_time: string
+	room?: string
+	instructor?: string
+  }
+
 export interface Person {
 	person_id: number
 	email: string
@@ -368,7 +382,12 @@ class API {
 		}).then(() => {});
 	}
 
-
+	static sendNewMeetings = async (meetings: Meeting[]) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/changeover`, {
+			method: 'POST',
+			body: JSON.stringify(meetings)
+		});
+	}
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {

@@ -14,6 +14,7 @@ interface UserPerson {
   doShowProfile: boolean | null
   doShowScheduling: boolean | null
   doShowLabSwap: boolean | null
+  doShowAdmin: boolean | null
 }
 
 export const contexts = {
@@ -37,7 +38,8 @@ export const contexts = {
     user: null,
     doShowProfile: null,
     doShowScheduling: null,
-    doShowLabSwap: null
+    doShowLabSwap: null,
+    doShowAdmin: null
   }),
 
   userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
@@ -77,7 +79,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     user: null,
     doShowProfile: null,
     doShowScheduling: null,
-    doShowLabSwap: null
+    doShowLabSwap: null,
+    doShowAdmin: null
   })
 
   const userQualState = useState([
@@ -110,7 +113,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       user: user,
       doShowProfile: user && (user.peer_teacher || user.administrator),
       doShowScheduling: user && user.administrator,
-      doShowLabSwap: user && (user.peer_teacher || user.administrator)
+      doShowLabSwap: user && (user.peer_teacher || user.administrator),
+      doShowAdmin: user && user.administrator
     })
 
     // eslint-disable-next-line
@@ -142,14 +146,16 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
         user: user,
         doShowProfile: true,
         doShowScheduling: true,
-        doShowLabSwap: true
+        doShowLabSwap: true,
+        doShowAdmin: true
       })
     } else {
       setUser({
         user: user,
         doShowProfile: (user && (user.peer_teacher || user.administrator)),
         doShowScheduling: (user && user.administrator),
-        doShowLabSwap: (user && (user.peer_teacher || user.administrator))
+        doShowLabSwap: (user && (user.peer_teacher || user.administrator)),
+        doShowAdmin: (user && user.administrator)
       })
     }
 

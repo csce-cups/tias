@@ -8,6 +8,7 @@ import Landing from './Landing';
 import './../Components/common.scss';
 import { APIContext } from '../Components/APIContext';
 import { LabSwapPage } from './LabSwapPage';
+import { Admin } from './Admin';
 
 export const App = () => {
   return (
@@ -20,6 +21,7 @@ export const App = () => {
             <Route path='/Scheduling' element={<Scheduling/>} />
             <Route path='/Profile' element={<Profile/>} />
             <Route path='/Labswap' element={<LabSwapPage/>} />
+            <Route path='/Admin' element={<Admin/>} />
           </Routes>
         </Router>
       </APIContext>
