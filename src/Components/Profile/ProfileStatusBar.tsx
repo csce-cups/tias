@@ -6,11 +6,12 @@
 */
 
 import React, { useContext } from 'react';
-import API, { APIStudentUnavailability, parseCookie } from '../../modules/API';
+import API, { APIStudentUnavailability } from '../../modules/API';
 import contexts from '../APIContext';
 
 export const ProfileStatusBar = () => {
   const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
+  const user = useContext(contexts.user);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const parseICSFile = (icsFileAsText: any) => {
@@ -66,9 +67,9 @@ export const ProfileStatusBar = () => {
         line += len;
       }
   
-      API.saveUserUnavailability(data).then(() => {
+      API.saveUserUnavailability(user.user?.person_id, data).then(() => {
         if (btn !== null) btn.innerHTML = 'Updating Preferences...'
-          API.fetchUserViableCourses(parseCookie().tias_user_id).then((resp) => {
+          API.fetchUserViableCourses(user.user?.person_id).then((resp) => {
             setUserViableCourses(resp);
             if (btn !== null) btn.innerHTML = 'Upload Successful!';
           })

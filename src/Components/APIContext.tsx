@@ -109,7 +109,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       });
     })
 
-    const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
+    const user = employeeState[0].find((e) => e.person_id === parseInt(parseCookie().tias_user_id)) || null;
     setUser({
       user: user,
       doShowProfile: user && (user.peer_teacher || user.administrator),
@@ -121,7 +121,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   }, []); // Fetch static data right away
 
   useEffect(() => {
-    const userPromises = test ? API.fetchAllUserDummy(parseCookie().tias_user_id) : API.fetchAllUser(parseCookie().tias_user_id);
+    const user = employeeState[0].find((e) => e.person_id === googleDataState[0].tias_user_id) || null;
+    const userPromises = test ? API.fetchAllUserDummy(user?.person_id) : API.fetchAllUser(user?.person_id);
 
     userPromises.userQuals.then((resp) => {
       userQualState[1](resp);
@@ -135,7 +136,6 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       userViableCourses[1](resp);
     });
 
-    const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
     const isPermAdmin = permAdmin && googleDataState[0].tv === permAdmin;
     if (isPermAdmin) {
       setUser({

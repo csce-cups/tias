@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import API, { CourseBlockWeek, parseCookie } from '../../modules/API'
+import API, { CourseBlockWeek } from '../../modules/API'
 import { compressWeek } from '../../modules/BlockManipulation'
 import uuid from '../../uuid'
 import contexts from '../APIContext'
@@ -9,12 +9,12 @@ import { PreferenceBlock } from './PreferenceBlock'
 export const PreferenceSelector = () => {
   const input_id = uuid();
   const [collapsed, setCollapsed] = React.useState<boolean>(true);
-  const [userQuals, setUserQuals] = useContext(contexts.userQuals);
-  const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
+  const [userQuals,] = useContext(contexts.userQuals);
+  const [userPrefs,] = useContext(contexts.userPrefs);
+  const user = useContext(contexts.user);
   const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
   const [filter, setFilter] = useState(new Map<number, boolean>());
   const [employees, setEmployees] = useContext(contexts.employees);
-  const thisEmployee = employees.find(e => e.person_id === +parseCookie().tias_user_id);
 
   const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(userViableCourses), setUserViableCourses];
 
@@ -22,14 +22,14 @@ export const PreferenceSelector = () => {
 
     const newPrefSections = +(document.getElementById(input_id)! as HTMLInputElement).value;
     let updatePrefSectionVal = undefined;
-    if (thisEmployee && newPrefSections !== thisEmployee.desired_number_assignments) {
+    if (user.user && newPrefSections !== user.user.desired_number_assignments) {
       updatePrefSectionVal = newPrefSections;
-      employees[employees.findIndex(e => e.person_id === +parseCookie().tias_user_id)!].desired_number_assignments = newPrefSections;
+      employees[employees.findIndex(e => e.person_id === user.user?.person_id)!].desired_number_assignments = newPrefSections;
     }
     
     document.getElementById("submit-prefs")?.setAttribute('value', 'Saving...');
     
-    API.sendUserPreferences(parseCookie().tias_user_id, userPrefs, updatePrefSectionVal).then(() => {
+    API.sendUserPreferences(user.user?.person_id, userPrefs, updatePrefSectionVal).then(() => {
       document.getElementById("submit-prefs")?.setAttribute('value', 'Saved!');
       setEmployees(employees);
     }).catch(err => {
@@ -61,7 +61,7 @@ export const PreferenceSelector = () => {
           <div className="dropdown-label">
             Preferred Number of Lab Sections:  
           </div>
-          <input id={input_id} type="number" placeholder={thisEmployee? `${thisEmployee.desired_number_assignments}` : '2'} style={{margin: '0 5px'}}/>
+          <input id={input_id} type="number" placeholder={user.user? `${user.user.desired_number_assignments}` : '2'} style={{margin: '0 5px'}}/>
         </div>
         < contexts.blocks.Provider value={blocksPayload} >
           < SchedulingWindow renderBlockType={PreferenceBlock} options={{
