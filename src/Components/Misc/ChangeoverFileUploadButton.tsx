@@ -35,8 +35,6 @@ interface CSCECSVRow {
   instructor: string
 }
 
-
-
 const parse_time = (time: string, time_zone_offset: number = 0): string => {
   let time_colon = time.indexOf(":");
   let time_space = time.indexOf(" ", time_colon + 1);
@@ -48,7 +46,7 @@ const parse_time = (time: string, time_zone_offset: number = 0): string => {
   return `${(hour + time_zone_offset) % 24}:${minute}`;
 };
 
-export const ChangeoverFileUpload = () => {
+export const ChangeoverFileUploadButton = () => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const parseICSFile = async (icsFileAsText: string) => {
@@ -164,7 +162,7 @@ export const ChangeoverFileUpload = () => {
   return (
     <div className="admin-changeover">
       <input type="file" accept=".csv" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
-      <button id="upload-semester-button" className="blue button" onClick={handleClick}>Upload Schedule</button>
+      <button id="upload-semester-button" className="red button full" onClick={handleClick}>Upload New Semester</button>
     </div>
   );
 }

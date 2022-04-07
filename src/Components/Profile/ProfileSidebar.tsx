@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { CourseBlock, CourseBlockWeek } from '../../modules/API'
 import { findScheduled } from '../../modules/FindSchedule'
 import contexts from '../APIContext'
@@ -8,6 +8,7 @@ interface DisplayBlock extends CourseBlock {
 }
 
 export const ProfileSidebar = () => {
+  const user = useContext(contexts.user);
   const formatDate = (date: Date) => {
     const hour = date.getHours();
     const minute = date.getMinutes();
