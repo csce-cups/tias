@@ -91,24 +91,33 @@ export const ProfileSidebar = () => {
 
   const img = (googleData: any) => {
     try {
-      return <img alt="" src={(googleData !== {})? googleData.getImageUrl() : undefined} className="profile-picture" referrerPolicy="no-referrer"/>
-    } catch (TypeError) {
+      return <img alt="" src={(googleData !== {})? googleData.eN : undefined} className="profile-picture" referrerPolicy="no-referrer"/>
+    } catch (err) {
       return <div>No Image</div>
     }
   }
 
   const name = (googleData: any) => {
     try {
-      return <span>{googleData.getGivenName()} {googleData.getFamilyName()}</span>
-    } catch (TypeError) {
+      return <span>{googleData.tf}</span>
+    } catch (err) {
       return <span>Loading...</span>
     }
+  }
+
+  const titles = () => {
+    let str = '';
+    if (user.user?.peer_teacher) str += 'Peer Teacher';
+    if (user.user?.teaching_assistant) str += `${(str === '')? '' : ', '}Teaching Assistant`;
+    if (user.user?.professor) str += `${(str === '')? '' : ', '}Professor`;
+    if (user.user?.administrator) str += `${(str === '')? '' : ', '}Administrator`;
+    return str;
   }
 
   return (
     <div className="profile-sidebar">
       <div style={{height: '100px'}}/>
-      <span>Peer Teacher</span>
+      <span>{titles()}</span>
       < contexts.googleData.Consumer >
         {([googleData, _]) => (
           <>
