@@ -1,6 +1,6 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import API, { APIUserPreferenceEnum, APIUserPreferences, APIUserQualification, CourseBlockWeek, parseCookie, Person } from "../modules/API";
 import { loadSchedule } from "../modules/BlockManipulation";
+import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest} from "../modules/API";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
 
@@ -15,6 +15,7 @@ interface UserPerson {
   doShowProfile: boolean | null
   doShowScheduling: boolean | null
   doShowLabSwap: boolean | null
+  doShowAdmin: boolean | null
 }
 
 export const contexts = {
@@ -38,7 +39,8 @@ export const contexts = {
     user: null,
     doShowProfile: null,
     doShowScheduling: null,
-    doShowLabSwap: null
+    doShowLabSwap: null,
+    doShowAdmin: null
   }),
 
   userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
@@ -53,6 +55,11 @@ export const contexts = {
 
   userViableCourses: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
     { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
+    0 as any,
+  ]),
+
+  userTrades: createContext<[TradeRequest[], React.Dispatch<React.SetStateAction<TradeRequest[]>>]>([
+    [] as TradeRequest[],
     0 as any,
   ]),
 };
@@ -75,7 +82,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     user: null,
     doShowProfile: null,
     doShowScheduling: null,
-    doShowLabSwap: null
+    doShowLabSwap: null,
+    doShowAdmin: null
   })
 
   const userQualState = useState([
@@ -90,6 +98,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     Thursday: null,
     Friday: null,
   } as CourseBlockWeek);
+
+  const userTrades = useState([] as TradeRequest[]);
 
   useEffect(() => {
     const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
@@ -114,7 +124,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       user: user,
       doShowProfile: user && (user.peer_teacher || user.administrator),
       doShowScheduling: user && user.administrator,
-      doShowLabSwap: user && (user.peer_teacher || user.administrator)
+      doShowLabSwap: user && (user.peer_teacher || user.administrator),
+      doShowAdmin: user && user.administrator
     })
 
     // eslint-disable-next-line
@@ -136,20 +147,26 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       userViableCourses[1](resp);
     });
 
+    userPromises.userTrades.then((resp) => {
+      userTrades[1](resp);
+    });
+    
     const isPermAdmin = permAdmin && googleDataState[0].tv === permAdmin;
     if (isPermAdmin) {
       setUser({
         user: user,
         doShowProfile: true,
         doShowScheduling: true,
-        doShowLabSwap: true
+        doShowLabSwap: true,
+        doShowAdmin: true
       })
     } else {
       setUser({
         user: user,
         doShowProfile: (user && (user.peer_teacher || user.administrator)),
         doShowScheduling: (user && user.administrator),
-        doShowLabSwap: (user && (user.peer_teacher || user.administrator))
+        doShowLabSwap: (user && (user.peer_teacher || user.administrator)),
+        doShowAdmin: (user && user.administrator)
       })
     }
 
@@ -165,7 +182,9 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
               <contexts.userQuals.Provider value={userQualState}>
                 <contexts.userPrefs.Provider value={userPrefState}>
                   <contexts.userViableCourses.Provider value={userViableCourses}>
-                    {children}
+                    <contexts.userTrades.Provider value={userTrades}>
+                      {children}
+                    </contexts.userTrades.Provider>
                   </contexts.userViableCourses.Provider>
                 </contexts.userPrefs.Provider>
               </contexts.userQuals.Provider>

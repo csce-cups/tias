@@ -1,5 +1,6 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { CourseBlock, CourseBlockWeek } from '../../modules/API'
+import { findScheduled } from '../../modules/FindSchedule'
 import contexts from '../APIContext'
 
 interface DisplayBlock extends CourseBlock {
@@ -7,21 +8,6 @@ interface DisplayBlock extends CourseBlock {
 }
 
 export const ProfileSidebar = () => {
-  const user = useContext(contexts.user);
-  const findScheduled = (week: CourseBlockWeek) => {
-    const id = user.user?.person_id;
-    let retData: CourseBlock[] = [];
-
-    const days = [week.Monday, week.Tuesday, week.Wednesday, week.Thursday, week.Friday];
-    days.forEach(day => {
-      day?.forEach(block => {
-        if (block.scheduled?.includes(id? id : -2)) retData.push(block)
-      })
-    })
-
-    return retData;
-  }
-
   const formatDate = (date: Date) => {
     const hour = date.getHours();
     const minute = date.getMinutes();

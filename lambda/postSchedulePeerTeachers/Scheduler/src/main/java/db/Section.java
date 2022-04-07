@@ -3,6 +3,8 @@ package db;
 import java.util.ArrayList;
 
 public class Section {
+    int sectionId;
+
     int courseId;
     String sectionNumber;
     int capacityPTs;
@@ -12,7 +14,8 @@ public class Section {
     int currentPTs;
     int currentTAs;
     
-    public Section(int courseId, String sectionNumber, int capacityPTs, int capacityTAs) {
+    public Section(int sectionId, int courseId, String sectionNumber, int capacityPTs, int capacityTAs) {
+        this.sectionId = sectionId;
         this.courseId = courseId;
         this.sectionNumber = sectionNumber;
         this.capacityPTs = capacityPTs;
@@ -21,6 +24,10 @@ public class Section {
         meetings = new ArrayList<>();
         currentPTs = 0;
         currentTAs = 0;
+    }
+
+    public int getSectionId() {
+        return sectionId;
     }
 
     public int getCourseId() {
@@ -66,6 +73,7 @@ public class Section {
     @Override
     public String toString() {
         return "Section [capacityPTs=" + capacityPTs + ", capacityTAs=" + capacityTAs + ", courseId=" + courseId
-                + ", meetings=" + meetings + ", sectionNumber=" + sectionNumber + "]";
+                + ", currentPTs=" + currentPTs + ", currentTAs=" + currentTAs + ", meetings=" + meetings
+                + ", sectionId=" + sectionId + ", sectionNumber=" + sectionNumber + "]";
     }
 }

@@ -3,6 +3,29 @@ import BlockFormer from './BlockFormer';
 
 const timezone_offset = 0;
 
+export interface TradeRequest {
+	person_id_sender: number
+	section_id_sender: number
+	person_id_receiver: number
+	section_id_receiver: number
+	request_status: "Rejected" | "Accepted" | "Pending" | "Cancelled"
+}
+
+export type Weekday = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday"
+
+export interface Meeting {
+	course_id: number
+	department: string
+	course_number: string
+	section_number: string
+	meeting_type: string
+	days_met: Weekday[]
+	start_time: string
+	end_time: string
+	room?: string
+	instructor?: string
+  }
+
 export interface Person {
 	person_id: number
 	email: string
@@ -84,8 +107,8 @@ export interface APIReturn {
 	blocks: Promise<CourseBlockWeek>,
 	userQuals: Promise<APIUserQualification[]>
 	userPrefs: Promise<APIUserPreferences>
+	userTrades: Promise<TradeRequest[]>
 }
-
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
 export const parseCookie: any = () => {
@@ -116,7 +139,8 @@ class API {
 		return {
 			userQuals: API.fetchUserQualifications(user_id),
 			userPrefs: API.fetchUserPreferences(user_id),
-			userViableCourses: API.fetchUserViableCourses(user_id)
+			userViableCourses: API.fetchUserViableCourses(user_id),
+			userTrades: API.fetchUserTrades(user_id)
 		}
 	}
 
@@ -131,7 +155,8 @@ class API {
 		return {
 			userQuals: API.fetchUserQualificationsDummy(user_id),
 			userPrefs: API.fetchUserPreferencesDummy(user_id),
-			userViableCourses: API.fetchUserViableCourses(undefined)
+			userViableCourses: API.fetchUserViableCourses(undefined),
+			userTrades: API.fetchUserTrades(undefined)
 		}
 	}
 
@@ -262,6 +287,12 @@ class API {
 			});
 	}
 
+	static fetchUserTrades = async (user_id?: number): Promise<TradeRequest[]> => {
+		if (user_id === undefined) return new Promise((resolve) => resolve([] as TradeRequest[]));
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/trade-requests`)
+			.then(({data}) => data.trade_requests as TradeRequest[]);
+	}
+
 	static sendUserPreferences = async (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve()});
 		let rets: Promise<void>[] = [];
@@ -325,7 +356,12 @@ class API {
 		}).then(() => {});
 	}
 
-
+	static sendNewMeetings = async (meetings: Meeting[]) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/changeover`, {
+			method: 'POST',
+			body: JSON.stringify(meetings)
+		});
+	}
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {

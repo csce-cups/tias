@@ -59,7 +59,7 @@ const queryUserTeachingAssistants = async (professorId) => {
 
   client.connect();
 
-  const query = `SELECT p.person_id, p.first_name, p.last_name
+  const query = `SELECT p.person_id, p.email, p.first_name, p.last_name
                     FROM person p INNER JOIN professor_staff ps
                     ON p.person_id = ps.person_id_teaching_assistant
                     WHERE ps.person_id_professor = $1`;
