@@ -1,22 +1,28 @@
 const helper_functions = require("./helper_functions");
 const { OAuth2Client } = require('google-auth-library');
 const awsSDK = require('aws-sdk');
-const axios = require('axios')
+const axios = require('axios');
+const cryptoLib = require('crypto');
 awsSDK.config.update({ region: 'us-east-1' });
 
-async function userExists(userToken) {
-    const dbQuery = 
-    `
-        SELECT *
-            FROM person
-            WHERE google_token_sub = $1
-    `;
-    const params = [userToken];
+async function getExistingUserID(userTokenHash, userEmail) {
+    let dbQuery = `SELECT *
+                   FROM person
+                   WHERE `;
+    const params = [];
+    
+    if (userTokenHash !== null) {
+        dbQuery += 'google_token_sub = $1';
+        params.push(userTokenHash);
+    }
+    else if (userEmail !== null) {
+        dbQuery += 'email = $1';
+        params.push(userEmail);
+    }
     
     let dbRows = await helper_functions.queryDB(dbQuery, params);
     
     if (dbRows.length == 0) {
-        console.log('returning null');
         return null;
     }
     else {
@@ -29,17 +35,37 @@ function createUser(requestBody) {
         axios
             .put('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users', requestBody)
             .then(res => {
-                console.log('result is', res);
                 resolve(res);
             })
             .catch(error => {
-                console.log('error is', error);
+                reject(error);
+            });
+    });
+}
+
+function updateUser(userID, requestBody) {
+    return new Promise((resolve, reject) => {
+        axios
+            .put(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${userID}`, requestBody)
+            .then(res => {
+                resolve(res);
+            })
+            .catch(error => {
                 reject(error);
             });
     });
 }
 
 exports.handler = async (event) => {
+    let accessHeader = null;
+    
+    if (event.headers.origin === 'https://www.csce-scheduler.com') {
+        accessHeader = 'https://www.csce-scheduler.com';
+    }
+    else if (event.headers.origin === 'http://localhost:3000') {
+        accessHeader = 'http://localhost:3000';
+    }
+    
     let requestBody = JSON.parse(event.body);
     let token = requestBody.token;
     let dbID = null;
@@ -58,19 +84,27 @@ exports.handler = async (event) => {
 
     const payload = ticket.getPayload();
     const userToken = payload['sub'];
+    let userTokenHash = cryptoLib.createHash('md5').update(userToken).digest('hex');
     
-    let userID = await userExists(userToken);
+    let userID = await getExistingUserID(userTokenHash, null);
     if (userID != null) {
         dbID = userID;
     }
     else {
-        requestBody.token = userToken;
-        await createUser(requestBody).then((response) => { dbID = response.data.person_id});
+        userID = await getExistingUserID(null, requestBody.email);
+        if (userID != null) {
+            dbID = userID;
+            updateUser(dbID, {'google_token_sub': userTokenHash, 'profile_photo_url': requestBody.profilePhoto});
+        }
+        else {
+            requestBody.token = userTokenHash;
+            await createUser(requestBody).then((response) => { dbID = response.data.person_id});
+        }
     }
     
     const response = {
         statusCode: 200,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:3000" },
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
         body: JSON.stringify({ id: dbID }),
     };
     
