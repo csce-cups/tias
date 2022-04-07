@@ -52,9 +52,7 @@ export const PreferenceSelector = () => {
       <div className={`hstack header ${collapsed? 'collapsed' : ''}`} onClick={() => setCollapsed(!collapsed)}>
         <div className="header-content">Section Preferences</div>
         <div className="fill" />
-        <div className="arrow-container">
-          <div className={`arrow ${collapsed? 'left': 'down'}`} />
-        </div>
+        <div className="arrow-container"/>
       </div>
       <div className={`${collapsed? "collapsed " : ""}profile-render`}>
         <div className="hstack">
