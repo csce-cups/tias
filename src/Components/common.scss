@@ -1469,7 +1469,7 @@ img.back-arrow {
 	.inner-content {
 		display: flex;
 		flex-direction: column;
-		border: 1px solid black;
+		border: 1px solid $render_divider;
 		margin: 10px;
 		flex: 1 1 auto;
 		background-color: $light;
@@ -1521,17 +1521,27 @@ img.back-arrow {
 			background-color: $render_background;
 		}
 
-		.collapsible {
-			transition: all 0.2s ease-in-out;
-			min-height: 0;
-			overflow: hidden;
-			max-height: 100%;
-			border-bottom: 1px solid $render_divider;
-		}
+	}
 
-		.collapsed {
-			max-height: 0px;
-			border-bottom: 0;
+	.collapsible {
+		transition: all 0.2s ease-in-out;
+		min-height: 0;
+		overflow: hidden;
+		max-height: 100%;
+		border-bottom: 1px solid $render_divider;
+	}
+
+	.collapsed {
+		max-height: 0px;
+		border-bottom: 0;
+	}
+
+	.new-user-form {
+		display: flex;
+
+		input[type="text"] {
+			flex: 1 1 auto;
+			margin: 5px;
 		}
 	}
 }
