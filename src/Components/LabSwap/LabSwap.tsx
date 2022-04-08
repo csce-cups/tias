@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
+import API, { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
 import { compressWeek } from "../../modules/BlockManipulation";
 import contexts from '../APIContext';
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
@@ -22,14 +22,15 @@ export const LabSwap = () => {
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const selectedTradeBlocksState = useState<Selections>({ offered: null, requested: null });
   
-  const submitTrade = () => {//post to API
+  // JEREMY: Here's an example function to use as a button callback. Update the function called from API, and make sure the text is reasonable for whatever is going on
+  const submitTrade = () => {
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = 'Sending request...';
-    // API.sendThing.then(resp => {
-      
-    //   if (btn !== null) btn.innerHTML = 'Done!';
-    // });
-    if (btn !== null) btn.innerHTML = 'Done!';
+    API.GENERIC_POST(undefined).then(resp => {
+      if (btn !== null) btn.innerHTML = 'Done!';
+    }).catch(() => {
+      if (btn !== null) btn.innerHTML = 'An error occurred';
+    })
   };
 
   const userId = +parseCookie().tias_user_id;
@@ -78,10 +79,12 @@ export const LabSwap = () => {
 
     return retFormat;
   }
-  const reject = (trade:TradeRequest) => () =>{
+
+  const reject = (trade: TradeRequest) => () =>{
     //hit API
   }
-  const accept = (trade:TradeRequest) => () =>{
+
+  const accept = (trade: TradeRequest) => () =>{
 
   }
 
