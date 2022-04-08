@@ -62,6 +62,16 @@ export interface CourseBlockWeek {
 	Friday: CourseBlock[] | null
 }
 
+export interface Person_INIT {
+	email: string
+	firstName: string
+	lastName: string
+	isPeerTeacher: boolean
+	isTeachingAssistant: boolean
+	isProfessor: boolean
+	isAdministrator: boolean
+}
+
 interface raw_APICourseBlock {
 	department: string
 	course_number: string
@@ -163,6 +173,12 @@ class API {
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher
 	private static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
+			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
+			.catch(err => [{person_id: -2} as Person]);
+	}
+
+	static fetchEveryone = async (): Promise<Person[]> => {
+		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users")
 			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
 			.catch(err => [{person_id: -2} as Person]);
 	}
@@ -362,6 +378,26 @@ class API {
 			body: JSON.stringify(meetings)
 		});
 	}
+
+	static updateUser = async (user: Person) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user.person_id}`, {
+			method: 'PUT',
+			body: JSON.stringify({
+				"is_peer_teacher": user.peer_teacher,
+				"is_teaching_assistant": user.teaching_assistant,
+				"is_professor": user.professor,
+				"is_administrator": user.administrator
+			})
+		}).then(() => {});
+	}
+
+	static registerNewUser = async (user_init: Person_INIT) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users`, {
+			method: 'POST',
+			body: JSON.stringify(user_init)
+		}).then(() => {});
+	}
+
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {

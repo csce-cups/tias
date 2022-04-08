@@ -1,19 +1,26 @@
 import React, { FC, useContext, useState } from 'react'
-import { Person } from '../../modules/API'
+import API, { Person } from '../../modules/API'
 import edit_icon from '../../assets/edit.svg'
 import uuid from '../../uuid'
 import contexts from '../APIContext'
 
 interface Props {
     employee: Person
+    setEmployee: (e: Person) => void
 }
 
-export const AdminEmployee: FC<Props> = ({employee}) => {
+export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee: setEmployee_super}) => {
   const id = uuid();
   const did = uuid();
   const tid = uuid();
   const user = useContext(contexts.user);
   const [collapsed, setCollapsed] = useState(true);
+  const employeeState = useState(employee_super);
+  const employee = employeeState[0];
+  const setEmployee = (e: Person) => {
+    employeeState[1](e);
+    setEmployee_super(e);
+  }
 
   const [ptcheck, setPtcheck] = useState(employee.peer_teacher);
   const [tacheck, setTacheck] = useState(employee.teaching_assistant);
@@ -27,8 +34,6 @@ export const AdminEmployee: FC<Props> = ({employee}) => {
   ];
 
   const updateUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.error("UPDATE USER NOT IMPLEMENTED");
-
     if (user.user?.person_id === employee.person_id && !admincheck) {
       window.alert("You cannot remove your own adminstrator status!");
       return;
@@ -40,25 +45,28 @@ They will be able to run the scheduler, promote other users and delete them, and
       if (!window.confirm(text)) return
     }
 
-    console.log({
+    const udpatedUser ={
       ...employee,
       peer_teacher: ptcheck,
       teaching_assistant: tacheck,
       professor: profcheck,
       administrator: admincheck
-    })
+    }
 
     const btn = document.getElementById(id);
     
     if (btn !== null) btn.innerHTML = 'Saving...';
-    setTimeout(() => {
-      // if (btn !== null) btn.innerHTML = 'Done!';
-      if (btn !== null) btn.innerHTML = 'Not Implemented!';
-
+    API.updateUser(udpatedUser).then(() => {
+      if (btn !== null) btn.innerHTML = 'Done!';
+      if (udpatedUser.person_id === user.user?.person_id) alert("You have updated your own roles, please refresh the page to see the changes.");
+      setEmployee(udpatedUser);
+    }).catch(() => {
+      if (btn !== null) btn.innerHTML = 'An error occurred.';
+    }).finally(() => {
       setTimeout(() => {
         setCollapsed(true);
       }, 1500);
-    }, 2000);
+    });
   }
 
   const deleteUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -113,9 +121,9 @@ They will be able to run the scheduler, promote other users and delete them, and
           <button id={did} className="red button fill" onClick={deleteUser}>Delete user</button>
         </div>
 
-        <div className="hstack">
+        {/* <div className="hstack">
           <button id={tid} className="blue button fill" style={{marginTop: '0'}}>View Trades</button>
-        </div>
+        </div> */}
       </div>
     </div>
   )
