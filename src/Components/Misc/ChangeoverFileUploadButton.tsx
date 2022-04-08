@@ -51,7 +51,7 @@ interface CSCEJSONMeeting {
     version: null
   }[]
   meetingTime: {
-    beginTime: string
+    beginTime: string | null
     building: string
     buildingDescription: string
     campus: string
@@ -61,14 +61,14 @@ interface CSCEJSONMeeting {
     courseReferenceNumber: string
     creditHourSession: number
     endDate: string
-    endTime: string
+    endTime: string | null
     friday: boolean
     hoursWeek: number
     meetingScheduleType: string
     meetingType: MeetingType
     meetingTypeDescription: string
     monday: boolean
-    room: string
+    room: string | null
     saturday: boolean
     startDate: string
     sunday: boolean
@@ -175,6 +175,7 @@ const parseJSONFile = (jsonFileAsText: string, courses: Course[]): Meeting[] => 
   const json: CSCEJSONDatum[] = JSON.parse(jsonFileAsText).data
   for (let datum of json) {
     for (let jmeeting of datum.meetingsFaculty) {
+      if (jmeeting.meetingTime.beginTime === null || jmeeting.meetingTime.endTime === null) continue;
       const meeting: Meeting = {
         course_id: -1,
         department: datum.subject,
@@ -263,6 +264,8 @@ const parseCSVFile = (csvFileAsText: string, courses: Course[]): Meeting[] => {
   return meetings;
 };
 
+const DEFAULT_BUTTON_TEXT: string = 'Upload New Semester'
+
 const readInputFile = (file: File) => {
   const fileReader = new FileReader();
 
@@ -270,27 +273,30 @@ const readInputFile = (file: File) => {
     if (fileReader.result === null) return;
 
     const btn = document.getElementById('upload-semester-button') as HTMLButtonElement;
-    if (btn !== null) btn.innerHTML = 'Uploading...';
+    if (btn !== null) btn.innerHTML = 'Reading File...';
 
     const courses: Course[] = (await axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses")).data
 
     let meetings: Meeting[]
-    if (file.type === 'csv')
+    if (['csv', 'text/csv'].includes(file.type))
       meetings = parseCSVFile(fileReader.result as string, courses);
-    else if (file.type === 'json')
+    else if (['json', 'application/json'].includes(file.type))
       meetings = parseJSONFile(fileReader.result as string, courses);
     else
       return;
 
     if (window.confirm('If you upload this schedule, all of the data related to the current semester will be irrevocably destroyed.\n\nDo you wish to continue?')) {
-      API.sendNewMeetings(meetings).then((response) => {
-        if (btn !== null) btn.innerHTML = 'Sending Courses...'
+      if (btn !== null) btn.innerHTML = 'Sending Courses...'
+      API.sendNewMeetings(meetings).then((_response) => {
+        if (btn !== null) btn.innerHTML = 'Upload Successful'
+        setTimeout(() => {if(btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT}, 10000)
+        alert('Courses Succesfully Loaded into the Database')
       }).catch(() => {
         if (btn !== null) btn.innerHTML = 'An error occurred.';
       })
     } else {
       if (btn !== null) btn.innerHTML = 'Upload Cancelled'
-      setTimeout(() => {if(btn !== null) btn.innerHTML = 'Upload Schedule'}, 10000)
+      setTimeout(() => {if(btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT}, 10000)
     }
   }
 
@@ -319,8 +325,8 @@ export const ChangeoverFileUploadButton = () => {
 
   return (
     <div className="admin-changeover">
-      <input type="file" accept=".csv,.json" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
-      <button id="upload-semester-button" className="red button full" onClick={handleClick}>Upload New Semester</button>
+      <input type="file" accept=".csv,text/csv,.json,application/json" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
+      <button id="upload-semester-button" className="red button full" onClick={handleClick}>{DEFAULT_BUTTON_TEXT}</button>
     </div>
   );
 }
