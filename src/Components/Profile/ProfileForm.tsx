@@ -56,7 +56,7 @@ export const ProfileForm = () => {
       < contexts.userQuals.Consumer >
         {([quals, setQuals]) => (
           <div className={`${collapsed? "collapsed " : ""}form-body`}>
-              <div className="form-border">
+              {/* <div className="form-border"> */}
                 <form onSubmit={(e: any) => submit(e, setQuals)}>
                   <div className="scrollable">
                     { (quals.length > 0)? 
@@ -72,7 +72,7 @@ export const ProfileForm = () => {
                     <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
                   </div>
                 </form>
-              </div>
+              {/* </div> */}
           </div>
         )}
       </contexts.userQuals.Consumer>

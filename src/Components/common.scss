@@ -218,6 +218,12 @@ $google_bg: white;
 	transition: all .1s ease-in-out;
 }
 
+.short {
+	height: 1.4em;
+	font-size: 1em;
+	padding: 0;
+}
+
 .button[disabled] {
 	background-color: #d3dbdc;
 	color: #85929C;
@@ -1118,7 +1124,7 @@ img.back-arrow {
 		transition: all 0.4s ease-in-out;
 
 		.form-border {
-			border: 2px solid black;
+			// border: 2px solid black;
 		}
 
 		.form-body {
@@ -1135,13 +1141,16 @@ img.back-arrow {
 
 			position: relative;
 
+			border: 2px solid black;
+
 			.scrollable .hstack:first-child {
 				margin-top: 5px;
 			}
 		}
 
 		.form-body.collapsed {
-			height: 2px; // So that the border is still visible
+			height: 0px;
+			border-top: 0;
 		}
 
 		.form-row {
@@ -1455,11 +1464,18 @@ img.back-arrow {
 
 .panel {
 	flex: 1 0 0;
+	background-color: $render_background;
 
-	.course-list {
+	.inner-content {
+		display: flex;
+		flex-direction: column;
 		border: 1px solid black;
 		margin: 10px;
 		flex: 1 1 auto;
+		background-color: $light;
+
+		overflow: hidden;
+		border-radius: 3px;
 	}
 
 	.panel-title {
@@ -1485,6 +1501,38 @@ img.back-arrow {
 	span {
 		margin-left: 10px;
 		margin-bottom: 5px;
+	}
+
+	.employee-row {
+		// border: 1px solid black;
+		border-bottom: 0;
+		// padding: 2px 5px;
+		margin: 3px 5px;
+		display: flex;
+
+		.header {
+			border-bottom: 1px solid $render_divider;
+			padding: 2px 5px 2px 5px;
+			margin: 0;
+			border-radius: 3px 3px 0 0;
+		}
+
+		.header:hover {
+			background-color: $render_background;
+		}
+
+		.collapsible {
+			transition: all 0.2s ease-in-out;
+			min-height: 0;
+			overflow: hidden;
+			max-height: 100%;
+			border-bottom: 1px solid $render_divider;
+		}
+
+		.collapsed {
+			max-height: 0px;
+			border-bottom: 0;
+		}
 	}
 }
 

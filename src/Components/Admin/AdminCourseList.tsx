@@ -21,7 +21,7 @@ export const AdminCourseList = () => {
   }, [blocks]);
 
   return (
-    <div className="vstack course-list">
+    <div className="vstack inner-content">
       <h2 className="panel-title">Possible Courses</h2>
       <span>These are the courses that will be added when you upload a new semester</span>
       { Array.from(Array(count).keys()).map(i => 
