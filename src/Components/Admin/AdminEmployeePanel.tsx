@@ -26,12 +26,12 @@ export const AdminEmployeePanel = () => {
   }
   type K = keyof typeof algs;
 
-  const [employees, setEmployees] = useContext(contexts.employees);
+  const [employees, setEmployees] = useContext(contexts.employees); // TODO: Pull all employees not just peer teachers
   const [sortAlg, setSortAlg] = useState<string>('sortLastAlg');
   const [collapsed, setCollapsed] = useState(true);
 
   const registerUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.error("REGISTER USER NOT IMPLEMENTED");
+    console.error("REGISTER USER NOT IMPLEMENTED"); // TODO: implement
 
     const newUser: Person_INIT = {
       email: '',
