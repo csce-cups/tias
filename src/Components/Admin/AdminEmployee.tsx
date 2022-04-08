@@ -1,7 +1,8 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useContext, useState } from 'react'
 import { Person } from '../../modules/API'
 import edit_icon from '../../assets/edit.svg'
 import uuid from '../../uuid'
+import contexts from '../APIContext'
 
 interface Props {
     employee: Person
@@ -11,15 +12,34 @@ export const AdminEmployee: FC<Props> = ({employee}) => {
   const id = uuid();
   const did = uuid();
   const tid = uuid();
+  const user = useContext(contexts.user);
   const [collapsed, setCollapsed] = useState(true);
 
   const [ptcheck, setPtcheck] = useState(employee.peer_teacher);
   const [tacheck, setTacheck] = useState(employee.teaching_assistant);
   const [profcheck, setProfcheck] = useState(employee.professor);
   const [admincheck, setAdmincheck] = useState(employee.administrator);
+  const perms = [
+    employee.administrator? 'Administrator' : '',
+    employee.professor? 'Professor' : '',
+    employee.teaching_assistant? 'Teaching Assistant' : '',
+    employee.peer_teacher? 'Peer Teacher' : ''
+  ];
 
   const updateUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     console.error("UPDATE USER NOT IMPLEMENTED");
+
+    if (user.user?.person_id === employee.person_id && !admincheck) {
+      window.alert("You cannot remove your own adminstrator status!");
+      return;
+    }
+
+    if (admincheck && !employee.administrator) {
+      const text = `This action will give ${employee.first_name} ${employee.last_name} administrative privilages over the scheduler. \
+They will be able to run the scheduler, promote other users and delete them, and replace semester data. Are you sure you would like to give ${employee.first_name} ${employee.last_name} administrative privilages?`;
+      if (!window.confirm(text)) return
+    }
+
     console.log({
       ...employee,
       peer_teacher: ptcheck,
@@ -62,7 +82,9 @@ export const AdminEmployee: FC<Props> = ({employee}) => {
     <div className="employee-row vstack">
       <div className="hstack header" onClick={() => setCollapsed(!collapsed)}>
         <div>{employee.first_name} {employee.last_name}</div>
-        <div className="fill"></div>
+        <div className="fill"/>
+        {perms.filter(e => e !== '').join(', ')}
+        <div style={{marginRight: '15px'}}/>
         <img alt="edit" src={edit_icon}/>
       </div>
       <div className={`collapsible${collapsed? ' collapsed' : ' uncollapsed'}`}>

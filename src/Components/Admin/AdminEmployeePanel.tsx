@@ -6,10 +6,28 @@ import { AdminEmployee } from './AdminEmployee';
 
 export const AdminEmployeePanel = () => {
   const rid = uuid();
-  const sortLastAlg = ((a: Person, b: Person) => a.last_name.localeCompare(b.last_name));
-  const sortFirstAlg = ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name));
+  const algs = {
+    sortLastAlg: ((a: Person, b: Person) => a.last_name.localeCompare(b.last_name)),
+    sortFirstAlg: ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name)),
+    sortRoleAlg: ((a: Person, b: Person) => {
+      if (a && !b) return -1;
+      else if (!a && b) return 1;
+      else if (!a && !b) return 0;
+      else if (a.administrator && !b.administrator) return -1;
+      else if (!a.administrator && b.administrator) return 1;
+      else if (a.professor && !b.professor) return -1;
+      else if (!a.professor && b.professor) return 1;
+      else if (a.teaching_assistant && !b.teaching_assistant) return -1;
+      else if (!a.teaching_assistant && b.teaching_assistant) return 1;
+      else if (a.peer_teacher && !b.peer_teacher) return -1;
+      else if (!a.peer_teacher && b.peer_teacher) return 1;
+      else return 0;
+    })
+  }
+  type K = keyof typeof algs;
+
   const [employees, setEmployees] = useContext(contexts.employees);
-  const [sortLast, setSortLast] = useState(true);
+  const [sortAlg, setSortAlg] = useState<string>('sortLastAlg');
   const [collapsed, setCollapsed] = useState(true);
 
   const registerUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -34,8 +52,9 @@ export const AdminEmployeePanel = () => {
         <div className="header-bar" style={{borderWidth: '1px'}}>
           <div className="hstack">
             <div className="element left">Sort By:</div>
-            <div className="element center" onClick={() => setSortLast(false)}>First Name</div>
-            <div className="element center" onClick={() => setSortLast(true)}>Last Name</div>
+            <div className="element center" onClick={() => setSortAlg('sortFirstAlg')}>First Name</div>
+            <div className="element center" onClick={() => setSortAlg('sortLastAlg')}>Last Name</div>
+            <div className="element center" onClick={() => setSortAlg('sortRoleAlg')}>Role</div>
           </div>
         </div>
 
@@ -50,7 +69,7 @@ export const AdminEmployeePanel = () => {
         <div style={{margin: '5px'}}/>
         
         <div className="scrollable vstack">
-          { employees.sort((sortLast)? sortLastAlg : sortFirstAlg).map(employee => (
+          { employees.sort(algs[sortAlg as K]).map(employee => (
             <AdminEmployee key={employee.person_id} employee={employee} />
           ))}
         </div>
