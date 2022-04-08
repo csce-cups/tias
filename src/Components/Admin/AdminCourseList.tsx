@@ -23,6 +23,7 @@ export const AdminCourseList = () => {
   return (
     <div className="vstack course-list">
       <h2 className="panel-title">Possible Courses</h2>
+      <span>These are the courses that will be added when you upload a new semester</span>
       { Array.from(Array(count).keys()).map(i => 
         (courses[i] === '')? <></> :
         <AdminCourseRow key={i} valueState={[courses, setCourses, i]} countState={[count, setCount]}/>

@@ -7,51 +7,27 @@ interface Props {
 
 export const AdminCourseRow: FC<Props> = ({countState, valueState}) => {
   const [courses, setCourses, which] = valueState;
+  const [count, setCount] = countState;
   const [content, setContent] = React.useState("");
-  const [active, setActive] = React.useState(false);
-  const ref: any = useRef(null);
-
-  // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
-  useEffect(() => { // Disables focus view on mouse click outside
-    const handleClickOutside = (event: any) => {
-      if (ref.current && !ref.current.contains(event.target) && active) {
-        handleClick(true);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside, true);
-    return () => {
-      document.removeEventListener('click', handleClickOutside, true);
-    };
-  });
-
-  const handleClick = (out?: boolean) => {
-    console.log(content)
-    if (out && content === '') {
-      countState[1](countState[0] - 1);
-    } else if (content === '') {
-      countState[1](countState[0] + 1);
-      setCourses([...courses, ""]);
-    }
-    setActive(!active);
-  }
 
   const handleChange = (event: any) => {
     const val = event.target.value;
-    setContent(val);
-    console.log(courses.map((course, i) => i === which ? val : course));
-    setCourses(courses.map((course, i) => i === which ? val : course));
+    setContent(val)
+    if (courses[which] === undefined) {
+      setCount(count + 1);
+      setCourses([...courses, val]);
+    } else {
+      setCourses(courses.map((course, i) => i === which ? val : course));
+    }
   }
 
   return (
     <div className="course-row">
-      <input 
-        ref={ref}
+      <input
         name={`add-course-text-${courses[which]}`}
         type="text" value={(courses[which] === undefined)? '' : courses[which]}
         placeholder="Add Course"
         onChange={handleChange}
-        onClick={() => handleClick}
       />
     </div>
   );
