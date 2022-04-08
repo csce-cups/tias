@@ -7,9 +7,11 @@ export const AdminEmployeePanel = () => {
   return (
     <div className="vstack panel">
       <h2 className="panel-title">Employees</h2>
-      { employees.map(employee => (
-        <div>{employee.first_name} {employee.last_name}</div>
-      ))}
+      <div className='scrollable'>
+        { employees.map(employee => (
+          <div>{employee.first_name} {employee.last_name}</div>
+        ))}
+      </div>
     </div>
   )
 }
