@@ -33,7 +33,7 @@ async function getExistingUserID(userTokenHash, userEmail) {
 function createUser(requestBody) {
     return new Promise((resolve, reject) => {
         axios
-            .put('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users', requestBody)
+            .post('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users', requestBody)
             .then(res => {
                 resolve(res);
             })
@@ -66,6 +66,12 @@ exports.handler = async (event) => {
         accessHeader = 'http://localhost:3000';
     }
     
+    let response = {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json", 
+                   "Access-Control-Allow-Origin": accessHeader }
+    };
+    
     let requestBody = JSON.parse(event.body);
     let token = requestBody.token;
     let dbID = null;
@@ -76,7 +82,6 @@ exports.handler = async (event) => {
     let clientID = paramResponse.Parameter.Value;
     
     const client = new OAuth2Client(clientID);
-
     const ticket = await client.verifyIdToken({
         idToken: token,
         audience: clientID
@@ -94,19 +99,14 @@ exports.handler = async (event) => {
         userID = await getExistingUserID(null, requestBody.email);
         if (userID != null) {
             dbID = userID;
-            updateUser(dbID, {'google_token_sub': userTokenHash, 'profile_photo_url': requestBody.profilePhoto});
+            await updateUser(dbID, {'google_token_sub': userTokenHash, 'profile_photo_url': requestBody.profilePhoto});
         }
         else {
             requestBody.token = userTokenHash;
-            await createUser(requestBody).then((response) => { dbID = response.data.person_id});
+            dbID = await createUser(requestBody);
         }
     }
     
-    const response = {
-        statusCode: 200,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
-        body: JSON.stringify({ id: dbID }),
-    };
-    
+    response.body = JSON.stringify({ id: dbID });
     return response;
 };
