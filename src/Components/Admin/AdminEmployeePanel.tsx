@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react'
-import { Person, Person_INIT } from '../../modules/API';
+import React, { useContext, useEffect, useState } from 'react'
+import API, { Person, Person_INIT } from '../../modules/API';
 import uuid from '../../uuid';
 import contexts from '../APIContext'
 import { AdminEmployee } from './AdminEmployee';
@@ -27,8 +27,15 @@ export const AdminEmployeePanel = () => {
   type K = keyof typeof algs;
 
   const [employees, setEmployees] = useContext(contexts.employees); // TODO: Pull all employees not just peer teachers
+  const [everyone, setEveryone] = useState([{person_id: -1}] as Person[]);
   const [sortAlg, setSortAlg] = useState<string>('sortLastAlg');
   const [collapsed, setCollapsed] = useState(true);
+
+  useEffect(() => {
+    API.fetchEveryone().then(res => {
+      setEveryone(res);
+    });
+  }, [])
 
   const registerUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     console.error("REGISTER USER NOT IMPLEMENTED"); // TODO: implement
@@ -81,12 +88,18 @@ export const AdminEmployeePanel = () => {
         <div style={{margin: '5px'}}/>
         
         <div className="scrollable vstack">
-          { employees.sort(algs[sortAlg as K]).map((employee, i) => (
-            <AdminEmployee key={JSON.stringify(employee)} employee={employee} setEmployee={(e: Person) => {
-              employees[i] = e;
-              setEmployees(employees);
-            }}/>
-          ))}
+          { (everyone.length > 0)?
+            (everyone[0].person_id !== -1)?
+              everyone.sort(algs[sortAlg as K]).map((employee, i) => (
+                <AdminEmployee key={JSON.stringify(employee)} employee={employee} setEmployee={(subject: Person) => {
+                  setEmployees(employees.map(e => e.person_id === subject.person_id ? subject : e));
+                }}/>
+              ))
+              :
+              <div className="loading">Loading...</div>
+            :
+            <div className="loading">Nothing to show.</div>
+          }
         </div>
       </div>
     </div>

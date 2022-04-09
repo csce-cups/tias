@@ -171,7 +171,7 @@ class API {
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher
-	private static fetchPTList = async (): Promise<Person[]> => {
+	static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
 			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
 			.catch(err => [{person_id: -2} as Person]);
@@ -246,7 +246,6 @@ class API {
 			.catch(err => console.log(err));
 	}
 
-	// We get a ton of data back from this, but I really only care about the section_id so I reduce the data here
 	static fetchUserViableCourses = async (user_id?: number): Promise<CourseBlockWeek> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve({} as CourseBlockWeek);});
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/viable-courses`)
