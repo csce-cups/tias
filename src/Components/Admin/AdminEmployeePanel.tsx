@@ -26,37 +26,72 @@ export const AdminEmployeePanel = () => {
   }
   type K = keyof typeof algs;
 
-  const [employees, setEmployees] = useContext(contexts.employees); // TODO: Pull all employees not just peer teachers
+  const [employees, setEmployees] = useContext(contexts.employees);
   const [everyone, setEveryone] = useState([{person_id: -1}] as Person[]);
   const [sortAlg, setSortAlg] = useState<string>('sortLastAlg');
   const [collapsed, setCollapsed] = useState(true);
 
+  const [formPtCheck, setFormPtCheck] = useState<boolean>(false);
+  const [formTACheck, setFormTACheck] = useState<boolean>(false);
+  const [formProfCheck, setFormProfCheck] = useState<boolean>(false);
+  const [formAdminCheck, setFormAdminCheck] = useState<boolean>(false);
+
+  const toggleCollapsed = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const btn = document.getElementById(rid);
+    if (btn !== null) btn.innerHTML = "Register";
+
+    if (collapsed) document.getElementById('new-user-form-collapsable')?.classList.remove('hidden');
+    else setTimeout(() => {
+      document.getElementById('new-user-form-collapsable')?.classList.add('hidden');
+    }, 500);
+
+    setTimeout(() => { // For animation's sake, we add the tiniest delay to toggling
+      setCollapsed(!collapsed);
+    }, 1);
+  }
+
+
   useEffect(() => {
+    document.getElementById('new-user-form-collapsable')?.classList.add('hidden');
     API.fetchEveryone().then(res => {
       setEveryone(res);
     });
   }, [])
 
   const registerUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.error("REGISTER USER NOT IMPLEMENTED"); // TODO: implement
+    const elementIds = ['email-register-text', 'fname-register-text', 'lname-register-text',
+      'pt-register-checkbox', 'ta-register-checkbox', 'prof-register-checkbox', 'admin-register-checkbox'];
+    const elements = elementIds.map(id => document.getElementById(id) as HTMLInputElement);
+    const btn = document.getElementById(rid);
 
-    const newUser: Person_INIT = {
-      email: '',
-      firstName: '',
-      lastName: '',
-      isPeerTeacher: false,
-      isTeachingAssistant: false,
-      isProfessor: false,
-      isAdministrator: false,
+    if (elements.splice(0, 3).some(e => e.value === '')) {
+      if (btn !== null) btn.innerHTML = 'You must specify a first name, last name, and an email';
     }
 
-    const btn = document.getElementById(rid);
+    const newUser: Person_INIT = {
+      email: elements[0].value,
+      firstName: elements[1].value,
+      lastName: elements[2].value,
+      isPeerTeacher: elements[3].checked,
+      isTeachingAssistant: elements[4].checked,
+      isProfessor: elements[5].checked,
+      isAdministrator: elements[6].checked
+    }
     
     if (btn !== null) btn.innerHTML = 'Registering...';
-    setTimeout(() => {
-      // if (btn !== null) btn.innerHTML = 'Done!';
-      if (btn !== null) btn.innerHTML = 'Not Implemented!';
-    }, 2000);
+    API.registerNewUser(newUser).then(() => {
+      if (btn !== null) btn.innerHTML = 'Updating list...';
+      API.fetchEveryone().then(res => {
+        setEmployees(res.filter(e => e.peer_teacher));
+        setEveryone(res);
+        if (btn !== null) btn.innerHTML = 'Done!';
+      }).catch(() => {
+        if (btn !== null) btn.innerHTML = 'The user was registered, but there was an error updating the list. Please refresh the page.';
+      })
+      
+    }).catch(() => {
+      if (btn !== null) btn.innerHTML = 'An error occurred.';
+    });
   }
 
   return (
@@ -75,13 +110,42 @@ export const AdminEmployeePanel = () => {
           </div>
         </div>
 
-        <button className="blue button short" onClick={() => setCollapsed(!collapsed)}>Register New User</button>
-        <div className={`collapsible${collapsed? ' collapsed' : ' uncollapsed'}`}>
-          <div className="new-user-form">
-            <input type="text" placeholder="First Name"/>
-            <input type="text" placeholder="Last Name"/>
-            <input type="text" placeholder="email@tamu.edu"/>
-            <button id={rid} className="short green button" onClick={registerUser} style={{padding: '0 5px'}}>Register</button>
+        <div className={`hstack header witharrow ${collapsed? 'collapsed' : ''}`} onClick={toggleCollapsed}>
+          <div className="header-content">Register New User</div>
+          <div className="fill" />
+          <div className="arrow-container"/>
+        </div>
+
+        <div id="new-user-form-collapsable" className={`collapsible${collapsed? ' collapsed' : ' uncollapsed'}`}>
+          <div className="new-user-form hstack">
+            <div className="vstack fill">
+              <div className="hstack">
+                <input id="fname-register-text" type="text" pattern="/^[a-zA-Z\s]*$/" placeholder="First Name"/>
+                <input id="lname-register-text" type="text" pattern="/^[a-zA-Z\s]*$/" placeholder="Last Name"/>
+                <input id="email-register-text" type="text" pattern="/*.@tamu.edu" placeholder="email@tamu.edu"/>
+              </div>
+              <div className='hstack'>
+                <div className="fill">
+                  <input id="pt-register-checkbox" type="checkbox" checked={formPtCheck} onChange={() => setFormPtCheck(!formPtCheck)}/>
+                  <label htmlFor="pt-register-checkbox">Peer Teacher</label>
+                </div>
+                <div className="fill">
+                  <input id="ta-register-checkbox" type="checkbox" checked={formTACheck} onChange={() => setFormTACheck(!formTACheck)}/>
+                  <label htmlFor="ta-register-checkbox">Teaching Assistant</label>
+                </div>
+                <div className="fill">
+                  <input id="prof-register-checkbox" type="checkbox" checked={formProfCheck} onChange={() => setFormProfCheck(!formProfCheck)}/>
+                  <label htmlFor="prof-register-checkbox">Professor</label>
+                </div>
+                <div className="fill">
+                  <input id="admin-register-checkbox" type="checkbox" checked={formAdminCheck} onChange={() => setFormAdminCheck(!formAdminCheck)}/>
+                  <label htmlFor="admin-register-checkbox">Administrator</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="hstack">
+            <button id={rid} className="short green button fill" onClick={registerUser} style={{padding: '0 5px'}}>Register</button>
           </div>
         </div>
 

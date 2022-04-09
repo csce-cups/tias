@@ -62,10 +62,10 @@ export const ProfileForm = () => {
                     { (quals.length > 0)? 
                       quals.map((qual: APIUserQualification, idx: number) => (
                         <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${JSON.stringify(qual)}`}/>
-                        ))
-                        :
-                        <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
-                      }
+                      ))
+                      :
+                      <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
+                    }
                   </div>
 
                   <div className="hstack">

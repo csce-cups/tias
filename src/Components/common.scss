@@ -829,6 +829,24 @@ img.back-arrow {
 	display: flex;
 }
 
+// https://code-boxx.com/dropdown-arrow-css/
+.header.witharrow::after {
+	content: "\25b6";
+	transform: rotate(90deg);
+	transition: all 0.1s ease-in-out;
+	transition-delay: 0s;
+}
+
+.header.witharrow.collapsed::after {
+	transform: rotate(180deg);
+	transition: all 0.1s ease-in-out;
+	transition-delay: 0.3s;
+}
+
+.header.witharrow:hover {
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
 .arrow {
 	display: flex;
 	padding: 2px;
@@ -1531,7 +1549,11 @@ img.back-arrow {
 		border-bottom: 1px solid $render_divider;
 	}
 
-	.collapsed {
+	.hidden {
+		display: none;
+	}
+
+	.collapsed:not(.header) {
 		max-height: 0px;
 		border-bottom: 0;
 	}
@@ -1542,6 +1564,7 @@ img.back-arrow {
 		input[type="text"] {
 			flex: 1 1 auto;
 			margin: 5px;
+			min-width: 0;
 		}
 	}
 }
