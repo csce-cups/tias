@@ -20,10 +20,10 @@ exports.handler = async (event) => {
     const requestBody = JSON.parse(event.body);
     
     const sender         = requestBody.trade_request.person_id_sender;
-    const senderCourse   = requestBody.trade_request.course_section_id_sender;
+    const senderCourse   = requestBody.trade_request.section_id_sender;
     const receiver       = requestBody.trade_request.person_id_receiver;
-    const receiverCourse = requestBody.trade_request.course_section_id_receiver;
-    const tradeReqStatus = requestBody.trade_request.trade_req_status;
+    const receiverCourse = requestBody.trade_request.section_id_receiver;
+    const tradeReqStatus = requestBody.trade_request.request_status;
 
     let request = await helper_functions.queryDB(`
     SELECT *
