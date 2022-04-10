@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import contexts from '../APIContext';
 
@@ -62,7 +62,7 @@ export const GoogleButton = () => {
       .then(responseData => {
         document.cookie = `tias_user_id=${responseData.id}`
         setLoggedIn(true);
-        setGoogleData(userBasicInfo);
+        setGoogleData({...userBasicInfo, tias_user_id: responseData.id});
       });
 
     clientUsername = response.Du.VX

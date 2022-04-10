@@ -37,7 +37,6 @@ export const LabSwapBlock: FC<Props> = ({visible, size, inline, edge, bottom, da
   const selectBlockForTrade = ((e: React.MouseEvent<HTMLButtonElement>) => {
     const tradeType = e.currentTarget.getAttribute('request-type')!;
     const course = document.querySelector(`input[type=radio]:checked`);
-    console.log(course)
     if (course === null) return;
 
     const selectedCourseIdx = +course.getAttribute('data-idx')!;

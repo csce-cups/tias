@@ -1,11 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { ProfileFormRow } from './ProfileFormRow'
-import contexts from '../APIContext'
-import API, { APIUserQualification, parseCookie } from '../../modules/API';
+import React, { useContext, useState } from 'react';
+import API, { APIUserQualification } from '../../modules/API';
+import contexts from '../APIContext';
+import { Scrollable } from '../Misc/Scrollable';
+import { ProfileFormRow } from './ProfileFormRow';
 
 export const ProfileForm = () => {
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
   const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses); 
+  const user = useContext(contexts.user);
 
   const submit = (event: any, setQuals: any) => {
     const selections = Array.from(document.querySelectorAll(`select[id$="-prefs"]`));
@@ -23,7 +25,7 @@ export const ProfileForm = () => {
     })
 
     document.getElementById("submit-button")?.setAttribute('value', 'Saving...');
-    fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/qualifications`, {
+    fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user.user?.person_id}/qualifications`, {
       method: 'PUT',
       body: JSON.stringify(requestBody)
     }).then(response => response.json())
@@ -32,7 +34,7 @@ export const ProfileForm = () => {
           document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
         } else {
           document.getElementById("submit-button")?.setAttribute('value', 'Updating Preferences...');
-          API.fetchUserViableCourses(parseCookie().tias_user_id).then((resp) => {
+          API.fetchUserViableCourses(user.user?.person_id).then((resp) => {
             setQuals(newQuals);
             setUserViableCourses(resp);
             document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
@@ -55,23 +57,23 @@ export const ProfileForm = () => {
       < contexts.userQuals.Consumer >
         {([quals, setQuals]) => (
           <div className={`${collapsed? "collapsed " : ""}form-body`}>
-              <div className="form-border">
-                <form onSubmit={(e: any) => submit(e, setQuals)}>
-                  <div className="scrollable">
+              {/* <div className="form-border"> */}
+                <form onSubmit={(e) => submit(e, setQuals)}>
+                  < Scrollable >
                     { (quals.length > 0)? 
                       quals.map((qual: APIUserQualification, idx: number) => (
                         <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${JSON.stringify(qual)}`}/>
-                        ))
-                        :
-                        <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
-                      }
-                  </div>
+                      ))
+                      :
+                      <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
+                    }
+                  </Scrollable>
 
                   <div className="hstack">
                     <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
                   </div>
                 </form>
-              </div>
+              {/* </div> */}
           </div>
         )}
       </contexts.userQuals.Consumer>

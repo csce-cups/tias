@@ -51,10 +51,43 @@ $google_bg: white;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	flex: 1;
+	height: 100%;
 
 	// Hide the scrollbar
 	-ms-overflow-style: none;  /* IE and Edge */
 	scrollbar-width: none;  /* Firefox */
+}
+
+// https://css-tricks.com/scroll-shadows-with-javascript/
+.shadow {
+	position: absolute;
+	left: 0;
+	z-index: 100;
+	width: 100%;
+	height: 10px;
+	background: black;
+}
+
+.shadow--top {
+	top: 0;
+	background: -webkit-linear-gradient(270deg, rgba(0, 0, 0, 0.35), transparent);
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent);
+	opacity: 0;
+}
+  
+.shadow--bottom {
+	bottom: 0;
+	background: -webkit-linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent);
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0.35), transparent);
+}
+
+.scrollable-wrapper {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
 }
 
 .vstack {
@@ -187,16 +220,53 @@ $google_bg: white;
 	background-color: #a191ac;
 }
 
-.purple:hover {
+.purple:hover:not(.prompt, .inline-prompt) {
 	background-color: darken(#a191ac, 8%);
 	box-shadow: inset 0 0 5px 0;
 	cursor: pointer;
 }
 
+.purple.toggled {
+	background-color: darken(#a191ac, 8%);
+	box-shadow: inset 0 0 5px 0;
+}
+
+.purple.toggled:hover:not(.prompt, .inline-prompt) {
+	background-color: darken(#a191ac, 12%);
+	box-shadow: inset 0 0 7px 0;
+}
+
+.red {
+	background-color: #FF0000;
+}
+
+.red:hover:not(.prompt, .inline-prompt) {
+	background-color: darken(#FF0000, 8%);
+	box-shadow: inset 0 0 5px 0;
+	cursor: pointer;
+}
+
+.button.onred {
+	background-color: $light;
+	height: 30px;
+	margin: 2px;
+	outline-offset: -3px;
+	outline: 1px solid red;
+	padding: 5px;
+
+	transition: all .1s ease-in-out;
+}
+
+.button.onred:hover:not([disabled]) {
+	background-color: $render_background;
+	outline: 3px solid $light;
+	cursor: pointer;
+}
 
 .button {
 	border: 0px solid black;
 	margin: 5px;
+	position: relative;
 
 	height: 40px;
 	padding: 10px;
@@ -207,6 +277,18 @@ $google_bg: white;
 	border-radius: 5px;
 
 	transition: all .1s ease-in-out;
+}
+
+div.button, input.button {
+	display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.short {
+	height: 1.4em;
+	font-size: 1em;
+	padding: 0;
 }
 
 .button[disabled] {
@@ -307,7 +389,7 @@ $day_divider_size : 1.5px;
 		border: 2px solid black;
 		
 		width: 100%;
-		height: 100%;
+		// height: 100%;
 
 		.day {
 			background-color: $render_background;
@@ -508,6 +590,10 @@ $block_margin_amount : 2px;
 	flex: 1 1 auto;
 }
 
+.fill-restricted {
+	flex: 1 0 0;
+}
+
 .grow-h {
 	transition: all .2s cubic-bezier(0.79, 1.38, 0.77, 1.39);
 }
@@ -530,6 +616,7 @@ $block_margin_amount : 2px;
 	border-bottom: 2px solid black;
 	background-color: $accent;
 	display: flex;
+	flex: 0 0 auto;
 
 	.element {
 		color: $light;
@@ -773,6 +860,11 @@ img.back-arrow {
 	max-width: 400px;
 }
 
+.main-profile {
+	position: relative;
+	overflow: hidden;
+}
+
 .nowrap {
 	white-space: nowrap;
 }
@@ -806,6 +898,24 @@ img.back-arrow {
 
 .arrow-container {
 	display: flex;
+}
+
+// https://code-boxx.com/dropdown-arrow-css/
+.header.witharrow::after {
+	content: "\25b6";
+	transform: rotate(90deg);
+	transition: all 0.1s ease-in-out;
+	transition-delay: 0s;
+}
+
+.header.witharrow.collapsed::after {
+	transform: rotate(180deg);
+	transition: all 0.1s ease-in-out;
+	transition-delay: 0.3s;
+}
+
+.header.witharrow:hover {
+	background-color: rgba(0, 0, 0, 0.2);
 }
 
 .arrow {
@@ -1034,6 +1144,7 @@ img.back-arrow {
 
 		padding: 5px 0;
 		margin: 0 0 5px 0;
+		flex: 0 0 auto;
 
 		.button {
 			margin: 0 5px 0 0;
@@ -1063,6 +1174,7 @@ img.back-arrow {
 		border-bottom: 0;
 		transition: all 0.1s ease-in-out;
 		font-size: 1.2em;
+		min-height: 1.2em;
 		font-weight: bold;
 		margin-bottom: 0;
 
@@ -1092,24 +1204,23 @@ img.back-arrow {
 		height: 100%;
 	}
 
-	.profile-form.collapsed {
-		flex: 0 1 0;
-	}
-
 	.profile-form {
 		display: flex;
 		flex-direction: column;
 		margin-bottom: 10px;
-		flex: 0 1 content;
+		flex: 0 0 auto;
+		height: fit-content;
 		transition: all 0.4s ease-in-out;
 
 		.form-border {
-			border: 2px solid black;
+			// border: 2px solid black;
 		}
 
 		.form-body {
 			overflow: hidden;
 			transition: all 0.4s ease-in-out;
+
+			background-color: $light;
 
 			height: 100%;
 
@@ -1119,13 +1230,16 @@ img.back-arrow {
 
 			position: relative;
 
+			border: 2px solid black;
+
 			.scrollable .hstack:first-child {
 				margin-top: 5px;
 			}
 		}
 
 		.form-body.collapsed {
-			height: 2px; // So that the border is still visible
+			height: 0px;
+			border-top: 0;
 		}
 
 		.form-row {
@@ -1185,6 +1299,7 @@ img.back-arrow {
 	
 	.profile-render {
 		border: 2px solid black;
+		background-color: $light;
 		display: flex;
 		flex-direction: column;
 
@@ -1202,6 +1317,109 @@ img.back-arrow {
 
 		.render-container {
 			margin: 8px 0;
+		}
+
+		.block.interacted {
+			transition: all 0.2s ease-in-out, min-width 0s linear, min-height 0s linear;
+
+			position: absolute;
+			right: 0;
+			top: 0;
+
+			display: flex;
+
+			height: fit-content;
+			min-height: 100%;
+
+			width: fit-content;
+			min-width: 100%;
+
+			padding: 0;
+			
+			z-index: 5;
+			box-shadow: 0 0 10px 0;
+
+			transform: translateY(-5px);
+		}
+		
+		.block.interacted.left {
+			left: 0;
+		}
+		
+		.block.interacted.bottom {
+			top: auto;
+			bottom: 0;
+			transform: translateY(5px);
+		}
+
+		.block {
+			display: flex;
+			position: relative;
+			transition: all 0.2s ease-in-out;
+		}
+
+		.pref-pane {
+			display: flex;
+			flex-direction: column;
+			color: $light;
+			white-space: nowrap;
+    		overflow: hidden;
+
+			flex: 1 1 auto;
+
+			button {
+				border-radius: 2px;
+				border: 1px solid $render_divider;
+				transition: all 0.05s ease-in-out;
+			}
+
+			button.cantdo {
+				background-color: #FFBDBD;
+			}
+
+			button.cantdo:hover {
+				background-color: #FF8C8C;
+			}
+
+			button.prefernot {
+				background-color: #FBFFBD
+			}
+
+			button.prefernot:hover {
+				background-color: #F1FF28
+			}
+
+			button.indiff:hover {
+				background-color: $render_background;
+			}
+
+			button.prefer {
+				background-color: #BFFFBD;
+			}
+
+			button.prefer:hover {
+				background-color: #75FF70;
+			}
+		}
+
+		.pref-pane-title {
+			margin: 0 3px 5px 3px;
+			color: $render_background;
+			text-align: center;
+		}
+
+		.pref-row {
+			display: flex;
+			align-items: center;
+
+			input[type="checkbox"] {
+				margin-top: 6px;
+				align-self: flex-start;
+			}
+
+			label {
+				text-align: left;
+			}
 		}
 
 		.check-all {
@@ -1265,7 +1483,6 @@ img.back-arrow {
 	}
 }
 
-
 .employee-row {
 	margin: 15px 5px;
 	
@@ -1305,7 +1522,7 @@ img.back-arrow {
 			padding: 0 4px;
 		}
 
-		.center:last-child {
+		.center {
 			border-left: 1px solid $render_divider;
 		}
 		
@@ -1314,4 +1531,244 @@ img.back-arrow {
 			cursor: pointer;
 		}
 	}
+}
+
+.page-text {
+	height: 100%;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+
+	font-size: 2em;
+	font-weight: bold;
+	color: $render_divider;
+}
+
+.backdrop {
+	position: absolute;
+	height: 40%;
+	width: 100%;
+	z-index: -2;
+}
+
+.inline-prompt {
+	height: 20em;
+}
+
+.panel {
+	flex: 1 0 0;
+	background-color: $render_background;
+
+	.prompt {
+		position: absolute;
+		right: 0;
+		top: 0;
+		height: fit-content;
+		z-index: 2;
+		padding: 5px;
+
+		input.confirm[type="text"] {
+			width: auto;
+			margin: 0 10px;
+		}
+	}
+
+	.prompt.bottom {
+		top: auto;
+		bottom: 0;
+	}
+
+	.inner-content {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid $render_divider;
+		margin: 10px;
+		flex: 1 1 auto;
+		background-color: $light;
+
+		overflow: hidden;
+		border-radius: 3px;
+	}
+
+	.panel-title {
+		margin: 10px;
+		margin-top: 5px;
+	}
+
+	.course-row {
+		padding: 5px 10px;
+		display: flex;
+		position: relative;
+
+		border-bottom: 1px solid $render_divider;
+
+		input[type="text"] {
+			width: 100%;
+		}
+	}
+
+	.course-row:first-child {
+		margin-top: 5px;
+	}
+
+	.course-row:last-child {
+		margin-bottom: 5px;
+	}
+
+	.course-row:nth-child(odd) {
+		background-color: $render_background;
+	}
+
+	.button.full {
+		margin: 10px;
+		flex: 1 1 auto;
+	}
+
+	span {
+		margin-left: 10px;
+		margin-bottom: 5px;
+	}
+
+	.employee-row {
+		// border: 1px solid black;
+		border-bottom: 0;
+		// padding: 2px 5px;
+		margin: 3px 5px;
+		display: flex;
+
+		.header {
+			border-bottom: 1px solid $render_divider;
+			padding: 2px 5px 2px 5px;
+			margin: 0;
+			border-radius: 3px 3px 0 0;
+		}
+
+		.header:hover {
+			background-color: $render_background;
+		}
+
+	}
+
+	.collapsible {
+		transition: all 0.2s ease-in-out;
+		min-height: 0;
+		overflow: hidden;
+		max-height: 100%;
+		display: flex;
+		flex: 1 0 auto;
+		border-bottom: 1px solid $render_divider;
+		flex-direction: column;
+	}
+
+	.hidden {
+		display: none;
+	}
+
+	.collapsed:not(.header) {
+		max-height: 0px;
+		border-bottom: 0;
+	}
+
+	.new-user-form {
+		display: flex;
+
+		input[type="text"] {
+			flex: 1 1 auto;
+			margin: 5px;
+			min-width: 0;
+		}
+	}
+}
+
+.panel:first-child {
+	border-right: 2px solid black;
+}
+
+.admin-changeover {
+	width: 100%;
+	display: flex;
+	position: relative;
+}
+
+.course-delete {
+	height: 1.7em;
+	padding-top: 0;
+	padding-bottom: 0;
+	overflow: hidden;
+	min-width: fit-content;
+	border: 1px solid $render_divider;
+}
+
+.course-delete:not(.prompt) {
+	align-self: center;
+}
+
+.course-delete.hidden {
+	padding: 0;
+	width: 0;
+	min-width: 0;
+	display: block;
+	border: 0;
+}
+
+.add-menu-container {
+	position: relative;
+}
+
+.add-menu {
+	top: -40px;
+	padding-top: 40px;
+
+	position: absolute;
+	background-color: $light;
+	border: 1px solid $render_divider;
+	border-radius: 5px;
+	width: 100%;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+
+	overflow: hidden;
+
+	input[type="text"] {
+		margin: 5px;
+	}
+
+	transition: all 0.2s ease-in-out, opacity 0.2s ease-in-out 0s;
+}
+
+.add-menu.hidden {
+	border: 0;
+	opacity: 0;
+	padding-top: 0px;
+	display: flex;
+
+	height: 40px;
+
+	transition: all 0.2s ease-in-out, opacity 0.2s ease-in-out 0.2s;
+}
+
+.header-end {
+	padding: 0 5px;
+	border-bottom: 1px solid $render_divider;
+}
+
+.m5 {
+	margin: 5px;
+}
+
+.m10 {
+	margin: 10px;
+}
+
+.mb10 {
+	margin-bottom: 10px;
+}
+
+.mr15 {
+	margin-right: 15px;
+}
+
+.mb0 {
+	margin-bottom: 0;
 }

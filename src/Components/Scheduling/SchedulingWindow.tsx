@@ -1,9 +1,9 @@
 import React, { FC, useContext, useEffect, useState } from "react";
-import { SchedulingRender } from "./SchedulingRender";
-import { SchedulingFilter } from "./SchedulingFilter";
-import contexts from "../APIContext";
 import { CourseBlock } from "../../modules/API";
+import contexts from "../APIContext";
 import RenderBlockProps from "./BlockBase";
+import { SchedulingFilter } from "./SchedulingFilter";
+import { SchedulingRender } from "./SchedulingRender";
 
 export interface OptionsProps {
   selectable?: boolean
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
-  const [blocks, _] = useContext(contexts.blocks);
+  const [blocks, ] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
   const filterActual = options?.filter?.[0] ?? filter;
 

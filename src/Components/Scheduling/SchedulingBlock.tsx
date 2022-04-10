@@ -1,7 +1,7 @@
-import React, { FC } from 'react'
-import { Hat } from '../Misc/Hat';
+import React, { FC } from 'react';
 import { CourseBlock } from '../../modules/API';
-import RenderBlockProps, { calcFlex, blockColors } from './BlockBase';
+import { Hat } from '../Misc/Hat';
+import RenderBlockProps, { blockColors, calcFlex } from './BlockBase';
 
 interface Props extends RenderBlockProps {
   data: {

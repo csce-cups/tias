@@ -8,22 +8,27 @@ interface RenderCourseBlock extends CourseBlock {
   collisions_right: number[]
 }
 
-let numHours = 13;
-let startTime = new Date(0);
-startTime.setHours(8);
-
 // Breaks for 3 different lengths in a block
 const d_len = (e: CourseBlock) => { return e.end_time.getTime() - e.start_time.getTime(); }
 
-const time_to_height = (start: Date, end: Date, max: number = numHours*60*60*1000) => {
+const time_to_height = (start: Date, end: Date, max: number) => {
   return (end.getTime() - start.getTime()) / max * 100;
 }
 
-const start_time_to_top = (start: Date, pstart: Date = startTime, parent: number = numHours*60*60*1000) => {
+const start_time_to_top = (start: Date, pstart: Date, parent: number) => {
   return (start.getTime() - pstart.getTime()) / parent * 100;
 }
 
-const placeBlocks = <DataCourseBlock extends CourseBlock>(data: DataCourseBlock[] | null, filter: Map<number, boolean>, renderBlockType: React.FC<RenderBlockProps>, edge: "left" | "right" | "center", start: Date, end: Date) => {
+const placeBlocks = <DataCourseBlock extends CourseBlock>(
+  data: DataCourseBlock[] | null, 
+  filter: Map<number, boolean>, 
+  renderBlockType: React.FC<RenderBlockProps>, 
+  edge: "left" | "right" | "center", 
+  start: Date, 
+  end: Date,
+  numHours: number,
+  startTime: Date
+) => {
   // If no data, do nothing
   if (data === null) return (
     <div className="vstack absolute">
@@ -85,7 +90,7 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(data: DataCourseBlock[
       inline = false;
     } else { // Not, staggered but different line
       if (!inline) { // Commit the staggered bits and flush the buffer
-        returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end));
+        returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end, numHours, startTime));
         line = [];
         inline = true;
       } else {
@@ -99,16 +104,25 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(data: DataCourseBlock[
     line.push(block);
   });
 
-  if (!inline) returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end));
+  if (!inline) returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end, numHours, startTime));
   else if (line.length > 0) layered.push(line);
 
-  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter, renderBlockType, edge, start, end));
+  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter, renderBlockType, edge, start, end, numHours, startTime));
 
   return returns;
 }
 
 // Requires input to be pre-layered
-const placeInlineBlocks = (layered_data: CourseBlock[][], filter: Map<number, boolean>, renderBlockType: React.FC<RenderBlockProps>, edge: "left" | "right" | "center", start: Date, end: Date): JSX.Element[] => {
+const placeInlineBlocks = (
+  layered_data: CourseBlock[][], 
+  filter: Map<number, boolean>, 
+  renderBlockType: React.FC<RenderBlockProps>, 
+  edge: "left" | "right" | "center", 
+  start: Date, 
+  end: Date,
+  numHours: number,
+  startTime: Date
+): JSX.Element[] => {
   const isBottom = (st: Date) => {
     const diffSt = st.getTime() - start.getTime();
     const diffEnd = end.getTime() - st.getTime();
@@ -120,8 +134,8 @@ const placeInlineBlocks = (layered_data: CourseBlock[][], filter: Map<number, bo
     layered_data.map((layer: CourseBlock[]) => (
       <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(layer)}`} style={{ 
         padding: 0, 
-        height: `${time_to_height(layer[0].start_time, layer[0].end_time)}%`,
-        top: `${start_time_to_top(layer[0].start_time)}%`
+        height: `${time_to_height(layer[0].start_time, layer[0].end_time, numHours*60*60*1000)}%`,
+        top: `${start_time_to_top(layer[0].start_time, startTime, numHours*60*60*1000)}%`
       }}>
         { layer.map((block: CourseBlock) => (
           React.createElement(renderBlockType, {
@@ -138,7 +152,16 @@ const placeInlineBlocks = (layered_data: CourseBlock[][], filter: Map<number, bo
   ))
 }
 
-const placeStaggeredBlocks = (blocks: CourseBlock[], filter: Map<number, boolean>, renderBlockType: React.FC<RenderBlockProps>, edge: "left" | "right" | "center", start: Date, end: Date) => {
+const placeStaggeredBlocks = (
+  blocks: CourseBlock[], 
+  filter: Map<number, boolean>,
+  renderBlockType: React.FC<RenderBlockProps>,
+  edge: "left" | "right" | "center",
+  start: Date,
+  end: Date,
+  numHours: number,
+  startTime: Date
+) => {
   // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
   const registerCollisions = (block: CourseBlock, idx: number): RenderCourseBlock => ({...block, ...findCollisions(block.start_time, block.end_time, idx)});
   const findCollisions = (region_start: Date, region_end: Date, loc: number, arr_start: number = 0, arr_end: number = blocks.length-1) => {
@@ -243,8 +266,8 @@ const placeStaggeredBlocks = (blocks: CourseBlock[], filter: Map<number, boolean
       return (
         <div className="block-container hstack fill" key={`blocks-set-${JSON.stringify(block)}`} style={{ 
           padding: 0, 
-          height: `${time_to_height(block.start_time, block.end_time)}%`,
-          top: `${start_time_to_top(block.start_time)}%`
+          height: `${time_to_height(block.start_time, block.end_time, numHours*60*60*1000)}%`,
+          top: `${start_time_to_top(block.start_time, startTime, numHours*60*60*1000)}%`
         }}>
           { preparedBlock.collisions_left.map((collision: number, idx: number) => {
             collisionReferences.get(bidx).push(collision);

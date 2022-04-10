@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import API, { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
 import { compressWeek } from "../../modules/BlockManipulation";
 import contexts from '../APIContext';
+import { Scrollable } from "../Misc/Scrollable";
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
 import { LabSwapBlock } from "./LabSwapBlock";
 import { SwapSet } from "./SwapSet";
@@ -18,6 +19,8 @@ interface Submission{
   offered_id: number,
   requested_id: number
 }
+
+type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 
 export const selectedTradeBlocksContext = createContext<[Selections, React.Dispatch<React.SetStateAction<Selections>>]>([{ offered: null, requested: null }, 0 as any]);
 
@@ -44,7 +47,7 @@ export const LabSwap = () => {
   const userId = +parseCookie().tias_user_id;
 
   interface DisplayBlock extends CourseBlock {
-    days: ('M' | 'T' | 'W' | 'R' | 'F')[]
+    days: (shortday)[]
   }
 
   const renderScheduled = (retData: CourseBlockWeek) => {
@@ -54,7 +57,7 @@ export const LabSwap = () => {
     let retFormat: DisplayBlock[] = [];
 
     const shortDays = ['M', 'T', 'W', 'R', 'F'];
-    const dayMap = new Map<string, 'M' | 'T' | 'W' | 'R' | 'F'>(
+    const dayMap = new Map<string, shortday>(
       [
         ['Monday', 'M'],
         ['Tuesday', 'T'],
@@ -64,7 +67,7 @@ export const LabSwap = () => {
       ]
     )
 
-    const cmpDay = (a: 'M' | 'T' | 'W' | 'R' | 'F', b: 'M' | 'T' | 'W' | 'R' | 'F') => {
+    const cmpDay = (a: shortday, b: shortday) => {
       if (shortDays.indexOf(a) < shortDays.indexOf(b)) return -1;
       else if (shortDays.indexOf(a) > shortDays.indexOf(b)) return 1;
       return 0;
@@ -81,8 +84,8 @@ export const LabSwap = () => {
       return 0;
     }).forEach(block => {
       const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
-      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F']})
-      else retFormat[where].days.push(dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F');
+      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
+      else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
     })
 
     return retFormat;
@@ -176,7 +179,7 @@ export const LabSwap = () => {
               return <></>
             } else {
               return (
-                <div className="scrollable">
+                < Scrollable >
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Outstanding Requests </div>
                       {renderSwapSets(trades, 'Pending', request => request.person_id_receiver === userId && request.request_status === 'Pending')}
@@ -196,7 +199,7 @@ export const LabSwap = () => {
                     <div className="swap-section-title"> Past Requests </div>
                       {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status !== 'Pending')}
                   </div>
-                </div>
+                </Scrollable>
               )
             }
           }}
