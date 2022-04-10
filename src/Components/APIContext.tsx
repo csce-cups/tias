@@ -1,5 +1,5 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import { loadSchedule } from "../modules/BlockManipulation";
+import { loadSchedule, updateWithSchedule } from "../modules/BlockManipulation";
 import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest} from "../modules/API";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
@@ -144,7 +144,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     });
 
     userPromises.userViableCourses.then((resp) => {
-      userViableCourses[1](resp);
+      updateWithSchedule(loadedScheduleState[0], resp, userViableCourses[1]);
     });
 
     userPromises.userTrades.then((resp) => {
@@ -169,8 +169,6 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
         doShowAdmin: (user && user.administrator)
       })
     }
-
-
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
   return (
