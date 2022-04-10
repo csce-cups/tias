@@ -57,23 +57,19 @@ export const ProfileForm = () => {
       < contexts.userQuals.Consumer >
         {([quals, setQuals]) => (
           <div className={`${collapsed? "collapsed " : ""}form-body`}>
-              {/* <div className="form-border"> */}
-                <form onSubmit={(e) => submit(e, setQuals)}>
-                  < Scrollable >
-                    { (quals.length > 0)? 
-                      quals.map((qual: APIUserQualification, idx: number) => (
-                        <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${JSON.stringify(qual)}`}/>
-                      ))
-                      :
-                      <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
-                    }
-                  </Scrollable>
+            <form onSubmit={(e) => submit(e, setQuals)}>
+              { (quals.length > 0)? 
+                quals.map((qual: APIUserQualification, idx: number) => (
+                  <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${JSON.stringify(qual)}`}/>
+                ))
+                :
+                <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
+              }
 
-                  <div className="hstack">
-                    <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
-                  </div>
-                </form>
-              {/* </div> */}
+              <div className="hstack">
+                <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
+              </div>
+            </form>
           </div>
         )}
       </contexts.userQuals.Consumer>
