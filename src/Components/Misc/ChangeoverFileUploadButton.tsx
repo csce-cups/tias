@@ -5,9 +5,10 @@
    https://medium.com/web-dev-survey-from-kyoto/how-to-customize-the-file-upload-button-in-react-b3866a5973d8 
 */
 
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import API, { Meeting, Weekday } from '../../modules/API';
 import axios from 'axios';
+import uuid from '../../uuid';
 
 interface Course {
   course_id: number
@@ -305,6 +306,30 @@ const readInputFile = (file: File) => {
 
 export const ChangeoverFileUploadButton = () => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [prompt, setPrompt] = React.useState(false);
+  const [input, setInput] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const clickRef: any = React.useRef(null);
+  
+  // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
+  useEffect(() => { // Disables focus view on mouse click outside
+    const handleClickOutside = (event: any) => {
+      if (clickRef.current && !clickRef.current.contains(event.target) && prompt) {
+        setPrompt(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  });
+
+  const handleValidationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+    if (e.target.value === "NEW SEMESTER") setButtonDisabled(false);
+    else setButtonDisabled(true);
+  }
 
   const handleClick = () => {
     if (fileInputRef.current !== null) {
@@ -326,7 +351,32 @@ export const ChangeoverFileUploadButton = () => {
   return (
     <div className="admin-changeover">
       <input type="file" accept=".csv,text/csv,.json,application/json" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
-      <button id="upload-semester-button" className="red button full" onClick={handleClick}>{DEFAULT_BUTTON_TEXT}</button>
+      <div id="upload-semester-button" className={`red button full ${prompt? 'inline-prompt' : ''}`} style={{padding: '0 10px'}} onClick={() => setPrompt(true)}>
+        { prompt?
+          <div ref={clickRef} className="vstack" style={{height: '100%'}}>
+            <div className="vstack" style={{height: '100%', padding: '10px'}}>
+              <div>
+                This button is for the start of a new semester with a new block schedule.
+                By uploading a new schedule, you will irrevocably destroy all data related to the current semester. 
+                Any generated schedules will be invalidated, and any peer teacher schedules or lab preferences will be lost.
+              </div>
+              <div className="m10"/>
+              If you would like to proceed, please enter "NEW SEMESTER" in the text box below.
+            </div>
+
+            <input id={'changeover-text'} value={input} onChange={handleValidationChange} type="text" className="confirm" placeholder={`Type NEW SEMESTER to confirm`}/>
+            <div className="m10"/>
+            <div className="hstack">
+              <button disabled={buttonDisabled} className="short button fill onred" onClick={handleClick}>Upload block schedule</button>
+            </div>
+            <div className="m5"/>
+          </div>
+          :
+          <div className="vstack" style={{height: '100%', justifyContent: 'center'}}>
+            {DEFAULT_BUTTON_TEXT}
+          </div>
+        }
+      </div>
     </div>
   );
 }

@@ -220,7 +220,7 @@ $google_bg: white;
 	background-color: #a191ac;
 }
 
-.purple:hover:not(.prompt) {
+.purple:hover:not(.prompt, .inline-prompt) {
 	background-color: darken(#a191ac, 8%);
 	box-shadow: inset 0 0 5px 0;
 	cursor: pointer;
@@ -231,7 +231,7 @@ $google_bg: white;
 	box-shadow: inset 0 0 5px 0;
 }
 
-.purple.toggled:hover:not(.prompt) {
+.purple.toggled:hover:not(.prompt, .inline-prompt) {
 	background-color: darken(#a191ac, 12%);
 	box-shadow: inset 0 0 7px 0;
 }
@@ -240,7 +240,7 @@ $google_bg: white;
 	background-color: #FF0000;
 }
 
-.red:hover:not(.prompt) {
+.red:hover:not(.prompt, .inline-prompt) {
 	background-color: darken(#FF0000, 8%);
 	box-shadow: inset 0 0 5px 0;
 	cursor: pointer;
@@ -1544,6 +1544,10 @@ img.back-arrow {
 	z-index: -2;
 }
 
+.inline-prompt {
+	height: 20em;
+}
+
 .panel {
 	flex: 1 0 0;
 	background-color: $render_background;
@@ -1608,7 +1612,7 @@ img.back-arrow {
 		background-color: $render_background;
 	}
 
-	button.full {
+	.button.full {
 		margin: 10px;
 		flex: 1 1 auto;
 	}
@@ -1673,6 +1677,7 @@ img.back-arrow {
 .admin-changeover {
 	width: 100%;
 	display: flex;
+	position: relative;
 }
 
 .course-delete {

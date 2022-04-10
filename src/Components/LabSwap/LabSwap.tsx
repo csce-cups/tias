@@ -16,6 +16,7 @@ export interface Selections {
   requested: CourseBlock | null,
 }
 
+type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 
 export const selectedTradeBlocksContext = createContext<[Selections, React.Dispatch<React.SetStateAction<Selections>>]>([{ offered: null, requested: null }, 0 as any]);
 
@@ -36,7 +37,7 @@ export const LabSwap = () => {
   const userId = +parseCookie().tias_user_id;
 
   interface DisplayBlock extends CourseBlock {
-    days: ('M' | 'T' | 'W' | 'R' | 'F')[]
+    days: (shortday)[]
   }
 
   const renderScheduled = (retData: CourseBlockWeek) => {
@@ -46,7 +47,7 @@ export const LabSwap = () => {
     let retFormat: DisplayBlock[] = [];
 
     const shortDays = ['M', 'T', 'W', 'R', 'F'];
-    const dayMap = new Map<string, 'M' | 'T' | 'W' | 'R' | 'F'>(
+    const dayMap = new Map<string, shortday>(
       [
         ['Monday', 'M'],
         ['Tuesday', 'T'],
@@ -56,7 +57,7 @@ export const LabSwap = () => {
       ]
     )
 
-    const cmpDay = (a: 'M' | 'T' | 'W' | 'R' | 'F', b: 'M' | 'T' | 'W' | 'R' | 'F') => {
+    const cmpDay = (a: shortday, b: shortday) => {
       if (shortDays.indexOf(a) < shortDays.indexOf(b)) return -1;
       else if (shortDays.indexOf(a) > shortDays.indexOf(b)) return 1;
       return 0;
@@ -73,8 +74,8 @@ export const LabSwap = () => {
       return 0;
     }).forEach(block => {
       const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
-      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F']})
-      else retFormat[where].days.push(dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F');
+      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
+      else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
     })
 
     return retFormat;

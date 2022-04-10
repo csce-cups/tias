@@ -3,8 +3,9 @@ import { Hat } from '../Misc/Hat';
 import { CourseBlock } from '../../modules/API';
 import RenderBlockProps, { calcFlex, blockColors } from '../Scheduling/BlockBase';
 
+type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 interface DisplayBlock extends CourseBlock {
-  days: ('M' | 'T' | 'W' | 'R' | 'F')[]
+  days: (shortday)[]
 }
 
 interface Props extends RenderBlockProps {
@@ -33,7 +34,7 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
     let ret: JSX.Element[] = [];
 
     const shortDays = ['M', 'T', 'W', 'R', 'F'];
-    const dayMap = new Map<string, 'M' | 'T' | 'W' | 'R' | 'F'>(
+    const dayMap = new Map<string, shortday>(
       [
         ['Monday', 'M'],
         ['Tuesday', 'T'],
@@ -43,7 +44,7 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
       ]
     )
 
-    const cmpDay = (a: 'M' | 'T' | 'W' | 'R' | 'F', b: 'M' | 'T' | 'W' | 'R' | 'F') => {
+    const cmpDay = (a: shortday, b: shortday) => {
       if (shortDays.indexOf(a) < shortDays.indexOf(b)) return -1;
       else if (shortDays.indexOf(a) > shortDays.indexOf(b)) return 1;
       return 0;
@@ -60,8 +61,8 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
       return 0;
     }).forEach(block => {
       const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
-      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F']})
-      else retFormat[where].days.push(dayMap.get(block.weekday) as 'M' | 'T' | 'W' | 'R' | 'F');
+      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
+      else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
     })
 
     retFormat.forEach(block => {
