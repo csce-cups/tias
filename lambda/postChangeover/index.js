@@ -23,7 +23,8 @@ exports.handler = async (event) => {
         deleteTable('section_assignment'),
         deleteTable('section_meeting'),
         deleteTable('trade_request'),
-        deleteTable('course_section')
+        deleteTable('course_section'),
+        helper_functions.queryDB('ALTER SEQUENCE course_section_section_id_seq RESTART WITH 1')
     ])
 
     const add_sections = []
@@ -33,11 +34,14 @@ exports.handler = async (event) => {
         `
             INSERT INTO course_section (course_id, section_number, placeholder_professor_name)
             VALUES (\$1, \$2, \$3)
-            ON CONFLICT DO NOTHING
+            ON CONFLICT (course_id, section_number) DO NOTHING
             RETURNING section_id
         `,
-        [meeting.course_id, meeting.section_number, meeting.instructor]).then(rows => meeting.section_id = rows[0].section_id).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, `Couldn't Insert at least 1 Course Section`)))
-        
+        [meeting.course_id, meeting.section_number, meeting.instructor]).then(rows => eventBody.filter(m => m.course_id === meeting.course_id && m.section_number === meeting.section_number).forEach(m => {
+            if (rows[0]?.section_id)
+                m.section_id = rows[0].section_id
+        })).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, `Couldn't Insert at least 1 Course Section`)))
+
     }
 
     await Promise.all(add_sections)
@@ -50,6 +54,7 @@ exports.handler = async (event) => {
             `
                 INSERT INTO section_meeting (section_id, weekday, start_time, end_time, place, meeting_type)
                 VALUES (\$1, \$2, \$3, \$4, \$5, \$6)
+                ON CONFLICT DO NOTHING
             `,
             [meeting.section_id, day, meeting.start_time, meeting.end_time, meeting.room, meeting.meeting_type]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, `Couldn't Insert at least 1 Course Section Meeting`)))
         }
@@ -57,7 +62,7 @@ exports.handler = async (event) => {
 
     await Promise.all(add_section_meetings)
 
-    helper_functions.cleanup();
+    helper_functions.cleanup()
 
     return response;
 };

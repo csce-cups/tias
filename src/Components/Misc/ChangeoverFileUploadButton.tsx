@@ -187,6 +187,13 @@ const parseJSONFile = (jsonFileAsText: string, courses: Course[]): Meeting[] => 
         start_time: parse_time_json(jmeeting.meetingTime.beginTime),
         end_time: parse_time_json(jmeeting.meetingTime.endTime)
       }
+      if (datum.faculty?.length !== 0) {
+        meeting.instructor = datum.faculty.map(faculty => faculty.displayName).join(', ')
+      }
+      if (jmeeting.meetingTime.building !== null && jmeeting.meetingTime.room !== null) {
+        meeting.room = `${jmeeting.meetingTime.building} ${jmeeting.meetingTime.room}`
+      }
+
       const filtered_sections = courses.filter(course => course.department === meeting.department && course.course_number === meeting.course_number)
 
       if (filtered_sections.length === 0) continue;
@@ -292,8 +299,9 @@ const readInputFile = (file: File) => {
         if (btn !== null) btn.innerHTML = 'Upload Successful'
         setTimeout(() => {if(btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT}, 10000)
         alert('Courses Succesfully Loaded into the Database')
-      }).catch(() => {
+      }).catch((_err) => {
         if (btn !== null) btn.innerHTML = 'An error occurred.';
+        setTimeout(() => {if(btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT}, 10000)
       })
     } else {
       if (btn !== null) btn.innerHTML = 'Upload Cancelled'
