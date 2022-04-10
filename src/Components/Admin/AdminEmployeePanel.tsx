@@ -37,6 +37,7 @@ export const AdminEmployeePanel = () => {
   const [formAdminCheck, setFormAdminCheck] = useState<boolean>(false);
 
   const toggleCollapsed = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
     const btn = document.getElementById(rid);
     if (btn !== null) btn.innerHTML = "Register";
 
@@ -52,45 +53,55 @@ export const AdminEmployeePanel = () => {
 
 
   useEffect(() => {
-    document.getElementById('new-user-form-collapsable')?.classList.add('hidden');
+    if (collapsed) document.getElementById('new-user-form-collapsable')?.classList.add('hidden');
     API.fetchEveryone().then(res => {
       setEveryone(res);
     });
   }, [])
 
-  const registerUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const elementIds = ['email-register-text', 'fname-register-text', 'lname-register-text',
-      'pt-register-checkbox', 'ta-register-checkbox', 'prof-register-checkbox', 'admin-register-checkbox'];
-    const elements = elementIds.map(id => document.getElementById(id) as HTMLInputElement);
+  const registerUser = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const elementIds = ['email-register-text', 'fname-register-text', 'lname-register-text'];
+    const values = elementIds.map(id => (document.getElementById(id) as HTMLInputElement)?.value);
+    const expected = [/.*@tamu\.edu$/, /^[a-zA-Z\s]*$/, /^[a-zA-Z\s]*$/];
     const btn = document.getElementById(rid);
 
-    if (elements.splice(0, 3).some(e => e.value === '')) {
-      if (btn !== null) btn.innerHTML = 'You must specify a first name, last name, and an email';
+    if (values.some(e => e === '')) {
+      btn?.setAttribute('value', 'You must specify a first name, last name, and an email');
+      return;
+    } else if (values.some((e, i) => !expected[i].test(e))) {
+      const wrong = values.findIndex((e, i) => !expected[i].test(e));
+      if (wrong === 0) btn?.setAttribute('value', `"${values[wrong]}" is not a valid @tamu.edu email)`);
+      else btn?.setAttribute('value', `"${values[wrong]}" is not a valid name`);
+      return;
+    } else if (formAdminCheck) {
+      const text = `This action will give ${values[1]} ${values[2]} administrative privilages over the scheduler. \
+They will be able to run the scheduler, promote other users and delete them, and replace semester data. Are you sure you would like to give ${values[1]} ${values[2]} administrative privilages?`;
+      if (!window.confirm(text)) return;
     }
 
     const newUser: Person_INIT = {
-      email: elements[0].value,
-      firstName: elements[1].value,
-      lastName: elements[2].value,
-      isPeerTeacher: elements[3].checked,
-      isTeachingAssistant: elements[4].checked,
-      isProfessor: elements[5].checked,
-      isAdministrator: elements[6].checked
+      email: values[0],
+      firstName: values[1],
+      lastName: values[2],
+      isPeerTeacher: formPtCheck,
+      isTeachingAssistant: formTACheck,
+      isProfessor: formProfCheck,
+      isAdministrator: formAdminCheck
     }
     
-    if (btn !== null) btn.innerHTML = 'Registering...';
+    btn?.setAttribute('value', 'Registering...');
     API.registerNewUser(newUser).then(() => {
-      if (btn !== null) btn.innerHTML = 'Updating list...';
+      btn?.setAttribute('value', 'Updating list...');
       API.fetchEveryone().then(res => {
         setEmployees(res.filter(e => e.peer_teacher));
         setEveryone(res);
-        if (btn !== null) btn.innerHTML = 'Done!';
+        btn?.setAttribute('value', 'Done!');
       }).catch(() => {
-        if (btn !== null) btn.innerHTML = 'The user was registered, but there was an error updating the list. Please refresh the page.';
+        btn?.setAttribute('value', 'The user was registered, but there was an error updating the list. Please refresh the page.');
       })
       
     }).catch(() => {
-      if (btn !== null) btn.innerHTML = 'An error occurred.';
+      btn?.setAttribute('value', 'An error occurred.');
     });
   }
 
@@ -120,9 +131,9 @@ export const AdminEmployeePanel = () => {
           <div className="new-user-form hstack">
             <div className="vstack fill">
               <div className="hstack">
-                <input id="fname-register-text" type="text" pattern="/^[a-zA-Z\s]*$/" placeholder="First Name"/>
-                <input id="lname-register-text" type="text" pattern="/^[a-zA-Z\s]*$/" placeholder="Last Name"/>
-                <input id="email-register-text" type="text" pattern="/*.@tamu.edu" placeholder="email@tamu.edu"/>
+                <input id="fname-register-text" type="text" title="A first name must only contain letters" pattern="^[a-zA-Z\s]*$" placeholder="First Name"/>
+                <input id="lname-register-text" type="text" title="A last name must only contain letters" pattern="^[a-zA-Z\s]*$" placeholder="Last Name"/>
+                <input id="email-register-text" type="text" title="Only a tamu email may be registered" pattern=".*@tamu\.edu$" placeholder="email@tamu.edu"/>
               </div>
               <div className='hstack'>
                 <div className="fill">
@@ -145,7 +156,7 @@ export const AdminEmployeePanel = () => {
             </div>
           </div>
           <div className="hstack">
-            <button id={rid} className="short green button fill" onClick={registerUser} style={{padding: '0 5px'}}>Register</button>
+            <input onClick={e => registerUser(e)} id={rid} type="submit" className="short green button fill submit" value="Register" style={{padding: '0 5px'}}/>
           </div>
         </div>
 

@@ -57,7 +57,7 @@ export const ProfileForm = () => {
         {([quals, setQuals]) => (
           <div className={`${collapsed? "collapsed " : ""}form-body`}>
               {/* <div className="form-border"> */}
-                <form onSubmit={(e: any) => submit(e, setQuals)}>
+                <form onSubmit={(e) => submit(e, setQuals)}>
                   <div className="scrollable">
                     { (quals.length > 0)? 
                       quals.map((qual: APIUserQualification, idx: number) => (
