@@ -278,6 +278,12 @@ $google_bg: white;
 	transition: all .1s ease-in-out;
 }
 
+div.button, input.button {
+	display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .short {
 	height: 1.4em;
 	font-size: 1em;
@@ -1562,7 +1568,7 @@ img.back-arrow {
 
 		input.confirm[type="text"] {
 			width: auto;
-			margin: 0 20px;
+			margin: 0 10px;
 		}
 	}
 
@@ -1647,7 +1653,10 @@ img.back-arrow {
 		min-height: 0;
 		overflow: hidden;
 		max-height: 100%;
+		display: flex;
+		flex: 1 0 auto;
 		border-bottom: 1px solid $render_divider;
+		flex-direction: column;
 	}
 
 	.hidden {
@@ -1686,6 +1695,7 @@ img.back-arrow {
 	padding-bottom: 0;
 	overflow: hidden;
 	min-width: fit-content;
+	border: 1px solid $render_divider;
 }
 
 .course-delete:not(.prompt) {
@@ -1697,6 +1707,7 @@ img.back-arrow {
 	width: 0;
 	min-width: 0;
 	display: block;
+	border: 0;
 }
 
 .add-menu-container {

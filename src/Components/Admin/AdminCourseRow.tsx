@@ -46,20 +46,21 @@ export const AdminCourseRow: FC<Props> = ({course, isEditing, deleteSelf, isBott
         </div>
       </div>
       <div className="fill"/>
-      <button onClick={() => setIsPrompt(true)} 
+      <div onClick={() => setIsPrompt(true)} 
         className={`red button course-delete ${!isEditing? 'hidden' : ''} ${isPrompt? 'prompt' : ''} ${isBottom? 'bottom' : ''}`}
       >
         { isPrompt?
-          <div ref={ref}>
-            <div>
-              Are you sure you want to delete {course.department} {course.course_number}? 
-              If the semester data depends on this course, you will need to upload a new semester in order to repair it.
-            </div>
-            <div className="m10"/>
-            <div className="vstack">
+          <div ref={ref} className="vstack" style={{height: '100%'}}>
+            <div className="vstack" style={{height: '100%', padding: '10px'}}>
+              <div>
+                Are you sure you want to delete {course.department} {course.course_number}? 
+                If the semester data depends on this course, you will need to upload a new semester in order to repair it.
+              </div>
+              <div className="m10"/>
               Please enter {course.course_number} to confirm.
-              <input id={id} onChange={handleChange} type="text" className="confirm" placeholder={`Type ${course.course_number} to confirm`}/>
             </div>
+
+            <input id={id} onChange={handleChange} type="text" className="confirm" placeholder={`Type ${course.course_number} to confirm`}/>
             <div className="m10"/>
             <div className="hstack">
               <button disabled={buttonDisabled} className="short button fill onred" onClick={deleteSelf}>Delete</button>
@@ -68,7 +69,7 @@ export const AdminCourseRow: FC<Props> = ({course, isEditing, deleteSelf, isBott
           :
           <div>Delete</div>
         }
-      </button>
+      </div>
     </div>
   );
 };

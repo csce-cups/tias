@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect } from 'react'
+import React, { FC, ReactNode, useEffect, useState } from 'react'
 import uuid from '../../uuid';
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const Scrollable: FC<Props> = ({children, classes}) => {
-  const id = uuid();
+  const [id,] = useState(uuid());
 
   // https://css-tricks.com/scroll-shadows-with-javascript/
   useEffect(() => {
