@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import API, { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
 import { compressWeek } from "../../modules/BlockManipulation";
 import contexts from '../APIContext';
@@ -28,7 +28,11 @@ export const LabSwap = () => {
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const selectedTradeBlocksState = useState<Selections>({ offered: null, requested: null });
   
-  // JEREMY: Here's an example function to use as a button callback. Update the function called from API, and make sure the text is reasonable for whatever is going on
+  //Reset Button on new trade selection
+  useEffect(()=>{
+    const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
+    if (btn !== null && btn.innerHTML==="Done!") btn.innerHTML = "Request Trade";
+  }, [selectedTradeBlocksState])
   const submitTrade = () => {
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = 'Sending request...';

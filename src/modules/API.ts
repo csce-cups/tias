@@ -382,6 +382,7 @@ class API {
 			body: JSON.stringify(DATA)
 		}).then(() => {});
 	}
+	//used for both cancel and reject
 	static REJECT_TRADE = async (DATA: TradeRequest): Promise<void> => {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
 			method: 'PUT',
