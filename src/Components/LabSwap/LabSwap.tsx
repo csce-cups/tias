@@ -14,7 +14,10 @@ export interface Selections {
   offered: CourseBlock | null, //selected sections
   requested: CourseBlock | null,
 }
-
+interface Submission{
+  offered_id: number,
+  requested_id: number
+}
 
 export const selectedTradeBlocksContext = createContext<[Selections, React.Dispatch<React.SetStateAction<Selections>>]>([{ offered: null, requested: null }, 0 as any]);
 
@@ -26,7 +29,12 @@ export const LabSwap = () => {
   const submitTrade = () => {
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = 'Sending request...';
-    API.GENERIC_POST(undefined).then(resp => {
+    let temp = [selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested];
+    const data:Submission = {
+      offered_id: temp[0]?.section_id!,
+      requested_id: temp[1]?.section_id!
+    }
+    API.SUBMIT_TRADE(data).then(resp => {
       if (btn !== null) btn.innerHTML = 'Done!';
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
@@ -81,11 +89,32 @@ export const LabSwap = () => {
   }
 
   const reject = (trade: TradeRequest) => () =>{
-    //hit API
+    // const btn = document.getElementById('reject-trade-btn') as HTMLButtonElement;
+    // if (btn !== null) btn.innerHTML = 'Sending request...';
+    trade.request_status="Rejected";
+    API.REJECT_TRADE(trade).then(resp => {
+      // if (btn !== null) btn.innerHTML = 'Done!';
+    }).catch(() => {
+      // if (btn !== null) btn.innerHTML = 'An error occurred';
+    })
   }
-
+  const cancel = (trade: TradeRequest) => () =>{
+    // const btn = document.getElementById('reject-trade-btn') as HTMLButtonElement;
+    // if (btn !== null) btn.innerHTML = 'Sending request...';
+    trade.request_status="Cancelled";
+    API.REJECT_TRADE(trade).then(resp => {
+      // if (btn !== null) btn.innerHTML = 'Done!';
+    }).catch(() => {
+      // if (btn !== null) btn.innerHTML = 'An error occurred';
+    })
+  }
   const accept = (trade: TradeRequest) => () =>{
+    trade.request_status="Accepted";
 
+    API.ACCEPT_TRADE(trade).then(resp => {
+    }).catch(() => {
+     
+    })
   }
 
 
@@ -107,11 +136,11 @@ export const LabSwap = () => {
     }
     let actions=null;
     if(action!==null){
-      if(action==='Pending'){ //action is cancel
+      if(action==='Pending'){ //we sent this out, action is cancel
         actions=(<div>
-          <button onClick={reject(request)}>Cancel</button>
+          <button onClick={cancel(request)}>Cancel</button>
         </div>);
-      }else if(action==='Outstanding'){ //actions are accept and reject
+      }else if(action==='Outstanding'){ //incoming requests, so actions are accept and reject
         actions=(<div>
           <button onClick={accept(request)}>Accept</button>
           <button onClick={reject(request)}>Reject</button>
@@ -140,7 +169,10 @@ export const LabSwap = () => {
         </div>
         <contexts.userTrades.Consumer>
           {([trades,]) => {
-            if (trades.length === 0) {
+            if(trades===undefined){
+              return <></>
+            }
+            else if (trades.length === 0) {
               return <></>
             } else {
               return (

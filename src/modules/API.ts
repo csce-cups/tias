@@ -99,15 +99,18 @@ export interface APIReturn {
 export const parseCookie: any = () => {
 	return (
 		document.cookie
-			.split(';')
-			.map(v => v.split('='))
-			.reduce((acc: any, v) => {
-				acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+			?.split(';')
+			?.map(v => v.split('='))
+			?.reduce((acc: any, v) => {
+				acc[decodeURIComponent(v[0]?.trim())] = decodeURIComponent(v[1]?.trim());
 				return acc;
 			}, {})
 	)
 }
-
+interface Submission{
+	offered_id: number,
+	requested_id: number
+}
 class API {
 	static fetchAll = (): APIReturn => {
 		let id = undefined;
@@ -346,12 +349,30 @@ class API {
 		JEREMY: This is the basic layout of an API POST. Change the function name, the parameter and it's type, the URL, and the "THING" field to what the API expects.
 	*/
 	static GENERIC_POST = async (DATA: any): Promise<void> => {
-		return fetch('YOUR URL HERE', {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
 			method: 'POST',
 			body: JSON.stringify({"THING": DATA})
 		}).then(() => {});
 	}
-
+	
+	static SUBMIT_TRADE = async (DATA: Submission): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+			method: 'POST',
+			body: JSON.stringify({"trade_request": DATA})
+		}).then(() => {});
+	}
+	static ACCEPT_TRADE = async (DATA: TradeRequest): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+			method: 'PUT',
+			body: JSON.stringify({"trade_request": DATA})
+		}).then(() => {});
+	}
+	static REJECT_TRADE = async (DATA: TradeRequest): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+			method: 'PUT',
+			body: JSON.stringify({"trade_request": DATA})
+		}).then(() => {});
+	}
 	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
 		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
 			method: 'GET'
