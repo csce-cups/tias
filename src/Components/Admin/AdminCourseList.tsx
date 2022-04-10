@@ -31,12 +31,12 @@ export const AdminCourseList = () => {
   }, []);
 
   const deleteCourse = (course: Course, btn: EventTarget & HTMLButtonElement) => {
-    if (!window.confirm(`Are you sure you want to delete ${course.department} ${course.course_number}?
-If the semester data depends on this course, you will need to upload a new semester in order to repair it.`)) return;
-
     btn.innerHTML = "Deleting...";
     API.deleteCourse(course.course_id).then(() => {
       btn.innerHTML = "Done!";
+      setTimeout(() => {
+        btn.classList.remove("prompt");
+      }, 500);
       setTimeout(() => {
         API.getCourses().then(res => {
           setCourses(res);
@@ -113,8 +113,8 @@ If the semester data depends on this course, you will need to upload a new semes
         >Edit Courses</button>
       </div>
       <div className="scrollable">
-        { courses.map(c =>
-          <AdminCourseRow key={JSON.stringify(c)} course={c} isEditing={isEditing} deleteSelf={
+        { courses.sort((a, b) => a.course_number.localeCompare(b.course_number)).map((c, i) =>
+          <AdminCourseRow key={JSON.stringify(c)} course={c} isBottom={courses.length - i < 5} isEditing={isEditing} deleteSelf={
             (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
               deleteCourse(c, e.currentTarget);
             }
