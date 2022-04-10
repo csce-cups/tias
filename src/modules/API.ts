@@ -424,6 +424,12 @@ class API {
 		}).then(() => {});
 	}
 
+	static deleteCourse = async (course_id: number) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses/${course_id}`, {
+			method: 'DELETE'
+		}).then(() => {});
+	}
+
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {

@@ -4,9 +4,10 @@ import { Course, CourseBlock } from "../../modules/API";
 interface Props {
   course: Course
   isEditing: boolean
+  deleteSelf: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
-export const AdminCourseRow: FC<Props> = ({course, isEditing}) => {
+export const AdminCourseRow: FC<Props> = ({course, isEditing, deleteSelf}) => {
   return (
     <div className="course-row hstack">
       <div className="vstack">
@@ -18,7 +19,7 @@ export const AdminCourseRow: FC<Props> = ({course, isEditing}) => {
         </div>
       </div>
       <div className="fill"/>
-      <button className={`red button course-delete ${!isEditing? 'hidden' : ''}`}>Delete</button>
+      <button onClick={deleteSelf} className={`red button course-delete ${!isEditing? 'hidden' : ''}`}>Delete</button>
     </div>
   );
 };

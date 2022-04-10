@@ -30,6 +30,21 @@ export const AdminCourseList = () => {
     });
   }, []);
 
+  const deleteCourse = (course: Course, btn: EventTarget & HTMLButtonElement) => {
+    if (!window.confirm(`Are you sure you want to delete ${course.department} ${course.course_number}?
+If the semester data depends on this course, you will need to upload a new semester in order to repair it.`)) return;
+
+    btn.innerHTML = "Deleting...";
+    API.deleteCourse(course.course_id).then(() => {
+      btn.innerHTML = "Done!";
+      setTimeout(() => {
+        API.getCourses().then(res => {
+          setCourses(res);
+        });
+      }, 1000);
+    });
+  };
+
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const btn = document.getElementById("submit-new-course-button") as HTMLButtonElement;
@@ -77,7 +92,7 @@ export const AdminCourseList = () => {
     <div className="vstack inner-content">
       <h2 className="panel-title">Courses</h2>
       <span>These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
-      <div className="hstack" style={{margin: '0 5px'}}>
+      <div className="hstack header-end">
         <div className="vstack fill">
           <button style={{height: '30px', padding: '0 5px', zIndex: '3'}} className="short green button fill" onClick={() => setShowMenu(true)}>Add Course</button>
           <div ref={ref} className="add-menu-container">
@@ -91,11 +106,19 @@ export const AdminCourseList = () => {
             </form>
           </div>
         </div>
-        <button onClick={() => setIsEditing(!isEditing)} style={{height: '30px', padding: '0 5px'}} className="short purple button">Edit Courses</button>
+        <button 
+          onClick={() => setIsEditing(!isEditing)} 
+          style={{height: '30px', padding: '0 5px'}} 
+          className={`short purple button ${isEditing? 'toggled' : ''}`}
+        >Edit Courses</button>
       </div>
       <div className="scrollable">
         { courses.map(c =>
-          <AdminCourseRow key={JSON.stringify(c)} course={c} isEditing={isEditing}/>
+          <AdminCourseRow key={JSON.stringify(c)} course={c} isEditing={isEditing} deleteSelf={
+            (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+              deleteCourse(c, e.currentTarget);
+            }
+          }/>
         )}
       </div>
     </div>
