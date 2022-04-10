@@ -17,10 +17,10 @@ export const App = () => {
           < NavBar />
           <Routes>
             <Route path='/' element={<Landing/>} />
-            <Route path='/Scheduling' element={<Scheduling/>} />
-            <Route path='/Profile' element={<Profile/>} />
-            <Route path='/Labswap' element={<LabSwapPage/>} />
-            <Route path='/Admin' element={<AdminPage/>} />
+            <Route path='/scheduling' element={<Scheduling/>} />
+            <Route path='/profile' element={<Profile/>} />
+            <Route path='/labswap' element={<LabSwapPage/>} />
+            <Route path='/admin' element={<AdminPage/>} />
           </Routes>
         </Router>
       </APIContext>

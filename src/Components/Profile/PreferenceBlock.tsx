@@ -65,7 +65,9 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
   }
 
   const resName = (prof: string) => {
-    if (prof !== "") {
+    if (prof === "TBA") {
+      return '(professor TBA)';
+    } else if (prof !== "") {
       return `with ${prof} `;
     } else {
       return '';

@@ -74,7 +74,9 @@ export const LabSwapBlock: FC<Props> = ({visible, size, inline, edge, bottom, da
   });
 
   const resName = (prof: string) => {
-    if (prof !== "") {
+    if (prof === "TBA") {
+      return '(professor TBA)';
+    } else if (prof !== "") {
       return `with ${prof} `;
     } else {
       return '';

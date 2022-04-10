@@ -215,7 +215,7 @@ class API {
 						weekday: e.weekday,
 						place: e.place,
 						scheduled: null,
-						professor: e.placeholder_professor_name
+						professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name
 					}))
 					:
 					[]
@@ -291,7 +291,7 @@ class API {
 					weekday: e.weekday,
 					place: e.place,
 					scheduled: null,
-					professor: e.placeholder_professor_name
+					professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name
 				})
 
 				dataStrict.forEach((b: raw_APICourseBlock) => {
