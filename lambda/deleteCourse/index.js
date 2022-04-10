@@ -5,6 +5,8 @@ exports.handler = async (event) => {
     
     let accessHeader = null;
     
+    // Enable CORS for the requesting domain, if the domain
+    // is one that we expect.
     if (event.headers.origin === 'https://www.csce-scheduler.com') {
         accessHeader = 'https://www.csce-scheduler.com';
     }
@@ -19,6 +21,8 @@ exports.handler = async (event) => {
                      "Access-Control-Allow-Origin": accessHeader }
     };
     
+    // Query all course sections associated with
+    // the course being deleted.
     const dbQuerySections = `SELECT section_id
                              FROM course_section
                              WHERE course_id = $1`;
@@ -26,9 +30,15 @@ exports.handler = async (event) => {
     
     let sectionIDObjs = await helper_functions.queryDB(dbQuerySections, params).catch((err) => {
         helper_functions.GenerateErrorResponseAndLog(err, response, 'Failed to query sections associated with specified course.');
-        return response;
     });
     
+    if (response.statusCode === 500) {
+        return response;
+    }
+    
+    // If course sections existed for the course being deleted,
+    // then delete all records in our database relevant to the
+    // respective sections.
     if (sectionIDObjs.length !== 0) {
         let sectionIDs = sectionIDObjs.map((sectionIDObj) => sectionIDObj.section_id);
     
@@ -44,20 +54,28 @@ exports.handler = async (event) => {
         for (const dbQuery of dbQueries) {
             await helper_functions.queryDB(dbQuery, params).catch((err) => {
                 helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to delete course and associated dependencies.');
-                return response;
             });
+            
+            if (response.statusCode === 500) {
+                return response;
+            }
         }
     }
-
+    
     let dbQueries = ['DELETE FROM qualification WHERE course_id = $1',
                      'DELETE FROM course WHERE course_id = $1'];
     params = [courseId];
     
+    // Delete records related to the course itself, rather than
+    // the course's sections to finish deletion.
     for (const dbQuery of dbQueries) {
         await helper_functions.queryDB(dbQuery, params).catch((err) => {
             helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to delete course and associated dependencies.');
-            return response;
         });
+        
+        if (response.statusCode === 500) {
+            return response;
+        }
     }
 
     return response;

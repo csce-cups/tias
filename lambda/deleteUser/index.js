@@ -30,8 +30,11 @@ exports.handler = async (event) => {
     for (const dbQuery of dbQueries) {
         await helper_functions.queryDB(dbQuery, params).catch((err) => {
             helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to delete user and associated dependencies.');
-            return response;
         });
+        
+        if (response.statusCode === 500) {
+            return response;
+        }
     }
 
     return response;

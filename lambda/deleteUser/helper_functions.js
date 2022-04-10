@@ -8,7 +8,7 @@
 const awsSDK = require('aws-sdk');
 awsSDK.config.update({ region: 'us-east-1' });
 
-const { Client } = require('pg')
+const { Client } = require('pg');
 
 const sysManagerClient = new awsSDK.SSM();
 
