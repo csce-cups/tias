@@ -23,13 +23,14 @@ export const Scrollable: FC<Props> = ({children, classes, deps}) => {
       shadowBtm.style.opacity = "0";
     }
     
-    function callback(this: HTMLElement, ev: Event) {
+    function callback(this: HTMLElement, ev?: Event) {
       const currentScroll = this.scrollTop / (contentScrollHeight);  
       shadowTop.style.opacity = `${currentScroll}`;
       shadowBtm.style.opacity = `${1 - currentScroll}`;
     }
 
     content.addEventListener('scroll', callback);
+    content.dispatchEvent(new Event('scroll'));
 
     return () => content.removeEventListener('scroll', callback);
 

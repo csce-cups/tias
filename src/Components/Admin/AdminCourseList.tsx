@@ -114,7 +114,7 @@ export const AdminCourseList = () => {
           onClick={() => setIsEditing(!isEditing)} style={courseBtnStyles} className={`short purple button ${isEditing? 'toggled' : ''}`}
         >Edit Courses</button>
       </div>
-      < Scrollable >
+      < Scrollable deps={[courses]}>
         { courses.sort((a, b) => a.course_number.localeCompare(b.course_number)).map((c, i) =>
           <AdminCourseRow key={JSON.stringify(c)} course={c} isBottom={courses.length - i < 5} isEditing={isEditing} deleteSelf={
             (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
