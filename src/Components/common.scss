@@ -3,6 +3,7 @@
 $green : #79ca42;
 $blue : #33ACE3;
 $accent : #800000;
+$maroon : #800000;
 $render_background : #d3dbdc;
 $render_divider : #85929C;
 $light : white;
@@ -193,6 +194,15 @@ $google_bg: white;
 	cursor: pointer;
 }
 
+.maroon {
+	background-color: $maroon;
+	color: white;
+}
+
+.maroon:hover {
+	background-color: darken($maroon, 8%);
+	cursor: pointer;
+}
 
 .button {
 	border: 0px solid black;
@@ -205,6 +215,18 @@ $google_bg: white;
 	font-size: 16px;
 
 	border-radius: 5px;
+
+	transition: all .1s ease-in-out;
+}
+
+.button2 {
+	border: 1px solid black;
+	margin: 7px;
+
+	height: 40px;
+	padding: 10px;
+
+	font-size: 20px;
 
 	transition: all .1s ease-in-out;
 }
@@ -1127,6 +1149,27 @@ img.back-arrow {
 	display: flex;
 	position: relative;
 	border: 2px solid black;
+}
+
+img#landing {
+	width: 100vw;
+	position: absolute;
+	object-fit: cover;
+	overflow: hidden;
+}
+
+.landing-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+
+.background-image {
+	background-image: url(rick2.jpg.png);
+	background-color: transparent;
+	height: 100%;
 }
 
 .schedule-info-container {
