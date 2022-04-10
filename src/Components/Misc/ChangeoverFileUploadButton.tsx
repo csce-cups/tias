@@ -280,37 +280,40 @@ const readInputFile = (file: File) => {
   fileReader.onload = async () => {
     if (fileReader.result === null) return;
 
-    const btn = document.getElementById('upload-semester-button') as HTMLButtonElement;
-    if (btn !== null) btn.innerHTML = 'Reading File...';
-
+    let btn = document.getElementById('upload-semester-button') as HTMLDivElement;
+    if (btn !== null) btn.textContent = 'Reading File...';
 
     const courses: Course[] = (await axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses")).data
 
     let meetings: Meeting[]
-    if (['csv', 'text/csv'].includes(file.type))
+    if (['csv', 'application/csv', 'text/csv'].includes(file.type))
       meetings = parseCSVFile(fileReader.result as string, courses);
-    else if (['json', 'application/json'].includes(file.type))
+    else if (['json', 'application/json', 'text/json'].includes(file.type))
       meetings = parseJSONFile(fileReader.result as string, courses);
     else
       return;
 
     if (window.confirm('If you upload this schedule, all of the data related to the current semester will be irrevocably destroyed.\n\nDo you wish to continue?')) {
-      if (btn !== null) btn.innerHTML = 'Sending Courses...'
+      btn = document.getElementById('upload-semester-button') as HTMLDivElement;
+      if (btn !== null) btn.textContent = 'Sending Courses...'
       API.sendNewMeetings(meetings).then((_response) => {
-        if (btn !== null) btn.innerHTML = 'Upload Successful'
-        setTimeout(() => { if (btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT }, 10000)
+        btn = document.getElementById('upload-semester-button') as HTMLDivElement;
+        if (btn !== null) btn.textContent = 'Upload Successful'
+        setTimeout(() => { if (btn !== null) btn.textContent = DEFAULT_BUTTON_TEXT }, 10000)
         alert('Courses Succesfully Loaded into the Database')
       }).catch((_err) => {
-        if (btn !== null) btn.innerHTML = 'An error occurred.';
-        setTimeout(() => { if (btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT }, 10000)
+        btn = document.getElementById('upload-semester-button') as HTMLDivElement
+        if (btn !== null) btn.textContent = 'An error occurred.';
+        setTimeout(() => { if (btn !== null) btn.textContent = DEFAULT_BUTTON_TEXT }, 10000)
       })
     } else {
-      if (btn !== null) btn.innerHTML = 'Upload Cancelled'
-      setTimeout(() => { if (btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT }, 10000)
+      btn = document.getElementById('upload-semester-button') as HTMLDivElement
+      if (btn !== null) btn.textContent = 'Upload Cancelled'
+      setTimeout(() => { if (btn !== null) btn.textContent = DEFAULT_BUTTON_TEXT }, 10000)
     }
-
-    fileReader.readAsText(file);
   }
+
+  fileReader.readAsText(file);
 }
 
 export const ChangeoverFileUploadButton = () => {
@@ -361,8 +364,8 @@ export const ChangeoverFileUploadButton = () => {
 
   return (
     <div className="admin-changeover">
-      <input type="file" accept=".csv,text/csv,.json,application/json" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }} />
-      <div id="upload-semester-button" className={`red button full ${prompt ? 'inline-prompt' : ''}`} style={{ padding: '0 10px' }} onClick={() => setPrompt(true)}>
+      <input type="file" accept=".csv,text/csv,application/csv,.json,application/json,text/json" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }} />
+      <div className={`red button full ${prompt ? 'inline-prompt' : ''}`} style={{ padding: '0 10px' }} onClick={() => setPrompt(true)}>
         {prompt ?
           <div ref={clickRef} className="vstack" style={{ height: '100%' }}>
             <div className="vstack" style={{ height: '100%', padding: '10px' }}>
@@ -383,7 +386,7 @@ export const ChangeoverFileUploadButton = () => {
             <div className="m5" />
           </div>
           :
-          <div className="vstack" style={{ height: '100%', justifyContent: 'center' }}>
+          <div id="upload-semester-button" className="vstack" style={{ height: '100%', justifyContent: 'center' }}>
             {DEFAULT_BUTTON_TEXT}
           </div>
         }
