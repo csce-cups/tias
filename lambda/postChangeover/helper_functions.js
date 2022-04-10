@@ -75,14 +75,9 @@ const queryDB = async (dbQuery, params) => {
   
   return await client
     .query(dbQuery, params)
-    .then((dbResponse) => {
-        client.release();
-        return dbResponse.rows;
-    })
-    .catch((error) => {
-        client.release();
-        console.error(error);
-    });
+    .then(dbResponse => dbResponse.rows)
+    .catch(error => console.error(error))
+    .finally(() => client.release());
 };
 
 const GenerateErrorResponseAndLog = (err, response, msg) => {
@@ -92,6 +87,6 @@ const GenerateErrorResponseAndLog = (err, response, msg) => {
     response.body = JSON.stringify({err: msg});
 };
 
-const cleanup = () => pool.end().then(() => console.log('pool has drained'))
+const cleanup = () => pool.end().then(() => {pool = null; console.log('pool has drained')})
 
 module.exports = { cleanup, prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };

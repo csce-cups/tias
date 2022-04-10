@@ -45,7 +45,7 @@ export const ExportFileButton = () => {
   return (
     <div className="admin-changeover">
       <a download="exported_schedule.csv" ref={fileExportRef} style={{ display: "none" }}/>
-      <button id="upload-semester-button" className="blue button full" style={{marginTop: '0', marginBottom: '0'}} onClick={handleClick}>Export Schedule as CSV</button>
+      <button id="export-courses-button" className="blue button full" style={{marginTop: '0', marginBottom: '0'}} onClick={handleClick}>Export Schedule as CSV</button>
     </div>
   );
 }
