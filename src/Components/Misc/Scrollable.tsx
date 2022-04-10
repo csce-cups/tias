@@ -4,9 +4,10 @@ import uuid from '../../uuid';
 interface Props {
 	children: ReactNode;
   classes?: string;
+  deps?: any[];
 }
 
-export const Scrollable: FC<Props> = ({children, classes}) => {
+export const Scrollable: FC<Props> = ({children, classes, deps}) => {
   const [id,] = useState(uuid());
 
   // https://css-tricks.com/scroll-shadows-with-javascript/
@@ -33,7 +34,7 @@ export const Scrollable: FC<Props> = ({children, classes}) => {
     return () => content.removeEventListener('scroll', callback);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children])
+  }, [children, ...(deps? deps : [])]);
 
   return (
     <div id={`sw-${id}`} className="scrollable-wrapper">

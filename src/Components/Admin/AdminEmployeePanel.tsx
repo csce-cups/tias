@@ -168,25 +168,25 @@ They will be able to run the scheduler, promote other users and delete them, and
 
         <div className="m5"/>
         
-        < Scrollable classes={"vstack"} >
           { (everyone.length > 0)?
             (everyone[0].person_id !== -1)?
-              everyone.sort(algs[sortAlg as K]).map((employee, i) => (
-                <AdminEmployee key={JSON.stringify(employee)} employee={employee} setEmployee={(subject: Person | null) => {
-                  if (subject === null) {
-                    setEmployees(employees.filter(e => e.person_id !== employee.person_id));
-                    API.fetchEveryone().then(res => {
-                      setEveryone(res);
-                    });
-                  } else setEmployees(employees.map(e => e.person_id === subject.person_id ? subject : e));
-                }}/>
-              ))
+              < Scrollable classes={"vstack"} deps={[employees]}>
+                { everyone.sort(algs[sortAlg as K]).map((employee, i) => (
+                  <AdminEmployee key={JSON.stringify(employee)} employee={employee} setEmployee={(subject: Person | null) => {
+                    if (subject === null) {
+                      setEmployees(employees.filter(e => e.person_id !== employee.person_id));
+                      API.fetchEveryone().then(res => {
+                        setEveryone(res);
+                      });
+                    } else setEmployees(employees.map(e => e.person_id === subject.person_id ? subject : e));
+                  }}/>
+                ))}
+              </Scrollable>
               :
               <div className="loading">Loading...</div>
             :
             <div className="loading">Nothing to show.</div>
           }
-        </Scrollable>
       </div>
     </div>
   )
