@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
+import API, { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
 import { compressWeek } from "../../modules/BlockManipulation";
 import contexts from '../APIContext';
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
@@ -22,14 +22,15 @@ export const LabSwap = () => {
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const selectedTradeBlocksState = useState<Selections>({ offered: null, requested: null });
   
-  const submitTrade = () => {//post to API
+  // JEREMY: Here's an example function to use as a button callback. Update the function called from API, and make sure the text is reasonable for whatever is going on
+  const submitTrade = () => {
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = 'Sending request...';
-    // API.sendThing.then(resp => {
-      
-    //   if (btn !== null) btn.innerHTML = 'Done!';
-    // });
-    if (btn !== null) btn.innerHTML = 'Done!';
+    API.GENERIC_POST(undefined).then(resp => {
+      if (btn !== null) btn.innerHTML = 'Done!';
+    }).catch(() => {
+      if (btn !== null) btn.innerHTML = 'An error occurred';
+    })
   };
 
   const userId = +parseCookie().tias_user_id;
@@ -79,7 +80,16 @@ export const LabSwap = () => {
     return retFormat;
   }
 
-  const renderSwapSets = (retData: TradeRequest[], filter: (request: TradeRequest) => boolean) => retData.filter(filter).map((request) => {
+  const reject = (trade: TradeRequest) => () =>{
+    //hit API
+  }
+
+  const accept = (trade: TradeRequest) => () =>{
+
+  }
+
+
+  const renderSwapSets = (retData: TradeRequest[], action:"Outstanding" | "Pending" | null, filter: (request: TradeRequest) => boolean) => retData.filter(filter).map((request) => {
     const allBlocks = renderScheduled(viableBlockWeek); // For easier iteration
     let sent: DisplayBlock | null = null
     let received: DisplayBlock | null = null
@@ -95,8 +105,24 @@ export const LabSwap = () => {
     if (request.person_id_receiver === userId) {
       [received, sent] = [sent, received]
     }
+    let actions=null;
+    if(action!==null){
+      if(action==='Pending'){ //action is cancel
+        actions=(<div>
+          <button onClick={reject(request)}>Cancel</button>
+        </div>);
+      }else if(action==='Outstanding'){ //actions are accept and reject
+        actions=(<div>
+          <button onClick={accept(request)}>Accept</button>
+          <button onClick={reject(request)}>Reject</button>
+        </div>)
+      }
+    }
     return (
-      < SwapSet selected={[sent, received]} />
+      <>
+        < SwapSet selected={[sent, received]} />
+        {actions}
+      </>
     )
     })
 
@@ -121,21 +147,22 @@ export const LabSwap = () => {
                 <div className="scrollable">
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Outstanding Requests </div>
-                      {renderSwapSets(trades, request => request.person_id_receiver === userId && request.request_status === 'Pending')}
+                      {renderSwapSets(trades, 'Pending', request => request.person_id_receiver === userId && request.request_status === 'Pending')}
                   </div>
 
                   <div className="swap-divider"/>
 
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Sent Requests </div>
-                      {renderSwapSets(trades, request => request.person_id_sender === userId && request.request_status === 'Pending')}
+                      {renderSwapSets(trades, 'Outstanding', request => request.person_id_sender === userId && request.request_status === 'Pending')}
+
                   </div>
 
                   <div className="swap-divider"/>
 
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Past Requests </div>
-                      {renderSwapSets(trades, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status !== 'Pending')}
+                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status !== 'Pending')}
                   </div>
                 </div>
               )
