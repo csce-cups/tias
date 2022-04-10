@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
-  const [blocks, _] = useContext(contexts.blocks);
+  const [blocks, ] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
   const filterActual = options?.filter?.[0] ?? filter;
 

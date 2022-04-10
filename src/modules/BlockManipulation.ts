@@ -5,6 +5,7 @@ export interface CompressedCourseBlock extends CourseBlock {
   professors: string[]
   section_ids: number[]
   locations: string[]
+	scheduledAll: number[][]
 }
 
 export const cmp = (course1: CompressedCourseBlock, course2: CourseBlock) => {
@@ -38,7 +39,8 @@ export const compressDay = (courses: Array<CourseBlock> | null | undefined) => {
       section_numbers: [c.section_number],
       section_ids: [c.section_id],
       professors: [c.professor],
-      locations: [c.place]
+      locations: [c.place],
+      scheduledAll: (c.scheduled)? [c.scheduled] : []
     });
 
     fidx++; //update to the newly added index
@@ -49,6 +51,7 @@ export const compressDay = (courses: Array<CourseBlock> | null | undefined) => {
       compressed[fidx].section_ids.push(courses[cidx].section_id);
       compressed[fidx].professors.push(courses[cidx].professor);
       compressed[fidx].locations.push(courses[cidx].place);
+      if (courses[cidx].scheduled) compressed[fidx].scheduledAll.push(courses[cidx].scheduled!);
       cidx++;
     }
   }

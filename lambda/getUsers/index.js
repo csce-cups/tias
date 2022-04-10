@@ -1,17 +1,40 @@
 const helper_functions = require("./helper_functions");
 
-const constructDBQuery = (userId, userTypes, params) => {
+let params = [];
+let paramIndex = 1;
+
+const constructDBQuery = (userId, userEmail, userFirstName, userLastName, userTypes) => {
     let baseQuery = `
         SELECT person_id, email, first_name, last_name, profile_photo_url,
-            peer_teacher, teaching_assistant, administrator, professor
-        FROM person`;
+               desired_number_assignments, peer_teacher, teaching_assistant, 
+               administrator, professor
+            FROM person`;
     
     let whereClause = " WHERE ";
     let conditions = [];
     
     if (userId) {
-        conditions.push("person_id = $1");
+        conditions.push(`person_id = $${paramIndex}`);
+        paramIndex++;
         params.push(userId);
+    }
+    
+    if (userEmail) {
+        conditions.push(`email = $${paramIndex}`);
+        paramIndex++;
+        params.push(userEmail);
+    }
+    
+    if (userFirstName) {
+        conditions.push(`first_name ILIKE $${paramIndex}`);
+        paramIndex++;
+        params.push(userFirstName);
+    }
+    
+    if (userLastName) {
+        conditions.push(`last_name ILIKE $${paramIndex}`);
+        paramIndex++;
+        params.push(userLastName);
     }
     
     if (userTypes) {
@@ -51,26 +74,31 @@ const constructDBQuery = (userId, userTypes, params) => {
 };
 
 exports.handler = async (event) => {
-    let userId = event?.pathParameters?.userId;
-    let userTypes = event?.multiValueQueryStringParameters?.userType;
+    let userId        = event?.pathParameters?.userId;
+    let userTypes     = event?.multiValueQueryStringParameters?.usertype;
+    let userFirstName = event?.queryStringParameters?.firstname;
+    let userLastName  = event?.queryStringParameters?.lastname;
+    let userEmail     = event?.queryStringParameters?.email;
     
-    let params = [];
-    let dbQuery = constructDBQuery(userId, userTypes, params);
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json", 
+                     "Access-Control-Allow-Origin": "http://localhost:3000" },
+    };
     
-    console.log(dbQuery);
+    params = [];
+    let dbQuery = constructDBQuery(userId, userEmail, userFirstName, userLastName, userTypes);
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
+    let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, "Unable to retrieve specified user.");
+        return response;
+    });
     
     const responseBody = {
         "users": dbRows
     };
 
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify(responseBody)
-    };
-
+    response.body = JSON.stringify(responseBody);
     return response;
 };

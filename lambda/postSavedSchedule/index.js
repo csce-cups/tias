@@ -3,9 +3,6 @@ const helper_functions = require("./helper_functions");
 exports.handler = async (event) => {
     let scheduledObj = JSON.parse(event.body).scheduled;
 
-    let dbQuery = `DELETE FROM section_assignment`;
-    let params = [];
-
     const response = {
         "isBase64Encoded": false,
         "statusCode": 200,
@@ -13,15 +10,20 @@ exports.handler = async (event) => {
         "body": JSON.stringify({})
     };
 
-    await helper_functions.queryDB(dbQuery, params).catch(err => {
+    await helper_functions.queryDB(`DELETE FROM section_assignment`, []).catch(err => {
         response.statusCode = 500;
         response.body = JSON.stringify({err: "Failed to delete the old schedule."});
     })
+
+    await helper_functions.queryDB(`DELETE FROM trade_request`, []).catch(err => {
+        response.statusCode = 500;
+        response.body = JSON.stringify({err: "Failed to delete the old trade requests."});
+    })
     
-    dbQuery = `INSERT INTO section_assignment
+    let dbQuery = `INSERT INTO section_assignment
                 VALUES
                 `;
-    
+    let params = []
     let dbParams = []
 
     let paramIndex = 1;

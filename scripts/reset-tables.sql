@@ -4,7 +4,7 @@ CREATE TYPE preference AS ENUM
 
 DROP TYPE IF EXISTS request_status CASCADE;
 CREATE TYPE request_status AS ENUM
-    ('Pending', 'Accepted', 'Rejected');
+    ('Pending', 'Accepted', 'Rejected', 'Cancelled');
 
 DROP TYPE IF EXISTS weekday CASCADE;
 CREATE TYPE weekday AS ENUM
