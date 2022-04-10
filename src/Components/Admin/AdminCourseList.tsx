@@ -22,8 +22,8 @@ export const AdminCourseList = () => {
 
   return (
     <div className="vstack inner-content">
-      <h2 className="panel-title">Possible Courses</h2>
-      <span>These are the courses that will be added when you upload a new semester</span>
+      <h2 className="panel-title">Courses</h2>
+      <span>These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester</span>
       { Array.from(Array(count).keys()).map(i => 
         (courses[i] === '')? <></> :
         <AdminCourseRow key={i} valueState={[courses, setCourses, i]} countState={[count, setCount]}/>

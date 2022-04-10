@@ -12,7 +12,6 @@ interface Props {
 export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee: setEmployee_super}) => {
   const id = uuid();
   const did = uuid();
-  const tid = uuid();
   const user = useContext(contexts.user);
   const [collapsed, setCollapsed] = useState(true);
   const employeeState = useState<Person>(employee_super);
@@ -77,7 +76,7 @@ They will be able to run the scheduler, promote other users and delete them, and
     if (btn !== null) btn.innerHTML = 'Deleting...';
     API.deleteUser(employee.person_id).then(() => {
       if (btn !== null) btn.innerHTML = 'Deleted!';
-      
+
       setTimeout(() => {
         setCollapsed(true);
       }, 1000);
