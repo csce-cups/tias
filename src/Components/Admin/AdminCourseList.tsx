@@ -1,33 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
-import { CourseBlock } from "../../modules/API";
+import API, { Course } from "../../modules/API";
 import contexts from "../APIContext";
 import { AdminCourseRow } from "./AdminCourseRow";
 
 export const AdminCourseList = () => {
-  const [count, setCount] = useState<number>(1);
   const [blocks, ] = useContext(contexts.blocks);
-  const [courses, setCourses] = useState<string[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
   
   useEffect(() => {
-    let course_set = new Set<string>();
-    const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
-    allBlocks.forEach((blocks: CourseBlock[] | null) => {
-      blocks?.forEach((block: CourseBlock) => {
-        course_set.add(`${block.course_number}`);
-      })
-    })
-    setCount(course_set.size + 1);
-    setCourses(Array.from(course_set).sort());
-  }, [blocks]);
+    API.getCourses().then(res => {
+      setCourses(res);
+    });
+  }, []);
 
   return (
     <div className="vstack inner-content">
       <h2 className="panel-title">Courses</h2>
-      <span>These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester</span>
-      { Array.from(Array(count).keys()).map(i => 
-        (courses[i] === '')? <></> :
-        <AdminCourseRow key={i} valueState={[courses, setCourses, i]} countState={[count, setCount]}/>
-      )}
+      <span>These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
+      <div className="hstack" style={{margin: '0 5px'}}>
+        <button style={{height: '30px', padding: '0 5px'}} className="short green button fill">Add Course</button>
+        <button onClick={() => setIsEditing(!isEditing)} style={{height: '30px', padding: '0 5px'}} className="short purple button">Edit Courses</button>
+      </div>
+      <div className="scrollable">
+        { courses.map(c =>
+          <AdminCourseRow key={JSON.stringify(c)} course={c} isEditing={isEditing}/>
+        )}
+      </div>
     </div>
   );
 };

@@ -121,7 +121,10 @@ They will be able to run the scheduler, promote other users and delete them, and
         </div>
 
         <div className={`hstack header witharrow ${collapsed? 'collapsed' : ''}`} onClick={toggleCollapsed}>
-          <div className="header-content">Register New User</div>
+          <div className="fill" />
+          <div className="header-content">
+            <strong>Register New User</strong>
+          </div>
           <div className="fill" />
           <div className="arrow-container"/>
         </div>

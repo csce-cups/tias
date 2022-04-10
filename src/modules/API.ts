@@ -24,7 +24,14 @@ export interface Meeting {
 	end_time: string
 	room?: string
 	instructor?: string
-  }
+}
+
+export interface Course {
+	course_id: number
+	course_name: string
+	course_number: string
+	department: string
+}
 
 export interface Person {
 	person_id: number
@@ -401,6 +408,13 @@ class API {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${uid}`, {
 			method: 'DELETE'
 		}).then(() => {});
+	}
+
+	static getCourses = async (): Promise<Course[]> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses', {
+			method: 'GET'
+		}).then(sessionResponse => sessionResponse.json())
+		  .then(responseData => responseData as Course[]);
 	}
 
 
