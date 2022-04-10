@@ -22,7 +22,7 @@ export const EmployeeList: FC<Props> = () => {
 
   return (
     <div className="vstack">
-      <div className="header hstack" style={{marginBottom: '0'}}>
+      <div className="header hstack mb0">
         <h2 className="slim">Peer Teachers</h2>
       </div>
 

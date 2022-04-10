@@ -1555,6 +1555,11 @@ img.back-arrow {
 		height: fit-content;
 		z-index: 2;
 		padding: 5px;
+
+		input.confirm[type="text"] {
+			width: auto;
+			margin: 0 20px;
+		}
 	}
 
 	.prompt.bottom {
@@ -1729,4 +1734,24 @@ img.back-arrow {
 .header-end {
 	padding: 0 5px;
 	border-bottom: 1px solid $render_divider;
+}
+
+.m5 {
+	margin: 5px;
+}
+
+.m10 {
+	margin: 10px;
+}
+
+.mb10 {
+	margin-bottom: 10px;
+}
+
+.mr15 {
+	margin-right: 15px;
+}
+
+.mb0 {
+	margin-bottom: 0;
 }

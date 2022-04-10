@@ -87,7 +87,10 @@ export const AdminCourseList = () => {
       })
       console.log(newCourse);
     }
+  }
 
+  const courseBtnStyles = {
+    height: '30px', padding: '0 5px', zIndex: '3'
   }
 
   return (
@@ -96,7 +99,7 @@ export const AdminCourseList = () => {
       <span>These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
       <div className="hstack header-end">
         <div className="vstack fill">
-          <button style={{height: '30px', padding: '0 5px', zIndex: '3'}} className="short green button fill" onClick={() => setShowMenu(true)}>Add Course</button>
+          <button style={courseBtnStyles} className="short green button fill" onClick={() => setShowMenu(true)}>Add Course</button>
           <div ref={ref} className="add-menu-container">
             <form className={`add-menu ${!showMenu? 'hidden' : ''}`} onSubmit={(e) => submit(e)}>
               <div className="hstack">
@@ -104,14 +107,12 @@ export const AdminCourseList = () => {
                 <input id="num-new-course-text" className="fill" type="text" placeholder="Course Number"/>
               </div>
               <input id="name-new-course-text" className="fill" type="text" placeholder="Course Name"/>
-              <input id="submit-new-course-button" type="submit" style={{height: '30px', padding: '0 5px'}} className="short green button fill" value="Save"/>
+              <input id="submit-new-course-button" type="submit" style={courseBtnStyles} className="short green button fill" value="Save"/>
             </form>
           </div>
         </div>
         <button 
-          onClick={() => setIsEditing(!isEditing)} 
-          style={{height: '30px', padding: '0 5px'}} 
-          className={`short purple button ${isEditing? 'toggled' : ''}`}
+          onClick={() => setIsEditing(!isEditing)} style={courseBtnStyles} className={`short purple button ${isEditing? 'toggled' : ''}`}
         >Edit Courses</button>
       </div>
       < Scrollable >

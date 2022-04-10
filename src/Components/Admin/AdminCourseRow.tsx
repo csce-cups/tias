@@ -55,12 +55,12 @@ export const AdminCourseRow: FC<Props> = ({course, isEditing, deleteSelf, isBott
               Are you sure you want to delete {course.department} {course.course_number}? 
               If the semester data depends on this course, you will need to upload a new semester in order to repair it.
             </div>
-            <div style={{margin: '10px'}}/>
+            <div className="m10"/>
             <div className="vstack">
               Please enter {course.course_number} to confirm.
-              <input id={id} onChange={handleChange} type="text" style={{width: 'auto', margin: '0 20px'}} placeholder={`Type ${course.course_number} to confirm`}/>
+              <input id={id} onChange={handleChange} type="text" className="confirm" placeholder={`Type ${course.course_number} to confirm`}/>
             </div>
-            <div style={{margin: '10px'}}/>
+            <div className="m10"/>
             <div className="hstack">
               <button disabled={buttonDisabled} className="short button fill onred" onClick={deleteSelf}>Delete</button>
             </div>

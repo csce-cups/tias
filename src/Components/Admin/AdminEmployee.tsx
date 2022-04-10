@@ -95,7 +95,7 @@ They will be able to run the scheduler, promote other users and delete them, and
         <div>{employee.first_name} {employee.last_name}</div>
         <div className="fill"/>
         {perms.filter(e => e !== '').join(', ')}
-        <div style={{marginRight: '15px'}}/>
+        <div className="mr15"/>
         <img alt="edit" src={edit_icon}/>
       </div>
       <div className={`collapsible${collapsed? ' collapsed' : ' uncollapsed'}`}>
@@ -123,10 +123,6 @@ They will be able to run the scheduler, promote other users and delete them, and
           <button id={id} className="green button fill-restricted" onClick={updateUser}>Update user</button>
           <button id={did} className="red button fill-restricted" onClick={deleteUser}>Delete user</button>
         </div>
-
-        {/* <div className="hstack">
-          <button id={tid} className="blue button fill" style={{marginTop: '0'}}>View Trades</button>
-        </div> */}
       </div>
     </div>
   )

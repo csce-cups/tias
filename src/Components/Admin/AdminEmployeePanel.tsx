@@ -105,14 +105,17 @@ They will be able to run the scheduler, promote other users and delete them, and
     });
   }
 
+  const title = {margin: '0', paddingBottom: '2px', borderWidth: '1px'}
+  const thinBorder = {borderWidth: '1px'}
+
   return (
     <div className="vstack panel">
       <div className="inner-content">
-        <div className="header hstack" style={{margin: '0', paddingBottom: '2px', borderWidth: '1px'}}>
+        <div className="header hstack" style={title}>
           <h2 className="slim">Employees</h2>
         </div>
 
-        <div className="header-bar" style={{borderWidth: '1px'}}>
+        <div className="header-bar" style={thinBorder}>
           <div className="hstack">
             <div className="element left">Sort By:</div>
             <div className="element center" onClick={() => setSortAlg('sortFirstAlg')}>First Name</div>
@@ -163,7 +166,7 @@ They will be able to run the scheduler, promote other users and delete them, and
           </div>
         </div>
 
-        <div style={{margin: '5px'}}/>
+        <div className="m5"/>
         
         < Scrollable classes={"vstack"} >
           { (everyone.length > 0)?
