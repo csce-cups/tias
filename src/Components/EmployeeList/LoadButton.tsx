@@ -6,7 +6,6 @@ export const LoadButton = () => {
   const [loadedSchedule, setLoadedSchedule] = useContext(contexts.loadedSchedule);
   const [employees, setEmployees] = useContext(contexts.employees);
   const [blocks, setBlocks] = useContext(contexts.blocks);
-  const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
 
   const runLoadSchedule = () => {
     if (loadedSchedule.size !== 0) {

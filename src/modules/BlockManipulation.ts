@@ -1,3 +1,4 @@
+import React from "react";
 import API, { CourseBlock, CourseBlockWeek, Person } from "./API";
 
 export interface CompressedCourseBlock extends CourseBlock {
@@ -123,3 +124,33 @@ export const loadSchedule = (params: loadScheduleParams): Promise<void> => {
     });
   });
 };
+
+export const updateWithSchedule = (
+  schedule: Map<string, number[]>,
+  toUpdate: CourseBlockWeek,
+  udpate: React.Dispatch<React.SetStateAction<CourseBlockWeek>>
+) => {
+  const allBlocks = [
+    toUpdate.Monday,
+    toUpdate.Tuesday,
+    toUpdate.Wednesday,
+    toUpdate.Thursday,
+    toUpdate.Friday,
+  ] as any; // For easier iteration
+  allBlocks.forEach((day: any, oidx: number) => {
+    day?.forEach((block: any, iidx: number) => {
+      const pids = schedule.has(`${block.section_id}`)
+        ? schedule.get(`${block.section_id}`)!
+        : [];
+      allBlocks[oidx][iidx].scheduled = pids;
+    });
+  });
+
+  udpate({
+    Monday: allBlocks[0],
+    Tuesday: allBlocks[1],
+    Wednesday: allBlocks[2],
+    Thursday: allBlocks[3],
+    Friday: allBlocks[4],
+  });
+}

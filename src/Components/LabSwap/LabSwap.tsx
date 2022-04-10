@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
-import { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import API, { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
 import { compressWeek } from "../../modules/BlockManipulation";
 import contexts from '../APIContext';
 import { Scrollable } from "../Misc/Scrollable";
@@ -15,6 +15,10 @@ export interface Selections {
   offered: CourseBlock | null, //selected sections
   requested: CourseBlock | null,
 }
+interface Submission{
+  offered_id: number,
+  requested_id: number
+}
 
 type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 
@@ -24,14 +28,32 @@ export const LabSwap = () => {
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const selectedTradeBlocksState = useState<Selections>({ offered: null, requested: null });
   
-  const submitTrade = () => {//post to API
+  //Reset Button on new trade selection
+  useEffect(()=>{
+    const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
+    if (btn !== null && btn.innerHTML==="Done!") btn.innerHTML = "Request Trade";
+  }, [selectedTradeBlocksState])
+  const submitTrade = () => {
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = 'Sending request...';
-    // API.sendThing.then(resp => {
-      
-    //   if (btn !== null) btn.innerHTML = 'Done!';
-    // });
-    if (btn !== null) btn.innerHTML = 'Done!';
+    let temp = [selectedTradeBlocksState[0].offered, selectedTradeBlocksState[0].requested];
+    const data:Submission = {
+      offered_id: temp[0]?.section_id!,
+      requested_id: temp[1]?.section_id!
+    }
+    API.SUBMIT_TRADE(data).then(resp => {
+      if (btn !== null){
+        //TRYING TO MAKE BUTTON DISPLAY AN ERROR BETTER
+        // if(resp.requested===[]){
+        //   btn.innerHTML = "No Possible Trade Recipients";
+        // }else{
+
+         btn.innerHTML = 'Done!';
+        // }
+      }
+    }).catch(() => {
+      if (btn !== null) btn.innerHTML = 'An error occurred';
+    })
   };
 
   const userId = +parseCookie().tias_user_id;
@@ -73,18 +95,41 @@ export const LabSwap = () => {
       else if (a.section_number > b.section_number) return 1;
       return 0;
     }).forEach(block => {
-      const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
-      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
-      else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
+        const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
+        if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
+        else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
     })
 
     return retFormat;
   }
-  const reject = (trade:TradeRequest) => () =>{
-    //hit API
-  }
-  const accept = (trade:TradeRequest) => () =>{
 
+  const reject = (trade: TradeRequest) => () =>{
+    // const btn = document.getElementById('reject-trade-btn') as HTMLButtonElement;
+    // if (btn !== null) btn.innerHTML = 'Sending request...';
+    trade.request_status="Rejected";
+    API.REJECT_TRADE(trade).then(resp => {
+      // if (btn !== null) btn.innerHTML = 'Done!';
+    }).catch(() => {
+      // if (btn !== null) btn.innerHTML = 'An error occurred';
+    })
+  }
+  const cancel = (trade: TradeRequest) => () =>{
+    // const btn = document.getElementById('reject-trade-btn') as HTMLButtonElement;
+    // if (btn !== null) btn.innerHTML = 'Sending request...';
+    trade.request_status="Cancelled";
+    API.REJECT_TRADE(trade).then(resp => {
+      // if (btn !== null) btn.innerHTML = 'Done!';
+    }).catch(() => {
+      // if (btn !== null) btn.innerHTML = 'An error occurred';
+    })
+  }
+  const accept = (trade: TradeRequest) => () =>{
+    trade.request_status="Accepted";
+
+    API.ACCEPT_TRADE(trade).then(resp => {
+    }).catch(() => {
+     
+    })
   }
 
 
@@ -106,15 +151,15 @@ export const LabSwap = () => {
     }
     let actions=null;
     if(action!==null){
-      if(action==='Pending'){ //action is cancel
-        actions=(<div>
-          <button onClick={reject(request)}>Cancel</button>
-        </div>);
-      }else if(action==='Outstanding'){ //actions are accept and reject
+      if(action==='Pending'){ //we sent this out, action is cancel
         actions=(<div>
           <button onClick={accept(request)}>Accept</button>
           <button onClick={reject(request)}>Reject</button>
         </div>)
+      }else if(action==='Outstanding'){ //incoming requests, so actions are accept and reject
+        actions=(<div>
+          <button onClick={cancel(request)}>Cancel</button>
+        </div>);
       }
     }
     return (
@@ -139,7 +184,11 @@ export const LabSwap = () => {
         </div>
         <contexts.userTrades.Consumer>
           {([trades,]) => {
-            if (trades.length === 0) {
+            if(trades===undefined){
+              return <></>
+            }
+            else if (trades.length === 0) {
+              console.log("NO TRADES")
               return <></>
             } else {
               return (
