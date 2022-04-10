@@ -1601,3 +1601,40 @@ img.back-arrow {
 	width: 0;
 	display: block;
 }
+
+.add-menu-container {
+	position: relative;
+}
+
+.add-menu {
+	top: -40px;
+	padding-top: 40px;
+
+	position: absolute;
+	background-color: $light;
+	border: 1px solid $render_divider;
+	border-radius: 5px;
+	width: 100%;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+
+	overflow: hidden;
+
+	input[type="text"] {
+		margin: 5px;
+	}
+
+	transition: all 0.2s ease-in-out, opacity 0.2s ease-in-out 0s;
+}
+
+.add-menu.hidden {
+	border: 0;
+	opacity: 0;
+	padding-top: 0px;
+	display: flex;
+
+	height: 40px;
+
+	transition: all 0.2s ease-in-out, opacity 0.2s ease-in-out 0.2s;
+}

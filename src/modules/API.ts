@@ -417,6 +417,13 @@ class API {
 		  .then(responseData => responseData as Course[]);
 	}
 
+	static addCourse = async (course: Course) => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses', {
+			method: 'POST',
+			body: JSON.stringify(course)
+		}).then(() => {});
+	}
+
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {
