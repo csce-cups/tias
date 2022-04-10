@@ -85,7 +85,6 @@ export const AdminCourseList = () => {
         if (btn !== null) btn.setAttribute('value', "An error occurred.");
 
       })
-      console.log(newCourse);
     }
   }
 
