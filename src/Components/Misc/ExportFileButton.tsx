@@ -5,7 +5,7 @@
    https://medium.com/web-dev-survey-from-kyoto/how-to-customize-the-file-upload-button-in-react-b3866a5973d8 
 */
 
-import React, { useContext } from 'react'
+import React from 'react'
 import axios from 'axios';
 
 interface AssignedPerson {
@@ -45,7 +45,7 @@ export const ExportFileButton = () => {
   return (
     <div className="admin-changeover">
       <a download="exported_schedule.csv" ref={fileExportRef} style={{ display: "none" }}/>
-      <button id="upload-semester-button" className="blue button full" onClick={handleClick}>Export Schedule as CSV</button>
+      <button id="upload-semester-button" className="blue button full" style={{marginTop: '0', marginBottom: '0'}} onClick={handleClick}>Export Schedule as CSV</button>
     </div>
   );
 }

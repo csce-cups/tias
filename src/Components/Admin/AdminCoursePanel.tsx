@@ -7,8 +7,8 @@ export const AdminCoursePanel = () => {
   return (
     <div className="vstack panel">
       < AdminCourseList />
-      < ChangeoverFileUploadButton />
       < ExportFileButton />
+      < ChangeoverFileUploadButton />
     </div>
   )
 }
