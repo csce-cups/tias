@@ -260,6 +260,7 @@ $google_bg: white;
 .button.onred:hover:not([disabled]) {
 	background-color: $render_background;
 	outline: 3px solid $light;
+	cursor: pointer;
 }
 
 .button {

@@ -12,9 +12,9 @@ import uuid from '../../uuid';
 
 interface Course {
   course_id: number
-	department: string
-	course_number: string
-	course_name: string | null
+  department: string
+  course_number: string
+  course_name: string | null
 }
 
 type MeetingType = "INT" | "INS" | "CMP" | "LEC" | "LAB" | "PRAC" | "CLD" | "REC" | "EXAM" | "SEM" | "RES" | "PRL"
@@ -127,13 +127,13 @@ interface CSCEJSONDatum {
   meetingsFaculty: CSCEJSONMeeting[]
   reservedSeatSummary: null
   sectionAttributes: {
-      class: string
-      code: string
-      courseReferenceNumber: string
-      description: string
-      isZTCAttribute: boolean
-      termCode: string
-    }[]
+    class: string
+    code: string
+    courseReferenceNumber: string
+    description: string
+    isZTCAttribute: boolean
+    termCode: string
+  }[]
   termType: string
   instructionalMethod: string
   instructionalMethodDescription: string
@@ -224,7 +224,7 @@ const parseCSVFile = (csvFileAsText: string, courses: Course[]): Meeting[] => {
       room: elements[8],
       instructor: elements[9]
     }
-    
+
     let course_section_first_space = parsedRow.course_section.indexOf(" ");
     let course_section_slash = parsedRow.course_section.indexOf("/");
     let course_section_second_space = parsedRow.course_section.indexOf(
@@ -283,6 +283,7 @@ const readInputFile = (file: File) => {
     const btn = document.getElementById('upload-semester-button') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = 'Reading File...';
 
+
     const courses: Course[] = (await axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses")).data
 
     let meetings: Meeting[]
@@ -297,19 +298,19 @@ const readInputFile = (file: File) => {
       if (btn !== null) btn.innerHTML = 'Sending Courses...'
       API.sendNewMeetings(meetings).then((_response) => {
         if (btn !== null) btn.innerHTML = 'Upload Successful'
-        setTimeout(() => {if(btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT}, 10000)
+        setTimeout(() => { if (btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT }, 10000)
         alert('Courses Succesfully Loaded into the Database')
       }).catch((_err) => {
         if (btn !== null) btn.innerHTML = 'An error occurred.';
-        setTimeout(() => {if(btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT}, 10000)
+        setTimeout(() => { if (btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT }, 10000)
       })
     } else {
       if (btn !== null) btn.innerHTML = 'Upload Cancelled'
-      setTimeout(() => {if(btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT}, 10000)
+      setTimeout(() => { if (btn !== null) btn.innerHTML = DEFAULT_BUTTON_TEXT }, 10000)
     }
-  }
 
-  fileReader.readAsText(file);
+    fileReader.readAsText(file);
+  }
 }
 
 export const ChangeoverFileUploadButton = () => {
@@ -318,7 +319,7 @@ export const ChangeoverFileUploadButton = () => {
   const [input, setInput] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
   const clickRef: any = React.useRef(null);
-  
+
   // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
   useEffect(() => { // Disables focus view on mouse click outside
     const handleClickOutside = (event: any) => {
@@ -347,6 +348,8 @@ export const ChangeoverFileUploadButton = () => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.currentTarget.files === null) return;
+
+    setPrompt(false);
     readInputFile(event.currentTarget.files[0]);
 
     // Reset target.value to allow user
@@ -358,29 +361,29 @@ export const ChangeoverFileUploadButton = () => {
 
   return (
     <div className="admin-changeover">
-      <input type="file" accept=".csv,text/csv,.json,application/json" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
-      <div id="upload-semester-button" className={`red button full ${prompt? 'inline-prompt' : ''}`} style={{padding: '0 10px'}} onClick={() => setPrompt(true)}>
-        { prompt?
-          <div ref={clickRef} className="vstack" style={{height: '100%'}}>
-            <div className="vstack" style={{height: '100%', padding: '10px'}}>
+      <input type="file" accept=".csv,text/csv,.json,application/json" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }} />
+      <div id="upload-semester-button" className={`red button full ${prompt ? 'inline-prompt' : ''}`} style={{ padding: '0 10px' }} onClick={() => setPrompt(true)}>
+        {prompt ?
+          <div ref={clickRef} className="vstack" style={{ height: '100%' }}>
+            <div className="vstack" style={{ height: '100%', padding: '10px' }}>
               <div>
                 This button is for the start of a new semester with a new block schedule.
-                By uploading a new schedule, you will irrevocably destroy all data related to the current semester. 
+                By uploading a new schedule, you will irrevocably destroy all data related to the current semester.
                 Any generated schedules will be invalidated, and any peer teacher schedules or lab preferences will be lost.
               </div>
-              <div className="m10"/>
+              <div className="m10" />
               If you would like to proceed, please enter "NEW SEMESTER" in the text box below.
             </div>
 
-            <input id={'changeover-text'} value={input} onChange={handleValidationChange} type="text" className="confirm" placeholder={`Type NEW SEMESTER to confirm`}/>
-            <div className="m10"/>
+            <input id={'changeover-text'} value={input} onChange={handleValidationChange} type="text" className="confirm" placeholder={`Type NEW SEMESTER to confirm`} />
+            <div className="m10" />
             <div className="hstack">
               <button disabled={buttonDisabled} className="short button fill onred" onClick={handleClick}>Upload block schedule</button>
             </div>
-            <div className="m5"/>
+            <div className="m5" />
           </div>
           :
-          <div className="vstack" style={{height: '100%', justifyContent: 'center'}}>
+          <div className="vstack" style={{ height: '100%', justifyContent: 'center' }}>
             {DEFAULT_BUTTON_TEXT}
           </div>
         }

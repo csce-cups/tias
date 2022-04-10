@@ -201,18 +201,22 @@ class API {
 					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
 					return d;
 				}
-				const convert = (input: raw_APICourseBlock[]): CourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
-					department: e.department,
-					course_number: parseInt(e.course_number),
-					section_number: e.section_number,
-					section_id: e.section_id,
-					start_time: createDate(e.start_time),
-					end_time: createDate(e.end_time),
-					weekday: e.weekday,
-					place: e.place,
-					scheduled: null,
-					professor: e.placeholder_professor_name
-				})))
+				const convert = (input: raw_APICourseBlock[]): CourseBlock[] => (
+					input? input.map((e: raw_APICourseBlock) => ({
+						department: e.department,
+						course_number: parseInt(e.course_number),
+						section_number: e.section_number,
+						section_id: e.section_id,
+						start_time: createDate(e.start_time),
+						end_time: createDate(e.end_time),
+						weekday: e.weekday,
+						place: e.place,
+						scheduled: null,
+						professor: e.placeholder_professor_name
+					}))
+					:
+					[]
+				);
 
 				return ({
 					Monday: convert(dataStrict.Monday),
@@ -223,6 +227,7 @@ class API {
 				} as any)
 			})
 			.catch(err => {
+				console.error(err);
 				return ({
 					Monday: [{course_number: -1} as CourseBlock],
 					Tuesday: [{course_number: -1} as CourseBlock],
