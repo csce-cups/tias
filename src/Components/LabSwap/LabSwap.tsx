@@ -38,7 +38,15 @@ export const LabSwap = () => {
       requested_id: temp[1]?.section_id!
     }
     API.SUBMIT_TRADE(data).then(resp => {
-      if (btn !== null) btn.innerHTML = 'Done!';
+      if (btn !== null){
+        //TRYING TO MAKE BUTTON DISPLAY AN ERROR BETTER
+        // if(resp.requested===[]){
+        //   btn.innerHTML = "No Possible Trade Recipients";
+        // }else{
+
+         btn.innerHTML = 'Done!';
+        // }
+      }
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
     })
@@ -141,13 +149,13 @@ export const LabSwap = () => {
     if(action!==null){
       if(action==='Pending'){ //we sent this out, action is cancel
         actions=(<div>
-          <button onClick={cancel(request)}>Cancel</button>
-        </div>);
-      }else if(action==='Outstanding'){ //incoming requests, so actions are accept and reject
-        actions=(<div>
           <button onClick={accept(request)}>Accept</button>
           <button onClick={reject(request)}>Reject</button>
         </div>)
+      }else if(action==='Outstanding'){ //incoming requests, so actions are accept and reject
+        actions=(<div>
+          <button onClick={cancel(request)}>Cancel</button>
+        </div>);
       }
     }
     return (
@@ -176,6 +184,7 @@ export const LabSwap = () => {
               return <></>
             }
             else if (trades.length === 0) {
+              console.log("NO TRADES")
               return <></>
             } else {
               return (

@@ -143,7 +143,7 @@ export const parseCookie: any = () => {
 		return ({})
 	}
 }
-interface Submission{
+export interface Submission{
 	offered_id: number,
 	requested_id: number
 }
@@ -373,7 +373,7 @@ class API {
 	static SUBMIT_TRADE = async (DATA: Submission): Promise<void> => {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
 			method: 'POST',
-			body: JSON.stringify({"trade_request": DATA})
+			body: JSON.stringify(DATA)
 		}).then(() => {});
 	}
 	static ACCEPT_TRADE = async (DATA: TradeRequest): Promise<void> => {
