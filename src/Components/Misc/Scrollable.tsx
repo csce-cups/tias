@@ -17,7 +17,11 @@ export const Scrollable: FC<Props> = ({children, classes}) => {
     let shadowTop = document.getElementById(`shadow-top-${id}`)!;
     let shadowBtm = document.getElementById(`shadow-btm-${id}`)!;
     let contentScrollHeight = content.scrollHeight - wrapper.offsetHeight;
-
+    if (contentScrollHeight === 0) {
+      shadowTop.style.opacity = "0";
+      shadowBtm.style.opacity = "0";
+    }
+    
     function callback(this: HTMLElement, ev: Event) {
       const currentScroll = this.scrollTop / (contentScrollHeight);  
       shadowTop.style.opacity = `${currentScroll}`;
