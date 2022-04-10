@@ -397,6 +397,12 @@ class API {
 		}).then(() => {});
 	}
 
+	static deleteUser = async (uid: number) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${uid}`, {
+			method: 'DELETE'
+		}).then(() => {});
+	}
+
 
 	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {

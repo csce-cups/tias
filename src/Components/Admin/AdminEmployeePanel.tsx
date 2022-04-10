@@ -51,7 +51,6 @@ export const AdminEmployeePanel = () => {
     }, 1);
   }
 
-
   useEffect(() => {
     if (collapsed) document.getElementById('new-user-form-collapsable')?.classList.add('hidden');
     API.fetchEveryone().then(res => {
@@ -166,8 +165,13 @@ They will be able to run the scheduler, promote other users and delete them, and
           { (everyone.length > 0)?
             (everyone[0].person_id !== -1)?
               everyone.sort(algs[sortAlg as K]).map((employee, i) => (
-                <AdminEmployee key={JSON.stringify(employee)} employee={employee} setEmployee={(subject: Person) => {
-                  setEmployees(employees.map(e => e.person_id === subject.person_id ? subject : e));
+                <AdminEmployee key={JSON.stringify(employee)} employee={employee} setEmployee={(subject: Person | null) => {
+                  if (subject === null) {
+                    setEmployees(employees.filter(e => e.person_id !== employee.person_id));
+                    API.fetchEveryone().then(res => {
+                      setEveryone(res);
+                    });
+                  } else setEmployees(employees.map(e => e.person_id === subject.person_id ? subject : e));
                 }}/>
               ))
               :

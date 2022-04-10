@@ -6,7 +6,7 @@ import contexts from '../APIContext'
 
 interface Props {
     employee: Person
-    setEmployee: (e: Person) => void
+    setEmployee: (e: Person | null) => void
 }
 
 export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee: setEmployee_super}) => {
@@ -15,11 +15,11 @@ export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee:
   const tid = uuid();
   const user = useContext(contexts.user);
   const [collapsed, setCollapsed] = useState(true);
-  const employeeState = useState(employee_super);
+  const employeeState = useState<Person>(employee_super);
   const employee = employeeState[0];
-  const setEmployee = (e: Person) => {
-    employeeState[1](e);
+  const setEmployee = (e: Person | null) => {
     setEmployee_super(e);
+    if (e) employeeState[1](e);
   }
 
   const [ptcheck, setPtcheck] = useState(employee.peer_teacher);
@@ -70,20 +70,24 @@ They will be able to run the scheduler, promote other users and delete them, and
   }
 
   const deleteUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.error("DELETE USER NOT IMPLEMENTED");
     if (!window.confirm(`Are you sure you want to delete ${employee.first_name} ${employee.last_name}? This action cannot be undone!`)) return;
 
     const btn = document.getElementById(did);
     
     if (btn !== null) btn.innerHTML = 'Deleting...';
-    setTimeout(() => {
-      // if (btn !== null) btn.innerHTML = 'Done!';
-      if (btn !== null) btn.innerHTML = 'Not Implemented!';
-
+    API.deleteUser(employee.person_id).then(() => {
+      if (btn !== null) btn.innerHTML = 'Deleted!';
+      
       setTimeout(() => {
         setCollapsed(true);
-      }, 1500);
-    }, 2000);
+      }, 1000);
+
+      setTimeout(() => {
+        setEmployee(null);
+      }, 1410);
+    }).catch(() => {
+      if (btn !== null) btn.innerHTML = 'An error occurred.';
+    });
   }
 
   return (
@@ -117,8 +121,8 @@ They will be able to run the scheduler, promote other users and delete them, and
         </div>
 
         <div className="hstack">
-          <button id={id} className="green button fill" onClick={updateUser}>Update user</button>
-          <button id={did} className="red button fill" onClick={deleteUser}>Delete user</button>
+          <button id={id} className="green button fill-restricted" onClick={updateUser}>Update user</button>
+          <button id={did} className="red button fill-restricted" onClick={deleteUser}>Delete user</button>
         </div>
 
         {/* <div className="hstack">
