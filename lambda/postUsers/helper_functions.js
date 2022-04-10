@@ -8,7 +8,7 @@
 const awsSDK = require('aws-sdk');
 awsSDK.config.update({ region: 'us-east-1' });
 
-const { Client } = require('pg');
+const { Client } = require('pg')
 
 const sysManagerClient = new awsSDK.SSM();
 
@@ -80,4 +80,4 @@ const queryDB = async (dbQuery, params) => {
     .catch((error) => console.error(error));
 };
 
-module.exports = { getStoredParameter, prefetchDBInfo, queryDB };
+module.exports = { prefetchDBInfo, queryDB };

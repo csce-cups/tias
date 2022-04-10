@@ -2,12 +2,26 @@ const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
     let updateData = JSON.parse(event.body);
+    const params = [];
     let updates = [];
     
     let id = event?.pathParameters?.userId;
     
+    let paramIndex = 1;
     for(let fieldToUpdate of Object.keys(updateData)) {
         switch (fieldToUpdate) {
+            case 'google_token_sub':
+                updates.push(`google_token_sub = ${paramIndex++}`);
+                params.push(updateData[fieldToUpdate]);
+                break;
+            case 'profile_photo_url':
+                updates.push(`profile_photo_url = ${paramIndex++}`);
+                params.push(updateData[fieldToUpdate]);
+                break;
+            case 'desired_number_assignments':
+                updates.push(`desired_number_assignments = ${paramIndex++}`);
+                params.push(+updateData[fieldToUpdate]);
+                break;
             case 'is_peer_teacher':
                 if (updateData[fieldToUpdate] == true) {
                     updates.push("peer_teacher = true");
@@ -18,8 +32,6 @@ exports.handler = async (event) => {
                     updates.push("teaching_assistant = true");
                 }
                 break;
-            case 'desired_number_assignments':
-                updates.push(`desired_number_assignments = ${+updateData[fieldToUpdate]}`);
         }
     }
     
@@ -33,15 +45,16 @@ exports.handler = async (event) => {
         setClause += updates[i];
     }
     
+    params.push(id);
+    
     const dbQuery = 
     `
         UPDATE person
         ${setClause}
-        WHERE person_id = $1
+        WHERE person_id = ${paramIndex}
     `;
     console.log(dbQuery);
     console.log('id is:', id);
-    const params = [id];
     
     let dbRows = await helper_functions.queryDB(dbQuery, params);
     
