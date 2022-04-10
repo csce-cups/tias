@@ -379,13 +379,13 @@ class API {
 	static ACCEPT_TRADE = async (DATA: TradeRequest): Promise<void> => {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
 			method: 'PUT',
-			body: JSON.stringify({"trade_request": DATA})
+			body: JSON.stringify(DATA)
 		}).then(() => {});
 	}
 	static REJECT_TRADE = async (DATA: TradeRequest): Promise<void> => {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
 			method: 'PUT',
-			body: JSON.stringify({"trade_request": DATA})
+			body: JSON.stringify(DATA)
 		}).then(() => {});
 	}
 	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {

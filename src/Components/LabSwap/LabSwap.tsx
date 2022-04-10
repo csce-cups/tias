@@ -91,9 +91,9 @@ export const LabSwap = () => {
       else if (a.section_number > b.section_number) return 1;
       return 0;
     }).forEach(block => {
-      const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
-      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
-      else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
+        const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
+        if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
+        else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
     })
 
     return retFormat;
