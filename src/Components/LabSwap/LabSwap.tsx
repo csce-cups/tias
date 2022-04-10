@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { CourseBlock, CourseBlockWeek, parseCookie, TradeRequest } from "../../modules/API";
 import { compressWeek } from "../../modules/BlockManipulation";
 import contexts from '../APIContext';
+import { Scrollable } from "../Misc/Scrollable";
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
 import { LabSwapBlock } from "./LabSwapBlock";
 import { SwapSet } from "./SwapSet";
@@ -141,7 +142,7 @@ export const LabSwap = () => {
               return <></>
             } else {
               return (
-                <div className="scrollable">
+                < Scrollable >
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Outstanding Requests </div>
                       {renderSwapSets(trades, 'Pending', request => request.person_id_receiver === userId && request.request_status === 'Pending')}
@@ -161,7 +162,7 @@ export const LabSwap = () => {
                     <div className="swap-section-title"> Past Requests </div>
                       {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status !== 'Pending')}
                   </div>
-                </div>
+                </Scrollable>
               )
             }
           }}

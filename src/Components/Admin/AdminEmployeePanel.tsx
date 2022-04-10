@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import API, { Person, Person_INIT } from '../../modules/API';
 import uuid from '../../uuid';
 import contexts from '../APIContext'
+import { Scrollable } from '../Misc/Scrollable';
 import { AdminEmployee } from './AdminEmployee';
 
 export const AdminEmployeePanel = () => {
@@ -164,7 +165,7 @@ They will be able to run the scheduler, promote other users and delete them, and
 
         <div style={{margin: '5px'}}/>
         
-        <div className="scrollable vstack">
+        < Scrollable classes={"vstack"} >
           { (everyone.length > 0)?
             (everyone[0].person_id !== -1)?
               everyone.sort(algs[sortAlg as K]).map((employee, i) => (
@@ -182,7 +183,7 @@ They will be able to run the scheduler, promote other users and delete them, and
             :
             <div className="loading">Nothing to show.</div>
           }
-        </div>
+        </Scrollable>
       </div>
     </div>
   )

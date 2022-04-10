@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import API, { APIUserQualification } from '../../modules/API';
 import contexts from '../APIContext';
+import { Scrollable } from '../Misc/Scrollable';
 import { ProfileFormRow } from './ProfileFormRow';
 
 export const ProfileForm = () => {
@@ -58,7 +59,7 @@ export const ProfileForm = () => {
           <div className={`${collapsed? "collapsed " : ""}form-body`}>
               {/* <div className="form-border"> */}
                 <form onSubmit={(e) => submit(e, setQuals)}>
-                  <div className="scrollable">
+                  < Scrollable >
                     { (quals.length > 0)? 
                       quals.map((qual: APIUserQualification, idx: number) => (
                         <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${JSON.stringify(qual)}`}/>
@@ -66,7 +67,7 @@ export const ProfileForm = () => {
                       :
                       <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
                     }
-                  </div>
+                  </Scrollable>
 
                   <div className="hstack">
                     <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>

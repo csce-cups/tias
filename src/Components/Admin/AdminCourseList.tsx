@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import API, { Course } from "../../modules/API";
 import contexts from "../APIContext";
+import { Scrollable } from "../Misc/Scrollable";
 import { AdminCourseRow } from "./AdminCourseRow";
 
 export const AdminCourseList = () => {
@@ -36,12 +37,13 @@ export const AdminCourseList = () => {
       btn.innerHTML = "Done!";
       setTimeout(() => {
         btn.classList.remove("prompt");
-      }, 500);
+      }, 1000);
+      
       setTimeout(() => {
         API.getCourses().then(res => {
           setCourses(res);
         });
-      }, 1000);
+      }, 1410);
     });
   };
 
@@ -112,7 +114,7 @@ export const AdminCourseList = () => {
           className={`short purple button ${isEditing? 'toggled' : ''}`}
         >Edit Courses</button>
       </div>
-      <div className="scrollable">
+      < Scrollable >
         { courses.sort((a, b) => a.course_number.localeCompare(b.course_number)).map((c, i) =>
           <AdminCourseRow key={JSON.stringify(c)} course={c} isBottom={courses.length - i < 5} isEditing={isEditing} deleteSelf={
             (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -120,7 +122,7 @@ export const AdminCourseList = () => {
             }
           }/>
         )}
-      </div>
+      </Scrollable>
     </div>
   );
 };
