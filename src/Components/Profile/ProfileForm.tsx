@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import API, { APIUserQualification } from '../../modules/API';
 import contexts from '../APIContext';
-import { Scrollable } from '../Misc/Scrollable';
 import { ProfileFormRow } from './ProfileFormRow';
 
 export const ProfileForm = () => {

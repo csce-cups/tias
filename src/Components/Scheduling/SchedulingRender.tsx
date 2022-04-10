@@ -34,7 +34,7 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
 
       setStart(new Date(start));
     }
-  }, []);
+  }, [blocks]);
 
   return (
     <div className="render-container" style={{marginTop: (options?.noHeader)? '8px' : undefined}}>
