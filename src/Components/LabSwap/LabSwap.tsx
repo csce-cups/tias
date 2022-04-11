@@ -25,13 +25,14 @@ type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 export const selectedTradeBlocksContext = createContext<[Selections, React.Dispatch<React.SetStateAction<Selections>>]>([{ offered: null, requested: null }, 0 as any]);
 
 export const LabSwap = () => {
+  const user = useContext(contexts.user);
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const selectedTradeBlocksState = useState<Selections>({ offered: null, requested: null });
   
   //Reset Button on new trade selection
   useEffect(()=>{
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
-    if (btn !== null && btn.innerHTML==="Done!") btn.innerHTML = "Request Trade";
+    if (btn !== null) btn.innerHTML = "Request Trade";
   }, [selectedTradeBlocksState])
   const submitTrade = () => {
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
@@ -41,20 +42,18 @@ export const LabSwap = () => {
       offered_id: temp[0]?.section_id!,
       requested_id: temp[1]?.section_id!
     }
-    API.SUBMIT_TRADE(data).then(resp => {
-      console.log("SUBMIT RESPONSE: "+resp);
-      // console.error(resp);
-      // if(resp.msg!==undefined){
-
-      // }
-      if (btn !== null){
-        //TRYING TO MAKE BUTTON DISPLAY AN ERROR BETTER
-        // if(resp.requested===[]){
-        //   btn.innerHTML = "No Possible Trade Recipients";
-        // }else{
-
+    console.log(data)
+    API.submitTrade(data, user.user?.person_id).then(resp => {
+      if(resp.msg){
+        if (btn !== null) btn.innerHTML = "Automatic Success";
+        alert(resp.msg);
+      }
+      else if(resp.err){
+        if (btn !== null) btn.innerHTML = "Failed";
+        alert(resp.err);
+      }
+      else if (btn !== null){
          btn.innerHTML = 'Done!';
-        // }
       }
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
@@ -111,21 +110,21 @@ export const LabSwap = () => {
 
   const reject = (trade: TradeRequest) => () =>{
     trade.request_status="Rejected";
-    API.REJECT_TRADE(trade).then(resp => {
+    API.updateTrade(trade, user.user?.person_id).then(resp => {
     }).catch((err) => {
       console.error(err);
     })
   }
   const cancel = (trade: TradeRequest) => () =>{
     trade.request_status="Cancelled";
-    API.REJECT_TRADE(trade).then(resp => {
+    API.updateTrade(trade, user.user?.person_id).then(resp => {
     }).catch((err) => {
       console.error(err);
     })
   }
   const accept = (trade: TradeRequest) => () =>{
     trade.request_status="Accepted";
-    API.ACCEPT_TRADE(trade).then(resp => {
+    API.updateTrade(trade, user.user?.person_id).then(resp => {
     }).catch((err) => {
       console.error(err);
     })
