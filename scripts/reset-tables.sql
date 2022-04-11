@@ -23,7 +23,7 @@ CREATE TABLE person (
 	last_name VARCHAR NOT NULL,
 	profile_photo_url VARCHAR NOT NULL,
 	desired_number_assignments INTEGER NOT NULL DEFAULT 2,
-	peer_teacher BOOLEAN DEFAULT 'true',
+	peer_teacher BOOLEAN,
 	teaching_assistant BOOLEAN,
 	administrator BOOLEAN,
 	professor BOOLEAN
