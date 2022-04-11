@@ -876,6 +876,15 @@ div.loading {
 	font-size: 1.4em;
 }
 
+div.loading-small {
+	height: 100%;
+    display: flex;
+    // justify-content: center;
+    align-items: center;
+	color: $render_divider;
+	font-size: 1.0em;
+}
+
 img.back-arrow {
 	max-height: 1.1em;
 	position: absolute;
@@ -997,6 +1006,16 @@ img.back-arrow {
 	font-weight: bold;
 	font-size: 1.2em;
 	margin-bottom: 5px;
+	margin-left: 10px;
+}
+
+.swap-section-subtitle {
+	font-weight: bold;
+	margin-bottom: 5px;
+	margin-left: 15px;
+}
+
+.ss-inside {
 	margin-left: 10px;
 }
 

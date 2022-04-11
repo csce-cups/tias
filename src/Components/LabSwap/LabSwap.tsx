@@ -28,6 +28,7 @@ export const LabSwap = () => {
   const user = useContext(contexts.user);
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const selectedTradeBlocksState = useState<Selections>({ offered: null, requested: null });
+  const [userTrades, setUserTrades] = useContext(contexts.userTrades);
   
   //Reset Button on new trade selection
   useEffect(()=>{
@@ -43,19 +44,20 @@ export const LabSwap = () => {
       offered_id: temp[0]?.section_id!,
       requested_id: temp[1]?.section_id!
     }
-    console.log(data)
+    
     API.submitTrade(data, user.user?.person_id).then(resp => {
-      if(resp.msg){
+      if (resp.msg){
         if (btn !== null) btn.innerHTML = "Automatic Success";
         alert(resp.msg);
-      }
-      else if(resp.err){
+      } else if (resp.err){
         if (btn !== null) btn.innerHTML = "Failed";
         alert(resp.err);
-      }
-      else if (btn !== null){
+      } else if (btn !== null){
          btn.innerHTML = 'Done!';
       }
+      API.fetchUserTrades(user.user?.person_id).then(resp => {
+        setUserTrades(resp);
+      });
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
     })
@@ -134,11 +136,15 @@ export const LabSwap = () => {
   }
 
 
-  const renderSwapSets = (retData: TradeRequest[], action:"Outstanding" | "Pending" | null, filter: (request: TradeRequest) => boolean) => retData.filter(filter).map((request) => {
-    const allBlocks = renderScheduled(viableBlockWeek); // For easier iteration
-    let sent: DisplayBlock | null = null
-    let received: DisplayBlock | null = null
-    allBlocks.forEach((block: DisplayBlock, _oidx: number) => {
+  const renderSwapSets = (retData: TradeRequest[], action:"Outstanding" | "Pending" | null, filter: (request: TradeRequest) => boolean) => {
+    if (retData.length === 0) return <div className="loading-small ss-inside">None</div>
+
+    return retData.filter(filter).map((request) => {
+
+      const allBlocks = renderScheduled(viableBlockWeek); // For easier iteration
+      let sent: DisplayBlock | null = null
+      let received: DisplayBlock | null = null
+      allBlocks.forEach((block: DisplayBlock, _oidx: number) => {
         if (block.section_id === request.section_id_sender) {
           sent = block
         }
@@ -146,30 +152,37 @@ export const LabSwap = () => {
           received = block
         }
         if (sent && received) return;
-    });
-    if (request.person_id_receiver === userId) {
-      [received, sent] = [sent, received]
-    }
-    let actions=null;
-    if(action!==null){
-      if(action==='Pending'){ //we sent this out, action is cancel
-        actions=(<div>
-          <button onClick={accept(request)}>Accept</button>
-          <button onClick={reject(request)}>Reject</button>
-        </div>)
-      }else if(action==='Outstanding'){ //incoming requests, so actions are accept and reject
-        actions=(<div>
-          <button onClick={cancel(request)}>Cancel</button>
-        </div>);
+      });
+
+      if (request.person_id_receiver === userId) {
+        [received, sent] = [sent, received]
       }
-    }
-    return (
-      <>
-        < SwapSet selected={[sent, received]} />
-        {actions}
-      </>
-    )
+
+      let actions = null;
+      if (action !== null){
+        if (action === 'Pending') { //we sent this out, action is cancel
+          actions = (
+            <div>
+              <button onClick={accept(request)}>Accept</button>
+              <button onClick={reject(request)}>Reject</button>
+            </div>
+          );
+        } else if (action === 'Outstanding'){ //incoming requests, so actions are accept and reject
+          actions = (
+            <div>
+              <button onClick={cancel(request)}>Cancel</button>
+            </div>
+          );
+        }
+      }
+      return (
+        <>
+          < SwapSet selected={[sent, received]} />
+          {actions}
+        </>
+      )
     })
+  }
 
   const blocksPayload: [CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>] = [compressWeek(viableBlockWeek), setBlockWeek];
 
@@ -185,43 +198,39 @@ export const LabSwap = () => {
         </div>
         <contexts.userTrades.Consumer>
           {([trades,]) => {
-            if(trades===undefined){
-              return <></>
-            }
-            else if (trades.length === 0) {
-              console.log("NO TRADES")
+            if (trades === undefined) {
               return <></>
             } else {
               return (
                 < Scrollable >
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Outstanding Requests </div>
-                      {renderSwapSets(trades, 'Pending', request => request.person_id_receiver === userId && request.request_status === 'Pending')}
+                    {renderSwapSets(trades, 'Pending', request => request.person_id_receiver === userId && request.request_status === 'Pending')}
                   </div>
 
                   <div className="swap-divider"/>
 
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Sent Requests </div>
-                      {renderSwapSets(trades, 'Outstanding', request => request.person_id_sender === userId && request.request_status === 'Pending')}
+                    {renderSwapSets(trades, 'Outstanding', request => request.person_id_sender === userId && request.request_status === 'Pending')}
                   </div>
 
                   <div className="swap-divider"/>
 
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Past Requests </div>
-                      <div>
+                      <div className="swap-section-subtitle">
                         Cancelled Requests
+                        {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
                       </div>
-                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
-                      <div>
+                      <div className="swap-section-subtitle">
                         Accepted Requests
+                        {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Accepted')}
                       </div>
-                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Accepted')}
-                      <div>
+                      <div className="swap-section-subtitle">
                         Rejected Requests
+                        {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Rejected')}
                       </div>
-                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Rejected')}
                   </div>
                 </Scrollable>
               )
