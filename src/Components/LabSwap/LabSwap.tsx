@@ -36,6 +36,7 @@ export const LabSwap = () => {
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const [viableBlockWeekLocal, setBlockWeekLocal] = useState<CourseBlockWeek>(viableBlockWeek);
   const [schedule,] = useContext(contexts.loadedSchedule);
+  const [userTrades, setUserTrades] = useContext(contexts.userTrades);
   const selectedTradeBlocksState = useState<Selections>({
     offered: null,
     requested: null,
