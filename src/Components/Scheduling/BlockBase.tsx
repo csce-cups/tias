@@ -21,7 +21,8 @@ export const blockColors = new Map([
   [312, '#0086B6'],
   [313, '#434F6F'],
   [314, '#807391'],
-  [315, '#6e438c']
+  [315, '#6e438c'],
+  [331, '#8f2476'],
 ]);
 
 export const statusColors = new Map<APIUserPreferenceEnum, string>([

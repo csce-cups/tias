@@ -3,13 +3,13 @@ const helper_functions = require("./helper_functions");
 exports.handler = async (event) => {
     let userId = event?.pathParameters?.userId;
     
-    let dbQuery = `SELECT * FROM "ValidCourses"($1)`;
+    let dbQuery = `SELECT * FROM "ViableCourses"($1)`;
     let params = [userId];
     
     let dbRows = await helper_functions.queryDB(dbQuery, params);
     
     const responseBody = {
-        "validCourses": dbRows
+        "viableCourses": dbRows
     };
 
     const response = {

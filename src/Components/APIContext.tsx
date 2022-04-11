@@ -1,5 +1,6 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie} from "../modules/API";
+import { loadSchedule, updateWithSchedule } from "../modules/BlockManipulation";
+import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest} from "../modules/API";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
 
@@ -14,6 +15,7 @@ interface UserPerson {
   doShowProfile: boolean | null
   doShowScheduling: boolean | null
   doShowLabSwap: boolean | null
+  doShowAdmin: boolean | null
 }
 
 export const contexts = {
@@ -37,7 +39,8 @@ export const contexts = {
     user: null,
     doShowProfile: null,
     doShowScheduling: null,
-    doShowLabSwap: null
+    doShowLabSwap: null,
+    doShowAdmin: null
   }),
 
   userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
@@ -54,7 +57,14 @@ export const contexts = {
     { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
     0 as any,
   ]),
+
+  userTrades: createContext<[TradeRequest[], React.Dispatch<React.SetStateAction<TradeRequest[]>>]>([
+    [] as TradeRequest[],
+    0 as any,
+  ]),
 };
+
+
 
 export const APIContext: FC<Props> = ({ children, args, test }) => {
   const googleDataState = useState({} as any);
@@ -72,7 +82,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     user: null,
     doShowProfile: null,
     doShowScheduling: null,
-    doShowLabSwap: null
+    doShowLabSwap: null,
+    doShowAdmin: null
   })
 
   const userQualState = useState([
@@ -88,29 +99,46 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     Friday: null,
   } as CourseBlockWeek);
 
+  const userTrades = useState([] as TradeRequest[]);
+  const [all, setAll] = useState([] as Person[]);
+
   useEffect(() => {
     const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
-    dataPromises.employees.then((resp) => {
-      employeeState[1](resp);
-    });
+    let employees: Person[];
+    let blocks: CourseBlockWeek;
 
-    dataPromises.blocks.then((resp) => {
-      blockState[1](resp);
-    });
+    Promise.all([
+      new Promise<void>(resolve => dataPromises.employees.then((resp) => {
+        setAll(resp);
+        employees = resp.filter(e => e.peer_teacher);
+      }).then(() => resolve())),
+      new Promise<void>(resolve => dataPromises.blocks.then((resp) => blocks = resp).then(() => resolve()))
+    ]).then(() => {
+      loadSchedule({
+        employees: employees,
+        setEmployees: employeeState[1],
+        blocks: blocks,
+        setBlocks: blockState[1],
+        setLoadedSchedule: loadedScheduleState[1]
+      });
 
-    const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
-    setUser({
-      user: user,
-      doShowProfile: user && (user.peer_teacher || user.administrator),
-      doShowScheduling: user && user.administrator,
-      doShowLabSwap: user && (user.peer_teacher || user.administrator)
+      const user = all.find((e) => e.person_id === parseInt(parseCookie().tias_user_id)) || null;
+      setUser({
+        user: user,
+        doShowProfile: (user && user.peer_teacher),
+        doShowScheduling: (user && user.administrator),
+        doShowLabSwap: (user && user.peer_teacher),
+        doShowAdmin: (user && user.administrator)
+      })
     })
+
 
     // eslint-disable-next-line
   }, []); // Fetch static data right away
 
   useEffect(() => {
-    const userPromises = test ? API.fetchAllUserDummy(parseCookie().tias_user_id) : API.fetchAllUser(parseCookie().tias_user_id);
+    const user = all.find((e) => e.person_id === googleDataState[0].tias_user_id) || null;
+    const userPromises = test ? API.fetchAllUserDummy(user?.person_id) : API.fetchAllUser(user?.person_id);
 
     userPromises.userQuals.then((resp) => {
       userQualState[1](resp);
@@ -124,25 +152,28 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       userViableCourses[1](resp);
     });
 
-    const user = employeeState[0].find((e) => e.person_id === +parseCookie().tias_user_id) || null;
+    userPromises.userTrades.then((resp) => {
+      userTrades[1](resp);
+    });
+    
     const isPermAdmin = permAdmin && googleDataState[0].tv === permAdmin;
     if (isPermAdmin) {
       setUser({
         user: user,
         doShowProfile: true,
         doShowScheduling: true,
-        doShowLabSwap: true
+        doShowLabSwap: true,
+        doShowAdmin: true
       })
     } else {
       setUser({
         user: user,
-        doShowProfile: (user && (user.peer_teacher || user.administrator)),
+        doShowProfile: (user && user.peer_teacher),
         doShowScheduling: (user && user.administrator),
-        doShowLabSwap: (user && (user.peer_teacher || user.administrator))
+        doShowLabSwap: (user && user.peer_teacher),
+        doShowAdmin: (user && user.administrator)
       })
     }
-
-
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
   return (
@@ -154,7 +185,9 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
               <contexts.userQuals.Provider value={userQualState}>
                 <contexts.userPrefs.Provider value={userPrefState}>
                   <contexts.userViableCourses.Provider value={userViableCourses}>
-                    {children}
+                    <contexts.userTrades.Provider value={userTrades}>
+                      {children}
+                    </contexts.userTrades.Provider>
                   </contexts.userViableCourses.Provider>
                 </contexts.userPrefs.Provider>
               </contexts.userQuals.Provider>

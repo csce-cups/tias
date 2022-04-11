@@ -1,14 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import back_arrow from '../../assets/back_arrow_icon.svg';
+import { CourseBlock } from '../../modules/API';
 import uuid from '../../uuid';
-import { CourseBlock } from '../../modules/API'
-import back_arrow from '../../assets/back_arrow_icon.svg'
 import RenderBlockProps from './BlockBase';
 import placeBlocks from './renderHelper';
 import { OptionsProps } from './SchedulingWindow';
-
-let numHours = 13;
-let startTime = new Date(0);
-startTime.setHours(8);
 
 interface Props<DataCourseBlock> {
   renderBlockType: React.FC<RenderBlockProps>
@@ -16,21 +12,27 @@ interface Props<DataCourseBlock> {
   filter: Map<number, boolean>
   day: string // The day of the week
   hours?: number // The number of hours in a day
+  startTime?: Date
   options?: OptionsProps
 }
 
 export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: React.PropsWithChildren<Props<DataCourseBlock>>) => {
-  const { renderBlockType, blocks, filter, day, hours, options } = props;
+  let { renderBlockType, blocks, filter, day, hours, startTime, options } = props;
   const [detailed, setDetailed] = useState(false);
   const [hatsHidden, setHatsHidden] = useState(false);
+
+  if (hours === undefined) hours = 12;
+  if (startTime === undefined) {
+    startTime = new Date(0);
+    startTime.setHours(8);
+  }
 
   const selectable = (options?.selectable === false)? false : true;
 
   const id = uuid();
-  if (hours !== undefined) numHours = hours;
 
   let dividers = [];
-  for (let i = 0; i < numHours; i++) {
+  for (let i = 0; i < hours; i++) {
     // Needs a key
     dividers[i] = <div className="divider" key={`divider-${i}`}/>;
   }
@@ -110,7 +112,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
       }
       <div className="vstack day" >
         { dividers }
-        { placeBlocks(blocks, filter, renderBlockType, edge, startTime, new Date(startTime.getTime() + numHours*60*60*1000)) }
+        { placeBlocks(blocks, filter, renderBlockType, edge, startTime, new Date(startTime.getTime() + hours*60*60*1000), hours, startTime) }
       </div>
     </div>
   )

@@ -4,7 +4,7 @@ CREATE TYPE preference AS ENUM
 
 DROP TYPE IF EXISTS request_status CASCADE;
 CREATE TYPE request_status AS ENUM
-    ('Pending', 'Accepted', 'Rejected');
+    ('Pending', 'Accepted', 'Rejected', 'Cancelled');
 
 DROP TYPE IF EXISTS weekday CASCADE;
 CREATE TYPE weekday AS ENUM
@@ -23,28 +23,23 @@ CREATE TABLE person (
 	last_name VARCHAR NOT NULL,
 	profile_photo_url VARCHAR NOT NULL,
 	desired_number_assignments INTEGER NOT NULL DEFAULT 2,
-	peer_teacher BOOLEAN DEFAULT 'true',
+	peer_teacher BOOLEAN,
 	teaching_assistant BOOLEAN,
 	administrator BOOLEAN,
 	professor BOOLEAN
 );
+ALTER TABLE IF EXISTS public.person
+    ADD CONSTRAINT email_unique_constraint UNIQUE (email);
 
-DROP TABLE IF EXISTS person_availability CASCADE;
-CREATE TABLE person_availability (
+ALTER TABLE IF EXISTS public.person
+    ADD CONSTRAINT google_token_sub_unique_constraint UNIQUE (google_token_sub);
+
+DROP TABLE IF EXISTS person_unavailability CASCADE;
+CREATE TABLE person_unavailability (
 	person_id INTEGER REFERENCES person(person_id),
 	weekday WEEKDAY,
 	start_time TIME,
 	end_time TIME,
-	PRIMARY KEY(person_id, weekday, start_time, end_time)
-);
-
-DROP TABLE IF EXISTS office_hours CASCADE;
-CREATE TABLE office_hours (
-	person_id INTEGER REFERENCES person(person_id),
-	weekday WEEKDAY,
-	start_time TIME,
-	end_time TIME,
-	place VARCHAR,
 	PRIMARY KEY(person_id, weekday, start_time, end_time)
 );
 
@@ -75,7 +70,7 @@ DROP TABLE IF EXISTS course_section CASCADE;
 CREATE TABLE course_section (
 	section_id SERIAL PRIMARY KEY,
 	course_id INTEGER REFERENCES course(course_id) NOT NULL,
-    person_id_professor INTEGER REFERENCES course(course_id),
+    person_id_professor INTEGER REFERENCES person(person_id),
 	section_number CHAR(3) NOT NULL,
 	placeholder_professor_name VARCHAR,
     capacity_peer_teachers INT DEFAULT 2,

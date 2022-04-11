@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { EmployeeList } from '../Components/EmployeeList/EmployeeList';
-import { SchedulingWindow } from '../Components/Scheduling/SchedulingWindow';
-import '../Components/common.scss';
-import { SchedulingBlock } from '../Components/Scheduling/SchedulingBlock';
 import contexts from '../Components/APIContext';
+import '../Components/common.scss';
+import { EmployeeList } from '../Components/EmployeeList/EmployeeList';
+import { SchedulingBlock } from '../Components/Scheduling/SchedulingBlock';
+import { SchedulingWindow } from '../Components/Scheduling/SchedulingWindow';
 
 export const Scheduling = () => {
   const {doShowScheduling} = useContext(contexts.user);
@@ -15,8 +15,10 @@ export const Scheduling = () => {
       < SchedulingWindow renderBlockType={SchedulingBlock}/>
     </div>
     );
+  } else if (doShowScheduling === false) {
+    return <div className="page-text">You do not have permission to visit this page.</div>
   } else {
-    return <div>You do not have permission to visit this page.</div>
+    return <div className="page-text">Loading...</div>
   }
 }
 

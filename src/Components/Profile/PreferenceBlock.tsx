@@ -1,9 +1,8 @@
-import React, { FC, useContext, useEffect, useRef, useState } from 'react'
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { APIUserPreferenceEnum } from '../../modules/API';
 import { CompressedCourseBlock } from '../../modules/BlockManipulation';
-import uuid from '../../uuid';
 import contexts from '../APIContext';
-import RenderBlockProps, { calcFlex, blockColors, statusColors } from '../Scheduling/BlockBase';
+import RenderBlockProps, { blockColors, calcFlex, statusColors } from '../Scheduling/BlockBase';
 
 interface Props extends RenderBlockProps {
   data: {
@@ -66,7 +65,9 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
   }
 
   const resName = (prof: string) => {
-    if (prof !== "") {
+    if (prof === "TBA") {
+      return '(professor TBA)';
+    } else if (prof !== "") {
       return `with ${prof} `;
     } else {
       return '';
@@ -85,7 +86,12 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
       <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
         <input id={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
         <label htmlFor={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} style={{color: resStatusColor(section_id)}} >
-          {course_instance.course_number}-{course_instance.section_numbers[i]} {resName(course_instance.professors[i])}{resStatusText(section_id)}
+          <div>
+            {course_instance.course_number}-{course_instance.section_numbers[i]} {resName(course_instance.professors[i])}{resStatusText(section_id)}
+          </div>
+          <div>
+            {course_instance.locations[i]}
+          </div>
         </label>
       </div>
     )
@@ -132,10 +138,6 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
           <div className="fill"/>
           <div style={{marginBottom: '5px'}}/>
           <div className="pref-pane-title">Set preferences for selected sections</div>
-          {/* <button className="cantdo">Can't do</button>
-          <button className="prefernot">Prefer not to do</button>
-          <button className="indiff">No Preference</button>
-          <button className="prefer">Prefer to do</button> */}
           <button onClick={handleClick} name="Can't Do" className="cantdo">I Can't Do These</button>
           <button onClick={handleClick} name="Prefer Not To Do" className="prefernot">I Don't Want These</button>
           <button onClick={handleClick} name="Indifferent" className="indiff">No Preference</button>

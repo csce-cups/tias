@@ -1,10 +1,11 @@
 import React, { FC, useContext, useState } from 'react'
-import { EmployeeRow } from './EmployeeRow'
-import { GenerateButton } from './GenerateButton'
-import { SaveButton } from './SaveButton'
 import { Person } from '../../modules/API'
 import contexts from '../APIContext'
+import { Scrollable } from '../Misc/Scrollable'
+import { EmployeeRow } from './EmployeeRow'
+import { GenerateButton } from './GenerateButton'
 import { LoadButton } from './LoadButton'
+import { SaveButton } from './SaveButton'
 
 interface Props {
   
@@ -44,14 +45,14 @@ export const EmployeeList: FC<Props> = () => {
 
       {(employees.length > 0)?
           (employees[0].person_id !== -2)?
-            <div className="scrollable">
+            < Scrollable >
               {employees.sort((sortLast)? sortLastAlg : sortFirstAlg).map((e: Person, index: number) => (
                 < EmployeeRow employee={employees[index]} setEmployee={(e: Person) => {
                   employees[index] = e;
                   setEmployees(employees);
                 }} key={`employee-row-${e.person_id}`} linkID={e.person_id} genState={genState} />
               ))}
-            </div>
+            </Scrollable>
             :
             <div className="loading">An error occurred.</div>
 

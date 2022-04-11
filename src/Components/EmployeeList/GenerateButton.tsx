@@ -1,5 +1,5 @@
 import React, { FC, useContext } from 'react'
-import API, { CourseBlock, Person } from '../../modules/API'
+import API, { CourseBlock, CourseBlockWeek, Person } from '../../modules/API'
 import contexts from '../APIContext'
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 export const GenerateButton: FC<Props> = ({genState}) => {
   const [loadedSchedule, setLoadedSchedule] = useContext(contexts.loadedSchedule);
   
-  const runScheduler = (employees: Person[], blocks: any, setEmployees: any, setBlocks: any) => {
+  const runScheduler = (employees: Person[], blocks: any, setEmployees: any, setBlocks: any, userViableCourses: any, setUserViableCourses: any) => {
     if (loadedSchedule.size !== 0) {
       if (!window.confirm("This will overwrite your current schedule. Are you sure you want to continue?")) return;
     }
@@ -54,6 +54,14 @@ export const GenerateButton: FC<Props> = ({genState}) => {
       setLoadedSchedule(resp.scheduled);
       setEmployees(employees);
       setBlocks({Monday: allBlocks[0], Tuesday: allBlocks[1], Wednesday: allBlocks[2], Thursday: allBlocks[3], Friday: allBlocks[4]});
+      setUserViableCourses({
+        Monday: allBlocks[0].filter((b: CourseBlock) => userViableCourses.Monday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Tuesday: allBlocks[1].filter((b: CourseBlock) => userViableCourses.Tuesday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Wednesday: allBlocks[2].filter((b: CourseBlock) => userViableCourses.Wednesday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Thursday: allBlocks[3].filter((b: CourseBlock) => userViableCourses.Thursday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
+        Friday: allBlocks[4].filter((b: CourseBlock) => userViableCourses.Friday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined )
+      });
+
       if (btn !== null) btn.innerHTML = 'Done generating!';
       genState[1](false);
 
@@ -65,11 +73,15 @@ export const GenerateButton: FC<Props> = ({genState}) => {
   return (
     < contexts.blocks.Consumer >
       {([blocks, setBlocks]) => (
-        < contexts.employees.Consumer >
-          {([employees, setEmployees]) => (
-            <button id="generate-schedule-button" className="blue button" onClick={() => runScheduler(employees, blocks, setEmployees, setBlocks)}>Generate Schedule</button>
-          )}
-        </contexts.employees.Consumer>
+        < contexts.userViableCourses.Consumer >
+        {([viable, setViable]) => (
+          < contexts.employees.Consumer >
+            {([employees, setEmployees]) => (
+              <button id="generate-schedule-button" className="blue button" onClick={() => runScheduler(employees, blocks, setEmployees, setBlocks, viable, setViable)}>Generate Schedule</button>
+            )}
+          </contexts.employees.Consumer>
+        )}
+        </contexts.userViableCourses.Consumer >
       )}
     </contexts.blocks.Consumer>
   )
