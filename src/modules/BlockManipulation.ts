@@ -98,6 +98,7 @@ export const loadSchedule = (params: loadScheduleParams): Promise<void> => {
       blocks.Thursday,
       blocks.Friday,
     ] as any; // For easier iteration
+    
     allBlocks.forEach((day: any, oidx: number) => {
       day?.forEach((block: any, iidx: number) => {
         const pids = resp.has(`${block.section_id}`)
@@ -137,6 +138,7 @@ export const updateWithSchedule = (
     toUpdate.Thursday,
     toUpdate.Friday,
   ] as any; // For easier iteration
+  
   allBlocks.forEach((day: any, oidx: number) => {
     day?.forEach((block: any, iidx: number) => {
       const pids = schedule.has(`${block.section_id}`)

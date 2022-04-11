@@ -144,7 +144,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     });
 
     userPromises.userViableCourses.then((resp) => {
-      updateWithSchedule(loadedScheduleState[0], resp, userViableCourses[1]);
+      userViableCourses[1](resp);
     });
 
     userPromises.userTrades.then((resp) => {
