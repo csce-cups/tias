@@ -913,12 +913,14 @@ img.back-arrow {
 	display: flex;
 	flex-direction: column;
 
-	position: relative;
+	// position: relative;
 
 	.block.viewed {
+		position: absolute;
 		height: 6em;
-		width: 180%;
+		width: 90%;
 		z-index: 100;
+		top: 0;
 
 		box-shadow: 0 0 5px 0 black;
 		
@@ -927,12 +929,16 @@ img.back-arrow {
 		}
 	}
 
-	.block.viewed.block-right {
-		transform: translateX(-50%);
+	.block:not(.viewed) {
+		transition: all 0.2s ease-in-out, height 0s linear;
 	}
 
+	.block.viewed.block-right {
+		right: 5%;
+	}
+	
 	.block.viewed.block-left {
-		transform: translateX(5%);
+		left: 5%;
 	}
 }
 
@@ -984,10 +990,6 @@ img.back-arrow {
 	}
 }
 
-.new-trade-col-content {
-	position: relative;
-}
-
 .block.standalone {
 	text-align: left;
 	width: calc(100% - $block_margin_amount);
@@ -1002,6 +1004,7 @@ img.back-arrow {
 
 .hstack.reqoff-col {
 	margin: 0 7px 0 5px;
+	position: relative;
 }
 
 .swap-section {

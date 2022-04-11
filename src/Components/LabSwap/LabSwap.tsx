@@ -179,10 +179,10 @@ export const LabSwap = () => {
   }
 
   const renderSwapSets = (retData: TradeRequest[], action:"Outstanding" | "Pending" | null, filter: (request: TradeRequest) => boolean) => {
-    if (retData.filter(filter).length === 0) return <div className="loading-small ss-inside swap-section-subtitle">None</div>
+    // if (retData.filter(filter).length === 0) return <div className="loading-small ss-inside swap-section-subtitle">None</div>
 
-    return retData.filter(filter).map((request) => {
-
+    // return retData.filter(filter).map((request) => {
+    return retData.map((request) => {
       const allBlocks = renderScheduled(viableBlockWeek); // For easier iteration
       let sent: DisplayBlock | null = null
       let received: DisplayBlock | null = null
@@ -204,15 +204,15 @@ export const LabSwap = () => {
       if (action !== null){
         if (action === 'Pending') { //we sent this out, action is cancel
           actions = (
-            <div>
-              <button onClick={accept(request)}>Accept</button>
-              <button onClick={reject(request)}>Reject</button>
+            <div className="hstack">
+              <button className="short green button fill" onClick={accept(request)}>Accept</button>
+              <button className="short red button fill" onClick={reject(request)}>Reject</button>
             </div>
           );
         } else if (action === 'Outstanding'){ //incoming requests, so actions are accept and reject
           actions = (
-            <div>
-              <button onClick={cancel(request)}>Cancel</button>
+            <div className="hstack">
+              <button className="short purple button fill" onClick={cancel(request)}>Cancel</button>
             </div>
           );
         }
