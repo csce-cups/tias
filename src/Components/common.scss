@@ -882,6 +882,15 @@ div.loading {
 	font-size: 1.4em;
 }
 
+div.loading-small {
+	height: 100%;
+    display: flex;
+    // justify-content: center;
+    align-items: center;
+	color: $render_divider;
+	font-size: 1.0em;
+}
+
 img.back-arrow {
 	max-height: 1.1em;
 	position: absolute;
@@ -904,12 +913,14 @@ img.back-arrow {
 	display: flex;
 	flex-direction: column;
 
-	position: relative;
+	// position: relative;
 
 	.block.viewed {
+		position: absolute;
 		height: 6em;
-		width: 180%;
+		width: 90%;
 		z-index: 100;
+		top: 0;
 
 		box-shadow: 0 0 5px 0 black;
 		
@@ -918,12 +929,16 @@ img.back-arrow {
 		}
 	}
 
-	.block.viewed.block-right {
-		transform: translateX(-50%);
+	.block:not(.viewed) {
+		transition: all 0.2s ease-in-out, height 0s linear;
 	}
 
+	.block.viewed.block-right {
+		right: 5%;
+	}
+	
 	.block.viewed.block-left {
-		transform: translateX(5%);
+		left: 5%;
 	}
 }
 
@@ -975,14 +990,10 @@ img.back-arrow {
 	}
 }
 
-.new-trade-col-content {
-	position: relative;
-}
-
 .block.standalone {
 	text-align: left;
 	width: calc(100% - $block_margin_amount);
-	height: 2em;
+	height: 2.5em;
 }
 
 .block.frosted.standalone {
@@ -993,6 +1004,7 @@ img.back-arrow {
 
 .hstack.reqoff-col {
 	margin: 0 7px 0 5px;
+	position: relative;
 }
 
 .swap-section {
@@ -1003,6 +1015,15 @@ img.back-arrow {
 	font-weight: bold;
 	font-size: 1.2em;
 	margin-bottom: 5px;
+	margin-left: 10px;
+}
+
+.swap-section-subtitle {
+	font-weight: bold;
+	margin: 5px 0 5px 15px;
+}
+
+.ss-inside {
 	margin-left: 10px;
 }
 
@@ -1803,6 +1824,37 @@ img.background-image {
 .header-end {
 	padding: 0 5px;
 	border-bottom: 1px solid $render_divider;
+}
+
+.button-dot {
+	height: 18px;
+	border-radius: 9px;
+	overflow: hidden;
+	margin: 1px;
+	padding: 0;
+	flex: 0 0 auto;
+	color: transparent;
+
+	border: 2px solid $render_divider;
+	z-index: 2;
+}
+
+.vstack.dotstack:hover > .button-dot, .vstack.dotstack.working > .button-dot {
+	color: black;
+	border: 0;
+}
+
+.vstack.dotstack {
+	width: 18px;
+	justify-content: space-around;
+	margin-left: 2px;
+	transition: all 0.1s ease-out;
+}
+
+.vstack.dotstack:hover, .vstack.dotstack.working {
+	width: 6em;
+	justify-content: space-around;
+	margin-left: 2px;
 }
 
 .m5 {

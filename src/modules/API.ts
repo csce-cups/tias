@@ -363,35 +363,30 @@ class API {
 	/* 
 		JEREMY: This is the basic layout of an API POST. Change the function name, the parameter and it's type, the URL, and the "THING" field to what the API expects.
 	*/
-	static GENERIC_POST = async (DATA: any): Promise<void> => {
-		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+	static genericPost = async (data: any, userId: number | undefined): Promise<any> => {
+		if (userId === undefined) return;
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${userId}/trade-requests`, {
 			method: 'POST',
-			body: JSON.stringify({"THING": DATA})
+			body: JSON.stringify({"THING": data})
 		}).then(() => {});
 	}
 	
-	static SUBMIT_TRADE = async (DATA: Submission): Promise<void> => {
-		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+	static submitTrade = async (data: Submission, userId: number | undefined): Promise<any> => {
+		if (userId === undefined) return;
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${userId}/trade-requests`, {
 			method: 'POST',
-			body: JSON.stringify(DATA)
+			body: JSON.stringify(data)
 		}).then((APIresp) => APIresp.json())
-		.then(data => {
-			return data;
-		});
 	}
-	static ACCEPT_TRADE = async (DATA: TradeRequest): Promise<void> => {
-		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+
+	static updateTrade = async (data: TradeRequest, userId: number | undefined): Promise<void> => {
+		if (userId === undefined) return;
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${userId}/trade-requests`, {
 			method: 'PUT',
-			body: JSON.stringify(DATA)
+			body: JSON.stringify(data)
 		}).then(() => {});
 	}
-	//used for both cancel and reject
-	static REJECT_TRADE = async (DATA: TradeRequest): Promise<void> => {
-		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
-			method: 'PUT',
-			body: JSON.stringify(DATA)
-		}).then(() => {});
-	}
+
 	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
 		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
 			method: 'GET'

@@ -83,6 +83,7 @@ const queryDB = async (dbQuery, params) => {
 const GenerateErrorResponseAndLog = (err, response, msg) => {
     console.error('error: ', err);
     console.error('trace: ', err.stack);
+    console.log(msg);
     response.statusCode = 500;
     response.body = JSON.stringify({err: msg});
 };
