@@ -54,7 +54,12 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
-        headers.put("Access-Control-Allow-Origin", "http://localhost:3000");
+        if (event.getHeaders().get("origin").equals("https://www.csce-scheduler.com")) {
+            headers.put("Access-Control-Allow-Origin", "https://www.csce-scheduler.com");
+        }
+        else if (event.getHeaders().get("origin").equals("http://localhost:3000")) {
+            headers.put("Access-Control-Allow-Origin", "http://localhost:3000");
+        }
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
@@ -76,6 +81,12 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             return response
                 .withStatusCode(500)
                 .withBody("{ \"message\": \"Scheduler Encountered an Error. Please check the logs in AWS or contact an Administrator.\" }");
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         return response
