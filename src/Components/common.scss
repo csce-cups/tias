@@ -993,7 +993,7 @@ img.back-arrow {
 .block.standalone {
 	text-align: left;
 	width: calc(100% - $block_margin_amount);
-	height: 2em;
+	height: 2.5em;
 }
 
 .block.frosted.standalone {
@@ -1824,6 +1824,36 @@ img.background-image {
 .header-end {
 	padding: 0 5px;
 	border-bottom: 1px solid $render_divider;
+}
+
+.button-dot {
+	height: 18px;
+	border-radius: 9px;
+	overflow: hidden;
+	margin: 1px;
+	padding: 0;
+	flex: 0 0 auto;
+	color: transparent;
+
+	border: 2px solid $render_divider;
+}
+
+.vstack.dotstack:hover > .button-dot {
+	color: black;
+	border: 0;
+}
+
+.vstack.dotstack {
+	width: 18px;
+	justify-content: space-around;
+	margin-left: 2px;
+	transition: all 0.1s ease-out;
+}
+
+.vstack.dotstack:hover {
+	width: 6em;
+	justify-content: space-around;
+	margin-left: 2px;
 }
 
 .m5 {

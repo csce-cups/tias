@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, ReactElement, useContext, useEffect, useState } from "react";
 import API, {
   CourseBlock,
   CourseBlockWeek,
@@ -200,27 +200,24 @@ export const LabSwap = () => {
         [received, sent] = [sent, received]
       }
 
-      let actions = null;
+      let actions: ReactElement<any, any>[] = [];
       if (action !== null){
         if (action === 'Pending') { //we sent this out, action is cancel
-          actions = (
-            <div className="hstack">
-              <button className="short green button fill" onClick={accept(request)}>Accept</button>
-              <button className="short red button fill" onClick={reject(request)}>Reject</button>
-            </div>
-          );
+          actions = [
+            <button className="short green button fill button-dot" onClick={accept(request)}>Accept</button>,
+            <button className="short red button fill button-dot" onClick={reject(request)}>Reject</button>
+          ];
         } else if (action === 'Outstanding'){ //incoming requests, so actions are accept and reject
-          actions = (
-            <div className="hstack">
-              <button className="short purple button fill" onClick={cancel(request)}>Cancel</button>
-            </div>
-          );
+          actions = [
+            <button className="short purple button fill button-dot" onClick={cancel(request)}>Cancel</button>
+          ];
         }
       }
       return (
         <>
-          < SwapSet selected={[sent, received]} />
-          {actions}
+          < SwapSet selected={[sent, received]} >
+            {(actions.length !== 0) ? actions : undefined}
+          </ SwapSet >
         </>
       )
     })
