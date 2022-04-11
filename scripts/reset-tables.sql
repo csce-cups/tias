@@ -28,6 +28,11 @@ CREATE TABLE person (
 	administrator BOOLEAN,
 	professor BOOLEAN
 );
+ALTER TABLE IF EXISTS public.person
+    ADD CONSTRAINT email_unique_constraint UNIQUE (email);
+
+ALTER TABLE IF EXISTS public.person
+    ADD CONSTRAINT google_token_sub_unique_constraint UNIQUE (google_token_sub);
 
 DROP TABLE IF EXISTS person_unavailability CASCADE;
 CREATE TABLE person_unavailability (

@@ -55,7 +55,7 @@ export const GoogleButton: FC<Props> = ({renderAs}) => {
       lastName: userBasicInfo.getFamilyName(),
       email: userBasicInfo.getEmail(),
       profilePhoto: userBasicInfo.getImageUrl(),
-      isPeerTeacher: true,
+      isPeerTeacher: false,
       isTeachingAssistant: false,
       isProfessor: false,
       isAdmin: false    
