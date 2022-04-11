@@ -33,7 +33,8 @@ export const LabSwap = () => {
   useEffect(()=>{
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = "Request Trade";
-  }, [selectedTradeBlocksState])
+  }, [selectedTradeBlocksState]);
+
   const submitTrade = () => {
     const btn = document.getElementById('request-trade-btn') as HTMLButtonElement;
     if (btn !== null) btn.innerHTML = 'Sending request...';
@@ -60,7 +61,7 @@ export const LabSwap = () => {
     })
   };
 
-  const userId = +parseCookie().tias_user_id;
+  const userId = user.user?.person_id;
 
   interface DisplayBlock extends CourseBlock {
     days: (shortday)[]
@@ -115,6 +116,7 @@ export const LabSwap = () => {
       console.error(err);
     })
   }
+
   const cancel = (trade: TradeRequest) => () =>{
     trade.request_status="Cancelled";
     API.updateTrade(trade, user.user?.person_id).then(resp => {
@@ -122,6 +124,7 @@ export const LabSwap = () => {
       console.error(err);
     })
   }
+
   const accept = (trade: TradeRequest) => () =>{
     trade.request_status="Accepted";
     API.updateTrade(trade, user.user?.person_id).then(resp => {
