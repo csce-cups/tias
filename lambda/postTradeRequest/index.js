@@ -91,11 +91,9 @@ exports.handler = async (event) => {
 
     // Automatically Process Trade Request -- Does not Hit trade_request Table
     if (people_in_requested.length < requested_section.capacity_peer_teachers && people_in_offered.length > 1) {
-        helper_functions.queryDB(`UPDATE section_assignment SET section_id = $1 WHERE person_id = $2 AND section_id = $3`, [requested_id, requester_id, offered_id])
-        .then(res => {
-            response.body = JSON.stringify({msg: "Automatically changed the course assignment."});
-        })
+        await helper_functions.queryDB(`UPDATE section_assignment SET section_id = $1 WHERE person_id = $2 AND section_id = $3`, [requested_id, requester_id, offered_id])
         .catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to change the assignment from the offered section to the requested section automatically."))
+        response.body = JSON.stringify({msg: "Automatically changed the course assignment."});
         return response;
     }
 
@@ -135,7 +133,7 @@ exports.handler = async (event) => {
     }
     
     if (traded_people.length === 0) {
-        response.body = JSON.stringify({msg: 'Unable to trade course successfully with any users in requested section due to qualification or availability conflicts.'});
+        response.body = JSON.stringify({err: 'Unable to trade course successfully with any users in requested section due to qualification or availability conflicts.'});
         return response;
     }
 

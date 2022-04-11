@@ -36,7 +36,6 @@ export const LabSwap = () => {
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
   const [viableBlockWeekLocal, setBlockWeekLocal] = useState<CourseBlockWeek>(viableBlockWeek);
   const [schedule,] = useContext(contexts.loadedSchedule);
-  const [userTrades, setUserTrades] = useContext(contexts.userTrades);
   const selectedTradeBlocksState = useState<Selections>({
     offered: null,
     requested: null,
@@ -70,18 +69,18 @@ export const LabSwap = () => {
     }
     
     API.submitTrade(data, user.user?.person_id).then(resp => {
-      if (resp.msg){
-        if (btn !== null) btn.innerHTML = "Automatic Success";
-        alert(resp.msg);
-      } else if (resp.err){
-        if (btn !== null) btn.innerHTML = "Failed";
-        alert(resp.err);
+      if (resp.msg || resp.err){
+        if (resp.msg) {
+          if (btn !== null) btn.innerHTML = "Automatic Success";
+          alert(resp.msg);
+        }
+        if (resp.err) {
+          if (btn !== null) btn.innerHTML = "Failed";
+          alert(resp.err);
+        }
       } else if (btn !== null){
          btn.innerHTML = 'Done!';
       }
-      API.fetchUserTrades(user.user?.person_id).then(resp => {
-        setUserTrades(resp);
-      });
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
     })
