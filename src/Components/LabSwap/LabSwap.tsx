@@ -42,6 +42,11 @@ export const LabSwap = () => {
       requested_id: temp[1]?.section_id!
     }
     API.SUBMIT_TRADE(data).then(resp => {
+      console.log("SUBMIT RESPONSE: "+resp);
+      // console.error(resp);
+      // if(resp.msg!==undefined){
+
+      // }
       if (btn !== null){
         //TRYING TO MAKE BUTTON DISPLAY AN ERROR BETTER
         // if(resp.requested===[]){
@@ -95,40 +100,34 @@ export const LabSwap = () => {
       else if (a.section_number > b.section_number) return 1;
       return 0;
     }).forEach(block => {
+      if(block!==undefined){
         const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
         if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
         else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
+      }
     })
-
     return retFormat;
   }
 
   const reject = (trade: TradeRequest) => () =>{
-    // const btn = document.getElementById('reject-trade-btn') as HTMLButtonElement;
-    // if (btn !== null) btn.innerHTML = 'Sending request...';
     trade.request_status="Rejected";
     API.REJECT_TRADE(trade).then(resp => {
-      // if (btn !== null) btn.innerHTML = 'Done!';
-    }).catch(() => {
-      // if (btn !== null) btn.innerHTML = 'An error occurred';
+    }).catch((err) => {
+      console.error(err);
     })
   }
   const cancel = (trade: TradeRequest) => () =>{
-    // const btn = document.getElementById('reject-trade-btn') as HTMLButtonElement;
-    // if (btn !== null) btn.innerHTML = 'Sending request...';
     trade.request_status="Cancelled";
     API.REJECT_TRADE(trade).then(resp => {
-      // if (btn !== null) btn.innerHTML = 'Done!';
-    }).catch(() => {
-      // if (btn !== null) btn.innerHTML = 'An error occurred';
+    }).catch((err) => {
+      console.error(err);
     })
   }
   const accept = (trade: TradeRequest) => () =>{
     trade.request_status="Accepted";
-
     API.ACCEPT_TRADE(trade).then(resp => {
-    }).catch(() => {
-     
+    }).catch((err) => {
+      console.error(err);
     })
   }
 
@@ -203,14 +202,24 @@ export const LabSwap = () => {
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Sent Requests </div>
                       {renderSwapSets(trades, 'Outstanding', request => request.person_id_sender === userId && request.request_status === 'Pending')}
-
                   </div>
 
                   <div className="swap-divider"/>
 
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Past Requests </div>
-                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status !== 'Pending')}
+                      <div>
+                        Cancelled Requests
+                      </div>
+                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
+                      <div>
+                        Accepted Requests
+                      </div>
+                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Accepted')}
+                      <div>
+                        Rejected Requests
+                      </div>
+                      {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Rejected')}
                   </div>
                 </Scrollable>
               )
