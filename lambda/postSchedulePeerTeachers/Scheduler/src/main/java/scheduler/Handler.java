@@ -19,12 +19,14 @@ import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
-import db.Availability;
+import db.Unavailability;
 import db.Course;
 import db.Meeting;
 import db.Person;
@@ -150,7 +152,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         rs.close();
         st.close();
 
-        st = conn.prepareStatement(constructPersonQuery("person_availability", peopleIds.length));
+        st = conn.prepareStatement(constructPersonQuery("person_unavailability", peopleIds.length));
 
         for (int i = 0; i < peopleIds.length; ++i) {
             st.setInt(i + 1, peopleIds[i]);
@@ -160,7 +162,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         while (rs.next())
         {
-            people.get(rs.getInt("person_id")).addAvailability(new Availability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
+            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
         }
 
         rs.close();
@@ -223,11 +225,11 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         st = conn.createStatement();
 
-        rs = st.executeQuery(constructPersonQuery("person_availability"));
+        rs = st.executeQuery(constructPersonQuery("person_unavailability"));
 
         while (rs.next())
         {
-            people.get(rs.getInt("person_id")).addAvailability(new Availability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
+            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
         }
 
         rs.close();
@@ -303,6 +305,14 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         }
     }
 
+    static void addLeftovers(Person person, Queue<Section> leftovers) {
+        for (Section section : leftovers) {
+            if (person.getNumberCurrentlyAssigned() >= person.getDesiredNumberAssignments()) break;
+            addIfPossible(person, section);
+        }
+        leftovers.clear();
+    }
+
     static void schedulePeopleToSections() {
         people.forEach((person_id, person) -> {
             person.computeAvailabilityScore(sections);
@@ -322,33 +332,56 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
             HashSet<Integer> badSections = new HashSet<>();
 
+            LinkedList<Section> leftovers = new LinkedList<>(); // nonempty preferred sections
+
             // Schedule what you prefer or marked indifferent
             for (Preference preference : frontPerson.getSortedPreferences()) {
                 if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                 if (!possibleSections.contains(preference.getSectionId())) continue;
                 if (preference.isPreferable()) {
-                    addIfPossible(frontPerson, sections.get(preference.getSectionId()));
+                    Section section = sections.get(preference.getSectionId());
+                    if (section.getAssignedPTs() > 0) {
+                        leftovers.add(section);
+                    } else {
+                        addIfPossible(frontPerson, section);
+                    }
                 } else {
                     badSections.add(preference.getSectionId());
                 }
                 possibleSections.remove(preference.getSectionId());
             }
 
-            // Schedule what you didn't mark at all -- possibly deprecated
+            addLeftovers(frontPerson, leftovers);
+
+            // Schedule what you didn't mark at all -- user never sets any preferences
             if (frontPerson.getNumberCurrentlyAssigned() < frontPerson.getDesiredNumberAssignments()) {
                 for (int sectionId : possibleSections) {
                     if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
-                    addIfPossible(frontPerson, sections.get(sectionId));
+                    Section section = sections.get(sectionId);
+                    if (section.getAssignedPTs() > 0) {
+                        leftovers.add(section);
+                    } else {
+                        addIfPossible(frontPerson, section);
+                    }
                 }
             }
+
+            addLeftovers(frontPerson, leftovers);
 
             // Schedule what you marked as not preferred
             if (frontPerson.getNumberCurrentlyAssigned() < frontPerson.getDesiredNumberAssignments()) {
                 for (int sectionId : badSections) {
                     if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
-                    addIfPossible(frontPerson, sections.get(sectionId));
+                    Section section = sections.get(sectionId);
+                    if (section.getAssignedPTs() > 0) {
+                        leftovers.add(section);
+                    } else {
+                        addIfPossible(frontPerson, section);
+                    }
                 }
             }
+            
+            addLeftovers(frontPerson, leftovers);
 
             if (frontPerson.getNumberCurrentlyAssigned() == 0) {
                 unscheduled.add(frontPerson.getPersonId());

@@ -1,9 +1,39 @@
-import axios from 'axios'
-import BlockFormer from './BlockFormer'
+import axios from 'axios';
+import BlockFormer from './BlockFormer';
 
-const timezone_offset = 6;
+const timezone_offset = 0;
 
-export interface APIPerson {
+export interface TradeRequest {
+	person_id_sender: number
+	section_id_sender: number
+	person_id_receiver: number
+	section_id_receiver: number
+	request_status: "Rejected" | "Accepted" | "Pending" | "Cancelled"
+}
+
+export type Weekday = "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday"
+
+export interface Meeting {
+	course_id: number
+	department: string
+	course_number: string
+	section_number: string
+	meeting_type: string
+	days_met: Weekday[]
+	start_time: string
+	end_time: string
+	room?: string
+	instructor?: string
+}
+
+export interface Course {
+	course_id: number
+	course_name: string
+	course_number: string
+	department: string
+}
+
+export interface Person {
 	person_id: number
 	email: string
 	first_name: string
@@ -14,30 +44,39 @@ export interface APIPerson {
 	administrator: boolean
 	professor: boolean
 	isScheduled: null | boolean
+	isChecked: boolean
+	desired_number_assignments: number
 }
 
-export interface APIPTListResponse {
-	users: APIPerson[]
-}
-
-export interface APICourseBlock {
+export interface CourseBlock {
 	department: string
 	course_number: number
-	section_number: number
+	section_number: string
 	section_id: number
 	start_time: Date
 	end_time: Date
 	weekday: string
 	place: string
 	scheduled: number[] | null;
+	professor: string
 }
 
-export interface APICourseBlockWeek {
-	Monday: APICourseBlock[] | null
-	Tuesday: APICourseBlock[] | null
-	Wednesday: APICourseBlock[] | null
-	Thursday: APICourseBlock[] | null
-	Friday: APICourseBlock[] | null
+export interface CourseBlockWeek {
+	Monday: CourseBlock[] | null
+	Tuesday: CourseBlock[] | null
+	Wednesday: CourseBlock[] | null
+	Thursday: CourseBlock[] | null
+	Friday: CourseBlock[] | null
+}
+
+export interface Person_INIT {
+	email: string
+	firstName: string
+	lastName: string
+	isPeerTeacher: boolean
+	isTeachingAssistant: boolean
+	isProfessor: boolean
+	isAdministrator: boolean
 }
 
 interface raw_APICourseBlock {
@@ -49,6 +88,7 @@ interface raw_APICourseBlock {
 	end_time: string
 	weekday: string
 	place: string
+	placeholder_professor_name: string
 }
 
 interface raw_APICourseBlockWeek {
@@ -65,89 +105,121 @@ export interface APIUserQualification {
 	qualified: boolean
 }
 
+export type APIUserPreferenceEnum = "Can't Do" | "Prefer Not To Do" | "Indifferent" | "Prefer To Do"
+export type APIUserPreferences = Map<number, APIUserPreferenceEnum>
+
 export interface APIAlgoResponse {
 	scheduled: Map<string, number[]>
 	unscheduled: number[]
 }
 
+export interface APIStudentUnavailability {
+	DTSTART: string,
+	DTEND: string,
+	BYDAY: string,
+}
+
 export interface APIReturn {
-	employees: Promise<APIPerson[]>
-	blocks: Promise<APICourseBlockWeek>,
+	employees: Promise<Person[]>
+	blocks: Promise<CourseBlockWeek>,
 	userQuals: Promise<APIUserQualification[]>
+	userPrefs: Promise<APIUserPreferences>
+	userTrades: Promise<TradeRequest[]>
 }
 
 // https://www.geekstrick.com/snippets/how-to-parse-cookies-in-javascript/
 export const parseCookie: any = () => {
-	return (
-		document.cookie
-			.split(';')
-			.map(v => v.split('='))
-			.reduce((acc: any, v) => {
-				acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
-				return acc;
-			}, {})
-	)
+	try {
+		return (
+			document.cookie
+				.split(';')
+				.map(v => v.split('='))
+				.reduce((acc: any, v) => {
+					acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+					return acc;
+				}, {})
+		)
+	} catch (e) {
+		return ({})
+	}
 }
-
+export interface Submission{
+	offered_id: number,
+	requested_id: number
+}
 class API {
-	static fetchAll = (): APIReturn => {
-		let id = undefined;
-		try {
-			id = parseCookie().tias_user_id;
-			if (id === -1) id = undefined;
-		} catch (SyntaxError) {};
-
+	static fetchAllStatic = () => {
 		return {
 			employees: API.fetchPTList(),
-			blocks: API.fetchCourseBlocks(),
-			userQuals: API.fetchUserQualifications(id)
+			blocks: API.fetchCourseBlocks()
 		}
 	}
 
-	static fetchAllDummy = (args?: {employees?: APIPerson[]}): APIReturn => {
-		let id = undefined;
-		try {
-			id = parseCookie(document.cookie).tias_user_id;
-			if (id === -1) id = undefined;
-		} catch (SyntaxError) {};
-
+	static fetchAllUser = (user_id: number | undefined) => {
 		return {
-			employees: API.fetchPTListDummy(args?.employees),
-			blocks: API.fetchCourseBlocksDummy(),
-			userQuals: API.fetchUserQualificationsDummy(id)
+			userQuals: API.fetchUserQualifications(user_id),
+			userPrefs: API.fetchUserPreferences(user_id),
+			userViableCourses: API.fetchUserViableCourses(user_id),
+			userTrades: API.fetchUserTrades(user_id)
+		}
+	}
+
+	static fetchAllStaticDummy = () => {
+		return {
+			employees: API.fetchPTListDummy(),
+			blocks: API.fetchCourseBlocksDummy()
+		}
+	}
+
+	static fetchAllUserDummy = (user_id: number | undefined) => {
+		return {
+			userQuals: API.fetchUserQualificationsDummy(user_id),
+			userPrefs: API.fetchUserPreferencesDummy(user_id),
+			userViableCourses: API.fetchUserViableCourses(undefined),
+			userTrades: API.fetchUserTrades(undefined)
 		}
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher
-	private static fetchPTList = async (): Promise<APIPerson[]> => {
+	static fetchPTList = async (): Promise<Person[]> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users?usertype=peer-teacher")
-			.then(({data}) => data.users)
-			.catch(err => console.log(err));
+			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
+			.catch(err => [{person_id: -2} as Person]);
+	}
+
+	static fetchEveryone = async (): Promise<Person[]> => {
+		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users")
+			.then(({data}) => data.users.map((v: any) => ({...v, isChecked: true})))
+			.catch(err => [{person_id: -2} as Person]);
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings
-	private static fetchCourseBlocks = async (): Promise<APICourseBlockWeek> => {
+	private static fetchCourseBlocks = async (): Promise<CourseBlockWeek> => {
 		return axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings")
 			.then(({data}) => {
-				console.log({data})
 				let dataStrict: raw_APICourseBlockWeek = data;
 				const createDate = (datestring: string): Date => {
 					let d = new Date(0);
-					d.setHours(timezone_offset + parseInt(datestring.substring(0, 2))); // First two digits are the hours
+					d.setHours(parseInt(datestring.substring(0, 2)) - timezone_offset); // First two digits are the hours
 					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
 					return d;
 				}
-				const convert = (input: raw_APICourseBlock[]): APICourseBlock[] => (input.map((e: raw_APICourseBlock) => ({
-					department: e.department,
-					course_number: parseInt(e.course_number),
-					section_number: parseInt(e.section_number),
-					section_id: e.section_id,
-					start_time: createDate(e.start_time),
-					end_time: createDate(e.end_time),
-					weekday: e.weekday,
-					place: e.place,
-					scheduled: null
-				})))
+				const convert = (input: raw_APICourseBlock[]): CourseBlock[] => (
+					input? input.map((e: raw_APICourseBlock) => ({
+						department: e.department,
+						course_number: parseInt(e.course_number),
+						section_number: e.section_number,
+						section_id: e.section_id,
+						start_time: createDate(e.start_time),
+						end_time: createDate(e.end_time),
+						weekday: e.weekday,
+						place: e.place,
+						scheduled: null,
+						professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name
+					}))
+					:
+					[]
+				);
 
 				return ({
 					Monday: convert(dataStrict.Monday),
@@ -157,7 +229,16 @@ class API {
 					Friday: convert(dataStrict.Friday)
 				} as any)
 			})
-			.catch(err => console.log(err));
+			.catch(err => {
+				console.error(err);
+				return ({
+					Monday: [{course_number: -1} as CourseBlock],
+					Tuesday: [{course_number: -1} as CourseBlock],
+					Wednesday: [{course_number: -1} as CourseBlock],
+					Thursday: [{course_number: -1} as CourseBlock],
+					Friday: [{course_number: -1} as CourseBlock]
+				} as any)
+			});
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/qualifications
@@ -168,6 +249,104 @@ class API {
 			.catch(err => console.log(err));
 	}
 
+	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/preferences
+	private static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`)
+			.then(({data}) => (
+				new Map<number, APIUserPreferenceEnum>(
+					data.preferences.map((pref: {section_id: number, preference: APIUserPreferenceEnum}) => ([pref.section_id, pref.preference]))
+				) as any
+			))
+			.catch(err => console.log(err));
+	}
+
+	static fetchUserViableCourses = async (user_id?: number): Promise<CourseBlockWeek> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve({} as CourseBlockWeek);});
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/viable-courses`)
+			.then(({data}) => {
+				let dataStrict: raw_APICourseBlock[] = data.viableCourses;
+				let ret = {
+					Monday: [] as CourseBlock[],
+					Tuesday: [] as CourseBlock[],
+					Wednesday: [] as CourseBlock[],
+					Thursday: [] as CourseBlock[],
+					Friday: [] as CourseBlock[]
+				} as CourseBlockWeek;
+
+				const createDate = (datestring: string): Date => {
+					let d = new Date(0);
+					d.setHours(parseInt(datestring.substring(0, 2)) - timezone_offset); // First two digits are the hours
+					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
+					return d;
+				}
+
+				const convertOne = (e: raw_APICourseBlock): CourseBlock => ({
+					department: e.department,
+					course_number: parseInt(e.course_number),
+					section_number: e.section_number,
+					section_id: e.section_id,
+					start_time: createDate(e.start_time),
+					end_time: createDate(e.end_time),
+					weekday: e.weekday,
+					place: e.place,
+					scheduled: null,
+					professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name
+				})
+
+				dataStrict.forEach((b: raw_APICourseBlock) => {
+					switch (b.weekday) {
+						case "Monday": ret.Monday!.push(convertOne(b)); break;
+						case "Tuesday": ret.Tuesday!.push(convertOne(b)); break;
+						case "Wednesday": ret.Wednesday!.push(convertOne(b)); break;
+						case "Thursday": ret.Thursday!.push(convertOne(b)); break;
+						case "Friday": ret.Friday!.push(convertOne(b)); break;
+					}
+				});
+
+				return ret;
+			})
+			.catch(err => {
+				return ({
+					Monday: [{course_number: -1} as CourseBlock],
+					Tuesday: [{course_number: -1} as CourseBlock],
+					Wednesday: [{course_number: -1} as CourseBlock],
+					Thursday: [{course_number: -1} as CourseBlock],
+					Friday: [{course_number: -1} as CourseBlock]
+				} as any)
+			});
+	}
+
+	static fetchUserTrades = async (user_id?: number): Promise<TradeRequest[]> => {
+		if (user_id === undefined) return new Promise((resolve) => resolve([] as TradeRequest[]));
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/trade-requests`)
+			.then(({data}) => data.trade_requests as TradeRequest[]);
+	}
+
+	static sendUserPreferences = async (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve()});
+		let rets: Promise<void>[] = [];
+		if (pref_num !== undefined) {
+			rets.push(
+					fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}`, {
+					method: "PUT",
+					body: JSON.stringify({"desired_number_assignments": pref_num})
+				}).then(() => {})
+			)
+		} 
+
+		rets.push(
+			fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`, {
+				method: "PUT",
+				body: JSON.stringify({
+					preferences: Array.from(prefs.entries()).map(arr => ({section_id: arr[0], preference: arr[1]}))
+				}),
+			}).then(() => {})
+		)
+
+		return Promise.all(rets).then(() => {});
+	}
+
 	static runScheduler = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
 		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/schedule-peer-teachers', {
 			method: 'POST',
@@ -175,13 +354,124 @@ class API {
 		}).then(sessionResponse => sessionResponse.json())
 		  .then(responseData => {
 			let map = new Map<string, number[]>();
-			Object.keys(responseData.scheduled).map(key => map.set(key, responseData.scheduled[key]));
+			Object.keys(responseData.scheduled).forEach(key => map.set(key, responseData.scheduled[key]));
 			responseData.scheduled = map;
 			return responseData;
 		});
 	}
 
-	private static fetchPTListDummy = async (response?: APIPerson[]): Promise<APIPerson[]> => {
+	/* 
+		JEREMY: This is the basic layout of an API POST. Change the function name, the parameter and it's type, the URL, and the "THING" field to what the API expects.
+	*/
+	static GENERIC_POST = async (DATA: any): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+			method: 'POST',
+			body: JSON.stringify({"THING": DATA})
+		}).then(() => {});
+	}
+	
+	static SUBMIT_TRADE = async (DATA: Submission): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+			method: 'POST',
+			body: JSON.stringify(DATA)
+		}).then((APIresp) => APIresp.json())
+		.then(data => {
+			return data;
+		});
+	}
+	static ACCEPT_TRADE = async (DATA: TradeRequest): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+			method: 'PUT',
+			body: JSON.stringify(DATA)
+		}).then(() => {});
+	}
+	//used for both cancel and reject
+	static REJECT_TRADE = async (DATA: TradeRequest): Promise<void> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/trade-requests`, {
+			method: 'PUT',
+			body: JSON.stringify(DATA)
+		}).then(() => {});
+	}
+	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
+			method: 'GET'
+		}).then(sessionResponse => sessionResponse.json())
+		  .then(responseData => {
+			let map = new Map<string, number[]>();
+			Object.keys(responseData.scheduled).forEach(key => map.set(key, responseData.scheduled[key]));
+			return map;
+		});
+	}
+
+	static sendSavedSchedule = async (scheduled: Map<string, number[]>): Promise<void> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/saved-schedule', {
+			method: 'POST',
+			body: JSON.stringify({"scheduled": Object.fromEntries(scheduled)})
+		}).then(() => {});
+	}
+
+	static saveUserUnavailability = async (uid: number | undefined, user_unavailability_arr: APIStudentUnavailability[]) => {
+		let currentDateObj = new Date();
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${uid}/unavailability`, {
+			method: 'POST',
+			body: JSON.stringify({"timezoneOffsetHours": (currentDateObj.getTimezoneOffset() / 60), "unavailability": user_unavailability_arr})
+		}).then(() => {});
+	}
+
+	static sendNewMeetings = async (meetings: Meeting[]) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/changeover`, {
+			method: 'POST',
+			body: JSON.stringify(meetings)
+		});
+	}
+
+	static updateUser = async (user: Person) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user.person_id}`, {
+			method: 'PUT',
+			body: JSON.stringify({
+				"is_peer_teacher": user.peer_teacher,
+				"is_teaching_assistant": user.teaching_assistant,
+				"is_professor": user.professor,
+				"is_administrator": user.administrator
+			})
+		}).then(() => {});
+	}
+
+	static registerNewUser = async (user_init: Person_INIT) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users`, {
+			method: 'POST',
+			body: JSON.stringify(user_init)
+		}).then(() => {});
+	}
+
+	static deleteUser = async (uid: number) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${uid}`, {
+			method: 'DELETE'
+		}).then(() => {});
+	}
+
+	static getCourses = async (): Promise<Course[]> => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses', {
+			method: 'GET'
+		}).then(sessionResponse => sessionResponse.json())
+		  .then(responseData => responseData as Course[]);
+	}
+
+	static addCourse = async (course: Course) => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses', {
+			method: 'POST',
+			body: JSON.stringify(course)
+		}).then(() => {});
+	}
+
+	static deleteCourse = async (course_id: number) => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses/${course_id}`, {
+			method: 'DELETE'
+		}).then(() => {});
+	}
+
+
+	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve(response || [
@@ -249,14 +539,16 @@ class API {
 						teaching_assistant: false,
 						administrator: false,
 						professor: false,
-						isScheduled: null
+						isScheduled: null,
+						isChecked: false,
+						desired_number_assignments: 2
 					})
 				))
 			}, 1000)
 		})
 	}
 
-	private static fetchCourseBlocksDummy = async (): Promise<APICourseBlockWeek> => {
+	private static fetchCourseBlocksDummy = async (): Promise<CourseBlockWeek> => {
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
 				resolve({
@@ -276,20 +568,40 @@ class API {
 			setTimeout(() => {
 				resolve([
 					{course_id: 1, course_number: "110", qualified: true},
-					{course_id: 2, course_number: "111", qualified: false},
-					{course_id: 3, course_number: "120", qualified: false},
-					{course_id: 4, course_number: "121", qualified: false},
-					{course_id: 5, course_number: "206", qualified: false},
-					{course_id: 6, course_number: "221", qualified: false},
-					{course_id: 7, course_number: "222", qualified: false},
-					{course_id: 8, course_number: "312", qualified: false},
-					{course_id: 9, course_number: "313", qualified: false},
+					{course_id: 2, course_number: "111", qualified: true},
+					{course_id: 3, course_number: "120", qualified: true},
+					{course_id: 4, course_number: "121", qualified: true},
+					{course_id: 5, course_number: "206", qualified: true},
+					{course_id: 6, course_number: "221", qualified: true},
+					{course_id: 7, course_number: "222", qualified: true},
+					{course_id: 8, course_number: "312", qualified: true},
+					{course_id: 9, course_number: "313", qualified: true},
 					{course_id: 10, course_number: "314", qualified: true},
 					{course_id: 11, course_number: "315", qualified: true},
 					{course_id: 11, course_number: "331", qualified: true}
-
 				])
 			}, 800);
+		})
+	}
+
+	private static fetchUserPreferencesDummy = async (user_id?: number): Promise<APIUserPreferences> => {
+		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
+		return API.fetchCourseBlocksDummy().then(blocks => {
+			const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
+			const choose = () => {
+				const possiblePrefs: APIUserPreferenceEnum[] = ["Can't Do", "Prefer Not To Do", "Indifferent", "Prefer To Do"];
+				return possiblePrefs[2];
+			}
+
+			let resp = new Map<number, APIUserPreferenceEnum>();
+
+			allBlocks.forEach(day => {
+				day?.forEach(block => {
+					resp.set(block.section_id, choose());
+				});
+			});
+
+			return resp;
 		})
 	}
 
@@ -301,7 +613,7 @@ class API {
 				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
 				resp.scheduled = map;
 				resolve(resp);
-			}, 200);
+			}, 10000);
 		})
 	}
 }

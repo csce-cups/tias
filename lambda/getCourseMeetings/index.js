@@ -1,20 +1,43 @@
 const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
+    let accessHeader = null;
+    
+    if (event.headers.origin == 'https://www.csce-scheduler.com') {
+        accessHeader = 'https://www.csce-scheduler.com';
+    }
+    else if (event.headers.origin == 'http://localhost:3000') {
+        accessHeader = 'http://localhost:3000';
+    }
+    
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json", 
+                     "Access-Control-Allow-Origin": accessHeader }
+    };
+    
     const dbQuery = 
     `
-        SELECT course.department, course.course_number, course_section.section_number, 
+        SELECT section_meeting.section_id, course.department, course.course_number, course_section.section_number, course_section.placeholder_professor_name,
                section_meeting.start_time, section_meeting.end_time, section_meeting.weekday, 
                section_meeting.place
-            FROM section_meeting
-            LEFT OUTER JOIN course_section ON course_section.section_id = section_meeting.section_id
-            LEFT OUTER JOIN course ON course.course_id = course_section.course_id
-            ORDER BY section_meeting.weekday, section_meeting.start_time, (section_meeting.end_time - section_meeting.start_time),
-                     course.course_number, course_section.section_number
+        FROM section_meeting
+        LEFT OUTER JOIN course_section ON course_section.section_id = section_meeting.section_id
+        LEFT OUTER JOIN course ON course.course_id = course_section.course_id
+        WHERE section_meeting.meeting_type = 'Laboratory'
+        ORDER BY section_meeting.weekday, section_meeting.start_time, (section_meeting.end_time - section_meeting.start_time),
+                 course.course_number, course_section.section_number
     `;
     const params = [];
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
+    let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to retrieve course meetings.');
+    });
+    
+    if (response.statusCode === 500) {
+        return response;
+    }
     
     const responseBody = { };
     
@@ -27,13 +50,7 @@ exports.handler = async (event) => {
     }
 	
 	responseBody[dbRows[dbRows.length - 1].weekday] = dbRows.slice(prevSliceIndex, dbRows.length);
-    
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify(responseBody)
-    };
 
+    response.body = JSON.stringify(responseBody);
     return response;
 };

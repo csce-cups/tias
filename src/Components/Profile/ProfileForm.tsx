@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react'
-import { ProfileFormRow } from './ProfileFormRow'
-import contexts from '../APIContext'
-import { APIUserQualification, parseCookie } from '../../modules/API';
+import React, { useContext, useState } from 'react';
+import API, { APIUserQualification } from '../../modules/API';
+import contexts from '../APIContext';
+import { ProfileFormRow } from './ProfileFormRow';
 
 export const ProfileForm = () => {
-  let updateOnDismount = () => {};
+  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses); 
+  const user = useContext(contexts.user);
+
   const submit = (event: any, setQuals: any) => {
     const selections = Array.from(document.querySelectorAll(`select[id$="-prefs"]`));
     let newQuals: APIUserQualification[] = [];
@@ -21,7 +24,7 @@ export const ProfileForm = () => {
     })
 
     document.getElementById("submit-button")?.setAttribute('value', 'Saving...');
-    fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${parseCookie().tias_user_id}/qualifications`, {
+    fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user.user?.person_id}/qualifications`, {
       method: 'PUT',
       body: JSON.stringify(requestBody)
     }).then(response => response.json())
@@ -29,51 +32,44 @@ export const ProfileForm = () => {
         if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
           document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
         } else {
-          document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!')
+          document.getElementById("submit-button")?.setAttribute('value', 'Updating Preferences...');
+          API.fetchUserViableCourses(user.user?.person_id).then((resp) => {
+            setQuals(newQuals);
+            setUserViableCourses(resp);
+            document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
+          })
         }
       })
       .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
-    
-    updateOnDismount = () => setQuals(newQuals);
 
     event.preventDefault();
   }
 
-  useEffect(() => {
-    return () => updateOnDismount();
-  }, [])
-
   return (
-    <div className="profile-form" >
-      <div className="header">
-        Courses
+    <div className={`profile-form ${collapsed? 'collapsed' : ''}`} >
+      <div className={`hstack header ${collapsed? 'collapsed' : ''}`} onClick={() => setCollapsed(!collapsed)}>
+        <div className="header-content">Course Qualifications</div>
+        <div className="fill" />
+        <div className="arrow-container"/>
       </div>
 
       < contexts.userQuals.Consumer >
         {([quals, setQuals]) => (
-          <form onSubmit={(e: any) => submit(e, setQuals)}>
-            <div className="scrollable">
-              <div className="hstack">
-                <div className="dropdown-label">
-                  Preferred Number of Lab Sections:  
-                </div>
-                <input className="fill" type="number" placeholder="2"/>
-              </div>
-              <div className="hr-container"><hr/></div>
-
+          <div className={`${collapsed? "collapsed " : ""}form-body`}>
+            <form onSubmit={(e) => submit(e, setQuals)}>
               { (quals.length > 0)? 
                 quals.map((qual: APIUserQualification, idx: number) => (
-                  <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${qual.course_id}`}/>
+                  <ProfileFormRow course_id={qual.course_id} course_name={qual.course_number} qual={qual.qualified} key={`pfrow-${JSON.stringify(qual)}`}/>
                 ))
                 :
                 <ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>
               }
-            </div>
 
-            <div className="hstack">
-              <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
-            </div>
-          </form>
+              <div className="hstack">
+                <input id="submit-button" type="submit" className="green button submit" value="Save Qualifications"/>
+              </div>
+            </form>
+          </div>
         )}
       </contexts.userQuals.Consumer>
     </div>

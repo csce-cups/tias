@@ -4,7 +4,7 @@ CREATE TYPE preference AS ENUM
 
 DROP TYPE IF EXISTS request_status CASCADE;
 CREATE TYPE request_status AS ENUM
-    ('Pending', 'Accepted', 'Rejected');
+    ('Pending', 'Accepted', 'Rejected', 'Cancelled');
 
 DROP TYPE IF EXISTS weekday CASCADE;
 CREATE TYPE weekday AS ENUM
@@ -29,22 +29,12 @@ CREATE TABLE person (
 	professor BOOLEAN
 );
 
-DROP TABLE IF EXISTS person_availability CASCADE;
-CREATE TABLE person_availability (
+DROP TABLE IF EXISTS person_unavailability CASCADE;
+CREATE TABLE person_unavailability (
 	person_id INTEGER REFERENCES person(person_id),
 	weekday WEEKDAY,
 	start_time TIME,
 	end_time TIME,
-	PRIMARY KEY(person_id, weekday, start_time, end_time)
-);
-
-DROP TABLE IF EXISTS office_hours CASCADE;
-CREATE TABLE office_hours (
-	person_id INTEGER REFERENCES person(person_id),
-	weekday WEEKDAY,
-	start_time TIME,
-	end_time TIME,
-	place VARCHAR,
 	PRIMARY KEY(person_id, weekday, start_time, end_time)
 );
 
@@ -75,7 +65,7 @@ DROP TABLE IF EXISTS course_section CASCADE;
 CREATE TABLE course_section (
 	section_id SERIAL PRIMARY KEY,
 	course_id INTEGER REFERENCES course(course_id) NOT NULL,
-    person_id_professor INTEGER REFERENCES course(course_id),
+    person_id_professor INTEGER REFERENCES person(person_id),
 	section_number CHAR(3) NOT NULL,
 	placeholder_professor_name VARCHAR,
     capacity_peer_teachers INT DEFAULT 2,
