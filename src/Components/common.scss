@@ -1836,9 +1836,10 @@ img.background-image {
 	color: transparent;
 
 	border: 2px solid $render_divider;
+	z-index: 2;
 }
 
-.vstack.dotstack:hover > .button-dot {
+.vstack.dotstack:hover > .button-dot, .vstack.dotstack.working > .button-dot {
 	color: black;
 	border: 0;
 }
@@ -1850,7 +1851,7 @@ img.background-image {
 	transition: all 0.1s ease-out;
 }
 
-.vstack.dotstack:hover {
+.vstack.dotstack:hover, .vstack.dotstack.working {
 	width: 6em;
 	justify-content: space-around;
 	margin-left: 2px;

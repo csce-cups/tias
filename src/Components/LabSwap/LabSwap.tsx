@@ -151,38 +151,67 @@ export const LabSwap = () => {
     return retFormat;
   };
 
-  const reject = (trade: TradeRequest) => () => {
-    trade.request_status="Rejected";
+  const reject = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, trade: TradeRequest) => {
+    const target = event.currentTarget;
+    trade.request_status = "Rejected";
+    target.parentElement?.classList.add('working')
+    target.innerHTML = "Working...";
     API.updateTrade(trade, user.user?.person_id).then(resp => {
-
+      target.innerHTML = "Rejected!";
     }).catch((err) => {
-      console.error(err);
+      target.innerHTML = "Error.";
+    }).finally(() => {
+      setTimeout(() => {
+        target.parentElement?.classList.remove('working');
+        API.fetchUserTrades(user.user?.person_id).then(resp => {
+          setUserTrades(resp);
+        });
+      }, 2000);
     })
   }
 
-  const cancel = (trade: TradeRequest) => () => {
-    trade.request_status="Cancelled";
+  const cancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, trade: TradeRequest) => {
+    const target = event.currentTarget;
+    trade.request_status = "Cancelled";
+    target.parentElement?.classList.add('working')
+    target.innerHTML = "Working...";
     API.updateTrade(trade, user.user?.person_id).then(resp => {
-
+      target.innerHTML = "Canceled!";
     }).catch((err) => {
-      console.error(err);
+      target.innerHTML = "Error.";
+    }).finally(() => {
+      setTimeout(() => {
+        target.parentElement?.classList.remove('working');
+        API.fetchUserTrades(user.user?.person_id).then(resp => {
+          setUserTrades(resp);
+        });
+      }, 2000);
     })
   }
 
-  const accept = (trade: TradeRequest) => () => {
-    trade.request_status="Accepted";
+  const accept = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, trade: TradeRequest) => {
+    const target = event.currentTarget;
+    trade.request_status = "Accepted";
+    target.parentElement?.classList.add('working')
+    target.innerHTML = "Working...";
     API.updateTrade(trade, user.user?.person_id).then(resp => {
-
+      target.innerHTML = "Accepted!";
     }).catch((err) => {
-      console.error(err);
+      target.innerHTML = "Error.";
+    }).finally(() => {
+      setTimeout(() => {
+        target.parentElement?.classList.remove('working');
+        API.fetchUserTrades(user.user?.person_id).then(resp => {
+          setUserTrades(resp);
+        });
+      }, 2000);
     })
   }
 
   const renderSwapSets = (retData: TradeRequest[], action:"Outstanding" | "Pending" | null, filter: (request: TradeRequest) => boolean) => {
-    // if (retData.filter(filter).length === 0) return <div className="loading-small ss-inside swap-section-subtitle">None</div>
+    if (retData.filter(filter).length === 0) return <div className="loading-small ss-inside swap-section-subtitle">None</div>
 
-    // return retData.filter(filter).map((request) => {
-    return retData.map((request) => {
+    return retData.filter(filter).map((request) => {
       const allBlocks = renderScheduled(viableBlockWeek); // For easier iteration
       let sent: DisplayBlock | null = null
       let received: DisplayBlock | null = null
@@ -204,18 +233,18 @@ export const LabSwap = () => {
       if (action !== null){
         if (action === 'Pending') { //we sent this out, action is cancel
           actions = [
-            <button className="short green button fill button-dot" onClick={accept(request)}>Accept</button>,
-            <button className="short red button fill button-dot" onClick={reject(request)}>Reject</button>
+            <button className="short green button fill button-dot" onClick={e => accept(e, request)} >Accept</button>,
+            <button className="short red button fill button-dot" onClick={e => reject(e, request)}>Reject</button>
           ];
         } else if (action === 'Outstanding'){ //incoming requests, so actions are accept and reject
           actions = [
-            <button className="short purple button fill button-dot" onClick={cancel(request)}>Cancel</button>
+            <button className="short purple button fill button-dot" onClick={e => cancel(e, request)}>Cancel</button>
           ];
         }
       }
       return (
         <>
-          < SwapSet selected={[sent, received]} >
+          < SwapSet key={`swapset-for-${JSON.stringify(request)}`} selected={[sent, received]} >
             {(actions.length !== 0) ? actions : undefined}
           </ SwapSet >
         </>
