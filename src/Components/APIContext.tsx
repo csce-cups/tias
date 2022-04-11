@@ -100,6 +100,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   } as CourseBlockWeek);
 
   const userTrades = useState([] as TradeRequest[]);
+  const [all, setAll] = useState([] as Person[]);
 
   useEffect(() => {
     const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
@@ -107,7 +108,10 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     let blocks: CourseBlockWeek;
 
     Promise.all([
-      new Promise<void>(resolve => dataPromises.employees.then((resp) => employees = resp).then(() => resolve())),
+      new Promise<void>(resolve => dataPromises.employees.then((resp) => {
+        setAll(resp);
+        employees = resp.filter(e => e.peer_teacher);
+      }).then(() => resolve())),
       new Promise<void>(resolve => dataPromises.blocks.then((resp) => blocks = resp).then(() => resolve()))
     ]).then(() => {
       loadSchedule({
@@ -117,22 +121,23 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
         setBlocks: blockState[1],
         setLoadedSchedule: loadedScheduleState[1]
       });
+
+      const user = all.find((e) => e.person_id === parseInt(parseCookie().tias_user_id)) || null;
+      setUser({
+        user: user,
+        doShowProfile: (user && user.peer_teacher),
+        doShowScheduling: (user && user.administrator),
+        doShowLabSwap: (user && user.peer_teacher),
+        doShowAdmin: (user && user.administrator)
+      })
     })
 
-    const user = employeeState[0].find((e) => e.person_id === parseInt(parseCookie().tias_user_id)) || null;
-    setUser({
-      user: user,
-      doShowProfile: user && (user.peer_teacher || user.administrator),
-      doShowScheduling: user && user.administrator,
-      doShowLabSwap: user && (user.peer_teacher || user.administrator),
-      doShowAdmin: user && user.administrator
-    })
 
     // eslint-disable-next-line
   }, []); // Fetch static data right away
 
   useEffect(() => {
-    const user = employeeState[0].find((e) => e.person_id === googleDataState[0].tias_user_id) || null;
+    const user = all.find((e) => e.person_id === googleDataState[0].tias_user_id) || null;
     const userPromises = test ? API.fetchAllUserDummy(user?.person_id) : API.fetchAllUser(user?.person_id);
 
     userPromises.userQuals.then((resp) => {
@@ -163,9 +168,9 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     } else {
       setUser({
         user: user,
-        doShowProfile: (user && (user.peer_teacher || user.administrator)),
+        doShowProfile: (user && user.peer_teacher),
         doShowScheduling: (user && user.administrator),
-        doShowLabSwap: (user && (user.peer_teacher || user.administrator)),
+        doShowLabSwap: (user && user.peer_teacher),
         doShowAdmin: (user && user.administrator)
       })
     }

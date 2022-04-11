@@ -150,7 +150,7 @@ export interface Submission{
 class API {
 	static fetchAllStatic = () => {
 		return {
-			employees: API.fetchPTList(),
+			employees: API.fetchEveryone(),
 			blocks: API.fetchCourseBlocks()
 		}
 	}
