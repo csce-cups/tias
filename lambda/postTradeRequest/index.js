@@ -94,7 +94,7 @@ exports.handler = async (event) => {
     for (let meeting of requested_meetings) {
         const conflictingSections = await helper_functions.queryDB(`SELECT section_meeting.* FROM section_assignment JOIN section_meeting ON section_assignment.section_id = section_meeting.section_id AND section_assignment.section_id != \$5 WHERE person_id = \$1 AND weekday = \$2 AND NOT (end_time < \$3 OR start_time > \$4)`, [requester_id, meeting.weekday, meeting.start_time, meeting.end_time, offered_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the requested section."))
      
-        console.log(conflictingSections)
+        console.log('conflicting:', conflictingSections)
     
         if (conflictingSections.length !== 0) {
             helper_functions.GenerateErrorResponseAndLog({stack: ""}, response, "You have another course at the same time.")
