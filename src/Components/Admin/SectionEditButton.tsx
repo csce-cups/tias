@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow';
 import { SectionEditBlock } from './SectionEditBlock';
+
+export interface EditableSection {
+  section_id: number
+  placeholder_proffessor_name: string
+  capacity_peer_teachers: number
+}
+
+export const toUpdateContext = createContext<[EditableSection[], React.Dispatch<React.SetStateAction<EditableSection[]>>]>([
+  [], 0 as any
+]);
 
 export const SectionEditButton = () => {
   const [editing, setEditing] = useState(false);

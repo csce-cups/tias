@@ -1,6 +1,7 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { CourseBlock } from '../../modules/API';
 import RenderBlockProps, { blockColors, calcFlex } from '../Scheduling/BlockBase';
+import { toUpdateContext } from './SectionEditButton';
 
 interface Props extends RenderBlockProps {
   data: {
@@ -10,6 +11,7 @@ interface Props extends RenderBlockProps {
 
 export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
   const [interacted, setInteracted] = useState<boolean>(false);
+  const [toUpdate, setToUpdate] = useContext(toUpdateContext);
   const {course_instance} = data;
   const [prof, setProf] = useState(course_instance.professor);
   const [desiredPTCount, setDesiredPTCount] = useState(course_instance.capacity_peer_teachers);
@@ -22,6 +24,24 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
     const hour12 = (hour === 12) ? 12 : hour % 12;
     const minutes = minute < 10 ? `0${minute}` : minute;
     return `${hour12}:${minutes} ${ampm}`;
+  }
+
+  const addToUpdate = () => {
+    const where = toUpdate.findIndex(({section_id}) => section_id === course_instance.section_id);
+    if (where === -1) {
+      toUpdate.push({
+        section_id: course_instance.section_id,
+        placeholder_proffessor_name: prof,
+        capacity_peer_teachers: desiredPTCount!
+      })
+    } else {
+      toUpdate[where] = {
+        section_id: course_instance.section_id,
+        placeholder_proffessor_name: prof,
+        capacity_peer_teachers: desiredPTCount!
+      }
+    }
+    setToUpdate(toUpdate);
   }
 
   let flex = calcFlex(visible, inline, size);
