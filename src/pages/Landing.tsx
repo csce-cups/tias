@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import './../Components/common.scss';
 import contexts from '../Components/APIContext';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,8 @@ import bg from '../assets/landing.png'
 
 export const Landing = () => {
   const user = useContext(contexts.user);
+  console.log(user);
+  
   return (
     <div className="app-body vstack background-image">
       <img src={bg} alt="background" className="background-image" />
@@ -19,9 +21,15 @@ export const Landing = () => {
           <Link to='Profile' className="landing-button" style={{"textDecoration": "none"}}>
             View Profile
           </Link>
-        : < GoogleButton renderAs={
-            <a className="landing-button" style={{"textDecoration": "none"}}>Sign in with Google</a>
-          }/>}
+        : user.user ?
+          < GoogleButton renderAs={
+            <a className="landing-button" style={{"textDecoration": "none"}}>
+              Sign in with Google
+            </a>
+          }/>
+        :
+          "You don't have any available actions associated with your account."
+        }
       </div>
     </div>
   );

@@ -93,7 +93,7 @@ export const GoogleButton: FC<Props> = ({renderAs}) => {
   return (
     < contexts.googleData.Consumer >
       {([googleData, setGoogleData]) => (
-        (loggedIn || googleData.tias_user_id !== undefined)? 
+        (loggedIn || (googleData.tias_user_id !== undefined && googleData.tias_user_id !== -1))? 
           <GoogleLogout
             clientId={tiasClientID}
             buttonText={`Logged in as ${clientUsername}. Click to sign out.`}
