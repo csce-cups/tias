@@ -57,8 +57,9 @@ export interface CourseBlock {
 	end_time: Date
 	weekday: string
 	place: string
-	scheduled: number[] | null;
+	scheduled: number[] | null
 	professor: string
+	capacity_peer_teachers?: number
 }
 
 export interface CourseBlockWeek {
@@ -89,6 +90,7 @@ interface raw_APICourseBlock {
 	weekday: string
 	place: string
 	placeholder_professor_name: string
+	capacity_peer_teachers: number
 }
 
 interface raw_APICourseBlockWeek {
@@ -215,7 +217,8 @@ class API {
 						weekday: e.weekday,
 						place: e.place,
 						scheduled: null,
-						professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name
+						professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name,
+						capacity_peer_teachers: e.capacity_peer_teachers
 					}))
 					:
 					[]
@@ -291,7 +294,8 @@ class API {
 					weekday: e.weekday,
 					place: e.place,
 					scheduled: null,
-					professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name
+					professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name,
+					capacity_peer_teachers: e.capacity_peer_teachers
 				})
 
 				dataStrict.forEach((b: raw_APICourseBlock) => {
