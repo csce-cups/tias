@@ -52,10 +52,12 @@ exports.handler = async (event) => {
         response.statusCode = 500;
         response.body = JSON.stringify({err: "Failed to get the offered section."});
     }))[0]
+    const offered_meetings = await helper_functions.queryDB(`SELECT * FROM section_meeting WHERE section_id = $1`, [offered_id])
     
     console.log('people_in_requested', people_in_requested);
 
     const requested_section = (await helper_functions.queryDB(`SELECT course_section.*, department, course_number FROM course_section JOIN course ON course_section.course_id = course.course_id WHERE section_id = $1`, [requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the requested section.")))[0]
+    const requested_meetings = await helper_functions.queryDB(`SELECT * FROM section_meeting WHERE section_id = $1`, [requested_id])
 
     let requester_in_offered = false
     for (let record of people_in_offered) {
@@ -88,6 +90,17 @@ exports.handler = async (event) => {
         helper_functions.GenerateErrorResponseAndLog({stack: ""}, response, "The requested course is not viable.")
         return response;
     }
+    
+    for (let meeting of requested_meetings) {
+        const conflictingSections = await helper_functions.queryDB(`SELECT section_meeting.* FROM section_assignment JOIN section_meeting ON section_assignment.section_id = section_meeting.section_id AND section_assignment.section_id != \$5 WHERE person_id = \$1 AND weekday = \$2 AND NOT (end_time < \$3 OR start_time > \$4)`, [requester_id, meeting.weekday, meeting.start_time, meeting.end_time, offered_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the requested section."))
+     
+        console.log(conflictingSections)
+    
+        if (conflictingSections.length !== 0) {
+            helper_functions.GenerateErrorResponseAndLog({stack: ""}, response, "You have another course at the same time.")
+            return response;
+        }   
+    }
 
     // Automatically Process Trade Request -- Does not Hit trade_request Table
     if (people_in_requested.length < requested_section.capacity_peer_teachers && people_in_offered.length > 1) {
@@ -119,6 +132,15 @@ exports.handler = async (event) => {
             response.body = JSON.stringify({err: "Failed to get the viable courses for at least one person in the requested section."});
         })
         if (viableCourses.length === 0) continue;
+        let person_can_switch = true
+        for (let meeting of offered_meetings) {
+            const conflictingSections = await helper_functions.queryDB(`SELECT section_meeting.* FROM section_assignment JOIN section_meeting ON section_assignment.section_id = section_meeting.section_id AND section_assignment.section_id != \$5 WHERE person_id = \$1 AND weekday = \$2 AND NOT (end_time < \$3 OR start_time > \$4)`, [person_id, meeting.weekday, meeting.start_time, meeting.end_time, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the requested section."))
+     
+            console.log(conflictingSections)
+    
+            if (conflictingSections.length !== 0) { person_can_switch = false; break }
+        }
+        if (!person_can_switch) continue
         traded_people.push(person_id)
         await helper_functions.queryDB(`INSERT INTO trade_request VALUES ($1, $2, $3, $4) ON CONFLICT (person_id_sender, section_id_sender, person_id_receiver, section_id_receiver) DO UPDATE SET request_status = 'Pending'`, [requester_id, offered_id, person_id, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to create the trade request for at least one person in the requested section."))
 
