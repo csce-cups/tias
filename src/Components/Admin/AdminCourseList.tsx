@@ -95,7 +95,7 @@ export const AdminCourseList = () => {
   return (
     <div className="vstack inner-content">
       <h2 className="panel-title">Courses</h2>
-      <span>These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
+      <span className="element">These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
       <div className="hstack header-end">
         <div className="vstack fill">
           <button style={courseBtnStyles} className="short green button fill" onClick={() => setShowMenu(true)}>Add Course</button>

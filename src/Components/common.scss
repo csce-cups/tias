@@ -341,8 +341,6 @@ $day_divider_size : 1.5px;
 	display: flex;
 	position: relative;
 
-	margin-top: 1.5em;
-
 	.day-label .exit {
 		background-color: red;
 	}
@@ -1697,7 +1695,7 @@ img.background-image {
 		flex: 1 1 auto;
 	}
 
-	span {
+	span.element {
 		margin-left: 10px;
 		margin-bottom: 5px;
 	}
@@ -1875,4 +1873,30 @@ img.background-image {
 
 .mb0 {
 	margin-bottom: 0;
+}
+
+.full-modal {
+	position: fixed;
+	top: 5px;
+	bottom: 5px;
+	right: 5px;
+	left: 5px;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	border-radius: 5px;
+	border-top: 2px solid black;
+	border-bottom: 2px solid black;
+	background: $light;
+	z-index: 100;
+	overflow: hidden;
+
+	transition: all 0.4s ease-in-out, height 0.4s ease-in-out 0.4s;
+}
+
+.full-modal.hidden {
+	display: flex;
+	height: 55px;
+	width: 0;
+	transition: all 0.4s ease-in-out 0.4s, height 0.4s ease-in-out 0s;
 }
