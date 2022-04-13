@@ -6,7 +6,7 @@ import { AdminCourseRow } from "./AdminCourseRow";
 
 export const AdminCourseList = () => {
   const [blocks, ] = useContext(contexts.blocks);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<Course[]>([{course_id: -1} as Course]);
   const [isEditing, setIsEditing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const ref: any = useRef(null);
@@ -115,13 +115,16 @@ export const AdminCourseList = () => {
         >Edit Courses</button>
       </div>
       < Scrollable deps={[courses]}>
-        { courses.sort((a, b) => a.course_number.localeCompare(b.course_number)).map((c, i) =>
-          <AdminCourseRow key={JSON.stringify(c)} course={c} isBottom={courses.length - i < 5} isEditing={isEditing} deleteSelf={
-            (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              deleteCourse(c, e.currentTarget);
-            }
-          }/>
-        )}
+        { courses.length > 0? 
+          courses.sort((a, b) => a.course_number.localeCompare(b.course_number)).map((c, i) =>
+            <AdminCourseRow key={JSON.stringify(c)} course={c} isBottom={courses.length - i < 5} isEditing={isEditing} deleteSelf={
+              (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                deleteCourse(c, e.currentTarget);
+              }
+            }/>
+          )
+          : <div className="loading">No courses.</div>
+        }
       </Scrollable>
     </div>
   );
