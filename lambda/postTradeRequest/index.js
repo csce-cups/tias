@@ -52,12 +52,12 @@ exports.handler = async (event) => {
         response.statusCode = 500;
         response.body = JSON.stringify({err: "Failed to get the offered section."});
     }))[0]
-    const offered_meetings = await helper_functions.queryDB(`SELECT * FROM section_meeting WHERE section_id = $1`, [offered_id])
+    const offered_meetings = (await helper_functions.queryDB(`SELECT * FROM section_meeting WHERE section_id = $1`, [offered_id])).filter(meeting => meeting.meeting_type === 'Laboratory')
     
     console.log('people_in_requested', people_in_requested);
 
     const requested_section = (await helper_functions.queryDB(`SELECT course_section.*, department, course_number FROM course_section JOIN course ON course_section.course_id = course.course_id WHERE section_id = $1`, [requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the requested section.")))[0]
-    const requested_meetings = await helper_functions.queryDB(`SELECT * FROM section_meeting WHERE section_id = $1`, [requested_id])
+    const requested_meetings = (await helper_functions.queryDB(`SELECT * FROM section_meeting WHERE section_id = $1`, [requested_id])).filter(meeting => meeting.meeting_type === 'Laboratory')
 
     let requester_in_offered = false
     for (let record of people_in_offered) {
@@ -136,7 +136,7 @@ exports.handler = async (event) => {
         for (let meeting of offered_meetings) {
             const conflictingSections = await helper_functions.queryDB(`SELECT section_meeting.* FROM section_assignment JOIN section_meeting ON section_assignment.section_id = section_meeting.section_id AND section_assignment.section_id != \$5 WHERE person_id = \$1 AND weekday = \$2 AND NOT (end_time < \$3 OR start_time > \$4)`, [person_id, meeting.weekday, meeting.start_time, meeting.end_time, requested_id]).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to get the requested section."))
      
-            console.log(conflictingSections)
+            console.log('conflicting: ', conflictingSections)
     
             if (conflictingSections.length !== 0) { person_can_switch = false; break }
         }
