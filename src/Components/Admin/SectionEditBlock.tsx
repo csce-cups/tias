@@ -12,12 +12,11 @@ interface Props extends RenderBlockProps {
 export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
   const {course_instance} = data;
   const [prof, setProf] = useState(course_instance.professor);
-  const [desiredPTCount, setDesiredPTCount] = useState(course_instance.capacity_peer_teachers);
+  const [desiredPTCount, setDesiredPTCount] = useState<number>(course_instance.capacity_peer_teachers ?? 2);
   
   const [interacted, setInteracted] = useState<boolean>(false);
   const [toUpdate, setToUpdate, unsaved, setUnsaved] = useContext(toUpdateContext);
-  const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [changed, setChanged] = useState(false);
 
   const ref: any = useRef(null);
 
@@ -31,32 +30,40 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
     return `${hour12}:${minutes} ${ampm}`;
   }
 
-  const registerUpdate = () => {
+  const revert = () => {
+    const where = toUpdate.findIndex(({section_id}) => section_id === course_instance.section_id);
+    toUpdate.splice(where, 1);
+    setToUpdate([...toUpdate]);
+    setChanged(false);
+    setProf(course_instance.professor);
+    setDesiredPTCount(course_instance.capacity_peer_teachers ?? 2);
+  }
+
+  const handleChange = <T,>(e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<T>>, setWith: T) => {
+    if (!unsaved) setUnsaved(unsaved + 1);
+    console.log(setWith);
+    setChanged(true);
+    setter(setWith);
+  }
+
+  useEffect(() => {
+    if (course_instance.capacity_peer_teachers === desiredPTCount && course_instance.professor === prof) return;
     const where = toUpdate.findIndex(({section_id}) => section_id === course_instance.section_id);
     if (where === -1) {
       toUpdate.push({
         section_id: course_instance.section_id,
-        placeholder_proffessor_name: prof,
+        placeholder_professor_name: prof,
         capacity_peer_teachers: desiredPTCount ?? 2
       })
     } else {
       toUpdate[where] = {
         section_id: course_instance.section_id,
-        placeholder_proffessor_name: prof,
+        placeholder_professor_name: prof,
         capacity_peer_teachers: desiredPTCount ?? 2
       }
     }
     setToUpdate([...toUpdate]);
-    if (unsaved) setUnsaved(unsaved - 1);
-    setSaved(true);
-    setUnsavedChanges(false);
-  }
-
-  const handleChange = <T,>(e: React.ChangeEvent<HTMLInputElement>, setter: (arg: T) => void, setWith: T) => {
-    if (!unsaved) setUnsaved(unsaved + 1);
-    setter(setWith);
-    setUnsavedChanges(true);
-  }
+  }, [prof, desiredPTCount]);
 
   let flex = calcFlex(visible, inline, size);
 
@@ -80,19 +87,14 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
     };
   });
 
-  let btnclass = (unsavedChanges)? 'cantdo' : (saved)? 'prefer' : 'indiff';
   let background = {
-    background: (unsavedChanges)?
-      `repeating-linear-gradient(225deg,red,red 8px,black 8px,black 10px,transparent 10px,transparent)`
-      : (saved)?
+    background: (changed)?
       `repeating-linear-gradient(225deg,green,green 8px,black 8px,black 10px,transparent 10px,transparent)`
       : 
       'transparent'
   };
 
-  let title = (unsavedChanges)?
-    'This section has unsaved changes'
-    : (saved)?
+  let title = (changed)?
     'This section has changes that will be saved'
     : 
     `${course_instance.course_number}-${course_instance.section_number}`;
@@ -122,7 +124,7 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
             <input className="fill" type='text' value={prof} onChange={e => handleChange(e, setProf, e.currentTarget.value)}/>
           </div>
           <div className="m5"/>
-          <button request-type="request" className={`submit-button ${btnclass}`} onClick={registerUpdate}>Update section</button>
+          <button disabled={!changed} request-type="request" className='submit-button cantdo' onClick={revert}>Revert Changes</button>
         </div>
         :
         <>

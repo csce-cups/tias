@@ -5,7 +5,6 @@ import { GoogleButton } from "./GoogleButton";
 
 export const NavBar = () => {
   const {doShowScheduling, doShowProfile, doShowLabSwap, doShowAdmin} = useContext(contexts.user);
-  console.log(doShowScheduling, doShowProfile, doShowLabSwap, doShowAdmin);
 
   return (
     <div className="navbar">

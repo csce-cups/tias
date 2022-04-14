@@ -69,6 +69,7 @@ export interface CourseBlockWeek {
 	Thursday: CourseBlock[] | null
 	Friday: CourseBlock[] | null
 }
+export type CourseBlockWeekKey = keyof CourseBlockWeek & string;
 
 export interface Person_INIT {
 	email: string
@@ -121,6 +122,17 @@ export interface APIStudentUnavailability {
 	BYDAY: string,
 }
 
+export interface Submission {
+	offered_id: number,
+	requested_id: number
+}
+
+export interface EditableSection {
+	section_id: number
+	placeholder_professor_name: string
+	capacity_peer_teachers: number
+}
+
 export interface APIReturn {
 	employees: Promise<Person[]>
 	blocks: Promise<CourseBlockWeek>,
@@ -145,10 +157,7 @@ export const parseCookie: any = () => {
 		return ({})
 	}
 }
-export interface Submission{
-	offered_id: number,
-	requested_id: number
-}
+
 class API {
 	static fetchAllStatic = () => {
 		return {
@@ -363,17 +372,6 @@ class API {
 			return responseData;
 		});
 	}
-
-	/* 
-		JEREMY: This is the basic layout of an API POST. Change the function name, the parameter and it's type, the URL, and the "THING" field to what the API expects.
-	*/
-	static genericPost = async (data: any, userId: number | undefined): Promise<any> => {
-		if (userId === undefined) return;
-		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${userId}/trade-requests`, {
-			method: 'POST',
-			body: JSON.stringify({"THING": data})
-		}).then(() => {});
-	}
 	
 	static submitTrade = async (data: Submission, userId: number | undefined): Promise<any> => {
 		if (userId === undefined) return;
@@ -466,6 +464,13 @@ class API {
 	static deleteCourse = async (course_id: number) => {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses/${course_id}`, {
 			method: 'DELETE'
+		}).then(() => {});
+	}
+
+	static updateSections = async (sections: EditableSection[]) => {
+		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/course-meetings', {
+			method: 'PUT',
+			body: JSON.stringify({updated_sections: sections})
 		}).then(() => {});
 	}
 

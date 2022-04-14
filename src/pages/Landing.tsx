@@ -7,7 +7,6 @@ import bg from '../assets/landing.png'
 
 export const Landing = () => {
   const user = useContext(contexts.user);
-  console.log(user);
   
   return (
     <div className="app-body vstack background-image">
@@ -21,7 +20,7 @@ export const Landing = () => {
           <Link to='Profile' className="landing-button" style={{"textDecoration": "none"}}>
             View Profile
           </Link>
-        : user.user ?
+        : !user.user ?
           < GoogleButton renderAs={
             <a className="landing-button" style={{"textDecoration": "none"}}>
               Sign in with Google
