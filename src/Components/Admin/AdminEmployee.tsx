@@ -14,6 +14,7 @@ export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee:
   const did = uuid();
   const user = useContext(contexts.user);
   const [collapsed, setCollapsed] = useState(true);
+  const [fullSized, setFullSized] = useState(false);
   const employeeState = useState<Person>(employee_super);
   const employee = employeeState[0];
   const setEmployee = (e: Person | null) => {
@@ -31,6 +32,10 @@ export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee:
     employee.teaching_assistant? 'Teaching Assistant' : '',
     employee.peer_teacher? 'Peer Teacher' : ''
   ];
+
+  const viewUser = () => {
+
+  }
 
   const updateUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (user.user?.person_id === employee.person_id && !admincheck) {
@@ -92,7 +97,7 @@ They will be able to run the scheduler, promote other users and delete them, and
   return (
     <div className="employee-row vstack">
       <div className="hstack header" onClick={() => setCollapsed(!collapsed)}>
-        <div>{employee.first_name} {employee.last_name}</div>
+        <div>{employee.first_name} {employee.last_name} <span className="email">({employee.email})</span></div>
         <div className="fill"/>
         {perms.filter(e => e !== '').join(', ')}
         <div className="mr15"/>
@@ -120,6 +125,7 @@ They will be able to run the scheduler, promote other users and delete them, and
         </div>
 
         <div className="hstack">
+          <button id={id} className="blue button fill-restricted" onClick={updateUser}>View user</button>
           <button id={id} className="green button fill-restricted" onClick={updateUser}>Update user</button>
           <button id={did} className="red button fill-restricted" onClick={deleteUser}>Delete user</button>
         </div>
