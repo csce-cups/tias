@@ -11,7 +11,7 @@ interface Props extends RenderBlockProps {
   }
 }
 
-export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom, data}) => {
+export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom, data, readOnly}) => {
   const [interacted, setInteracted] = useState<boolean>(false);
   const [userPrefs, setUserPrefs] = useContext(contexts.userPrefs);
   const {course_instance, linkIDs} = data;
@@ -59,7 +59,8 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
     switch (status) {
       case "Can't Do": return "(Can't)";
       case "Prefer Not To Do": return "(Don't Want)";
-      case "Indifferent": return "";
+      case undefined:
+      case "Indifferent": return readOnly? "(Indifferent)" : "";
       case "Prefer To Do": return "(Want)";
     }
   }
@@ -83,17 +84,22 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
   let seenDots: APIUserPreferenceEnum[] = [];
   course_instance.section_ids.forEach((section_id, i) => {
     formElements.push(
-      <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
-        <input id={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
-        <label htmlFor={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} style={{color: resStatusColor(section_id)}} >
-          <div>
-            {course_instance.course_number}-{course_instance.section_numbers[i]} {resName(course_instance.professors[i])}{resStatusText(section_id)}
-          </div>
-          <div>
-            {course_instance.locations[i]}
-          </div>
-        </label>
-      </div>
+      readOnly?
+        <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row" style={{color: resStatusColor(section_id), margin: '0 5px 5px 5px'}}>
+          {course_instance.course_number}-{course_instance.section_numbers[i]} {resName(course_instance.professors[i])} {resStatusText(section_id)}
+        </div>
+        :
+        <div key={`pref-row-${JSON.stringify(course_instance)}-${section_id}`} className="pref-row">
+          <input id={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} type="checkbox" name={`course-checkbox-${course_instance.section_id}`} data-sid={section_id} />
+          <label htmlFor={`pref-row-checkbox-${course_instance.course_number}-${section_id}`} style={{color: resStatusColor(section_id)}} >
+            <div>
+              {course_instance.course_number}-{course_instance.section_numbers[i]} {resName(course_instance.professors[i])} {resStatusText(section_id)}
+            </div>
+            <div>
+              {course_instance.locations[i]}
+            </div>
+          </label>
+        </div>
     )
 
     const pref = userPrefs.get(section_id);
@@ -129,19 +135,31 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
     >
       { interacted? 
         <div className="pref-pane">
-          <div className="pref-pane-title">Select courses</div>
-          <div key={`pref-row-checkall`} className="pref-row">
-            <div className="check-all" onClick={() => checkAll(course_instance.section_id)}>Select All</div>
-          </div>
+          { readOnly? 
+            <div className="pref-pane-title">Preferences</div>
+            :
+            <>
+              <div className="pref-pane-title">Select courses</div>
+              <div key={`pref-row-checkall`} className="pref-row">
+                <div className="check-all" onClick={() => checkAll(course_instance.section_id)}>Select All</div>
+              </div>
+            </>
+          }
           { formElements }
-
+          
           <div className="fill"/>
           <div style={{marginBottom: '5px'}}/>
-          <div className="pref-pane-title">Set preferences for selected sections</div>
-          <button onClick={handleClick} name="Can't Do" className="cantdo">I Can't Do These</button>
-          <button onClick={handleClick} name="Prefer Not To Do" className="prefernot">I Don't Want These</button>
-          <button onClick={handleClick} name="Indifferent" className="indiff">No Preference</button>
-          <button onClick={handleClick} name="Prefer To Do" className="prefer">I Want These</button>
+
+          { readOnly? 
+            <></> :
+            <>
+              <div className="pref-pane-title">Set preferences for selected sections</div>
+              <button onClick={handleClick} name="Can't Do" className="cantdo">I Can't Do These</button>
+              <button onClick={handleClick} name="Prefer Not To Do" className="prefernot">I Don't Want These</button>
+              <button onClick={handleClick} name="Indifferent" className="indiff">No Preference</button>
+              <button onClick={handleClick} name="Prefer To Do" className="prefer">I Want These</button>
+            </>
+          }
         </div>
         : 
         <>

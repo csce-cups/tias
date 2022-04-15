@@ -63,7 +63,7 @@ $google_bg: white;
 .shadow {
 	position: absolute;
 	left: 0;
-	z-index: 100;
+	z-index: 20;
 	width: 100%;
 	height: 10px;
 	background: black;
@@ -1306,14 +1306,6 @@ button.prefer:hover {
 				margin-right: 10px;
 			}
 
-			.fail {
-				color: red;
-			}
-
-			.success {
-				color: $green;
-			}
-
 			select {
 				width: 100%;
 				// margin: 0 10px;
@@ -1345,165 +1337,174 @@ button.prefer:hover {
 	.preferences-container.collapsed {
 		flex: 0 1 0;
 	}
+}
+
+.profile-render {
+	border: 2px solid black;
+	background-color: $light;
+	display: flex;
+	flex-direction: column;
+
+	height: 100%;
+	max-height: 100%;
+	min-height: 300px;
+
+	overflow: hidden;
+
+	max-width: 100%;
+
+	margin-bottom: 5px;
+
+	transition: all 0.4s ease-in-out;
+
+	.render-container {
+		margin: 8px 0;
+	}
+
+	.block.interacted {
+		transition: all 0.2s ease-in-out, min-width 0s linear, min-height 0s linear;
+
+		position: absolute;
+		right: 0;
+		top: 0;
+
+		display: flex;
+
+		height: fit-content;
+		min-height: 100%;
+
+		width: fit-content;
+		min-width: 100%;
+
+		padding: 0;
+		
+		z-index: 5;
+		box-shadow: 0 0 10px 0;
+
+		transform: translateY(-5px);
+	}
 	
-	.profile-render {
-		border: 2px solid black;
-		background-color: $light;
+	.block.interacted.left {
+		left: 0;
+	}
+	
+	.block.interacted.bottom {
+		top: auto;
+		bottom: 0;
+		transform: translateY(5px);
+	}
+
+	.block {
+		display: flex;
+		position: relative;
+		transition: all 0.2s ease-in-out;
+	}
+
+	.pref-pane {
 		display: flex;
 		flex-direction: column;
-
-		height: 100%;
-		max-height: 100%;
-		min-height: 300px;
-
+		color: $light;
+		white-space: nowrap;
 		overflow: hidden;
 
-		max-width: 100%;
+		flex: 1 1 auto;
 
-		margin-bottom: 5px;
-
-		transition: all 0.4s ease-in-out;
-
-		.render-container {
-			margin: 8px 0;
+		button {
+			border-radius: 2px;
+			border: 1px solid $render_divider;
+			transition: all 0.05s ease-in-out;
 		}
 
-		.block.interacted {
-			transition: all 0.2s ease-in-out, min-width 0s linear, min-height 0s linear;
-
-			position: absolute;
-			right: 0;
-			top: 0;
-
-			display: flex;
-
-			height: fit-content;
-			min-height: 100%;
-
-			width: fit-content;
-			min-width: 100%;
-
-			padding: 0;
-			
-			z-index: 5;
-			box-shadow: 0 0 10px 0;
-
-			transform: translateY(-5px);
-		}
-		
-		.block.interacted.left {
-			left: 0;
-		}
-		
-		.block.interacted.bottom {
-			top: auto;
-			bottom: 0;
-			transform: translateY(5px);
+		button.cantdo {
+			background-color: #FFBDBD;
 		}
 
-		.block {
-			display: flex;
-			position: relative;
-			transition: all 0.2s ease-in-out;
+		button.cantdo:hover {
+			background-color: #FF8C8C;
 		}
 
-		.pref-pane {
-			display: flex;
-			flex-direction: column;
-			color: $light;
-			white-space: nowrap;
-    		overflow: hidden;
-
-			flex: 1 1 auto;
-
-			button {
-				border-radius: 2px;
-				border: 1px solid $render_divider;
-				transition: all 0.05s ease-in-out;
-			}
-
-			button.cantdo {
-				background-color: #FFBDBD;
-			}
-
-			button.cantdo:hover {
-				background-color: #FF8C8C;
-			}
-
-			button.prefernot {
-				background-color: #FBFFBD
-			}
-
-			button.prefernot:hover {
-				background-color: #F1FF28
-			}
-
-			button.indiff:hover {
-				background-color: $render_background;
-			}
-
-			button.prefer {
-				background-color: #BFFFBD;
-			}
-
-			button.prefer:hover {
-				background-color: #75FF70;
-			}
+		button.prefernot {
+			background-color: #FBFFBD
 		}
 
-		.pref-pane-title {
-			margin: 0 3px 5px 3px;
-			color: $render_background;
-			text-align: center;
+		button.prefernot:hover {
+			background-color: #F1FF28
 		}
 
-		.pref-row {
-			display: flex;
-			align-items: center;
-
-			input[type="checkbox"] {
-				margin-top: 6px;
-				align-self: flex-start;
-			}
-
-			label {
-				text-align: left;
-			}
+		button.indiff:hover {
+			background-color: $render_background;
 		}
 
-		.check-all {
-			text-decoration: underline;
-			margin-left: 5px;
+		button.prefer {
+			background-color: #BFFFBD;
 		}
 
-		.check-all:hover {
-			color: $render_background
-		}
-
-		.pref-dot {
-			width: 6px;
-			height: 6px;
-			border-radius: 50%;
-			margin: 2px;
-		}
-
-		.dot-hstack {
-			position: absolute;
-			width: 100%;
-
-			display: flex;
-			flex-direction: row;
-			justify-content: center;
-			flex-wrap: wrap;
-			margin: 4px 0;
+		button.prefer:hover {
+			background-color: #75FF70;
 		}
 	}
 
-	.profile-render.collapsed {
-		height: 0;
-		border-top: 0;
-		min-height: 0;
+	.pref-pane-title {
+		margin: 0 3px 5px 3px;
+		color: $render_background;
+		text-align: center;
 	}
+
+	.pref-row {
+		display: flex;
+		align-items: center;
+
+		input[type="checkbox"] {
+			margin-top: 6px;
+			align-self: flex-start;
+		}
+
+		label {
+			text-align: left;
+		}
+	}
+
+	.check-all {
+		text-decoration: underline;
+		margin-left: 5px;
+	}
+
+	.check-all:hover {
+		color: $render_background
+	}
+
+}
+
+.pref-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	margin: 2px;
+}
+
+.dot-hstack {
+	position: absolute;
+	width: 100%;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin: 4px 0;
+}
+
+.profile-render.collapsed {
+	height: 0;
+	border-top: 0;
+	min-height: 0;
+}
+
+.fail {
+	color: red;
+}
+
+.success {
+	color: $green;
 }
 
 .class-render-container {
@@ -1556,8 +1557,8 @@ img.background-image {
 
 .employee-row {
 	margin: 15px 5px;
-	
-	.divider {
+
+	.employee-divider {
 		height: 0px;
 		margin-top: 7.5px;
 		border-radius: 5px;
@@ -1629,6 +1630,12 @@ img.background-image {
 .panel {
 	flex: 1 0 0;
 	background-color: $render_background;
+
+	.title {
+		margin: 0 3px 5px 3px;
+		text-align: center;
+		font-weight: bold;
+	}
 
 	.prompt {
 		position: absolute;
@@ -1902,16 +1909,21 @@ img.background-image {
 	z-index: 100;
 	overflow: hidden;
 
-	transition: all 0.4s ease-in-out, height 0.4s ease-in-out 0.4s;
+	transition: all 0.2s ease-in-out, height 0.2s ease-in-out 0.2s;
 }
 
 .full-modal-container.hidden, .full-modal.hidden {
 	display: flex;
 	height: 55px;
 	width: 0;
-	transition: all 0.4s ease-in-out 0.4s, height 0.4s ease-in-out 0s;
+	transition: all 0.2s ease-in-out 0.2s, height 0.2s ease-in-out 0s;
 }
 
 span.email {
 	color: $render_divider;
+}
+
+.bside {
+	border-left: 2px solid black;
+	border-right: 2px solid black;
 }

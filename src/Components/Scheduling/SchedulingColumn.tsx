@@ -112,7 +112,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
       }
       <div className="vstack day" >
         { dividers }
-        { placeBlocks(blocks, filter, renderBlockType, edge, startTime, new Date(startTime.getTime() + hours*60*60*1000), hours, startTime) }
+        { placeBlocks(blocks, filter, renderBlockType, edge, startTime, new Date(startTime.getTime() + hours*60*60*1000), hours, startTime, options) }
       </div>
     </div>
   )

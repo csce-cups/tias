@@ -3,6 +3,7 @@ import API, { Person } from '../../modules/API'
 import edit_icon from '../../assets/edit.svg'
 import uuid from '../../uuid'
 import contexts from '../APIContext'
+import { AdminEmployeeDetail } from './AdminEmployeeDetail'
 
 interface Props {
     employee: Person
@@ -125,7 +126,7 @@ They will be able to run the scheduler, promote other users and delete them, and
         </div>
 
         <div className="hstack">
-          <button id={id} className="blue button fill-restricted" onClick={updateUser}>View user</button>
+          < AdminEmployeeDetail employee={employee}/>
           <button id={id} className="green button fill-restricted" onClick={updateUser}>Update user</button>
           <button id={did} className="red button fill-restricted" onClick={deleteUser}>Delete user</button>
         </div>
