@@ -60,7 +60,7 @@ export const PreferenceBlock: FC<Props> = ({visible, size, inline, edge, bottom,
       case "Can't Do": return "(Can't)";
       case "Prefer Not To Do": return "(Don't Want)";
       case undefined:
-      case "Indifferent": return readOnly? "(Indifferent)" : "";
+      case "Indifferent": return readOnly? "(Unspecified)" : "";
       case "Prefer To Do": return "(Want)";
     }
   }

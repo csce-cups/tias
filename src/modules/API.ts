@@ -254,7 +254,7 @@ class API {
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/qualifications
-	private static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
+	static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`)
 			.then(({data}) => data.qualifications)
@@ -262,7 +262,7 @@ class API {
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/preferences
-	private static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
+	static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`)
 			.then(({data}) => (
