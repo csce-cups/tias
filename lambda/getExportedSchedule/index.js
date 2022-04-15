@@ -18,7 +18,7 @@ exports.handler = async (event) => {
     }
     
     let dbQuery = `
-    SELECT person.*, course_section.*, course.department, course.course_number, course_name, section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, (section_meeting.end_time - section_meeting.start_time) AS duration
+    SELECT person.*, course_section.*, course.department, course.course_number, course_name, section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, (section_meeting.end_time - section_meeting.start_time) AS duration, section_meeting.place
     FROM section_assignment
     JOIN person ON section_assignment.person_id = person.person_id
     JOIN course_section ON section_assignment.section_id = course_section.section_id
@@ -76,10 +76,10 @@ exports.handler = async (event) => {
         peopleObj[row.person_id].number_lab_hours += Math.ceil(row.duration.hours + row.duration.minutes / 60)
     }
 
-    const responseBody = Object.values({
+    const responseBody = {
         people: Object.values(peopleObj),
         courses: Object.values(courseObj)
-    })
+    }
 
     const response = {
         "isBase64Encoded": false,
