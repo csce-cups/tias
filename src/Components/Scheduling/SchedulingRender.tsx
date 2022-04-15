@@ -36,8 +36,6 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
     }
   }, [blocks]);
 
-  console.log(blocks)
-
   return (
     <div className="render-container" style={{marginTop: (options?.noHeader)? '8px' : undefined}}>
       < SchedulingTimes hours={hours} start={start}/>

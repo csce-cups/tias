@@ -32,8 +32,6 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
   options?: OptionsProps
 ) => {
   // If no data, do nothing
-  console.log(data);
-  
   if (data === null) return (
     <div className="vstack absolute">
       <div className="day-loading">Loading...</div>

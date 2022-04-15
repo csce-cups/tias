@@ -34,10 +34,6 @@ export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee:
     employee.peer_teacher? 'Peer Teacher' : ''
   ];
 
-  const viewUser = () => {
-
-  }
-
   const updateUser = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (user.user?.person_id === employee.person_id && !admincheck) {
       window.alert("You cannot remove your own adminstrator status!");
