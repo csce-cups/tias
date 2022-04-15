@@ -73,7 +73,7 @@ export const ExportFileButton = () => {
     <div className="admin-changeover">
       <a download="exported_people_schedule.tsv" ref={fileExportPeopleRef} style={{ display: "none" }}/>
       <a download="exported_courses_schedule.tsv" ref={fileExportCoursesRef} style={{ display: "none" }}/>
-      <button id="export-courses-button" className="blue button full" style={{marginTop: '0', marginBottom: '0'}} onClick={handleClick}>Export Schedule as CSV</button>
+      <button id="export-courses-button" className="blue button full" style={{marginTop: '0', marginBottom: '0'}} onClick={handleClick}>Export Schedule as TSV files</button>
     </div>
   );
 }
