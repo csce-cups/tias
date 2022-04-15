@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import {Person, CourseBlock, CourseBlockWeek, APIUserQualification, APIAlgoResponse, APIStudentUnavailability, APIReturn, APIUserPreferenceEnum, APIUserPreferences} from '../API'
+import {Person, CourseBlock, CourseBlockWeek, APIUserQualification, APIAlgoResponse, APIStudentUnavailability, APIReturn, APIUserPreferenceEnum, APIUserPreferences, TradeRequest} from '../API'
 
 export const parseCookie: any = () => ({tias_user_id: '1'});
 
@@ -36,7 +36,8 @@ class API {
 			employees: API.fetchPTList(),
 			blocks: API.fetchCourseBlocks(),
 			userQuals: API.fetchUserQualifications(id),
-			userPrefs: API.fetchUserPreferences(id)
+			userPrefs: API.fetchUserPreferences(id),
+			userTrades: API.fetchUserTrades(id),
 		}
 	}
 
@@ -127,7 +128,7 @@ class API {
 		});
 	}
 
-	private static fetchPTList = async (): Promise<Person[]> => {
+	static fetchPTList = async (): Promise<Person[]> => {
 		// console.log("MOCK API: static");
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
@@ -154,7 +155,7 @@ class API {
 		})
 	}
 
-	private static fetchCourseBlocks = async (): Promise<CourseBlockWeek> => {
+	static fetchCourseBlocks = async (): Promise<CourseBlockWeek> => {
 		// console.log("MOCK API: static");
 		return new Promise((resolve, _) => {
 			setTimeout(() => {
@@ -169,7 +170,7 @@ class API {
 		})
 	}
 
-	private static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
+	static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
 		// console.log("MOCK API: static");
 		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
 		return new Promise((resolve, _) => {
@@ -183,7 +184,7 @@ class API {
 		})
 	}
 
-	private static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
+	static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
 		// console.log("MOCK API: static");
 		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
 		return API.fetchCourseBlocks().then(blocks => {
@@ -209,6 +210,14 @@ class API {
 				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
 				resp.scheduled = map;
 				resolve(resp);
+			}, 100);
+		})
+	}
+
+	static fetchUserTrades = async (user_id?: number): Promise<TradeRequest[]> => {
+		return new Promise((resolve, _) => {
+			setTimeout(() => {
+				resolve([]); // TODO: PUT USEFUL TEST DATA HERE
 			}, 100);
 		})
 	}
