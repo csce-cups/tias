@@ -70,7 +70,7 @@ export const LabSwap = () => {
     }
     
     API.submitTrade(data, user.user?.person_id).then(resp => {
-      if (resp.msg || resp.err){
+      if (resp.msg || resp.err) {
         if (resp.msg) {
           if (btn !== null) btn.innerHTML = "Automatic Success";
           alert(resp.msg);
@@ -82,6 +82,10 @@ export const LabSwap = () => {
       } else if (btn !== null){
          btn.innerHTML = 'Done!';
       }
+    }).then(() => {
+      API.fetchUserTrades(user.user?.person_id).then(resp => {
+        setUserTrades(resp);
+      });
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
     })
@@ -269,10 +273,7 @@ export const LabSwap = () => {
             ]}
           />
           <button
-            disabled={
-              selectedTradeBlocksState[0].offered === null ||
-              selectedTradeBlocksState[0].requested === null
-            }
+            disabled={selectedTradeBlocksState[0].offered === null || selectedTradeBlocksState[0].requested === null}
             id={"request-trade-btn"}
             className="blue button"
             onClick={submitTrade}
