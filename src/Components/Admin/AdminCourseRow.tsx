@@ -35,6 +35,10 @@ export const AdminCourseRow: FC<Props> = ({course, isEditing, deleteSelf, isBott
     };
   });
 
+  if (course.course_id === -1) return (
+    <div className="loading">Loading...</div>
+  )
+
   return (
     <div className="course-row hstack">
       <div className="vstack">

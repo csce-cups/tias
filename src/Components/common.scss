@@ -341,8 +341,6 @@ $day_divider_size : 1.5px;
 	display: flex;
 	position: relative;
 
-	margin-top: 1.5em;
-
 	.day-label .exit {
 		background-color: red;
 	}
@@ -1118,7 +1116,7 @@ img.back-arrow {
 		width: 100%;
 	}
 
-	button:hover:not([disabled], .button) {
+	button:hover:not([disabled], .button, .submit-button) {
 		background-color: $render_background;
 	}
 
@@ -1136,35 +1134,35 @@ img.back-arrow {
 			border: 1px solid $render_divider;
 			transition: all 0.05s ease-in-out;
 		}
-
-		button.cantdo {
-			background-color: #FFBDBD;
-		}
-
-		button.cantdo:hover {
-			background-color: #FF8C8C;
-		}
-
-		button.prefernot {
-			background-color: #FBFFBD
-		}
-
-		button.prefernot:hover {
-			background-color: #F1FF28
-		}
-
-		button.indiff:hover {
-			background-color: $render_background;
-		}
-
-		button.prefer {
-			background-color: #BFFFBD;
-		}
-
-		button.prefer:hover {
-			background-color: #75FF70;
-		}
 	}
+}
+
+button.cantdo {
+	background-color: #FFBDBD;
+}
+
+button.cantdo:hover {
+	background-color: #FF8C8C;
+}
+
+button.prefernot {
+	background-color: #FBFFBD
+}
+
+button.prefernot:hover {
+	background-color: #F1FF28
+}
+
+button.indiff:hover {
+	background-color: $render_background;
+}
+
+button.prefer {
+	background-color: #BFFFBD;
+}
+
+button.prefer:hover {
+	background-color: #75FF70;
 }
 
 .Profile {
@@ -1697,7 +1695,7 @@ img.background-image {
 		flex: 1 1 auto;
 	}
 
-	span {
+	span.element {
 		margin-left: 10px;
 		margin-bottom: 5px;
 	}
@@ -1869,10 +1867,47 @@ img.background-image {
 	margin-bottom: 10px;
 }
 
+.ms5 {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
 .mr15 {
 	margin-right: 15px;
 }
 
 .mb0 {
 	margin-bottom: 0;
+}
+
+.full-modal-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 100;
+}
+
+.full-modal {
+	margin: 5px;
+	height: calc(100% - 15px);
+	width: calc(100% - 10px);
+	display: flex;
+	border-radius: 5px;
+	border-top: 2px solid black;
+	border-bottom: 2px solid black;
+	background: $light;
+	z-index: 100;
+	overflow: hidden;
+
+	transition: all 0.4s ease-in-out, height 0.4s ease-in-out 0.4s;
+}
+
+.full-modal-container.hidden, .full-modal.hidden {
+	display: flex;
+	height: 55px;
+	width: 0;
+	transition: all 0.4s ease-in-out 0.4s, height 0.4s ease-in-out 0s;
 }

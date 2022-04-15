@@ -6,7 +6,7 @@ import { AdminCourseRow } from "./AdminCourseRow";
 
 export const AdminCourseList = () => {
   const [blocks, ] = useContext(contexts.blocks);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<Course[]>([{course_id: -1} as Course]);
   const [isEditing, setIsEditing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const ref: any = useRef(null);
@@ -95,7 +95,7 @@ export const AdminCourseList = () => {
   return (
     <div className="vstack inner-content">
       <h2 className="panel-title">Courses</h2>
-      <span>These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
+      <span className="element">These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
       <div className="hstack header-end">
         <div className="vstack fill">
           <button style={courseBtnStyles} className="short green button fill" onClick={() => setShowMenu(true)}>Add Course</button>
@@ -115,13 +115,16 @@ export const AdminCourseList = () => {
         >Edit Courses</button>
       </div>
       < Scrollable deps={[courses]}>
-        { courses.sort((a, b) => a.course_number.localeCompare(b.course_number)).map((c, i) =>
-          <AdminCourseRow key={JSON.stringify(c)} course={c} isBottom={courses.length - i < 5} isEditing={isEditing} deleteSelf={
-            (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              deleteCourse(c, e.currentTarget);
-            }
-          }/>
-        )}
+        { courses.length > 0? 
+          courses.sort((a, b) => a.course_number.localeCompare(b.course_number)).map((c, i) =>
+            <AdminCourseRow key={JSON.stringify(c)} course={c} isBottom={courses.length - i < 5} isEditing={isEditing} deleteSelf={
+              (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                deleteCourse(c, e.currentTarget);
+              }
+            }/>
+          )
+          : <div className="loading">No courses.</div>
+        }
       </Scrollable>
     </div>
   );

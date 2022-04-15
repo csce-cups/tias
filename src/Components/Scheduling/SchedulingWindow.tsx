@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, ReactNode, useContext, useEffect, useState } from "react";
 import { CourseBlock } from "../../modules/API";
 import contexts from "../APIContext";
 import RenderBlockProps from "./BlockBase";
@@ -16,10 +16,11 @@ export interface OptionsProps {
 
 interface Props {
   renderBlockType: React.FC<RenderBlockProps>
+  top?: ReactNode
   options?: OptionsProps
 }
 
-export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
+export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top}) => {
   const [blocks, ] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
   const filterActual = options?.filter?.[0] ?? filter;
@@ -42,6 +43,10 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options}) => {
 
   return (
     <div className="vstack main" style={styles}>
+      { top?
+        top
+        : <div style={{height: '1.5em'}}/>
+      }
       <SchedulingRender renderBlockType={renderBlockType} filter={filterActual} options={options} />
       {!options?.filter && <SchedulingFilter filter={filter} setFilter={setFilter} />}
     </div>
