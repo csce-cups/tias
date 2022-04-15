@@ -15,6 +15,7 @@ export const AdminEmployeeDetail: FC<Props> = ({employee}) => {
   const [editing, setEditingState] = useState(false);
   const [showRender, setShowRender] = useState(false);
   const [fetched, setFetched] = useState(false);
+  const [allViable, setAllViable] = useContext(contexts.allViableCourses);
   const [viable, setViable] = useState<CourseBlockWeek>({ Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek);
   const [quals, setQuals] = useState<APIUserQualification[]>([{ course_id: -1, course_number: "loading", qualified: false }]);
 
@@ -22,11 +23,27 @@ export const AdminEmployeeDetail: FC<Props> = ({employee}) => {
     if (fetched) return;
 
     setFetched(true);
-    API.fetchUserViableCourses(employee.person_id).then(resp => {
-      setViable(resp);
-    }).catch(err => {
-
-    });
+    if (allViable.size === 0) {
+      API.fetchAllViableCourses().then(res => {
+        setAllViable(res);
+        setViable(res.get(employee.person_id) ?? {
+          Monday: [],
+          Tuesday: [],
+          Wednesday: [],
+          Thursday: [],
+          Friday: []
+        });
+      });
+    } else {
+      setViable(allViable.get(employee.person_id) ?? {
+        Monday: [],
+        Tuesday: [],
+        Wednesday: [],
+        Thursday: [],
+        Friday: []
+      });
+    }
+    
     API.fetchUserQualifications(employee.person_id).then(resp => {
       setQuals(resp);
     }).catch(err => {
@@ -57,6 +74,8 @@ export const AdminEmployeeDetail: FC<Props> = ({employee}) => {
               <div className="vstack bside">
                 <button className="red button" style={{padding: '0 5em', marginBottom: '10px'}} onClick={() => setEditing(false)}>Exit</button>
                 <div className="title">{employee.first_name} {employee.last_name}</div>
+                <div className="title">({employee.email})</div>
+                <div/> {/* Only to alternate the colors of the list */}
                 { (quals && quals.length > 0 && quals[0].course_id === -1)?
                   <div className="loading">Loading...</div>
                   :
