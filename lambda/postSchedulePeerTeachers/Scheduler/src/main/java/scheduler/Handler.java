@@ -54,7 +54,10 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
-        headers.put("Access-Control-Allow-Origin", "http://localhost:3000");
+        String origin = event.getHeaders().getOrDefault("origin", null);
+        if (origin.equals("https://www.csce-scheduler.com") || origin.equals("http://localhost:3000")) {
+            headers.put("Access-Control-Allow-Origin", origin);
+        }
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
@@ -110,6 +113,41 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         schedulePeopleToSections();
     }
 
+    static String constructPersonQuery(int numPeople) {
+        StringBuilder sb = new StringBuilder().append("SELECT * FROM \"Viability\" WHERE person_id IN (");
+        for (int i = 0; i < numPeople - 1; ++i) {
+            sb.append("?, ");
+        }
+        sb.append("?)");
+        return sb.toString();
+    }
+
+    static void getViability(int[] peopleIds) throws SQLException {
+        PreparedStatement st = conn.prepareStatement(constructPersonQuery(peopleIds.length));
+
+        for (int i = 0; i < peopleIds.length; ++i) {
+            st.setInt(i + 1, peopleIds[i]);
+        }
+
+        ResultSet rs = st.executeQuery();
+
+        while (rs.next())
+        {
+            Person person = people.get(rs.getInt("person_id"));
+
+            // TODO: Refactor Unavailability to Viable Courses -- Already Filtered for Availability
+            person.addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
+
+            person.addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
+
+            // TODO: Remove Qualifications as Viable Courses Encapsulates this Concept
+            person.addQualification(new Qualification(rs.getInt("course_id"), rs.getBoolean("qualified")));
+        }
+
+        rs.close();
+        st.close();
+    }
+
     static void getCourses() throws SQLException {
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM course");
@@ -128,11 +166,11 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             .append(table)
             .append(' ')
             .append("WHERE person_id IN (");
-            for (int i = 0; i < numPeople - 1; ++i) {
-                sb.append("?, ");
-            }
-            sb.append("?)");
-            return sb.toString();
+        for (int i = 0; i < numPeople - 1; ++i) {
+            sb.append("?, ");
+        }
+        sb.append("?)");
+        return sb.toString();
     }
 
     static void getPeople(int[] peopleIds) throws SQLException {
@@ -147,55 +185,6 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         while (rs.next())
         {
             people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.prepareStatement(constructPersonQuery("person_unavailability", peopleIds.length));
-
-        for (int i = 0; i < peopleIds.length; ++i) {
-            st.setInt(i + 1, peopleIds[i]);
-        }
-
-        rs = st.executeQuery();
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.prepareStatement(constructPersonQuery("section_assignment_preference", peopleIds.length));
-
-        for (int i = 0; i < peopleIds.length; ++i) {
-            st.setInt(i + 1, peopleIds[i]);
-        }
-
-        rs = st.executeQuery();
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.prepareStatement(constructPersonQuery("qualification", peopleIds.length));
-
-        for (int i = 0; i < peopleIds.length; ++i) {
-            st.setInt(i + 1, peopleIds[i]);
-        }
-
-        rs = st.executeQuery();
-
-        while (rs.next())
-        {
-            boolean qualified = rs.getBoolean("qualified");
-            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), qualified));
         }
 
         rs.close();
@@ -218,43 +207,6 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         while (rs.next())
         {
             people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.createStatement();
-
-        rs = st.executeQuery(constructPersonQuery("person_unavailability"));
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.createStatement();
-
-        rs = st.executeQuery(constructPersonQuery("section_assignment_preference"));
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.createStatement();
-
-        rs = st.executeQuery(constructPersonQuery("qualification"));
-
-        while (rs.next())
-        {
-            boolean qualified = rs.getBoolean("qualified");
-            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), qualified));
         }
 
         rs.close();
