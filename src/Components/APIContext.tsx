@@ -35,6 +35,11 @@ export const contexts = {
     0 as any
   ]),
 
+  allViableCourses: createContext<[Map<number, CourseBlockWeek>, React.Dispatch<React.SetStateAction<Map<number, CourseBlockWeek>>>]>([
+    new Map<number, CourseBlockWeek>(),
+    0 as any
+  ]),
+
   user: createContext<UserPerson>({
     user: null,
     doShowProfile: null,
@@ -78,6 +83,8 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   } as CourseBlockWeek);
 
   const loadedScheduleState = useState(new Map<string, number[]>());
+  const allViableCoursesState = useState(new Map<number, CourseBlockWeek>());
+
   const [user, setUser] = useState<UserPerson>({
     user: null,
     doShowProfile: null,
@@ -176,21 +183,23 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     }
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
-  return (
+  return ( // Wish we'd used redux
     <contexts.googleData.Provider value={googleDataState}>
       <contexts.employees.Provider value={employeeState}>
         <contexts.user.Provider value={user}>
           <contexts.blocks.Provider value={blockState}>
             <contexts.loadedSchedule.Provider value={loadedScheduleState}>
-              <contexts.userQuals.Provider value={userQualState}>
-                <contexts.userPrefs.Provider value={userPrefState}>
-                  <contexts.userViableCourses.Provider value={userViableCourses}>
-                    <contexts.userTrades.Provider value={userTrades}>
-                      {children}
-                    </contexts.userTrades.Provider>
-                  </contexts.userViableCourses.Provider>
-                </contexts.userPrefs.Provider>
-              </contexts.userQuals.Provider>
+              <contexts.allViableCourses.Provider value={allViableCoursesState}>
+                <contexts.userQuals.Provider value={userQualState}>
+                  <contexts.userPrefs.Provider value={userPrefState}>
+                    <contexts.userViableCourses.Provider value={userViableCourses}>
+                      <contexts.userTrades.Provider value={userTrades}>
+                        {children}
+                      </contexts.userTrades.Provider>
+                    </contexts.userViableCourses.Provider>
+                  </contexts.userPrefs.Provider>
+                </contexts.userQuals.Provider>
+              </contexts.allViableCourses.Provider>
             </contexts.loadedSchedule.Provider>
           </contexts.blocks.Provider>
         </contexts.user.Provider>

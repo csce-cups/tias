@@ -278,7 +278,7 @@ class API {
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/qualifications
-	private static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
+	static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`)
 			.then(({data}) => data.qualifications)
@@ -286,7 +286,7 @@ class API {
 	}
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/preferences
-	private static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
+	static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/preferences`)
 			.then(({data}) => (
@@ -351,6 +351,58 @@ class API {
 					Thursday: [{course_number: -1} as CourseBlock],
 					Friday: [{course_number: -1} as CourseBlock]
 				} as any)
+			});
+	}
+
+	static fetchAllViableCourses = async (): Promise<Map<number, CourseBlockWeek>> => {
+		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/viable-courses`)
+			.then(({data}) => {
+				let dataStrict: (raw_APICourseBlock & {person_id: number})[] = data.viability;
+				let map = new Map<number, CourseBlockWeek>();
+
+				const createDate = (datestring: string): Date => {
+					let d = new Date(0);
+					d.setHours(parseInt(datestring.substring(0, 2)) - timezone_offset); // First two digits are the hours
+					d.setMinutes(parseInt(datestring.substring(3, 5))); // Next two digits are the minutes
+					return d;
+				}
+
+				const convertOne = (e: raw_APICourseBlock): CourseBlock => ({
+					department: e.department,
+					course_number: parseInt(e.course_number),
+					section_number: e.section_number,
+					section_id: e.section_id,
+					start_time: createDate(e.start_time),
+					end_time: createDate(e.end_time),
+					weekday: e.weekday,
+					place: e.place,
+					scheduled: null,
+					professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name,
+					capacity_peer_teachers: e.capacity_peer_teachers
+				})
+
+				dataStrict.forEach((b) => {
+					if (!map.has(b.person_id)) map.set(b.person_id, {
+						Monday: [] as CourseBlock[],
+						Tuesday: [] as CourseBlock[],
+						Wednesday: [] as CourseBlock[],
+						Thursday: [] as CourseBlock[],
+						Friday: [] as CourseBlock[]
+					} as CourseBlockWeek);
+
+					switch (b.weekday) {
+						case "Monday": map.get(b.person_id)!.Monday!.push(convertOne(b)); break;
+						case "Tuesday": map.get(b.person_id)!.Tuesday!.push(convertOne(b)); break;
+						case "Wednesday": map.get(b.person_id)!.Wednesday!.push(convertOne(b)); break;
+						case "Thursday": map.get(b.person_id)!.Thursday!.push(convertOne(b)); break;
+						case "Friday": map.get(b.person_id)!.Friday!.push(convertOne(b)); break;
+					}
+				});
+
+				return map;
+			})
+			.catch(err => {
+				return new Map<number, CourseBlockWeek>([[-1, {} as CourseBlockWeek]]);
 			});
 	}
 
