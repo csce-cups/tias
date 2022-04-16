@@ -2,16 +2,16 @@ import React, { FC, useContext, useState } from 'react'
 import { Person } from '../../modules/API'
 import contexts from '../APIContext'
 import { Scrollable } from '../Misc/Scrollable'
+import { EditButton } from '../Scheduling/EditButton'
 import { EmployeeRow } from './EmployeeRow'
 import { GenerateButton } from './GenerateButton'
-import { LoadButton } from './LoadButton'
 import { SaveButton } from './SaveButton'
 
 interface Props {
-  
+  editingState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
 }
 
-export const EmployeeList: FC<Props> = () => {
+export const EmployeeList: FC<Props> = ({editingState}) => {
   const sortLastAlg = ((a: Person, b: Person) => a.last_name.localeCompare(b.last_name));
   const sortFirstAlg = ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name));
   const [employees, setEmployees] = useContext(contexts.employees);
@@ -60,8 +60,8 @@ export const EmployeeList: FC<Props> = () => {
       }
 
       <div className="vstack top-border">
-        < LoadButton />
         < GenerateButton genState={genState} />
+        < EditButton editingState={editingState}/>
         < SaveButton />
       </div>
     </div>

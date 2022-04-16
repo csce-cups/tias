@@ -249,6 +249,14 @@ $google_bg: white;
 	cursor: pointer;
 }
 
+.edit-select {
+	box-shadow: inset 0 0 5px 2px blue;
+}
+
+.edit-select:hover:not(.prompt, .inline-prompt) {
+	box-shadow: inset 0 0 10px 2px blue;
+}
+
 .button.onred {
 	background-color: $light;
 	height: 30px;
@@ -409,6 +417,12 @@ $day_divider_size : 1.5px;
 			flex: 1 1 auto;
 		}
 	}
+
+	.render-content.editing {
+		border: 2px solid blue;
+		box-shadow: 0 0 7px 0 blue;
+		border-radius: 0px;
+	}
 	
 	.render-content {
 		flex: 1 1 auto;
@@ -418,11 +432,16 @@ $day_divider_size : 1.5px;
 		border: 2px solid black;
 		
 		width: 100%;
-		// height: 100%;
+		transition: all .2s ease-in-out;
+
+		.day.editing {
+			border-right: $day_divider_size solid blue;
+		}
 
 		.day {
 			background-color: $render_background;
 			border-right: $day_divider_size solid $render_divider;
+			transition: all .2s ease-in-out;
 		}
 
 		.day:last-child {
@@ -462,10 +481,6 @@ $day_divider_size : 1.5px;
 		.day.undetailed {
 			filter: brightness(50%);
 		}
-
-		.day.undetailed {
-			filter: brightness(50%);
-		}
 	}	
 
 	.vstack {
@@ -482,6 +497,11 @@ $day_divider_size : 1.5px;
 			border-style: dotted none none none;
 			border-width: 1px;
 			border-color: color.adjust($render_divider, $alpha: -0.6) $render_divider;
+		}
+
+		div.divider.editing {
+			border-color: color.adjust(blue, $alpha: -0.6) blue;
+			color: blue;
 		}
 	}
 
@@ -1039,6 +1059,24 @@ img.back-arrow {
 		display: flex;
 		position: relative;
 		transition: all 0.2s ease-in-out;
+	}
+
+	.block {
+		transition: all .2s cubic-bezier(0.79, 1.38, 0.77, 1.39);
+	}
+	
+	.block:not(.undetailed, .detailed, .interacted) {
+		transition: all .2s ease-in-out;
+	}
+	
+	.block:hover:not(.undetailed, .detailed, .interacted) {
+		z-index: 3;
+		border-radius: 5px;
+		// border: $day_divider_size solid $render_divider;
+		box-shadow: 0 0 10px 0;
+		// transform: scaleX(1.01);
+	
+		cursor: pointer;
 	}
 
 	.block.frosted {

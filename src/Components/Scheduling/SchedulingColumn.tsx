@@ -14,10 +14,11 @@ interface Props<DataCourseBlock> {
   hours?: number // The number of hours in a day
   startTime?: Date
   options?: OptionsProps
+  editing?: boolean
 }
 
 export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: React.PropsWithChildren<Props<DataCourseBlock>>) => {
-  let { renderBlockType, blocks, filter, day, hours, startTime, options } = props;
+  let { renderBlockType, blocks, filter, day, hours, startTime, options, editing } = props;
   const [detailed, setDetailed] = useState(false);
   const [hatsHidden, setHatsHidden] = useState(false);
 
@@ -27,14 +28,15 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
     startTime.setHours(8);
   }
 
-  const selectable = (options?.selectable === false)? false : true;
+  const selectable = (options?.selectable === false || editing)? false : true;
+  console.log({ editing, selectable });
 
   const id = uuid();
 
   let dividers = [];
   for (let i = 0; i < hours; i++) {
     // Needs a key
-    dividers[i] = <div className="divider" key={`divider-${i}`}/>;
+    dividers[i] = <div className={`divider ${editing? 'editing' : ''}`} key={`divider-${i}`}/>;
   }
 
   const select = () => {
@@ -75,7 +77,7 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
   const edge: "left" | "right" | "center" = (day === "Monday" || day === "Tuesday")? "left" : (day === "Friday")? "right" : "center"; 
 
   return (
-    <div className={`vstack day column ${selectable? 'grow-h' : ''}`} id={id} onClick={selectable? select : () => {}}>
+    <div className={`vstack day column ${selectable? 'grow-h' : ''} ${editing? 'editing' : ''}`} id={id} onClick={selectable? select : () => {}}>
       { (detailed) ? 
         <div className="day-label hstack detailed" style={{padding: 0}}>
           <div className="exit btn element detailed hstack" onClick={deselect}>

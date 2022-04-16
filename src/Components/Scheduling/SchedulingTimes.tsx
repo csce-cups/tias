@@ -2,7 +2,8 @@ import React, { FC } from 'react';
 
 interface Props {
   hours: number
-  start: Date;
+  start: Date
+  editing?: boolean
 }
 
 // https://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
@@ -17,12 +18,12 @@ const formatAMPM = (date: Date, offset: number) => {
   return strTime;
 }
 
-export const SchedulingTimes: FC<Props> = ({hours, start}) => {
+export const SchedulingTimes: FC<Props> = ({hours, start, editing}) => {
   let times = [];
   for (let i = 0; i < hours; i++) {
     // Needs a key
     const time = formatAMPM(start, i);
-    times[i] = <div className="divider hover-divider" key={`SchedulingTimes-${time}`}>{time}</div>;
+    times[i] = <div className={`divider hover-divider ${editing? 'editing' : ''}`} key={`SchedulingTimes-${time}`}>{time}</div>;
   }
 
   return (

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import contexts from '../Components/APIContext';
 import '../Components/common.scss';
 import { EmployeeList } from '../Components/EmployeeList/EmployeeList';
@@ -7,13 +7,14 @@ import { SchedulingWindow } from '../Components/Scheduling/SchedulingWindow';
 
 export const Scheduling = () => {
   const {doShowScheduling} = useContext(contexts.user);
+  const editState = useState<boolean>(false);
 
   if (doShowScheduling) {
     return (
       <div className="app-body">
-      < EmployeeList />
-      < SchedulingWindow renderBlockType={SchedulingBlock}/>
-    </div>
+        < EmployeeList editingState={editState}/>
+        < SchedulingWindow renderBlockType={SchedulingBlock} editing={editState[0]}/>
+      </div>
     );
   } else if (doShowScheduling === false) {
     return <div className="page-text">You do not have permission to visit this page.</div>
