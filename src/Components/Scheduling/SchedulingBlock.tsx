@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { CourseBlock } from '../../modules/API';
 import { Hat } from '../Misc/Hat';
 import RenderBlockProps, { blockColors, calcFlex } from './BlockBase';
@@ -10,7 +10,8 @@ interface Props extends RenderBlockProps {
   }
 }
 
-export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
+export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data}) => {
+  const [interacted, setInteracted] = useState<boolean>(false);
   const formatDate = (date: Date) => {
     const hour = date.getHours();
     const minute = date.getMinutes();
@@ -46,6 +47,12 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
     }
   }
 
+  const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (options?.editing) {
+      setInteracted(true);
+    }
+  }
+
   let color = { backgroundColor: 'red' };
   if (linkIDs === null || linkIDs.length !== 0 || course_instance.capacity_peer_teachers === 0) {
     color.backgroundColor = blockColors.get(course_instance.course_number)!
@@ -54,10 +61,15 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
     color.backgroundColor = '#800000';
   }
 
+  let className = 'block';
+  if (linkIDs !== null && linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0) className += ' alert';
+  if (interacted) className += ' interacted';
+
   return (
-    <div className={`block ${(linkIDs !== null && linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0)? 'alert' : ''}`}
+    <div className={className}
       title={`${course_instance.course_number}-${course_instance.section_number}`} 
       style={{...color, ...isVisible}}
+      onClick={handleClick}
     >
       { body() }
       <div className="fill"/>

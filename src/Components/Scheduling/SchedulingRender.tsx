@@ -10,10 +10,10 @@ interface Props {
   renderBlockType: React.FC<RenderBlockProps>
   filter: Map<number, boolean>
   options?: OptionsProps
-  editing?: boolean
 }
 
-export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options, editing}) => {
+export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) => {
+  const {editing} = options || {editing: false};
   const [blocks,] = useContext(contexts.blocks);
   const [hours, setHours] = useState<number>(12);
   const [start, setStart] = useState<Date>(new Date(0));
@@ -41,11 +41,11 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options, e
     <div className="render-container" style={{marginTop: (options?.noHeader)? '8px' : undefined}}>
       < SchedulingTimes hours={hours} start={start} editing={editing}/>
       <div className={`render-content ${editing? 'interact-blocks editing' : ''}`}>
-        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} editing={editing} day={'Monday'} blocks={blocks? blocks.Monday : [{course_number: -1} as CourseBlock]} />
-        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} editing={editing} day={'Tuesday'} blocks={blocks? blocks.Tuesday : [{course_number: -1} as CourseBlock]} />
-        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} editing={editing} day={'Wednesday'} blocks={blocks? blocks.Wednesday : [{course_number: -1} as CourseBlock]} />
-        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} editing={editing} day={'Thursday'} blocks={blocks? blocks.Thursday : [{course_number: -1} as CourseBlock]} />
-        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} editing={editing} day={'Friday'} blocks={blocks? blocks.Friday : [{course_number: -1} as CourseBlock]} />
+        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Monday'} blocks={blocks? blocks.Monday : [{course_number: -1} as CourseBlock]} />
+        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Tuesday'} blocks={blocks? blocks.Tuesday : [{course_number: -1} as CourseBlock]} />
+        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Wednesday'} blocks={blocks? blocks.Wednesday : [{course_number: -1} as CourseBlock]} />
+        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Thursday'} blocks={blocks? blocks.Thursday : [{course_number: -1} as CourseBlock]} />
+        < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Friday'} blocks={blocks? blocks.Friday : [{course_number: -1} as CourseBlock]} />
       </div>
     </div>
   )

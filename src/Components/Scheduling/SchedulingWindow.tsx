@@ -9,6 +9,7 @@ export interface OptionsProps {
   selectable?: boolean
   noHeader?: boolean
   noBorder?: boolean
+  editing?: boolean
 
   // Lets you specify an externally controlled filter
   filter?: [Map<number, boolean>, React.Dispatch<React.SetStateAction<Map<number, boolean>>>]
@@ -18,10 +19,9 @@ interface Props {
   renderBlockType: React.FC<RenderBlockProps>
   top?: ReactNode
   options?: OptionsProps
-  editing?: boolean
 }
 
-export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top, editing}) => {
+export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top}) => {
   const [blocks, ] = useContext(contexts.blocks);
   const [filter, setFilter] = useState(new Map<number, boolean>());
   const filterActual = options?.filter?.[0] ?? filter;
@@ -48,7 +48,7 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top, edit
         top
         : <div style={{height: '1.5em'}}/>
       }
-      <SchedulingRender renderBlockType={renderBlockType} filter={filterActual} options={options} editing={editing} />
+      <SchedulingRender renderBlockType={renderBlockType} filter={filterActual} options={options} />
       {!options?.filter && <SchedulingFilter filter={filter} setFilter={setFilter} />}
     </div>
   );

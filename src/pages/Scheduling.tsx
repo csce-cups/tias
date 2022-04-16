@@ -13,7 +13,7 @@ export const Scheduling = () => {
     return (
       <div className="app-body">
         < EmployeeList editingState={editState}/>
-        < SchedulingWindow renderBlockType={SchedulingBlock} editing={editState[0]}/>
+        < SchedulingWindow renderBlockType={SchedulingBlock} options={{editing: editState[0]}}/>
       </div>
     );
   } else if (doShowScheduling === false) {

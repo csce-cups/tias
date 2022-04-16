@@ -14,11 +14,11 @@ interface Props<DataCourseBlock> {
   hours?: number // The number of hours in a day
   startTime?: Date
   options?: OptionsProps
-  editing?: boolean
 }
 
 export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: React.PropsWithChildren<Props<DataCourseBlock>>) => {
-  let { renderBlockType, blocks, filter, day, hours, startTime, options, editing } = props;
+  let { renderBlockType, blocks, filter, day, hours, startTime, options } = props;
+  const {editing} = options || {editing: false};
   const [detailed, setDetailed] = useState(false);
   const [hatsHidden, setHatsHidden] = useState(false);
 

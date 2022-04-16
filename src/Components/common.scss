@@ -621,11 +621,11 @@ $block_margin_amount : 2px;
 	border-bottom: 2px solid black;
 }
 
-.column.detailed .block-text, .block-container .block.selected .block-text {
+.column.detailed .block-text, .block-container .block.selected .block-text, .interact-blocks .block.interacted .block-text {
 	display: none;
 }
 
-.column.detailed .block-detail, .block-container .block.selected .block-detail {
+.column.detailed .block-detail, .block-container .block.selected .block-detail, .interact-blocks .block.interacted .block-detail {
 	color: $light;
 	overflow: hidden;
 	padding: 0 0 5px 5px;
@@ -795,7 +795,7 @@ $block_margin_amount : 2px;
 	background: $accent;
 }
 
-.hat.selected, .hat.emphasized, .column.detailed .hat, .hat-container.selected .hat {
+.hat.selected, .hat.emphasized, .column.detailed .hat, .hat-container.selected .hat, .interact-blocks .block.interacted .hat {
 	flex: 1 1 0;
 	display: inline-block;
 	overflow: hidden;
@@ -849,13 +849,13 @@ $block_margin_amount : 2px;
 	border-bottom: 0;
 }
 
-.hat-container.selected {
+.hat-container.selected, .interact-blocks .block.interacted .hat-container {
 	flex: 0 0 0.2em;
 	border-radius: 3px 3px 0 0;
 	border-bottom: 2px solid black;
 }
 
-.hat-container.emphasized, .column.detailed .hat-container {
+.hat-container.emphasized, .column.detailed .hat-container, .interact-blocks .block.interacted .hat-container {
 	flex: 0 0 1.2em;
 	border-radius: 3px 3px 0 0;
 	border-bottom: 2px solid white;
@@ -870,7 +870,7 @@ $block_margin_amount : 2px;
 	max-height: 100%;
 }
 
-.hat-container.selected, .column.detailed .hat-container.selected {
+.hat-container.selected, .column.detailed .hat-container.selected, .interact-blocks .block.interacted .hat-container {
 	border-bottom: 2px solid black;
 }
 
@@ -1061,6 +1061,16 @@ img.back-arrow {
 		transition: all 0.2s ease-in-out;
 	}
 
+	.block.selected {
+		position: absolute;
+		height: 100%;
+		width: calc(100% - 14px);
+		margin-left: 7px;
+		z-index: 2;
+		
+		box-shadow: 0 0 10px 0;
+	}
+
 	.block {
 		transition: all .2s cubic-bezier(0.79, 1.38, 0.77, 1.39);
 	}
@@ -1111,7 +1121,7 @@ img.back-arrow {
 		min-height: 100%;
 
 		width: fit-content;
-		min-width: 100%;
+		min-width: calc(100% - 4px);
 
 		padding: 0;
 		

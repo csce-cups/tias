@@ -148,6 +148,7 @@ const placeInlineBlocks = (
             edge,
             bottom: isBottom(block.start_time),
             key: `deep-unravel-block-${JSON.stringify(block)}`,
+            options
           })
         ))}
       </div>
@@ -288,6 +289,7 @@ const placeStaggeredBlocks = (
             edge,
             bottom: isBottom(block.start_time),
             key: `block-${JSON.stringify(block)}`,
+            options
           })}
           { rightSpacers.render }
         </div>
