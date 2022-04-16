@@ -6,31 +6,7 @@
 */
 
 import React from 'react'
-import axios from 'axios';
-
-interface AssignedCourse {
-  course_id: string
-  sec: string
-  lab_days: string[]
-  begin: string
-  end: string
-  instructor: string
-  lab_room: string
-  peer_teachers: string[]
-}
-
-interface AssignedPerson {
-  first: string
-  last: string
-  classes: string[]
-  labs: any
-  number_lab_hours: number
-}
-
-interface Response {
-  courses: AssignedCourse[]
-  people: AssignedPerson[]
-}
+import API from '../../modules/API';
 
 const labsToString = (lab: any) => {
   let acc: string[] = []
@@ -46,7 +22,7 @@ export const ExportFileButton = () => {
 
   const handleClick = () => {
     if (fileExportPeopleRef.current !== null && fileExportCoursesRef.current !== null) {
-      axios.get('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/export-schedule').then(response => response.data as Response)
+      API.fetchExportedSchedule()
       .then(data => {
         let coursesTsvText = 'Course ID\tSec\tLab Days\tBegin\tEnd\tInstructor\tLab Room\n'
         for (let course of data.courses) {

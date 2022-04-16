@@ -48,6 +48,30 @@ export interface Person {
 	desired_number_assignments: number
 }
 
+interface AssignedCourse {
+	course_id: string
+	sec: string
+	lab_days: string[]
+	begin: string
+	end: string
+	instructor: string
+	lab_room: string
+	peer_teachers: string[]
+}
+
+interface AssignedPerson {
+	first: string
+	last: string
+	classes: string[]
+	labs: any
+	number_lab_hours: number
+}
+
+interface ExportedSchedule {
+	courses: AssignedCourse[]
+	people: AssignedPerson[]
+}
+
 export interface CourseBlock {
 	department: string
 	course_number: number
@@ -334,6 +358,10 @@ class API {
 		if (user_id === undefined) return new Promise((resolve) => resolve([] as TradeRequest[]));
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/trade-requests`)
 			.then(({data}) => data.trade_requests as TradeRequest[]);
+	}
+
+	static fetchExportedSchedule = async (): Promise<ExportedSchedule> => {
+		return axios.get('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/export-schedule').then(response => response.data as ExportedSchedule)
 	}
 
 	static sendUserPreferences = async (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
