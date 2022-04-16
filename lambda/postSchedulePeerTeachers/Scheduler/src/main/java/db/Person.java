@@ -14,12 +14,10 @@ public class Person implements Comparable<Person> {
     String email, firstName, lastName;
     int desiredNumberAssignments;
     boolean peerTeacher, teachingAssistant, administrator, professor;
-    ArrayList<Unavailability> unavailabilities;
     HashMap<Integer, Preference> preferences;
-    HashMap<Integer, Qualification> qualifications;
+    HashSet<Integer> viableSections;
     HashMap<Integer, Section> assignedSections;
 
-    ArrayList<Integer> availableSections;
     float availabilityScore;
 
     public Person(int personId, String email, String firstName, String lastName, int desiredNumberAssignments, boolean peerTeacher, boolean teachingAssistant,
@@ -33,12 +31,10 @@ public class Person implements Comparable<Person> {
         this.teachingAssistant = teachingAssistant;
         this.administrator = administrator;
         this.professor = professor;
-        this.unavailabilities = new ArrayList<Unavailability>();
         this.preferences = new HashMap<Integer, Preference>();
-        this.qualifications = new HashMap<Integer, Qualification>();
+        this.viableSections = new HashSet<Integer>();
         this.assignedSections = new HashMap<Integer, Section>();
 
-        availableSections = new ArrayList<>();
         availabilityScore = 0.f;
     }
 
@@ -78,14 +74,6 @@ public class Person implements Comparable<Person> {
         return professor;
     }
 
-    public ArrayList<Unavailability> getUnavailabilities() {
-        return (ArrayList<Unavailability>) Collections.unmodifiableList(unavailabilities);
-    }
-
-    public void addUnavailability(Unavailability availability) {
-        unavailabilities.add(availability);
-    }
-
     public Collection<Preference> getPreferences() {
         return preferences.values();
     }
@@ -94,27 +82,19 @@ public class Person implements Comparable<Person> {
         preferences.put(preference.getSectionId(), preference);
     }
 
+    public HashSet<Integer> getViableSections() {
+        return viableSections;
+    }
+
+    public void addViableSection(Integer sectionId) {
+        viableSections.add(sectionId);
+    }
+
     public ArrayList<Preference> getSortedPreferences() {
         ArrayList<Preference> sortedPreferences = new ArrayList<>();
         sortedPreferences.addAll(getPreferences());
         Collections.sort(sortedPreferences, Collections.reverseOrder());
         return sortedPreferences;
-    }
-
-    public Collection<Qualification> getQualifications() {
-        return qualifications.values();
-    }
-
-    public void addQualification(Qualification qualification) {
-        qualifications.put(qualification.getCourseId(), qualification);
-    }
-
-    public float getAvailabilityScore() {
-        return availabilityScore;
-    }
-
-    public ArrayList<Integer> getAvailabileSections() {
-        return (ArrayList<Integer>) Collections.unmodifiableList(availableSections);
     }
 
     public int getNumberCurrentlyAssigned() {
@@ -125,25 +105,6 @@ public class Person implements Comparable<Person> {
         assignedSections.put(section.getSectionId(), section);
     }
 
-    boolean isQualified(int courseId) {
-        Qualification qualification = qualifications.getOrDefault(courseId, null);
-        if (qualification != null) {
-            return qualification.isQualified();
-        }
-        return false;
-    }
-
-    boolean isAvailable(ArrayList<Meeting> meetings) {
-        for (Meeting meeting : meetings) {
-            for (Unavailability unavailability : unavailabilities) {
-                if (unavailability.getWeekday().equals(meeting.getWeekday()) && !(unavailability.getEndTime().before(meeting.getStartTime()) || unavailability.getStartTime().after(meeting.getEndTime()))) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     boolean getPreferenceEquals(int sectionId, DBPreference target) {
         Preference preference = preferences.getOrDefault(sectionId, null);
         if (preference != null) {
@@ -152,8 +113,8 @@ public class Person implements Comparable<Person> {
         return false;
     }
 
-    public boolean isGoodSection(int sectionId, Section section) {
-        return isQualified(section.getCourseId()) && isAvailable(section.getMeetings()) && !getPreferenceEquals(sectionId, DBPreference.CANT_DO);
+    public boolean isGoodSection(int sectionId) {
+        return !getPreferenceEquals(sectionId, DBPreference.CANT_DO);
     }
 
     public boolean alreadyAssigned(String weekday, Time start, Time end) {
@@ -170,7 +131,7 @@ public class Person implements Comparable<Person> {
     int computePreferenceDelta() {
         int accumulator = 0;
         for (Preference preference : preferences.values()) {
-            if (!preference.getPreference().equals(DBPreference.INDIFFERENT)) {
+            if (preference != null && preference.getPreference() != DBPreference.INDIFFERENT)) {
                 ++accumulator;
             }
         }
@@ -188,24 +149,7 @@ public class Person implements Comparable<Person> {
      * @param sections Iterable collection of sections
      */
     public void computeAvailabilityScore(HashMap<Integer, Section> sections) {
-        // This is because we use a Java Lambda and Java does not support Closures
-        final Integer[] data = new Integer[2];
-        data[0] = 0; // Number Qualified
-        data[1] = 0; // Number Available
-        sections.forEach((sectionId, section) -> {
-            if (!isQualified(section.getCourseId())) return;
-            data[0]++;
-            if (isAvailable(section.getMeetings())) {
-                availableSections.add(sectionId);
-                data[1]++;
-            }
-        });
-        // availabilityScore = (float)data[1]; // Simple
-        // availabilityScore = (float)data[1] / data[0]; // Normalized
-        if (data[0] == 0) {
-            data[0] = 1; // Avoid division by zero for unqualified people
-        }
-        availabilityScore = (float)data[1] / data[0] - computePreferenceDelta() / 1000.f; // Favor students that mark more preferences
+        availabilityScore = viableSections.size() - computePreferenceDelta() / 1000.f; // Favor students that mark more preferences
     }
 
     @Override

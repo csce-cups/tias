@@ -107,8 +107,9 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         unscheduled = new ArrayList<Integer>();
 
         getCourses();
-        getPeople(peopleIds);
         getSections();
+        getPeople(peopleIds);
+        getViability(peopleIds);
 
         schedulePeopleToSections();
     }
@@ -135,13 +136,12 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         {
             Person person = people.get(rs.getInt("person_id"));
 
-            // TODO: Refactor Unavailability to Viable Courses -- Already Filtered for Availability
-            person.addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
+            person.addViableSection(rs.getInt("section_id"));
 
-            person.addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
-
-            // TODO: Remove Qualifications as Viable Courses Encapsulates this Concept
-            person.addQualification(new Qualification(rs.getInt("course_id"), rs.getBoolean("qualified")));
+            String preference = rs.getString("preference");
+            if (preference != null) {
+                person.addPreference(new Preference(rs.getInt("section_id"), preference, rs.getString("course_number")));
+            }
         }
 
         rs.close();
@@ -277,8 +277,8 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
             HashSet<Integer> possibleSections = new HashSet<>();
             possibleSections.addAll(
-                sections.keySet().stream()
-                    .filter(sectionId ->  frontPerson.isGoodSection(sectionId, sections.get(sectionId)))
+                frontPerson.getViableSections().stream()
+                    .filter(sectionId ->  frontPerson.isGoodSection(sectionId))
                     .collect(Collectors.toSet())
             );
 
