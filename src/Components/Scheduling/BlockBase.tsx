@@ -8,7 +8,6 @@ export default interface RenderBlockProps {
   edge?: "left" | "right" | "center"
   bottom?: boolean
   data: any
-  readOnly?: boolean
 }
 
 export const blockColors = new Map([

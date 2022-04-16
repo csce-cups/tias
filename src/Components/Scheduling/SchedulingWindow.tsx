@@ -9,7 +9,6 @@ export interface OptionsProps {
   selectable?: boolean
   noHeader?: boolean
   noBorder?: boolean
-  readOnly?: boolean
 
   // Lets you specify an externally controlled filter
   filter?: [Map<number, boolean>, React.Dispatch<React.SetStateAction<Map<number, boolean>>>]

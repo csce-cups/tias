@@ -6,6 +6,7 @@ import { SchedulingWindow } from '../Scheduling/SchedulingWindow';
 import back_arrow from '../../assets/back_arrow_icon.svg';
 import { PreferenceBlock } from '../Profile/PreferenceBlock';
 import { isReturnStatement } from 'typescript';
+import { PrefViewBlock } from './PrefViewBlock';
 
 interface Props {
   employee: Person
@@ -75,6 +76,9 @@ export const AdminEmployeeDetail: FC<Props> = ({employee}) => {
                 <button className="red button" style={{padding: '0 5em', marginBottom: '10px'}} onClick={() => setEditing(false)}>Exit</button>
                 <div className="title">{employee.first_name} {employee.last_name}</div>
                 <div className="title">({employee.email})</div>
+                <div className="border"/>
+                <div className="m5"><strong>Prefered lab hours: {employee.desired_number_assignments}</strong></div>
+
                 <div/> {/* Only to alternate the colors of the list */}
                 { (quals && quals.length > 0 && quals[0].course_id === -1)?
                   <div className="loading">Loading...</div>
@@ -92,11 +96,10 @@ export const AdminEmployeeDetail: FC<Props> = ({employee}) => {
               </div>
                 
               < contexts.blocks.Provider value={blocksPayload} >
-                < SchedulingWindow renderBlockType={PreferenceBlock} options={{
+                < SchedulingWindow renderBlockType={PrefViewBlock} options={{
                   noHeader: true,
                   noBorder: true,
-                  selectable: false,
-                  readOnly: true
+                  selectable: false
                 }}/>
               </ contexts.blocks.Provider >
             </>

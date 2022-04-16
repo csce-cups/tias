@@ -1927,3 +1927,8 @@ span.email {
 	border-left: 2px solid black;
 	border-right: 2px solid black;
 }
+
+.border {
+	margin: 0 5px;
+	border-bottom: 1px solid $render_divider;
+}
