@@ -4,7 +4,6 @@ import contexts from '../APIContext';
 import { useNavigate } from 'react-router-dom';
 
 const tiasClientID : string = (process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID as string)
-let clientUsername = ""
 
 interface GoogleProps {
   onClick: () => void;
@@ -37,6 +36,7 @@ interface Props {
 export const GoogleButton: FC<Props> = ({renderAs}) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [employees,] = useContext(contexts.employees);
+  const user = useContext(contexts.user);
   const navigate = useNavigate();
 
   const googleResponseCallback = (response: any, setGoogleData: any) => {
@@ -80,8 +80,7 @@ export const GoogleButton: FC<Props> = ({renderAs}) => {
           }
         }
       });
-
-    clientUsername = response.Du.VX
+    
   };
 
   const logout = () => {
@@ -93,10 +92,10 @@ export const GoogleButton: FC<Props> = ({renderAs}) => {
   return (
     < contexts.googleData.Consumer >
       {([googleData, setGoogleData]) => (
-        (loggedIn || googleData.tias_user_id !== undefined)? 
+        (loggedIn || (googleData.tias_user_id !== undefined && googleData.tias_user_id !== -1))? 
           <GoogleLogout
             clientId={tiasClientID}
-            buttonText={`Logged in as ${clientUsername}. Click to sign out.`}
+            buttonText={`Logged in as ${user.user?.first_name}. Click to sign out.`}
             onLogoutSuccess={logout}
             onFailure={() => {}}
             render={renderProps => (
@@ -104,7 +103,7 @@ export const GoogleButton: FC<Props> = ({renderAs}) => {
                 <button style={{background: 'transparent', border: 0}} onClick={renderProps.onClick} disabled={renderProps.disabled}>{renderAs}</button>
                 :
                 <div className="vstack google">
-                  {button(renderProps, `Logged in as ${clientUsername}. Click to sign out.`)}
+                  {button(renderProps, `Logged in as ${user.user?.first_name}. Click to sign out.`)}
                 </div>
             )}
           />

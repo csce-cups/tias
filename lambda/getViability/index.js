@@ -1,8 +1,6 @@
 const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
-    let userId = event?.pathParameters?.userId;
-    
     let accessHeader = null;
     
     if (event.headers.origin == 'https://www.csce-scheduler.com') {
@@ -12,13 +10,13 @@ exports.handler = async (event) => {
         accessHeader = 'http://localhost:3000';
     }
     
-    let dbQuery = `SELECT * FROM "Viability" WHERE person_id = $1`;
-    let params = [userId];
+    let dbQuery = `SELECT * FROM "Viability"`;
+    let params = [];
     
     let dbRows = await helper_functions.queryDB(dbQuery, params);
     
     const responseBody = {
-        "viableCourses": dbRows
+        "viability": dbRows
     };
 
     const response = {

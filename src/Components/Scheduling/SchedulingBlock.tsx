@@ -30,8 +30,8 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
   }
   
   const body = () => {
-    if (linkIDs === null) return <></>
-    else if (linkIDs.length === 0) {
+    if (linkIDs === null || linkIDs.length === 0 && course_instance.capacity_peer_teachers === 0 ) return <></>
+    else if (linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0) {
       return (
         <div className="hat-container alert">
           < Hat linkID={-1} />
@@ -47,7 +47,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
   }
 
   let color = { backgroundColor: 'red' };
-  if (linkIDs === null || linkIDs.length !== 0) {
+  if (linkIDs === null || linkIDs.length !== 0 || course_instance.capacity_peer_teachers === 0) {
     color.backgroundColor = blockColors.get(course_instance.course_number)!
     if (color.backgroundColor === undefined) console.error('Color not defined for:', JSON.stringify(course_instance))
   } else {
@@ -55,7 +55,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, data}) => {
   }
 
   return (
-    <div className={`block ${(linkIDs !== null && linkIDs.length === 0)? 'alert' : ''}`}
+    <div className={`block ${(linkIDs !== null && linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0)? 'alert' : ''}`}
       title={`${course_instance.course_number}-${course_instance.section_number}`} 
       style={{...color, ...isVisible}}
     >

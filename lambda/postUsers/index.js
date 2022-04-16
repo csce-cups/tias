@@ -2,15 +2,15 @@ const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
     let userInfo                = JSON.parse(event.body);
-    let userTokenHash           = userInfo.token ?? '';
-    let userEmail               = userInfo.email ?? '';
+    let userTokenHash           = userInfo.token;
+    let userEmail               = userInfo.email;
     let userFirstName           = userInfo.firstName ?? '';
     let userLastName            = userInfo.lastName ?? '';
     let userProfilePhoto        = userInfo.profilePhoto ?? '';
     let userIsPeerTeacher       = userInfo.isPeerTeacher ?? false;
     let userIsTeachingAssistant = userInfo.isTeachingAssistant ?? false;
     let userIsProfessor         = userInfo.isProfessor ?? false;
-    let userIsAdmin             = userInfo.isAdmin ?? false;
+    let userIsAdmin             = userInfo.isAdministrator ?? false;
     
     let accessHeader = null;
     
@@ -36,8 +36,7 @@ exports.handler = async (event) => {
         RETURNING person_id
     `;
     const params = [userTokenHash, userEmail, userFirstName, userLastName, userProfilePhoto, 
-                    userIsPeerTeacher, userIsTeachingAssistant, userIsProfessor, 
-                    userIsAdmin];
+                    userIsPeerTeacher, userIsTeachingAssistant, userIsAdmin, userIsProfessor];
     
     let dbRows = await helper_functions.queryDB(dbQuery, params);
     
