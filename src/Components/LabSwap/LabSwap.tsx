@@ -5,7 +5,7 @@ import API, {
   parseCookie,
   TradeRequest,
 } from "../../modules/API";
-import { compressWeek, updateWithSchedule } from "../../modules/BlockManipulation";
+import { compressWeek, loadSchedule, updateWithSchedule } from "../../modules/BlockManipulation";
 import contexts from "../APIContext";
 import { Scrollable } from "../Misc/Scrollable";
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
@@ -34,9 +34,10 @@ export const selectedTradeBlocksContext = createContext<
 export const LabSwap = () => {
   const user = useContext(contexts.user);
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
-  const [employees,] = useContext(contexts.employees);
+  const [employees, setEmployees] = useContext(contexts.employees);
+  const [blocks, setBlocks] = useContext(contexts.blocks);
   const [viableBlockWeekLocal, setBlockWeekLocal] = useState<CourseBlockWeek>(viableBlockWeek);
-  const [schedule,] = useContext(contexts.loadedSchedule);
+  const [schedule, setLoadedSchedule] = useContext(contexts.loadedSchedule);
   const [userTrades, setUserTrades] = useContext(contexts.userTrades);
   const selectedTradeBlocksState = useState<Selections>({
     offered: null,
@@ -72,6 +73,7 @@ export const LabSwap = () => {
       if (resp.msg || resp.err) {
         if (resp.msg) {
           if (btn !== null) btn.innerHTML = "Automatic Success";
+          loadSchedule({employees, setEmployees, blocks, setBlocks, setLoadedSchedule})
           alert(resp.msg);
         }
         if (resp.err) {
