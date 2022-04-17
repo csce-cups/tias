@@ -59,7 +59,7 @@ export const PreferenceSelector = () => {
           <div className="dropdown-label">
             Preferred Number of Weekly Lab Hours:
           </div>
-          <input id={input_id} type="number" placeholder={user.user? `${user.user.desired_number_assignments}` : '2'} style={{margin: '0 5px'}}/>
+          <input id={input_id} type="number" value={user.user? `${user.user.desired_number_assignments}` : '2'} style={{margin: '0 5px'}}/>
         </div>
         < contexts.blocks.Provider value={blocksPayload} >
           < SchedulingWindow renderBlockType={PreferenceBlock} options={{
