@@ -57,7 +57,7 @@ export const PreferenceSelector = () => {
       <div className={`${collapsed? "collapsed " : ""}profile-render`}>
         <div className="hstack">
           <div className="dropdown-label">
-            Preferred Number of Lab Sections:  
+            Preferred Number of Weekly Lab Hours:
           </div>
           <input id={input_id} type="number" placeholder={user.user? `${user.user.desired_number_assignments}` : '2'} style={{margin: '0 5px'}}/>
         </div>

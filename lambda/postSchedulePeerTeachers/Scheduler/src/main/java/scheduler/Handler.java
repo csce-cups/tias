@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.postgresql.util.PGInterval;
+
 import java.lang.StringBuilder;
 
 import java.util.ArrayList;
@@ -214,10 +216,10 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         st.close();
 
         st = conn.createStatement();
-        rs = st.executeQuery("SELECT * FROM section_meeting WHERE meeting_type='Laboratory'");
+        rs = st.executeQuery("SELECT *, (end_time - start_time) AS duration FROM section_meeting WHERE meeting_type='Laboratory'");
         while (rs.next())
         {
-            sections.get(rs.getInt("section_id")).addMeeting(new Meeting(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time"), rs.getString("place"), rs.getString("meeting_type")));
+            sections.get(rs.getInt("section_id")).addMeeting(new Meeting(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time"), rs.getString("place"), rs.getString("meeting_type"), (PGInterval)rs.getObject("duration")));
             onlineCourses.remove(rs.getInt("section_id"));
         }
         rs.close();
@@ -229,7 +231,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     }
 
     static void addIfPossible(Person person, Section section) {
-        if (section.getAssignedPTs() < section.getCapacityPTs()) {
+        if (section.getAssignedPTs() < section.getCapacityPTs() && person.getHoursAssigned() + section.getHours() <= person.getDesiredNumberAssignments()) {
             boolean alreadyAssigned = false;
             for (Meeting meeting : section.getMeetings()) {
                 if (person.alreadyAssigned(meeting.getWeekday(), meeting.getStartTime(), meeting.getEndTime())) {
@@ -247,7 +249,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
     static void addLeftovers(Person person, Queue<Section> leftovers) {
         for (Section section : leftovers) {
-            if (person.getNumberCurrentlyAssigned() >= person.getDesiredNumberAssignments()) break;
+            if (person.getHoursAssigned() >= person.getDesiredNumberAssignments()) break;
             addIfPossible(person, section);
         }
         leftovers.clear();
@@ -276,7 +278,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
             // Schedule what you prefer or marked indifferent
             for (Preference preference : frontPerson.getSortedPreferences()) {
-                if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
+                if (frontPerson.getHoursAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                 if (!possibleSections.contains(preference.getSectionId())) continue;
                 if (preference.isPreferable()) {
                     Section section = sections.get(preference.getSectionId());
@@ -298,9 +300,9 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             nullPreferenceSections.sort(Collections.reverseOrder());
 
             // Schedule what you didn't mark at all -- user never sets any preferences
-            if (frontPerson.getNumberCurrentlyAssigned() < frontPerson.getDesiredNumberAssignments()) {
+            if (frontPerson.getHoursAssigned() < frontPerson.getDesiredNumberAssignments()) {
                 for (int sectionId : nullPreferenceSections) {
-                    if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
+                    if (frontPerson.getHoursAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() > 0) {
                         leftovers.add(section);
@@ -313,9 +315,9 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             addLeftovers(frontPerson, leftovers);
 
             // Schedule what you marked as not preferred
-            if (frontPerson.getNumberCurrentlyAssigned() < frontPerson.getDesiredNumberAssignments()) {
+            if (frontPerson.getHoursAssigned() < frontPerson.getDesiredNumberAssignments()) {
                 for (int sectionId : badSections) {
-                    if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
+                    if (frontPerson.getHoursAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() > 0) {
                         leftovers.add(section);

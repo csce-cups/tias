@@ -28,6 +28,14 @@ public class Section implements Comparable<Section> {
         currentTAs = 0;
     }
 
+    public int getHours() {
+        int total = 0;
+        for (Meeting meeting : meetings) {
+            total += (int)Math.ceil(meeting.getHours());
+        }
+        return total;
+    }
+
     public int getSectionId() {
         return sectionId;
     }

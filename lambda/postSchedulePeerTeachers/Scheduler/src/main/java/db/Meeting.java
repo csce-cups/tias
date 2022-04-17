@@ -2,18 +2,23 @@ package db;
 
 import java.sql.Time;
 
+import org.postgresql.util.PGInterval;
+
 public class Meeting {
     String weekday;
     Time startTime, endTime;
     String place;
     String meetingType;
+
+    PGInterval duration;
     
-    public Meeting(String weekday, Time startTime, Time endTime, String place, String meetingType) {
+    public Meeting(String weekday, Time startTime, Time endTime, String place, String meetingType, PGInterval duration) {
         this.weekday = weekday;
         this.startTime = startTime;
         this.endTime = endTime;
         this.place = place;
         this.meetingType = meetingType;
+        this.duration = duration;
     }
 
     public String getWeekday() {
@@ -34,6 +39,10 @@ public class Meeting {
 
     public String getMeetingType() {
         return meetingType;
+    }
+
+    public float getHours() {
+        return duration.getHours() + duration.getMinutes() / 60f;
     }
 
     @Override
