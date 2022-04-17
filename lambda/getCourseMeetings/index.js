@@ -19,7 +19,7 @@ exports.handler = async (event) => {
     
     const dbQuery = 
     `
-        SELECT section_meeting.section_id, course.department, course.course_number, course_section.section_number, course_section.placeholder_professor_name,
+        SELECT section_meeting.section_id, course.department, course.course_number, course_section.section_number, course_section.placeholder_professor_name, course_section.capacity_peer_teachers,
                section_meeting.start_time, section_meeting.end_time, section_meeting.weekday, 
                section_meeting.place
         FROM section_meeting
