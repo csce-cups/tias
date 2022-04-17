@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import db.Preference.DBPreference;
 
@@ -131,7 +132,7 @@ public class Person implements Comparable<Person> {
     int computePreferenceDelta() {
         int accumulator = 0;
         for (Preference preference : preferences.values()) {
-            if (preference != null && preference.getPreference() != DBPreference.INDIFFERENT)) {
+            if (preference != null && preference.getPreference() != DBPreference.INDIFFERENT) {
                 ++accumulator;
             }
         }
@@ -154,12 +155,11 @@ public class Person implements Comparable<Person> {
 
     @Override
     public String toString() {
-        return "Person [administrator=" + administrator + ", availabilities=" + unavailabilities + ", availabilityScore="
-                + availabilityScore + ", availableSections=" + availableSections + ", desiredNumberAssignments="
-                + desiredNumberAssignments + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
-                + ", peerTeacher=" + peerTeacher + ", personId=" + personId + ", preferences=" + preferences
-                + ", professor=" + professor + ", qualifications=" + qualifications + ", sections=" + assignedSections
-                + ", teachingAssistant=" + teachingAssistant + "]";
+        return "Person [administrator=" + administrator + ", assignedSections=" + assignedSections
+                + ", availabilityScore=" + availabilityScore + ", desiredNumberAssignments=" + desiredNumberAssignments
+                + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName + ", peerTeacher="
+                + peerTeacher + ", personId=" + personId + ", preferences=" + preferences + ", professor=" + professor
+                + ", teachingAssistant=" + teachingAssistant + ", viableSections=" + viableSections + "]";
     }
 
     @Override

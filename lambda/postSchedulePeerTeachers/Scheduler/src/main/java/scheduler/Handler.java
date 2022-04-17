@@ -17,6 +17,7 @@ import com.google.gson.GsonBuilder;
 import java.lang.StringBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,12 +27,10 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
-import db.Unavailability;
 import db.Course;
 import db.Meeting;
 import db.Person;
 import db.Preference;
-import db.Qualification;
 import db.Section;
 
 // https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html
@@ -55,7 +54,13 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String origin = event.getHeaders().getOrDefault("origin", null);
-        if (origin.equals("https://www.csce-scheduler.com") || origin.equals("http://localhost:3000")) {
+        if (origin == null) {
+            event.getHeaders().getOrDefault("Origin", null);
+        }
+        if (origin == null) {
+            event.getHeaders().getOrDefault("ORIGIN", null);
+        }
+        if (origin != null && (origin.equals("https://www.csce-scheduler.com") || origin.equals("http://localhost:3000"))) {
             headers.put("Access-Control-Allow-Origin", origin);
         }
 
@@ -66,9 +71,11 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
                 .name("/tias/prod/db-password")
                 .withDecryption(true)
                 .build();
-        SsmClient ssmclient = SsmClient.create();
-        GetParameterResponse parameterResult = ssmclient.getParameter(parameterRequest);
-        String dbpassword = parameterResult.parameter().value();
+        String dbpassword = null;
+        try (SsmClient ssmclient = SsmClient.create()) {
+            GetParameterResponse parameterResult = ssmclient.getParameter(parameterRequest);
+            dbpassword = parameterResult.parameter().value();
+        }
 
         HashMap<String, ArrayList<Double>> eventBody = gson.fromJson(event.getBody(), HashMap.class);
 
@@ -108,6 +115,9 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         getCourses();
         getSections();
+        for (Section section : sections.values()) {
+            section.setCourseNumber(courses.get(section.getCourseId()).getCourseNumber());
+        }
         getPeople(peopleIds);
         getViability(peopleIds);
 
@@ -191,28 +201,6 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         st.close();
     }
 
-    static String constructPersonQuery(String table) {
-        StringBuilder sb = new StringBuilder()
-            .append("SELECT *")
-            .append("FROM ")
-            .append(table);
-            return sb.toString();
-    }
-
-    static void getPeople() throws SQLException {
-        Statement st = conn.createStatement();
-
-        ResultSet rs = st.executeQuery(constructPersonQuery("person"));
-
-        while (rs.next())
-        {
-            people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
-        }
-
-        rs.close();
-        st.close();
-    }
-
     static void getSections() throws SQLException {
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM course_section");
@@ -282,7 +270,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
                     .collect(Collectors.toSet())
             );
 
-            HashSet<Integer> badSections = new HashSet<>();
+            LinkedList<Integer> badSections = new LinkedList<>();
 
             LinkedList<Section> leftovers = new LinkedList<>(); // nonempty preferred sections
 
@@ -305,9 +293,13 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
             addLeftovers(frontPerson, leftovers);
 
+            LinkedList<Integer> nullPreferenceSections = new LinkedList<>();
+            nullPreferenceSections.addAll(possibleSections);
+            nullPreferenceSections.sort(Collections.reverseOrder());
+
             // Schedule what you didn't mark at all -- user never sets any preferences
             if (frontPerson.getNumberCurrentlyAssigned() < frontPerson.getDesiredNumberAssignments()) {
-                for (int sectionId : possibleSections) {
+                for (int sectionId : nullPreferenceSections) {
                     if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() > 0) {
