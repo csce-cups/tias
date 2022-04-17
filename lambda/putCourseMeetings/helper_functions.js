@@ -8,7 +8,7 @@
 const awsSDK = require('aws-sdk');
 awsSDK.config.update({ region: 'us-east-1' });
 
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
 const sysManagerClient = new awsSDK.SSM();
 
@@ -16,6 +16,8 @@ let dbEndpoint = null;
 let dbName = null;
 let dbUsername = null;
 let dbPass = null;
+
+let pool = null;
 
 const getStoredParameter = (parameterName) => {
     return new Promise((resolve, reject) => {
@@ -56,35 +58,30 @@ const prefetchDBInfo = async () => {
 
     paramResponse = await getStoredParameter('/tias/prod/db-password');
     dbPass = paramResponse.Parameter.Value;
+    
+    pool = new Pool({
+        user: dbUsername,
+        host: dbEndpoint,
+        database: dbName,
+        password: dbPass,
+        port: 5432,
+    });
 };
 
 const queryDB = async (dbQuery, params) => {
-  await prefetchDBInfo(dbQuery, params);
+    if (pool === null) {
+        await prefetchDBInfo(dbQuery, params);
+    }
   
-  const client = new Client({
-    user: dbUsername,
-    host: dbEndpoint,
-    database: dbName,
-    password: dbPass,
-    port: 5432,
-  });
+  const client = await pool.connect();
 
-  client.connect();
-  
   return await client
     .query(dbQuery, params)
-    .then((dbResponse) => {
-        client.end();
-        return dbResponse.rows;
-    })
-    .catch((error) => console.error(error));
+    .then(dbResponse => dbResponse.rows)
+    .catch(error => console.error(error))
+    .finally(() => client.release());
 };
 
-const GenerateErrorResponseAndLog = (err, response, msg) => {
-    console.error('error: ', err);
-    console.error('trace: ', err.stack);
-    response.statusCode = 500;
-    response.body = JSON.stringify({err: msg});
-};
+const cleanup = () => pool.end().then(() => {pool = null; console.log('pool has drained')});
 
-module.exports = { getStoredParameter, prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };
+module.exports = { cleanup, prefetchDBInfo, queryDB };

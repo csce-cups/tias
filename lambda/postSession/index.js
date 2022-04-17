@@ -5,7 +5,7 @@ const axios = require('axios');
 const cryptoLib = require('crypto');
 awsSDK.config.update({ region: 'us-east-1' });
 
-async function getExistingUserID(userTokenHash, userEmail) {
+async function getExistingUserID(userTokenHash, userEmail, response) {
     let dbQuery = `SELECT *
                    FROM person
                    WHERE `;
@@ -16,13 +16,15 @@ async function getExistingUserID(userTokenHash, userEmail) {
         params.push(userTokenHash);
     }
     else if (userEmail !== null) {
-        dbQuery += 'email = $1';
+        dbQuery += 'email ILIKE $1';
         params.push(userEmail);
     }
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
+    let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 'Failure in query for existing user.');
+    });
     
-    if (dbRows.length == 0) {
+    if (dbRows === undefined || dbRows.length == 0) {
         return null;
     }
     else {
@@ -91,15 +93,25 @@ exports.handler = async (event) => {
     const userToken = payload['sub'];
     let userTokenHash = cryptoLib.createHash('md5').update(userToken).digest('hex');
     
-    let userID = await getExistingUserID(userTokenHash, null);
+    let userID = await getExistingUserID(userTokenHash, null, response);
+    
+    if (response.statusCode === 500) {
+        return response;
+    }
+    
     if (userID != null) {
         dbID = userID;
     }
     else {
-        userID = await getExistingUserID(null, requestBody.email);
+        userID = await getExistingUserID(null, requestBody.email, response);
+        
+        if (response.statusCode === 500) {
+            return response;
+        }
+        
         if (userID != null) {
             dbID = userID;
-            await updateUser(dbID, {'google_token_sub': userTokenHash, 'profile_photo_url': requestBody.profilePhoto});
+            await updateUser(dbID, {'google_token_sub': userTokenHash, 'first_name': requestBody.firstName, 'last_name': requestBody.lastName, 'profile_photo_url': requestBody.profilePhoto});
         }
         else {
             requestBody.token = userTokenHash;
