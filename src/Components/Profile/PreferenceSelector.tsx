@@ -56,19 +56,20 @@ export const PreferenceSelector = () => {
         <div className="arrow-container"/>
       </div>
       <div className={`${collapsed? "collapsed " : ""}profile-render`}>
-        <div className="hstack">
-          <div className="dropdown-label">
-            Preferred Number of Lab Sections:  
-          </div>
-          <input id={input_id} type="number" value={desiredAssignments} onChange={e => setDesiredAssignements(+e.currentTarget.value)} style={{margin: '0 5px'}}/>
-        </div>
         < contexts.blocks.Provider value={blocksPayload} >
           < SchedulingWindow renderBlockType={PreferenceBlock} options={{
             noHeader: true,
             noBorder: true,
             selectable: false,
             filter: [filter, setFilter]
-          }}/>
+          }} top={
+            <div className="hstack">
+              <div className="dropdown-label">
+                Preferred Number of Lab Sections:  
+              </div>
+              <input id={input_id} type="number" value={desiredAssignments} onChange={e => setDesiredAssignements(+e.currentTarget.value)} style={{margin: '0 5px'}}/>
+            </div> 
+          }/>
         </ contexts.blocks.Provider >
         <input id="submit-prefs" onClick={submit} type="submit" className="blue button submit" value="Save Preferences"/>
       </div>
