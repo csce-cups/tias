@@ -295,7 +295,7 @@ export const LabSwap = () => {
               return (
                 <Scrollable>
                   <div className="swap-section vstack">
-                    <div className="swap-section-title"> Outstanding Requests </div>
+                    <div className="swap-section-title"> Received Requests </div>
                     {renderSwapSets(trades, 'Pending', request => request.person_id_receiver === userId && request.request_status === 'Pending')}
                   </div>
 
@@ -310,19 +310,6 @@ export const LabSwap = () => {
 
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Past Requests </div>
-                      { trades.filter(request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled').length > 0? 
-                        <>
-                          <div className="swap-section-subtitle">
-                            Cancelled Requests
-                          </div>
-                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
-                        </>
-                        :
-                        <div className="swap-section-subtitle">
-                          Cancelled Requests
-                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
-                        </div>
-                      }
                       { trades.filter(request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Accepted').length > 0? 
                         <>
                           <div className="swap-section-subtitle">
@@ -347,6 +334,19 @@ export const LabSwap = () => {
                         <div className="swap-section-subtitle">
                           Rejected Requests
                           {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Rejected')}
+                        </div>
+                      }
+                      { trades.filter(request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled').length > 0? 
+                        <>
+                          <div className="swap-section-subtitle">
+                            Cancelled Requests
+                          </div>
+                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
+                        </>
+                        :
+                        <div className="swap-section-subtitle">
+                          Cancelled Requests
+                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
                         </div>
                       }
                   </div>
