@@ -357,7 +357,7 @@ class API {
 	static fetchAllViableCourses = async (): Promise<Map<number, CourseBlockWeek>> => {
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/viable-courses`)
 			.then(({data}) => {
-				let dataStrict: (raw_APICourseBlock & {person_id: number})[] = data.viability;
+				let dataStrict: (raw_APICourseBlock & {person_id: number, preference: APIUserPreferenceEnum})[] = data.viability;
 				let map = new Map<number, CourseBlockWeek>();
 
 				const createDate = (datestring: string): Date => {
@@ -367,7 +367,7 @@ class API {
 					return d;
 				}
 
-				const convertOne = (e: raw_APICourseBlock): CourseBlock => ({
+				const convertOne = (e: (raw_APICourseBlock & {preference: APIUserPreferenceEnum})): (CourseBlock & {preference: APIUserPreferenceEnum}) => ({
 					department: e.department,
 					course_number: parseInt(e.course_number),
 					section_number: e.section_number,
@@ -378,16 +378,17 @@ class API {
 					place: e.place,
 					scheduled: null,
 					professor: e.placeholder_professor_name === null ? 'TBA' : e.placeholder_professor_name,
-					capacity_peer_teachers: e.capacity_peer_teachers
+					capacity_peer_teachers: e.capacity_peer_teachers,
+					preference: e.preference
 				})
 
 				dataStrict.forEach((b) => {
 					if (!map.has(b.person_id)) map.set(b.person_id, {
-						Monday: [] as CourseBlock[],
-						Tuesday: [] as CourseBlock[],
-						Wednesday: [] as CourseBlock[],
-						Thursday: [] as CourseBlock[],
-						Friday: [] as CourseBlock[]
+						Monday: [] as (CourseBlock & {preference: APIUserPreferenceEnum})[],
+						Tuesday: [] as (CourseBlock & {preference: APIUserPreferenceEnum})[],
+						Wednesday: [] as (CourseBlock & {preference: APIUserPreferenceEnum})[],
+						Thursday: [] as (CourseBlock & {preference: APIUserPreferenceEnum})[],
+						Friday: [] as (CourseBlock & {preference: APIUserPreferenceEnum})[]
 					} as CourseBlockWeek);
 
 					switch (b.weekday) {
@@ -398,7 +399,7 @@ class API {
 						case "Friday": map.get(b.person_id)!.Friday!.push(convertOne(b)); break;
 					}
 				});
-
+				
 				return map;
 			})
 			.catch(err => {

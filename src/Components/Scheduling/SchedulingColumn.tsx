@@ -29,8 +29,6 @@ export const SchedulingColumn = <DataCourseBlock extends CourseBlock>(props: Rea
   }
 
   const selectable = (options?.selectable === false || editing)? false : true;
-  console.log({ editing, selectable });
-
   const id = uuid();
 
   let dividers = [];

@@ -1,6 +1,6 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
 import { loadSchedule, updateWithSchedule } from "../modules/BlockManipulation";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest} from "../modules/API";
+import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest, CourseBlock} from "../modules/API";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
 
@@ -35,9 +35,13 @@ export const contexts = {
     0 as any
   ]),
 
-  allViableCourses: createContext<[Map<number, CourseBlockWeek>, React.Dispatch<React.SetStateAction<Map<number, CourseBlockWeek>>>]>([
+  allViableCourses: createContext<[
+    Map<number, CourseBlockWeek>, React.Dispatch<React.SetStateAction<Map<number, CourseBlockWeek>>>,
+    Map<number, {id: number, pref: APIUserPreferenceEnum}[]>
+  ]>([
     new Map<number, CourseBlockWeek>(),
-    0 as any
+    0 as any,
+    new Map<number, {id: number, pref: APIUserPreferenceEnum}[]>()
   ]),
 
   user: createContext<UserPerson>({
@@ -84,6 +88,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
 
   const loadedScheduleState = useState(new Map<string, number[]>());
   const allViableCoursesState = useState(new Map<number, CourseBlockWeek>());
+  const allViableCoursesMap = useState(new Map<number, {id: number, pref: APIUserPreferenceEnum}[]>());
 
   const [user, setUser] = useState<UserPerson>({
     user: null,
@@ -183,13 +188,33 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     }
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
+  useEffect(() => {
+    let newMap = new Map<number, {id: number, pref: APIUserPreferenceEnum}[]>();
+    const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    allViableCoursesState[0].forEach((week, id) => {
+      keys.forEach(k => {
+        week[k]?.forEach(course => {
+          if (id === 86) console.log(course)
+          if (newMap.has(course.section_id)) {
+            const get = newMap.get(course.section_id);
+            if (!get?.find(e => e.id === id)) newMap.get(course.section_id)!.push({id, pref: (course as any).preference});
+          } else {
+            newMap.set(course.section_id, [{id, pref: (course as any).pref}]);
+          }
+        })
+      });
+    });
+    console.log(newMap);
+    allViableCoursesMap[1](newMap);
+  }, [allViableCoursesState[0]])
+
   return ( // Wish we'd used redux
     <contexts.googleData.Provider value={googleDataState}>
       <contexts.employees.Provider value={employeeState}>
         <contexts.user.Provider value={user}>
           <contexts.blocks.Provider value={blockState}>
             <contexts.loadedSchedule.Provider value={loadedScheduleState}>
-              <contexts.allViableCourses.Provider value={allViableCoursesState}>
+              <contexts.allViableCourses.Provider value={[...allViableCoursesState, allViableCoursesMap[0]]}>
                 <contexts.userQuals.Provider value={userQualState}>
                   <contexts.userPrefs.Provider value={userPrefState}>
                     <contexts.userViableCourses.Provider value={userViableCourses}>

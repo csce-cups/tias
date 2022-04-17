@@ -41,7 +41,6 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
 
   const handleChange = <T,>(e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<T>>, setWith: T) => {
     if (!unsaved) setUnsaved(unsaved + 1);
-    console.log(setWith);
     setChanged(true);
     setter(setWith);
   }
