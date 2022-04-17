@@ -10,7 +10,7 @@ import contexts from "../APIContext";
 import { Scrollable } from "../Misc/Scrollable";
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";
 import { LabSwapBlock } from "./LabSwapBlock";
-import { SwapSet } from "./SwapSet";
+import { SwapSet, TradeInfo } from "./SwapSet";
 import { TitleSet } from "./TitleSet";
 //for main component
 //needs selection confirmation window
@@ -34,6 +34,7 @@ export const selectedTradeBlocksContext = createContext<
 export const LabSwap = () => {
   const user = useContext(contexts.user);
   const [viableBlockWeek, setBlockWeek] = useContext(contexts.userViableCourses);
+  const [employees,] = useContext(contexts.employees);
   const [viableBlockWeekLocal, setBlockWeekLocal] = useState<CourseBlockWeek>(viableBlockWeek);
   const [schedule,] = useContext(contexts.loadedSchedule);
   const [userTrades, setUserTrades] = useContext(contexts.userTrades);
@@ -53,9 +54,7 @@ export const LabSwap = () => {
   }, [schedule, viableBlockWeek]);
 
   const submitTrade = () => {
-    const btn = document.getElementById(
-      "request-trade-btn"
-    ) as HTMLButtonElement;
+    const btn = document.getElementById("request-trade-btn") as HTMLButtonElement;
 
     if (btn !== null) btn.innerHTML = "Sending request...";
 
@@ -70,7 +69,7 @@ export const LabSwap = () => {
     }
     
     API.submitTrade(data, user.user?.person_id).then(resp => {
-      if (resp.msg || resp.err){
+      if (resp.msg || resp.err) {
         if (resp.msg) {
           if (btn !== null) btn.innerHTML = "Automatic Success";
           alert(resp.msg);
@@ -79,9 +78,20 @@ export const LabSwap = () => {
           if (btn !== null) btn.innerHTML = "Failed";
           alert(resp.err);
         }
-      } else if (btn !== null){
-         btn.innerHTML = 'Done!';
+      } else if (btn !== null) {
+         btn.innerHTML = 'Updating...';
       }
+    }).then(() => {
+      API.fetchUserTrades(user.user?.person_id).then(resp => {
+        if (btn !== null) btn.innerHTML = "Done!";
+        setTimeout(() => {
+          setUserTrades(resp);
+          selectedTradeBlocksState[1]({
+            offered: null,
+            requested: null
+          });
+        }, 1500);
+      });
     }).catch(() => {
       if (btn !== null) btn.innerHTML = 'An error occurred';
     })
@@ -208,19 +218,19 @@ export const LabSwap = () => {
     })
   }
 
-  const renderSwapSets = (retData: TradeRequest[], action:"Outstanding" | "Pending" | null, filter: (request: TradeRequest) => boolean) => {
+  const renderSwapSets = (retData: TradeRequest[], action: "Outstanding" | "Pending" | null, filter: (request: TradeRequest) => boolean) => {
     if (retData.filter(filter).length === 0) return <div className="loading-small ss-inside swap-section-subtitle">None</div>
 
     return retData.filter(filter).map((request) => {
       const allBlocks = renderScheduled(viableBlockWeek); // For easier iteration
-      let sent: DisplayBlock | null = null
-      let received: DisplayBlock | null = null
+      let sent: TradeInfo | null = null
+      let received: TradeInfo | null = null
       allBlocks.forEach((block: DisplayBlock, _oidx: number) => {
         if (block.section_id === request.section_id_sender) {
-          sent = block;
+          sent = { block, person: employees.find(p => p.person_id === request.person_id_sender)};
         }
         if (block.section_id === request.section_id_receiver) {
-          received = block;
+          received = { block, person: employees.find(p => p.person_id === request.person_id_receiver)};
         }
         if (sent && received) return;
       });
@@ -264,15 +274,12 @@ export const LabSwap = () => {
           <TitleSet titles={["Offer", "Request"]} />
           <SwapSet
             selected={[
-              selectedTradeBlocksState[0].offered,
-              selectedTradeBlocksState[0].requested,
+              { block: selectedTradeBlocksState[0].offered, person: null},
+              { block: selectedTradeBlocksState[0].requested, person: null},
             ]}
           />
           <button
-            disabled={
-              selectedTradeBlocksState[0].offered === null ||
-              selectedTradeBlocksState[0].requested === null
-            }
+            disabled={selectedTradeBlocksState[0].offered === null || selectedTradeBlocksState[0].requested === null}
             id={"request-trade-btn"}
             className="blue button"
             onClick={submitTrade}
@@ -288,7 +295,7 @@ export const LabSwap = () => {
               return (
                 <Scrollable>
                   <div className="swap-section vstack">
-                    <div className="swap-section-title"> Outstanding Requests </div>
+                    <div className="swap-section-title"> Received Requests </div>
                     {renderSwapSets(trades, 'Pending', request => request.person_id_receiver === userId && request.request_status === 'Pending')}
                   </div>
 
@@ -303,19 +310,6 @@ export const LabSwap = () => {
 
                   <div className="swap-section vstack">
                     <div className="swap-section-title"> Past Requests </div>
-                      { trades.filter(request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled').length > 0? 
-                        <>
-                          <div className="swap-section-subtitle">
-                            Cancelled Requests
-                          </div>
-                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
-                        </>
-                        :
-                        <div className="swap-section-subtitle">
-                          Cancelled Requests
-                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
-                        </div>
-                      }
                       { trades.filter(request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Accepted').length > 0? 
                         <>
                           <div className="swap-section-subtitle">
@@ -340,6 +334,19 @@ export const LabSwap = () => {
                         <div className="swap-section-subtitle">
                           Rejected Requests
                           {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Rejected')}
+                        </div>
+                      }
+                      { trades.filter(request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled').length > 0? 
+                        <>
+                          <div className="swap-section-subtitle">
+                            Cancelled Requests
+                          </div>
+                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
+                        </>
+                        :
+                        <div className="swap-section-subtitle">
+                          Cancelled Requests
+                          {renderSwapSets(trades, null, request => (request.person_id_sender === userId || request.person_id_receiver === userId) && request.request_status === 'Cancelled')}
                         </div>
                       }
                   </div>

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { Hat } from '../Misc/Hat';
-import { CourseBlock } from '../../modules/API';
+import { CourseBlock, Person } from '../../modules/API';
 import RenderBlockProps, { calcFlex, blockColors } from '../Scheduling/BlockBase';
 
 type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
@@ -10,13 +10,14 @@ interface DisplayBlock extends CourseBlock {
 
 interface Props extends RenderBlockProps {
   data: {
-    course_instance: CourseBlock | null
+    course_instance: CourseBlock | null | undefined
+    person: Person | null | undefined
     shift: boolean
   }
 }
 
 export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
-  const {course_instance, shift} = data;
+  const {course_instance, person, shift} = data;
   const ref: any = useRef(null);
   const [interacted, setInteracted] = useState<boolean>(false);
 
@@ -27,64 +28,6 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
     const hour12 = (hour === 12) ? 12 : hour % 12;
     const minutes = minute < 10 ? `0${minute}` : minute;
     return `${hour12}:${minutes} ${ampm}`;
-  }
-
-  const renderScheduled = (retData: CourseBlock[]) => {    
-    let retFormat: DisplayBlock[] = [];
-    let ret: JSX.Element[] = [];
-
-    const shortDays = ['M', 'T', 'W', 'R', 'F'];
-    const dayMap = new Map<string, shortday>(
-      [
-        ['Monday', 'M'],
-        ['Tuesday', 'T'],
-        ['Wednesday', 'W'],
-        ['Thursday', 'R'],
-        ['Friday', 'F']
-      ]
-    )
-
-    const cmpDay = (a: shortday, b: shortday) => {
-      if (shortDays.indexOf(a) < shortDays.indexOf(b)) return -1;
-      else if (shortDays.indexOf(a) > shortDays.indexOf(b)) return 1;
-      return 0;
-    }
-
-    retData.sort((a, b) => {
-      if (cmpDay(dayMap.get(a.weekday)!, dayMap.get(b.weekday)!) !== 0) return cmpDay(dayMap.get(a.weekday)!, dayMap.get(b.weekday)!);
-      else if (a.start_time < b.start_time) return -1;
-      else if (a.start_time > b.start_time) return 1;
-      else if (a.course_number < b.course_number) return -1;
-      else if (a.course_number > b.course_number) return 1;
-      else if (a.section_number < b.section_number) return -1;
-      else if (a.section_number > b.section_number) return 1;
-      return 0;
-    }).forEach(block => {
-      const where = retFormat.findIndex(b => b.course_number === block.course_number && b.section_number === block.section_number);
-      if (where === -1) retFormat.push({...block, days: [dayMap.get(block.weekday) as shortday]})
-      else retFormat[where].days.push(dayMap.get(block.weekday) as shortday);
-    })
-
-    retFormat.forEach(block => {
-      ret.push(
-        <div className="schedule-info-element" key={`sie-${JSON.stringify(block)}`}>
-          <div>
-            {block.department}: {block.course_number}-{block.section_number}
-          </div>
-          <div>
-            {formatDate(block.start_time)}-{formatDate(block.end_time)} {block.days.join('')}
-          </div>
-          <div>
-            Professor {block.professor}
-          </div>
-          <div>
-            {block.place}
-          </div>
-        </div>
-      )
-    })
-
-    return ret;
   }
 
   // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
@@ -109,7 +52,7 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
     margin: visible? undefined : 0
   }
 
-  if (course_instance === null) {
+  if (course_instance === null || course_instance === undefined) {
       return (
         <div className="block frosted standalone" style={{outline: '0'}}>
           <div className="fill"/>
@@ -135,6 +78,18 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
     >
       { interacted? 
         <div className="pref-pane">
+          { person?
+            <>
+              <div>
+                Trade with: {person.first_name} {person.last_name}
+              </div>
+              <div>
+                ({person.email})
+              </div>
+              <div className="m5"/>
+            </>
+            : <></>
+          }
           <div>
             {course_instance.department}: {course_instance.course_number}-{course_instance.section_number}
           </div>

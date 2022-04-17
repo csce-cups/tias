@@ -63,7 +63,7 @@ export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID, genState}
           < Dot isScheduled={employee.isScheduled} linkID={linkID} />
         </div>
       </div>
-      <div className="divider"/>
+      <div className="employee-divider"/>
     </div>
   )
 }
