@@ -13,16 +13,16 @@ public class Person implements Comparable<Person> {
     int personId;
 
     String email, firstName, lastName;
-    int desiredNumberAssignments;
+    float desiredNumberAssignments;
     boolean peerTeacher, teachingAssistant, administrator, professor;
     HashMap<Integer, Preference> preferences;
     HashSet<Integer> viableSections;
     HashMap<Integer, Section> assignedSections;
 
     float availabilityScore;
-    int hoursAssigned;
+    float hoursAssigned;
 
-    public Person(int personId, String email, String firstName, String lastName, int desiredNumberAssignments, boolean peerTeacher, boolean teachingAssistant,
+    public Person(int personId, String email, String firstName, String lastName, float desiredNumberAssignments, boolean peerTeacher, boolean teachingAssistant,
             boolean administrator, boolean professor) {
         this.personId = personId;
         this.email = email;
@@ -38,7 +38,7 @@ public class Person implements Comparable<Person> {
         this.assignedSections = new HashMap<Integer, Section>();
 
         availabilityScore = 0.f;
-        hoursAssigned = 0;
+        hoursAssigned = 0.f;
     }
 
     public int getPersonId() {
@@ -57,7 +57,7 @@ public class Person implements Comparable<Person> {
         return lastName;
     }
 
-    public int getDesiredNumberAssignments() {
+    public float getDesiredNumberAssignments() {
         return desiredNumberAssignments;
     }
 
@@ -104,7 +104,7 @@ public class Person implements Comparable<Person> {
         return assignedSections.size();
     }
 
-    public int getHoursAssigned() {
+    public float getHoursAssigned() {
         return hoursAssigned;
     }
     
