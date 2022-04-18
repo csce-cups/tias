@@ -24,12 +24,16 @@ exports.handler = async (event) => {
     JOIN course_section ON section_assignment.section_id = course_section.section_id
     JOIN course ON course_section.course_id = course.course_id
     JOIN section_meeting ON course_section.section_id = section_meeting.section_id AND section_meeting.meeting_type = 'Laboratory'
-    ORDER BY person.last_name, person.first_name, course.department, course_section.section_number, course.course_number`;
+    ORDER BY person.last_name, person.first_name, course.department, course_section.section_number, course.course_number, section_meeting.weekday`;
     let params = [];
     
     let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
         helper_functions.GenerateErrorResponseAndLog(err, response, 'Failed to export schedule data.');
     });
+
+    if (response.statusCode === 500) {
+        return response;
+    }
     
     const courseObj = {};
     const peopleObj = {};
