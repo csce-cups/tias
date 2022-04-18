@@ -279,6 +279,7 @@ export const LabSwap = () => {
               { block: selectedTradeBlocksState[0].offered, person: null},
               { block: selectedTradeBlocksState[0].requested, person: null},
             ]}
+            height={"5.5em"}
           />
           <button
             disabled={selectedTradeBlocksState[0].offered === null || selectedTradeBlocksState[0].requested === null}
