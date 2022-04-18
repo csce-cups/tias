@@ -33,12 +33,14 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
         }
       });
 
-      const start = allBlocksFlat.reduce((acc, curr) => Math.min(acc, curr.start_time.getTime()), 0);
+      let startDate = new Date(allBlocksFlat.reduce((acc, curr) => Math.min(acc, curr.start_time.getTime()), 0));
+      startDate.setMinutes(0);
+      const start = startDate.getTime();
       const end = allBlocksFlat.reduce((max, block) => Math.max(max, block.end_time.getTime()), 0);
 
-      setHours(Math.ceil((end - start) / 1000/ 60 / 60))
-
-      setStart(new Date(start));
+      setHours(Math.ceil((end - start) / 1000/ 60 / 60));
+      
+      setStart(startDate);
     }
   }, [blocks]);
 
