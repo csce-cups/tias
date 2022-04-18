@@ -131,9 +131,11 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
       if (ref.current && !ref.current.contains(event.target) && interacted) {
         setInteracted(false);
         setDisabled(true);
-        blockUpdate("block", course_instance, {
-          opened: false
-        });
+        setTimeout(() => {
+          blockUpdate("block", course_instance, {
+            opened: false
+          });
+        }, 200);
       }
     };
 
