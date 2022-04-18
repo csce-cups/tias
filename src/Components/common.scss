@@ -1094,7 +1094,7 @@ img.back-arrow {
 		transition: all .2s ease-in-out;
 	}
 	
-	.block:hover:not(.undetailed, .detailed, .interacted) {
+	.block:hover:not(.undetailed, .detailed, .interacted, .standalone) {
 		z-index: 3;
 		border-radius: 5px;
 		// border: $day_divider_size solid $render_divider;
