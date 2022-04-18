@@ -10,6 +10,7 @@ interface DisplayBlock extends CourseBlock {
 
 export const ProfileSidebar = () => {
   const user = useContext(contexts.user);
+  const [schedule,] = useContext(contexts.loadedSchedule);
   const formatDate = (date: Date) => {
     const hour = date.getHours();
     const minute = date.getMinutes();
@@ -119,16 +120,25 @@ export const ProfileSidebar = () => {
       < contexts.blocks.Consumer >
       {([week,]) => {
         const retData = findScheduled(week);
-        if (retData.length === 0) {
-          return <></>
-        } else {
-          return (
-            <div className="schedule-info-container">
-              <div className="schedule-info-title">Currently Scheduled For:</div>
-              { renderScheduled(retData) }
-            </div>
-          )
-        }
+        return (
+          <div className="schedule-info-container">
+            { (retData.length === 0 && schedule.size > 0)?
+              <>
+                <div className="loading-inline">No assigned labs</div>
+              </>
+              : (retData.length === 0)?
+              <>
+                <div className="loading-inline">Scheduling hasn't happened.</div>
+                <div className="loading-inline">Check back later!</div>
+              </>
+              :
+              <>
+                <div className="schedule-info-title">Currently Scheduled For:</div>
+                { renderScheduled(retData) }
+              </>
+            }
+          </div>
+        )
       }}
       </contexts.blocks.Consumer>
     </div>

@@ -900,6 +900,15 @@ div.loading {
 	font-size: 1.4em;
 }
 
+div.loading-inline {
+	width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	color: $render_divider;
+	font-size: 1.2em;
+}
+
 div.loading-small {
 	height: 100%;
     display: flex;
@@ -1596,7 +1605,7 @@ img.background-image {
 
 .schedule-info-container {
 	padding-top: 15px;
-	padding-right: 10px;
+	margin-right: 10px;
 	border-top: 2px solid black;
 	margin: 15px 10px 10px 10px;
 
