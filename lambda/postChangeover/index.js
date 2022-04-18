@@ -8,12 +8,21 @@ const deleteTable = (table) => {
 
 exports.handler = async (event) => {
     const eventBody = JSON.parse(event.body);
+    
+    let accessHeader = null;
+    
+    if (event.headers.origin == 'https://www.csce-scheduler.com') {
+        accessHeader = 'https://www.csce-scheduler.com';
+    }
+    else if (event.headers.origin == 'http://localhost:3000') {
+        accessHeader = 'http://localhost:3000';
+    }
 
     const response = {
         "isBase64Encoded": false,
         "statusCode": 200,
         "headers": { "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "http://localhost:3000" },
+                     "Access-Control-Allow-Origin": accessHeader },
         "body": JSON.stringify({})
     };
 
@@ -24,8 +33,12 @@ exports.handler = async (event) => {
         deleteTable('section_meeting'),
         deleteTable('trade_request'),
         deleteTable('course_section'),
-        helper_functions.queryDB('ALTER SEQUENCE course_section_section_id_seq RESTART WITH 1')
+        helper_functions.queryDB('ALTER SEQUENCE course_section_section_id_seq RESTART WITH 1').catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Couldn't reset the numbering for the section id."))
     ])
+
+    if (response.statusCode === 500) {
+        return response;
+    }
 
     const add_sections = []
 
@@ -46,6 +59,10 @@ exports.handler = async (event) => {
 
     await Promise.all(add_sections)
 
+    if (response.statusCode === 500) {
+        return response;
+    }
+
     const add_section_meetings = []
 
     for (let meeting of eventBody) {
@@ -61,6 +78,10 @@ exports.handler = async (event) => {
     }
 
     await Promise.all(add_section_meetings)
+
+    if (response.statusCode === 500) {
+        return response;
+    }
 
     helper_functions.cleanup()
 
