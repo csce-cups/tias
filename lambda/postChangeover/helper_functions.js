@@ -87,6 +87,6 @@ const GenerateErrorResponseAndLog = (err, response, msg) => {
     response.body = JSON.stringify({err: msg});
 };
 
-const cleanup = () => pool.end().then(() => {pool = null; console.log('pool has drained')})
+const cleanup = () => pool.end().then(() => {pool = null})
 
 module.exports = { cleanup, prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };
