@@ -26,6 +26,10 @@ exports.handler = async (event) => {
     let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
         helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to load saved schedule.');
     });
+
+    if (response.statusCode === 500) {
+        return response;
+    }
     
     const responseBody = { scheduled: {} };
     
