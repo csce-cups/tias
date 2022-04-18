@@ -11,6 +11,7 @@ interface Props {
 
 export const EditButton: FC<Props> = ({editingState}) => {
   const [editing, setEditing] = editingState.bool;
+  const [editingCount, setEditingCount] = editingState.count;
   const [allViable, setAllViable, ] = useContext(contexts.allViableCourses);
 
   const fetchValidEmployees = () => {
@@ -27,16 +28,21 @@ export const EditButton: FC<Props> = ({editingState}) => {
     if (!editing) {
       fetchValidEmployees().then(() => {
         setEditing(true);
+        console.log(editingCount)
         t.innerHTML = 'Stop Editing';
       })
     } else setEditing(false);
+    
+    setEditingCount(0);
   }
 
   return (
     <button className={`purple button ${editing? 'edit-select' : ''}`} onClick={toggleEdit}>
-      { editing?
+      { (editing && editingCount === 0)?
         'Stop Editing'
-        : 
+        : (editing)?
+        `Save ${editingCount} blocks`
+        :
         'Edit Schedule'
       }
     </button>

@@ -18,6 +18,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
   const [employees,] = useContext(contexts.employees);
   const [viableEmployees, setViableEmployees] = useState<{id: number, pref: APIUserPreferenceEnum}[]>([]);
   const [disabled, setDisabled] = useState(true);
+  const [toUpdate, setToUpdate] = useState(false);
   const bid = `edit-schedule-btn-${uuid()}`;
   const sid = `drowdown-${uuid()}`;
 
@@ -31,7 +32,9 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
     return `${hour12}:${minutes} ${ampm}`;
   }
 
-  const {course_instance, linkIDs} = data;
+  const {course_instance, linkIDs: linkIDs_super} = data;
+  const [linkIDs, setLinkIDs] = useState<number[] | null>(linkIDs_super);
+
   let flex = calcFlex(visible, inline, size);
 
   const isVisible = {
@@ -66,6 +69,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
   let className = 'block';
   if (linkIDs !== null && linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0) className += ' alert';
   if (interacted) className += ' interacted';
+  if (toUpdate) className += ' edited';
 
   const createList = () => {
     let elements: JSX.Element[] = [];
@@ -153,19 +157,40 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
   }
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (options?.editing) {
+    if (options?.editing?.bool[0]) {
       setInteracted(true);
     }
   }
 
   const updateSchedule = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const t = e.currentTarget as HTMLButtonElement;
-    const selection = (document.getElementById(bid) as HTMLSelectElement).value;
-    const type = t.getAttribute('action-type')! as "add" | "remove";
+    const selectElement = document.getElementById(sid) as HTMLSelectElement;
+    const val = selectElement.value;
+    const type = t.getAttribute('action-type')! as "add" | "remove" | "reset";
+    if (!toUpdate && type !== "reset") {
+      setToUpdate(true);
+      options!.editing!.count[1](options!.editing!.count[0] + 1);
+    }
+
     if (type === "add") {
-      console.log("Adding", selection);
+      setLinkIDs(linkIDs?.concat(+val) ?? [+val]);
+      t.innerHTML = `Remove from ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
+      t.setAttribute('action-type', 'remove');
     } else if (type === "remove") {
-      console.log("Remove", selection);
+      setLinkIDs(linkIDs?.filter(id => id !== +val) ?? []);
+      t.innerHTML = `Add to ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
+      t.setAttribute('action-type', 'add');
+    } else if (type === "reset") {
+      setDisabled(true);
+      setLinkIDs(linkIDs_super);
+      
+      const btn = document.getElementById(bid)!;
+      btn.innerHTML = "Select a peer teacher";
+      btn.setAttribute('action-type', 'disabled');
+      selectElement.value = "none";
+
+      if (toUpdate) options!.editing!.count[1](options!.editing!.count[0] - 1);
+      setToUpdate(false);
     }
   }
 
@@ -192,8 +217,12 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
         { interacted?
           <>
             <div className="m5"/>
-            <div className="pref-pane-title">Desired PT Count: {course_instance.capacity_peer_teachers}</div>
-            <button id={bid} disabled={disabled} className="submit-button" onClick={updateSchedule} action-type="disabled">Select a peer teacher</button>
+            <div className="hstack" style={{position: 'relative', width: '100%'}}>
+              <div className="pref-pane-title">Desired PT Count: {course_instance.capacity_peer_teachers}</div>
+              <div className="fill"/>
+              <button disabled={!toUpdate} style={{width: 'fit-content', padding: '0 5px', margin: '0'}} className="cantdo submit-button" onClick={updateSchedule} action-type="reset">Reset</button>
+            </div>
+            <button id={bid} disabled={disabled} className="indiff submit-button" onClick={updateSchedule} action-type="disabled">Select a peer teacher</button>
             <select id={sid} className="manual" name="employee" defaultValue="none" style={{...color, color: 'white'}} onChange={handleChange}>
               { createList() }
             </select>
