@@ -8,7 +8,10 @@ import { GenerateButton } from './GenerateButton'
 import { SaveButton } from './SaveButton'
 
 interface Props {
-  editingState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
+  editingState: {
+    bool: [boolean, React.Dispatch<React.SetStateAction<boolean>>],
+    count: [number, React.Dispatch<React.SetStateAction<number>>]
+  }
 }
 
 export const EmployeeList: FC<Props> = ({editingState}) => {

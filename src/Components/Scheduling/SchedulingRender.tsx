@@ -13,7 +13,12 @@ interface Props {
 }
 
 export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) => {
-  const {editing} = options || {editing: false};
+  const {editing} = options || {
+    editing: {
+      bool: [false, () => {}],
+      count: [0, () => {}],
+    }
+  };
   const [blocks,] = useContext(contexts.blocks);
   const [hours, setHours] = useState<number>(12);
   const [start, setStart] = useState<Date>(new Date(0));
@@ -40,7 +45,7 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
   return (
     <div className="render-container" style={{marginTop: (options?.noHeader)? '8px' : undefined}}>
       < SchedulingTimes hours={hours} start={start} editing={editing}/>
-      <div className={`render-content ${editing? 'interact-blocks editing' : ''}`}>
+      <div className={`render-content ${editing?.bool[0]? 'interact-blocks editing' : ''}`}>
         < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Monday'} blocks={blocks? blocks.Monday : [{course_number: -1} as CourseBlock]} />
         < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Tuesday'} blocks={blocks? blocks.Tuesday : [{course_number: -1} as CourseBlock]} />
         < SchedulingColumn renderBlockType={renderBlockType} hours={hours} startTime={start} filter={filter} options={options} day={'Wednesday'} blocks={blocks? blocks.Wednesday : [{course_number: -1} as CourseBlock]} />

@@ -194,7 +194,6 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     allViableCoursesState[0].forEach((week, id) => {
       keys.forEach(k => {
         week[k]?.forEach(course => {
-          if (id === 86) console.log(course)
           if (newMap.has(course.section_id)) {
             const get = newMap.get(course.section_id);
             if (!get?.find(e => e.id === id)) newMap.get(course.section_id)!.push({id, pref: (course as any).preference});
@@ -204,7 +203,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
         })
       });
     });
-    console.log(newMap);
+    
     allViableCoursesMap[1](newMap);
   }, [allViableCoursesState[0]])
 

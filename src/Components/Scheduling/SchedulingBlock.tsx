@@ -19,6 +19,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
   const [viableEmployees, setViableEmployees] = useState<{id: number, pref: APIUserPreferenceEnum}[]>([]);
   const [disabled, setDisabled] = useState(true);
   const bid = `edit-schedule-btn-${uuid()}`;
+  const sid = `drowdown-${uuid()}`;
 
   const ref: any = useRef(null);
   const formatDate = (date: Date) => {
@@ -76,7 +77,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
     });
 
     elements.push(
-      <option value="none" style={{color: 'white', ...color}}>
+      <option key={"default"} value="none" style={{color: 'white', ...color}}>
         Select a peer teacher
       </option>  
     )
@@ -102,10 +103,16 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
     if (val === "none") {
       setDisabled(true);
       t.innerHTML = "Select a peer teacher";
+      t.setAttribute('action-type', 'disabled');
     } else {
       setDisabled(false);
-      if (linkIDs?.includes(+e.target.value)) t.innerHTML = `Remove from ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
-      else t.innerHTML = `Add to ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
+      if (linkIDs?.includes(+e.target.value)) {
+        t.innerHTML = `Remove from ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
+        t.setAttribute('action-type', 'remove');
+      } else {
+        t.innerHTML = `Add to ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
+        t.setAttribute('action-type', 'add');
+      } 
     }
   }
 
@@ -128,7 +135,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
     };
   });
   
-  const body = () => {
+  const hats = () => {
     if (linkIDs === null || linkIDs.length === 0 && course_instance.capacity_peer_teachers === 0 ) return <></>
     else if (linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0) {
       return (
@@ -151,6 +158,17 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
     }
   }
 
+  const updateSchedule = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const t = e.currentTarget as HTMLButtonElement;
+    const selection = (document.getElementById(bid) as HTMLSelectElement).value;
+    const type = t.getAttribute('action-type')! as "add" | "remove";
+    if (type === "add") {
+      console.log("Adding", selection);
+    } else if (type === "remove") {
+      console.log("Remove", selection);
+    }
+  }
+
   return (
     <div className={className}
       ref={ref}
@@ -158,7 +176,7 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
       style={{...color, ...isVisible}}
       onClick={handleClick}
     >
-      { body() }
+      { hats() }
       <div className="fill"/>
       <div className={`block-text ${visible? '' : 'hidden'}`}>
         {course_instance.course_number} {course_instance.section_number}
@@ -174,8 +192,9 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
         { interacted?
           <>
             <div className="m5"/>
-            <button id={bid} disabled={disabled} className="submit-button">Select a peer teacher</button>
-            <select className="manual" name="employee" defaultValue="none" style={{...color, color: 'white'}} onChange={handleChange}>
+            <div className="pref-pane-title">Desired PT Count: {course_instance.capacity_peer_teachers}</div>
+            <button id={bid} disabled={disabled} className="submit-button" onClick={updateSchedule} action-type="disabled">Select a peer teacher</button>
+            <select id={sid} className="manual" name="employee" defaultValue="none" style={{...color, color: 'white'}} onChange={handleChange}>
               { createList() }
             </select>
           </>

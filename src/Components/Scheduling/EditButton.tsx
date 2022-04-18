@@ -3,11 +3,14 @@ import API from '../../modules/API';
 import contexts from '../APIContext';
 
 interface Props {
-    editingState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
+  editingState: {
+    bool: [boolean, React.Dispatch<React.SetStateAction<boolean>>],
+    count: [number, React.Dispatch<React.SetStateAction<number>>]
+  }
 }
 
 export const EditButton: FC<Props> = ({editingState}) => {
-  const [editing, setEditing] = editingState;
+  const [editing, setEditing] = editingState.bool;
   const [allViable, setAllViable, ] = useContext(contexts.allViableCourses);
 
   const fetchValidEmployees = () => {

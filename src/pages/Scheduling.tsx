@@ -8,12 +8,13 @@ import { SchedulingWindow } from '../Components/Scheduling/SchedulingWindow';
 export const Scheduling = () => {
   const {doShowScheduling} = useContext(contexts.user);
   const editState = useState<boolean>(false);
+  const editCountState = useState<number>(0);
 
   if (doShowScheduling) {
     return (
       <div className="app-body">
-        < EmployeeList editingState={editState}/>
-        < SchedulingWindow renderBlockType={SchedulingBlock} options={{editing: editState[0]}}/>
+        < EmployeeList editingState={{bool: editState, count: editCountState}}/>
+        < SchedulingWindow renderBlockType={SchedulingBlock} options={{editing: {bool: editState, count: editCountState}}}/>
       </div>
     );
   } else if (doShowScheduling === false) {
