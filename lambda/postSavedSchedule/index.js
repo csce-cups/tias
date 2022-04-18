@@ -22,7 +22,7 @@ exports.handler = async (event) => {
     let dbQuery = `TRUNCATE section_assignment`;
     let params = [];
 
-    await helper_functions.queryDB(dbQuery, params).catch(err => {
+    await helper_functions.queryDB(`DELETE FROM section_assignment`, []).catch(err => {
         response.statusCode = 500;
         response.body = JSON.stringify({err: "Failed to delete the old schedule."});
     })

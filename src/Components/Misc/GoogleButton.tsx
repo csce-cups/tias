@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { FC, ReactNode, useContext, useState } from 'react';
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import contexts from '../APIContext';
+import { useNavigate } from 'react-router-dom';
 
 const tiasClientID : string = (process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID as string)
-let clientUsername = ""
 
 interface GoogleProps {
   onClick: () => void;
@@ -29,8 +29,15 @@ const button = (renderProps: GoogleProps, text: string) => {
   )
 }
 
-export const GoogleButton = () => {
+interface Props {
+  renderAs?: ReactNode;
+}
+
+export const GoogleButton: FC<Props> = ({renderAs}) => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [employees,] = useContext(contexts.employees);
+  const user = useContext(contexts.user);
+  const navigate = useNavigate();
 
   const googleResponseCallback = (response: any, setGoogleData: any) => {
     // Acquire the Google sign-in token.
@@ -48,7 +55,7 @@ export const GoogleButton = () => {
       lastName: userBasicInfo.getFamilyName(),
       email: userBasicInfo.getEmail(),
       profilePhoto: userBasicInfo.getImageUrl(),
-      isPeerTeacher: true,
+      isPeerTeacher: false,
       isTeachingAssistant: false,
       isProfessor: false,
       isAdmin: false    
@@ -61,11 +68,19 @@ export const GoogleButton = () => {
     }).then(sessionResponse => sessionResponse.json())
       .then(responseData => {
         document.cookie = `tias_user_id=${responseData.id}`
-      });
+        setLoggedIn(true);
+        setGoogleData({...userBasicInfo, tias_user_id: responseData.id});
+        const user = employees.find(p => p.person_id === responseData.id);
 
-    clientUsername = response.Du.VX
-    setLoggedIn(true);
-    setGoogleData(userBasicInfo);
+        if (renderAs) { // Landing button
+          if (user?.administrator) {
+            navigate('/scheduling');
+          } else if (user?.peer_teacher) {
+            navigate('/profile');
+          }
+        }
+      });
+    
   };
 
   const logout = () => {
@@ -75,39 +90,42 @@ export const GoogleButton = () => {
   }
 
   return (
-    <>
-      { (loggedIn)? 
-        <GoogleLogout
-          clientId={tiasClientID}
-          buttonText={`Logged in as ${clientUsername}. Click to sign out.`}
-          onLogoutSuccess={logout}
-          onFailure={() => {}}
-          render={renderProps => (
-            <div className="vstack google">
-              {button(renderProps, `Logged in as ${clientUsername}. Click to sign out.`)}
-            </div>
-          )}
-        />
-        : 
-        < contexts.googleData.Consumer >
-          {([googleData, setGoogleData]) => (
-            <GoogleLogin
-              clientId={tiasClientID}
-              buttonText="Sign in"
-              onSuccess={(resp) => googleResponseCallback(resp, setGoogleData)}
-              onFailure={(a: any) => console.log(a)}
-              cookiePolicy={"single_host_origin"}
-              isSignedIn={true}
-              hostedDomain="tamu.edu"
-              render={renderProps => (
+    < contexts.googleData.Consumer >
+      {([googleData, setGoogleData]) => (
+        (loggedIn || (googleData.tias_user_id !== undefined && googleData.tias_user_id !== -1))? 
+          <GoogleLogout
+            clientId={tiasClientID}
+            buttonText={`Logged in as ${user.user?.first_name}. Click to sign out.`}
+            onLogoutSuccess={logout}
+            onFailure={() => {}}
+            render={renderProps => (
+              renderAs !== undefined ?
+                <button style={{background: 'transparent', border: 0}} onClick={renderProps.onClick} disabled={renderProps.disabled}>{renderAs}</button>
+                :
+                <div className="vstack google">
+                  {button(renderProps, `Logged in as ${user.user?.first_name}. Click to sign out.`)}
+                </div>
+            )}
+          />
+          : 
+          <GoogleLogin
+            clientId={tiasClientID}
+            buttonText="Sign in"
+            onSuccess={(resp) => googleResponseCallback(resp, setGoogleData)}
+            onFailure={(a: any) => console.log(a)}
+            cookiePolicy={"single_host_origin"}
+            isSignedIn={true}
+            hostedDomain="tamu.edu"
+            render={renderProps => (
+              renderAs !== undefined ?
+                <button style={{background: 'transparent', border: 0}} onClick={renderProps.onClick} disabled={renderProps.disabled}>{renderAs}</button>
+                :
                 <div className="vstack google">
                   {button(renderProps, 'Sign in with Google')}
                 </div>
-              )}
-            />
-          )}
-        </contexts.googleData.Consumer>
-      }
-    </>
+            )}
+          />
+      )}
+    </contexts.googleData.Consumer>
   )
 }

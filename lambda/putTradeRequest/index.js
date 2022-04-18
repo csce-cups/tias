@@ -1,7 +1,6 @@
 const helper_functions = require("./helper_functions");
 
 const UpdateTradeRequest = async (sender, senderCourse, receiver, receiverCourse, status) => {
-    console.log(`UpdateTradeRequest: ${sender}, ${senderCourse}, ${receiver}, ${receiverCourse}, ${status}`);
     let dbQuery = `UPDATE trade_request 
                    SET request_status = $1
                    WHERE person_id_sender = $2 AND section_id_sender = $3

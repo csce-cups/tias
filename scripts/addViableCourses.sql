@@ -15,21 +15,22 @@ SELECT DISTINCT
 	(section_meeting.end_time - section_meeting.start_time) AS duration
 FROM person_unavailability
 JOIN section_meeting ON
-	(
+    section_meeting.meeting_type = 'Laboratory'
+	AND (
 		SELECT COUNT(*) FROM person_unavailability AS pb WHERE
-		pb.weekday = section_meeting.weekday
-		AND pb.start_time < section_meeting.start_time
-		AND pb.end_time > section_meeting.end_time
+		pb.person_id = "P_person_id"
+		AND pb.weekday = section_meeting.weekday
+		AND NOT (pb.end_time < section_meeting.start_time
+		OR pb.start_time > section_meeting.end_time)
 	) = 0
-	AND section_meeting.meeting_type = 'Laboratory'
 JOIN course_section ON
 	course_section.section_id = section_meeting.section_id
 JOIN qualification ON
 	qualified = 'true' AND
 	qualification.person_id = "P_person_id" AND
-	qualification.course_id IN (SELECT course_section.course_id FROM course_section WHERE course_section.section_id = section_meeting.section_id)
+	qualification.course_id = course_section.course_id
 JOIN course ON
-	course.course_id = course_section.course_id
+	course.course_id = qualification.course_id
 LEFT OUTER JOIN section_assignment_preference ON
 	section_assignment_preference.person_id = "P_person_id" AND
 	section_assignment_preference.section_id = section_meeting.section_id

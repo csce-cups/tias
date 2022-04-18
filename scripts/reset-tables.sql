@@ -4,7 +4,7 @@ CREATE TYPE preference AS ENUM
 
 DROP TYPE IF EXISTS request_status CASCADE;
 CREATE TYPE request_status AS ENUM
-    ('Pending', 'Accepted', 'Rejected');
+    ('Pending', 'Accepted', 'Rejected', 'Cancelled');
 
 DROP TYPE IF EXISTS weekday CASCADE;
 CREATE TYPE weekday AS ENUM
@@ -22,12 +22,17 @@ CREATE TABLE person (
 	first_name VARCHAR NOT NULL,
 	last_name VARCHAR NOT NULL,
 	profile_photo_url VARCHAR NOT NULL,
-	desired_number_assignments INTEGER NOT NULL DEFAULT 2,
-	peer_teacher BOOLEAN DEFAULT 'true',
+	desired_number_assignments REAL NOT NULL DEFAULT 6,
+	peer_teacher BOOLEAN,
 	teaching_assistant BOOLEAN,
 	administrator BOOLEAN,
 	professor BOOLEAN
 );
+ALTER TABLE IF EXISTS public.person
+    ADD CONSTRAINT email_unique_constraint UNIQUE (email);
+
+ALTER TABLE IF EXISTS public.person
+    ADD CONSTRAINT google_token_sub_unique_constraint UNIQUE (google_token_sub);
 
 DROP TABLE IF EXISTS person_unavailability CASCADE;
 CREATE TABLE person_unavailability (
