@@ -1077,7 +1077,8 @@ img.back-arrow {
 	}
 
 	.block {
-		transition: all .2s cubic-bezier(0.79, 1.38, 0.77, 1.39);
+		transition: all .2s cubic-bezier(0.79, 1.38, 0.77, 1.39), box-shadow .2s ease-in-out 1s;
+		box-shadow: 0 0 0 0;
 	}
 	
 	.block:not(.undetailed, .detailed, .interacted) {

@@ -12,13 +12,16 @@ interface Props extends RenderBlockProps {
   }
 }
 
-export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data}) => {
-  const [interacted, setInteracted] = useState<boolean>(false);
+export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, data}) => {
+  const {course_instance, linkIDs: linkIDs_super} = data;
+  const [linkIDs, setLinkIDs] = useState<number[] | null>(linkIDs_super);
+  const [interacted, setInteracted] = useState(course_instance.opened || false);
   const [,, viableEmployeesC] = useContext(contexts.allViableCourses);
   const [employees,] = useContext(contexts.employees);
   const [viableEmployees, setViableEmployees] = useState<{id: number, pref: APIUserPreferenceEnum}[]>([]);
   const [disabled, setDisabled] = useState(true);
-  const [toUpdate, setToUpdate] = useState(false);
+  const [toUpdate, setToUpdate] = useState(course_instance.updated || false);
+  const blockUpdate = useContext(contexts.blockUpdate);
   const bid = `edit-schedule-btn-${uuid()}`;
   const sid = `drowdown-${uuid()}`;
 
@@ -32,8 +35,6 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
     return `${hour12}:${minutes} ${ampm}`;
   }
 
-  const {course_instance, linkIDs: linkIDs_super} = data;
-  const [linkIDs, setLinkIDs] = useState<number[] | null>(linkIDs_super);
 
   let flex = calcFlex(visible, inline, size);
 
@@ -130,6 +131,9 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
       if (ref.current && !ref.current.contains(event.target) && interacted) {
         setInteracted(false);
         setDisabled(true);
+        blockUpdate("block", course_instance, {
+          opened: false
+        });
       }
     };
 
@@ -172,26 +176,38 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
       options!.editing!.count[1](options!.editing!.count[0] + 1);
     }
 
+    let newLinkIDs = linkIDs;
     if (type === "add") {
-      setLinkIDs(linkIDs?.concat(+val) ?? [+val]);
+      newLinkIDs = linkIDs?.concat(+val) ?? [+val];
       t.innerHTML = `Remove from ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
       t.setAttribute('action-type', 'remove');
     } else if (type === "remove") {
-      setLinkIDs(linkIDs?.filter(id => id !== +val) ?? []);
+      newLinkIDs = linkIDs?.filter(id => id !== +val) ?? [];
       t.innerHTML = `Add to ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
       t.setAttribute('action-type', 'add');
     } else if (type === "reset") {
       setDisabled(true);
-      setLinkIDs(linkIDs_super);
+      newLinkIDs = course_instance.ronly_scheduled || null;
       
       const btn = document.getElementById(bid)!;
       btn.innerHTML = "Select a peer teacher";
       btn.setAttribute('action-type', 'disabled');
       selectElement.value = "none";
-
+      
       if (toUpdate) options!.editing!.count[1](options!.editing!.count[0] - 1);
       setToUpdate(false);
     }
+
+    blockUpdate("section", course_instance, {
+      scheduled: newLinkIDs,
+      updated: (type !== "reset"),
+    });
+
+    blockUpdate("block", course_instance, {
+      opened: interacted
+    });
+
+    setLinkIDs(newLinkIDs);
   }
 
   return (
@@ -232,4 +248,4 @@ export const SchedulingBlock: FC<Props> = ({visible, size, inline, options, data
       </div>
     </div>
   )
-}
+})

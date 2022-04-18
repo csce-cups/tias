@@ -30,6 +30,8 @@ export const contexts = {
     0 as any,
   ]),
 
+  blockUpdate: createContext<(action: BlockAction, block: CourseBlock, splice: Object) => void>(0 as any),
+
   loadedSchedule: createContext<[Map<string, number[]>, React.Dispatch<React.SetStateAction<Map<string, number[]>>>]>([
     new Map<string, number[]>(),
     0 as any
@@ -74,7 +76,7 @@ export const contexts = {
 };
 
 
-
+export type BlockAction = "block" | "section";
 export const APIContext: FC<Props> = ({ children, args, test }) => {
   const googleDataState = useState({} as any);
   const employeeState = useState([] as Person[]);
@@ -85,6 +87,27 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     Thursday: null,
     Friday: null,
   } as CourseBlockWeek);
+
+  // Essentially a custom reducer for the blocks
+  const blockUpdate = (action: BlockAction, block: CourseBlock, splice: Object) => {
+    const keys: (keyof CourseBlockWeek)[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    switch (action) {
+      case "block": 
+        keys.forEach(k => blockState[0][k] = blockState[0][k]?.map(b => (b.section_id === block.section_id && b.weekday === block.weekday) ? {...b, ...splice} : b) || null);
+        break;
+      case "section":
+        keys.forEach(k => blockState[0][k] = blockState[0][k]?.map(b => (b.section_id === block.section_id) ? {...b, ...splice} : b) || null);
+        break;
+    }
+    
+    blockState[1]({
+      Monday: blockState[0].Monday,
+      Tuesday: blockState[0].Tuesday,
+      Wednesday: blockState[0].Wednesday,
+      Thursday: blockState[0].Thursday,
+      Friday: blockState[0].Friday
+    });
+  }
 
   const loadedScheduleState = useState(new Map<string, number[]>());
   const allViableCoursesState = useState(new Map<number, CourseBlockWeek>());
@@ -212,19 +235,21 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
       <contexts.employees.Provider value={employeeState}>
         <contexts.user.Provider value={user}>
           <contexts.blocks.Provider value={blockState}>
-            <contexts.loadedSchedule.Provider value={loadedScheduleState}>
-              <contexts.allViableCourses.Provider value={[...allViableCoursesState, allViableCoursesMap[0]]}>
-                <contexts.userQuals.Provider value={userQualState}>
-                  <contexts.userPrefs.Provider value={userPrefState}>
-                    <contexts.userViableCourses.Provider value={userViableCourses}>
-                      <contexts.userTrades.Provider value={userTrades}>
-                        {children}
-                      </contexts.userTrades.Provider>
-                    </contexts.userViableCourses.Provider>
-                  </contexts.userPrefs.Provider>
-                </contexts.userQuals.Provider>
-              </contexts.allViableCourses.Provider>
-            </contexts.loadedSchedule.Provider>
+            <contexts.blockUpdate.Provider value={blockUpdate}>
+              <contexts.loadedSchedule.Provider value={loadedScheduleState}>
+                <contexts.allViableCourses.Provider value={[...allViableCoursesState, allViableCoursesMap[0]]}>
+                  <contexts.userQuals.Provider value={userQualState}>
+                    <contexts.userPrefs.Provider value={userPrefState}>
+                      <contexts.userViableCourses.Provider value={userViableCourses}>
+                        <contexts.userTrades.Provider value={userTrades}>
+                          {children}
+                        </contexts.userTrades.Provider>
+                      </contexts.userViableCourses.Provider>
+                    </contexts.userPrefs.Provider>
+                  </contexts.userQuals.Provider>
+                </contexts.allViableCourses.Provider>
+              </contexts.loadedSchedule.Provider>
+            </contexts.blockUpdate.Provider>
           </contexts.blocks.Provider>
         </contexts.user.Provider>
       </contexts.employees.Provider>

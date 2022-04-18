@@ -82,8 +82,11 @@ export interface CourseBlock {
 	weekday: string
 	place: string
 	scheduled: number[] | null
+	ronly_scheduled?: number[] | null
 	professor: string
 	capacity_peer_teachers?: number
+	updated?: boolean
+	opened?: boolean
 }
 
 export interface CourseBlockWeek {

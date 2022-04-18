@@ -105,6 +105,7 @@ export const loadSchedule = (params: loadScheduleParams): Promise<void> => {
           ? resp.get(`${block.section_id}`)!
           : [];
         allBlocks[oidx][iidx].scheduled = pids;
+        allBlocks[oidx][iidx].ronly_scheduled = pids;
         pids.forEach((id) => scheduled.add(id));
       });
     });
