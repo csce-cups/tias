@@ -22,17 +22,19 @@ exports.handler = async (event) => {
     let dbQuery = `TRUNCATE section_assignment`;
     let params = [];
 
-    await helper_functions.queryDB(`DELETE FROM section_assignment`, []).catch(err => {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "Failed to delete the old schedule."});
-    })
+    await helper_functions.queryDB(dbQuery, params).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to delete the old schedule."))
+
+    if (response.statusCode === 500) {
+        return response;
+    }
                 
     dbQuery = `TRUNCATE trade_request`;
 
-    await helper_functions.queryDB(dbQuery, params).catch(err => {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "Failed to delete the trade requests."});
-    })
+    await helper_functions.queryDB(dbQuery, params).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to delete the trade requests."));
+
+    if (response.statusCode === 500) {
+        return response;
+    }
     
     dbQuery = `INSERT INTO section_assignment
                 VALUES`;
@@ -50,12 +52,11 @@ exports.handler = async (event) => {
 
     dbQuery += dbParams.join(', ');
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params).catch(err => {
-        response.statusCode = 500;
-        response.body = JSON.stringify({err: "Failed to save the new schedule."});
-    });
-    
-    console.log(dbRows);
+    await helper_functions.queryDB(dbQuery, params).catch(err => helper_functions.GenerateErrorResponseAndLog(err, response, "Failed to save the new schedule."))
+
+    if (response.statusCode === 500) {
+        return response;
+    }
 
     return response;
 };
