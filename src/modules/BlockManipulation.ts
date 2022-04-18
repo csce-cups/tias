@@ -157,3 +157,12 @@ export const updateWithSchedule = (
     Friday: allBlocks[4],
   });
 }
+
+export const inferSchedule = (blocks: CourseBlockWeek) => {
+  const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const schedule = new Map<string, number[]>();
+  keys.forEach(k => blocks[k]?.forEach(b => {
+    schedule.set(`${b.section_id}`, b.scheduled || []);
+  }));
+  return schedule;
+}

@@ -1,5 +1,6 @@
-import React, { FC, useContext } from 'react'
+import React, { FC, useContext, useState } from 'react'
 import API, { CourseBlock, CourseBlockWeek } from '../../modules/API';
+import { inferSchedule } from '../../modules/BlockManipulation';
 import contexts from '../APIContext';
 
 interface Props {
@@ -14,6 +15,8 @@ export const EditButton: FC<Props> = ({editingState}) => {
   const [editingCount, setEditingCount] = editingState.count;
   const [allViable, setAllViable, ] = useContext(contexts.allViableCourses);
   const [blocks, setBlocks] = useContext(contexts.blocks);
+  const [schedule, setSchedule] = useContext(contexts.loadedSchedule);
+  const [displayCancelButton, setDisplayCancelButton] = useState(true);
 
   const fetchValidEmployees = () => {
     if (allViable.size === 0) {
@@ -23,31 +26,39 @@ export const EditButton: FC<Props> = ({editingState}) => {
     } else return new Promise<void>(r => r());
   }
 
-  const toggleEdit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const startOrSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const t = e.currentTarget
-    t.innerHTML = !editing ? 'Loading...' : 'Edit Schedule';
+    t.innerHTML = !editing ? 'Loading...' : 'Saving...';
     if (!editing) {
       fetchValidEmployees().then(() => {
         setEditing(true);
         console.log(editingCount)
         t.innerHTML = 'Stop Editing';
       })
+      setEditingCount(0);
     } else {
-      setEditing(false);
-      const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-      keys.forEach(k => blocks[k] = blocks[k]?.map(b => ({
-        ...b,
-        scheduled: b.ronly_scheduled || null,
-        opened: false,
-        updated: false
-      })) || null);
-      setBlocks(blocks);
+      const newSchedule = inferSchedule(blocks);
+      setDisplayCancelButton(false);
+      API.sendSavedSchedule(newSchedule).then(() => {
+        const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        t.innerHTML = 'Saved!';
+        keys.forEach(k => blocks[k] = blocks[k]?.map(b => ({
+          ...b,
+          ronly_scheduled: b.scheduled || null,
+          opened: false,
+          updated: false
+        })) || null);
+        
+        setEditingCount(0);
+        setEditing(false);
+        setBlocks(blocks);
+        setSchedule(newSchedule);
+        setDisplayCancelButton(true);
+      });
     };
-    
-    setEditingCount(0);
   }
 
-  const cancelEdit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const cancelEdit = () => {
     setEditing(false);
     const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     keys.forEach(k => blocks[k] = blocks[k]?.map(b => ({
@@ -63,7 +74,7 @@ export const EditButton: FC<Props> = ({editingState}) => {
 
   return (
     <div style={{display: 'flex'}}>
-      <button name="edit-submit" className={`purple button fill ${editing? 'edit-select' : ''}`} onClick={toggleEdit}>
+      <button name="edit-submit" className={`purple button fill ${(editing && displayCancelButton)? 'edit-select' : ''}`} onClick={startOrSave}>
         { (editing && editingCount === 0)?
           'Stop Editing'
           : (editing)?
@@ -72,7 +83,7 @@ export const EditButton: FC<Props> = ({editingState}) => {
           'Edit Schedule'
         }
       </button>
-      { (editing && editingCount > 0)?
+      { (editing && editingCount > 0 && displayCancelButton)?
         <button name="cancel-edit-submit" className="red button" onClick={cancelEdit}>Cancel</button>
         : <></>
       }
