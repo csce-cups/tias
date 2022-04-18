@@ -47,15 +47,35 @@ export const EditButton: FC<Props> = ({editingState}) => {
     setEditingCount(0);
   }
 
+  const cancelEdit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setEditing(false);
+    const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    keys.forEach(k => blocks[k] = blocks[k]?.map(b => ({
+      ...b,
+      scheduled: b.ronly_scheduled || null,
+      opened: false,
+      updated: false
+    })) || null);
+    setBlocks(blocks);
+    
+    setEditingCount(0);
+  }
+
   return (
-    <button className={`purple button ${editing? 'edit-select' : ''}`} onClick={toggleEdit}>
-      { (editing && editingCount === 0)?
-        'Stop Editing'
-        : (editing)?
-        `Save ${editingCount} change${(editingCount > 1)? ' s' : ''}`
-        :
-        'Edit Schedule'
+    <div style={{display: 'flex'}}>
+      <button name="edit-submit" className={`purple button fill ${editing? 'edit-select' : ''}`} onClick={toggleEdit}>
+        { (editing && editingCount === 0)?
+          'Stop Editing'
+          : (editing)?
+          `Save ${editingCount} change${(editingCount > 1)? 's' : ''}`
+          :
+          'Edit Schedule'
+        }
+      </button>
+      { (editing && editingCount > 0)?
+        <button name="cancel-edit-submit" className="red button" onClick={cancelEdit}>Cancel</button>
+        : <></>
       }
-    </button>
+    </div>
   )
 }
