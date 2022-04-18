@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.Time;
+import java.lang.Math;
 
 import org.postgresql.util.PGInterval;
 
@@ -41,8 +42,12 @@ public class Meeting {
         return meetingType;
     }
 
+    private static float roundHours(float hours, float interval_hours) {
+        return interval_hours * (float)Math.ceil(hours / interval_hours);
+    }
+
     public float getHours() {
-        return duration.getHours() + duration.getMinutes() / 60f;
+        return roundHours(duration.getHours() + duration.getMinutes() / 60f, 0.25f);
     }
 
     @Override
