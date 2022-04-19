@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import API, { APIUserPreferenceEnum, CourseBlock, Person } from '../../modules/API';
 import uuid from '../../uuid';
-import contexts from '../APIContext';
+import contexts, { PersonPrefLink } from '../APIContext';
 import { Hat } from '../Misc/Hat';
 import RenderBlockProps, { blockColors, calcFlex, statusColors } from './BlockBase';
 
@@ -18,7 +18,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
   const [interacted, setInteracted] = useState(course_instance.opened || false);
   const [,, viableEmployeesC] = useContext(contexts.allViableCourses);
   const [employees,] = useContext(contexts.employees);
-  const [viableEmployees, setViableEmployees] = useState<{id: number, pref: APIUserPreferenceEnum}[]>([]);
+  const [viableEmployees, setViableEmployees] = useState<PersonPrefLink[]>([]);
   const [disabled, setDisabled] = useState(true);
   const [toUpdate, setToUpdate] = useState(course_instance.updated || false);
   const blockUpdate = useContext(contexts.blockUpdate);
@@ -75,8 +75,8 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
   const createList = () => {
     let elements: JSX.Element[] = [];
     let es: {employee: Person, pref: APIUserPreferenceEnum}[] = [];
-    viableEmployees.forEach(({id, pref}) => {
-      const employee = employees.find(e => e.person_id === id)!;
+    viableEmployees.forEach(({person_id, pref}) => {
+      const employee = employees.find(e => e.person_id === person_id)!;
       if (pref === "Can't Do") return;
       es.push({employee, pref});
     });

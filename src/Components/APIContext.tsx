@@ -18,6 +18,11 @@ interface UserPerson {
   doShowAdmin: boolean | null
 }
 
+export interface PersonPrefLink {
+  person_id: number
+  pref: APIUserPreferenceEnum
+}
+
 export const contexts = {
   googleData: createContext({} as any),
 
@@ -39,11 +44,11 @@ export const contexts = {
 
   allViableCourses: createContext<[
     Map<number, CourseBlockWeek>, React.Dispatch<React.SetStateAction<Map<number, CourseBlockWeek>>>,
-    Map<number, {id: number, pref: APIUserPreferenceEnum}[]>
+    Map<number, PersonPrefLink[]>
   ]>([
     new Map<number, CourseBlockWeek>(),
     0 as any,
-    new Map<number, {id: number, pref: APIUserPreferenceEnum}[]>()
+    new Map<number, PersonPrefLink[]>()
   ]),
 
   user: createContext<UserPerson>({
@@ -111,7 +116,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
 
   const loadedScheduleState = useState(new Map<string, number[]>());
   const allViableCoursesState = useState(new Map<number, CourseBlockWeek>());
-  const allViableCoursesMap = useState(new Map<number, {id: number, pref: APIUserPreferenceEnum}[]>());
+  const allViableCoursesMap = useState(new Map<number, PersonPrefLink[]>());
 
   const [user, setUser] = useState<UserPerson>({
     user: null,
@@ -212,16 +217,18 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
   useEffect(() => {
-    let newMap = new Map<number, {id: number, pref: APIUserPreferenceEnum}[]>();
+    let newMap = new Map<number, PersonPrefLink[]>();
     const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     allViableCoursesState[0].forEach((week, id) => {
       keys.forEach(k => {
         week[k]?.forEach(course => {
           if (newMap.has(course.section_id)) {
             const get = newMap.get(course.section_id);
-            if (!get?.find(e => e.id === id)) newMap.get(course.section_id)!.push({id, pref: (course as any).preference});
+            if (!get?.find(e => e.person_id === id)) newMap.get(course.section_id)!.push({
+              person_id: id, pref: (course as any).preference
+            });
           } else {
-            newMap.set(course.section_id, [{id, pref: (course as any).pref}]);
+            newMap.set(course.section_id, [{person_id: id, pref: (course as any).pref}]);
           }
         })
       });

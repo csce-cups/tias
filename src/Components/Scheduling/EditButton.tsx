@@ -28,8 +28,8 @@ export const EditButton: FC<Props> = ({editingState}) => {
 
   const startOrSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const t = e.currentTarget
-    t.innerHTML = !editing ? 'Loading...' : 'Saving...';
     if (!editing) {
+      t.innerHTML = 'Loading...';
       fetchValidEmployees().then(() => {
         setEditing(true);
         console.log(editingCount)
@@ -39,22 +39,30 @@ export const EditButton: FC<Props> = ({editingState}) => {
     } else {
       const newSchedule = inferSchedule(blocks);
       setDisplayCancelButton(false);
-      API.sendSavedSchedule(newSchedule).then(() => {
-        const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-        t.innerHTML = 'Saved!';
-        keys.forEach(k => blocks[k] = blocks[k]?.map(b => ({
-          ...b,
-          ronly_scheduled: b.scheduled || null,
-          opened: false,
-          updated: false
-        })) || null);
-        
+      if (editingCount > 0) {
+        t.innerHTML = 'Saving...';
+        API.sendSavedSchedule(newSchedule).then(() => {
+          const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+          t.innerHTML = 'Saved!';
+          keys.forEach(k => blocks[k] = blocks[k]?.map(b => ({
+            ...b,
+            ronly_scheduled: b.scheduled || null,
+            opened: false,
+            updated: false
+          })) || null);
+          
+          setEditingCount(0);
+          setEditing(false);
+          setBlocks(blocks);
+          setSchedule(newSchedule);
+          setDisplayCancelButton(true);
+        });
+      } else {
+        t.innerHTML = 'Edit Schedule';
         setEditingCount(0);
         setEditing(false);
-        setBlocks(blocks);
-        setSchedule(newSchedule);
         setDisplayCancelButton(true);
-      });
+      }
     };
   }
 
