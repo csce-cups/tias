@@ -89,14 +89,10 @@ export interface CourseBlock {
 	opened?: boolean
 }
 
-export interface CourseBlockWeek {
-	Monday: CourseBlock[] | null
-	Tuesday: CourseBlock[] | null
-	Wednesday: CourseBlock[] | null
-	Thursday: CourseBlock[] | null
-	Friday: CourseBlock[] | null
+export type CourseBlockWeekKey = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday"
+export type CourseBlockWeek = {
+	[key in CourseBlockWeekKey]: CourseBlock[] | null
 }
-export type CourseBlockWeekKey = keyof CourseBlockWeek & string;
 
 export interface Person_INIT {
 	email: string
