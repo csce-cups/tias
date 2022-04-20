@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import API, { CourseBlockWeek } from '../../modules/API'
-import { compressWeek } from '../../modules/BlockManipulation'
+import { compressWeek } from '../../modules/BlockFunctions'
 import uuid from '../../uuid'
 import contexts from '../APIContext'
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow'

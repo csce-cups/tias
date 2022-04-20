@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { APIUserPreferenceEnum } from '../../modules/API';
-import { CompressedCourseBlock } from '../../modules/BlockManipulation';
+import { CompressedCourseBlock } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';
 import RenderBlockProps, { blockColors, calcFlex, statusColors } from '../Scheduling/BlockBase';
 

@@ -87,6 +87,7 @@ export interface CourseBlock {
 	capacity_peer_teachers?: number
 	updated?: boolean
 	opened?: boolean
+	forbidden?: number[]
 }
 
 export type CourseBlockWeekKey = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday"

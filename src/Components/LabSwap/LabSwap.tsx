@@ -5,7 +5,7 @@ import API, {
   parseCookie,
   TradeRequest,
 } from "../../modules/API";
-import { compressWeek, loadSchedule, updateWithSchedule } from "../../modules/BlockManipulation";
+import { compressWeek, loadSchedule, updateWithSchedule } from "../../modules/BlockFunctions";
 import contexts from "../APIContext";
 import { Scrollable } from "../Misc/Scrollable";
 import { SchedulingWindow } from "../Scheduling/SchedulingWindow";

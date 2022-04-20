@@ -1,6 +1,6 @@
 import React, { FC, useContext, useState } from 'react'
 import API, { CourseBlock, CourseBlockWeek } from '../../modules/API';
-import { inferSchedule } from '../../modules/BlockManipulation';
+import { inferSchedule } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';
 
 interface Props {
@@ -32,7 +32,6 @@ export const EditButton: FC<Props> = ({editingState}) => {
       t.innerHTML = 'Loading...';
       fetchValidEmployees().then(() => {
         setEditing(true);
-        console.log(editingCount)
         t.innerHTML = 'Stop Editing';
       })
       setEditingCount(0);
@@ -67,6 +66,8 @@ export const EditButton: FC<Props> = ({editingState}) => {
   }
 
   const cancelEdit = () => {
+    if (!window.confirm(`This will discard ${editingCount} change${(editingCount > 1)? 's' : ''}. Are you sure?`)) return;
+
     setEditing(false);
     const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     keys.forEach(k => blocks[k] = blocks[k]?.map(b => ({

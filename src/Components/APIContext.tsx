@@ -1,5 +1,5 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import { loadSchedule, updateWithSchedule } from "../modules/BlockManipulation";
+import { loadSchedule, updateWithSchedule } from "../modules/BlockFunctions";
 import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest, CourseBlock} from "../modules/API";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
@@ -35,7 +35,7 @@ export const contexts = {
     0 as any,
   ]),
 
-  blockUpdate: createContext<(action: BlockAction, block: CourseBlock, splice: Object) => void>(0 as any),
+  blockUpdate: createContext<(actions: BlockUpdateAction[]) => void>(0 as any),
 
   loadedSchedule: createContext<[Map<string, number[]>, React.Dispatch<React.SetStateAction<Map<string, number[]>>>]>([
     new Map<string, number[]>(),
@@ -82,6 +82,11 @@ export const contexts = {
 
 
 export type BlockAction = "block" | "section";
+export interface BlockUpdateAction {
+  action: BlockAction;
+  block: CourseBlock;
+  splice: Object;
+}
 export const APIContext: FC<Props> = ({ children, args, test }) => {
   const googleDataState = useState({} as any);
   const employeeState = useState([] as Person[]);
@@ -94,16 +99,18 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   } as CourseBlockWeek);
 
   // Essentially a custom reducer for the blocks
-  const blockUpdate = (action: BlockAction, block: CourseBlock, splice: Object) => {
+  const blockUpdate = (actions: BlockUpdateAction[]) => {
     const keys: (keyof CourseBlockWeek)[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-    switch (action) {
-      case "block": 
-        keys.forEach(k => blockState[0][k] = blockState[0][k]?.map(b => (b.section_id === block.section_id && b.weekday === block.weekday) ? {...b, ...splice} : b) || null);
-        break;
-      case "section":
-        keys.forEach(k => blockState[0][k] = blockState[0][k]?.map(b => (b.section_id === block.section_id) ? {...b, ...splice} : b) || null);
-        break;
-    }
+    actions.forEach(({action, block, splice}) => {
+      switch (action) {
+        case "block": 
+          keys.forEach(k => blockState[0][k] = blockState[0][k]?.map(b => (b.section_id === block.section_id && b.weekday === block.weekday) ? {...b, ...splice} : b) || null);
+          break;
+        case "section":
+          keys.forEach(k => blockState[0][k] = blockState[0][k]?.map(b => (b.section_id === block.section_id) ? {...b, ...splice} : b) || null);
+          break;
+      }
+    })
     
     blockState[1]({
       Monday: blockState[0].Monday,

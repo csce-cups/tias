@@ -1232,6 +1232,16 @@ button.prefer:not([disabled]):hover {
 	background-color: #75FF70;
 }
 
+button.submit-button[action-type="error"] {
+	background-color: #ff0000;
+	opacity: 0.8;
+}
+
+button.submit-button[action-type="error"]:hover {
+	background-color: #ff0000;
+	opacity: 0.8;
+}
+
 .Profile {
 	flex: 1 1 auto;
 

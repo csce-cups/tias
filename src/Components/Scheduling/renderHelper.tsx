@@ -92,7 +92,7 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
       inline = false;
     } else { // Not, staggered but different line
       if (!inline) { // Commit the staggered bits and flush the buffer
-        returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end, numHours, startTime, options));
+        returns.push(...placeStaggeredBlocks(line, data, filter, renderBlockType, edge, start, end, numHours, startTime, options));
         line = [];
         inline = true;
       } else {
@@ -106,10 +106,10 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
     line.push(block);
   });
 
-  if (!inline) returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end, numHours, startTime, options));
+  if (!inline) returns.push(...placeStaggeredBlocks(line, data, filter, renderBlockType, edge, start, end, numHours, startTime, options));
   else if (line.length > 0) layered.push(line);
 
-  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter, renderBlockType, edge, start, end, numHours, startTime, options));
+  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, data, filter, renderBlockType, edge, start, end, numHours, startTime, options));
 
   return returns;
 }
@@ -117,6 +117,7 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
 // Requires input to be pre-layered
 const placeInlineBlocks = (
   layered_data: CourseBlock[][], 
+  allblocks: CourseBlock[], 
   filter: Map<number, boolean>, 
   renderBlockType: React.FC<RenderBlockProps>, 
   edge: "left" | "right" | "center", 
@@ -148,7 +149,8 @@ const placeInlineBlocks = (
             edge,
             bottom: isBottom(block.start_time),
             key: `deep-unravel-block-${JSON.stringify(block)}`,
-            options
+            options,
+            blocks: allblocks
           })
         ))}
       </div>
@@ -158,6 +160,7 @@ const placeInlineBlocks = (
 
 const placeStaggeredBlocks = (
   blocks: CourseBlock[], 
+  allblocks: CourseBlock[], 
   filter: Map<number, boolean>,
   renderBlockType: React.FC<RenderBlockProps>,
   edge: "left" | "right" | "center",
@@ -289,7 +292,8 @@ const placeStaggeredBlocks = (
             edge,
             bottom: isBottom(block.start_time),
             key: `block-${JSON.stringify(block)}`,
-            options
+            options,
+            blocks: allblocks
           })}
           { rightSpacers.render }
         </div>
