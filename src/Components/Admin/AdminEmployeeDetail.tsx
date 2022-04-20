@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect, useState } from 'react'
 import API, { APIUserQualification, CourseBlockWeek, Person } from '../../modules/API';
-import { compressWeek } from '../../modules/BlockManipulation';
+import { compressWeek } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow';
 import back_arrow from '../../assets/back_arrow_icon.svg';

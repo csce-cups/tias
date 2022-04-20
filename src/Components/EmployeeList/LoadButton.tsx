@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { loadSchedule } from '../../modules/BlockManipulation';
+import { loadSchedule } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';
 
 export const LoadButton = () => {

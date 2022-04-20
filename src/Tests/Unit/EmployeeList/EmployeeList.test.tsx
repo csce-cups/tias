@@ -14,7 +14,7 @@ jest.mock('../../../Components/EmployeeList/EmployeeRow', () => {
 describe('EmployeeList', () => {
     const folks = ["Abby Apple", "Bob Banana", "Charles Cherry"];
     const renderSubject = () => {
-        render(< EmployeeList />)
+        render(< EmployeeList editingState={{bool: [false, 0 as any], count: [0, 0 as any]}}/>)
     }
 
     it('has a generate button', () => {

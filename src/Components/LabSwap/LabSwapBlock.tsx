@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react'
-import { CompressedCourseBlock } from '../../modules/BlockManipulation';
+import { CompressedCourseBlock } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';
 import RenderBlockProps, { calcFlex, blockColors } from '../Scheduling/BlockBase';
 import "../common.scss";

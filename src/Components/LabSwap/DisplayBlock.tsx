@@ -44,7 +44,7 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
     };
   });
 
-  let flex = calcFlex(visible, inline, size);
+  let flex = calcFlex(visible, inline, undefined);
 
   const isVisible = {
     width: (visible)? undefined : 0,
@@ -74,7 +74,7 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
   return (
     <div ref={ref} className={classes} onClick={() => setInteracted(true)}
       title={`${course_instance.course_number}-${course_instance.section_number}`} 
-      style={{...color, ...isVisible}}
+      style={{...color, ...isVisible, height: interacted? size : undefined}}
     >
       { interacted? 
         <div className="pref-pane">

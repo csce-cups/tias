@@ -97,14 +97,18 @@ export const loadSchedule = (params: loadScheduleParams): Promise<void> => {
       blocks.Wednesday,
       blocks.Thursday,
       blocks.Friday,
-    ] as any; // For easier iteration
+    ] as (CourseBlock[] | null)[]; // For easier iteration
     
-    allBlocks.forEach((day: any, oidx: number) => {
-      day?.forEach((block: any, iidx: number) => {
+    allBlocks.forEach((day: CourseBlock[] | null, oidx: number) => {
+      day?.forEach((block: CourseBlock, iidx: number) => {
         const pids = resp.has(`${block.section_id}`)
           ? resp.get(`${block.section_id}`)!
           : [];
-        allBlocks[oidx][iidx].scheduled = pids;
+        allBlocks[oidx]![iidx].scheduled = pids;
+        allBlocks[oidx]![iidx].ronly_scheduled = pids;
+        findCollisionIndices(allBlocks[oidx]!, allBlocks[oidx]![iidx]).forEach(i => {
+          allBlocks[oidx]![i].forbidden = Array.from(new Set([...(allBlocks[oidx]![i]?.forbidden || []), ...pids]));
+        })
         pids.forEach((id) => scheduled.add(id));
       });
     });
@@ -155,4 +159,41 @@ export const updateWithSchedule = (
     Thursday: allBlocks[3],
     Friday: allBlocks[4],
   });
+}
+
+export const inferSchedule = (blocks: CourseBlockWeek) => {
+  const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const schedule = new Map<string, number[]>();
+  keys.forEach(k => blocks[k]?.forEach(b => {
+    schedule.set(`${b.section_id}`, b.scheduled || []);
+  }));
+  return schedule;
+}
+
+export const findCollisions = (blocks: CourseBlock[] | null, target: CourseBlock) => {
+  if (!blocks) return [];
+  const cis = findCollisionIndices(blocks, target);
+
+  return cis.map(i => blocks[i]);
+}
+
+const findCollisionIndices = (blocks: CourseBlock[], target: CourseBlock) => {
+  let collisions: number[] = [];
+  const ti = blocks.findIndex(b => b.section_id === target.section_id);
+
+  const startsDuring = (i: number) => blocks[i].start_time >= target.start_time && blocks[i].start_time < target.end_time;
+  const endsDuring = (i: number) => blocks[i].end_time <= target.end_time && blocks[i].end_time > target.start_time;
+  const isDuring = (i: number) => blocks[i].start_time < target.start_time && blocks[i].end_time > target.end_time;
+  for (let i = ti - 1; i >= 0; i--) {
+    if (endsDuring(i) || startsDuring(i) || isDuring(i)) {
+      collisions.push(i);
+    } else break;
+  }
+  for (let i = ti + 1; i < blocks.length; i++) {
+    if (endsDuring(i) || startsDuring(i) || isDuring(i)) {
+      collisions.push(i);
+    } else break;
+  }
+
+  return collisions; 
 }
