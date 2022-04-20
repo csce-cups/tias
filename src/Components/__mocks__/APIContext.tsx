@@ -15,7 +15,9 @@ interface UserPerson {
 }
 
 export const contexts = {
-  googleData: createContext({} as any),
+  googleData: createContext<[any, React.Dispatch<React.SetStateAction<any>>]>([
+    {}, 0 as any
+  ]),
 
   employees: createContext<[Person[], React.Dispatch<React.SetStateAction<Person[]>>]>(
     [[] as Person[], () => {}]
