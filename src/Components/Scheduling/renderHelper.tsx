@@ -1,6 +1,7 @@
 import React from "react";
 import { CourseBlock } from "../../modules/API";
 import RenderBlockProps from "./BlockBase";
+import { OptionsProps } from "./SchedulingWindow";
 import { SpacerBlock } from "./SpacerBlock";
 
 interface RenderCourseBlock extends CourseBlock {
@@ -27,7 +28,8 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
   start: Date, 
   end: Date,
   numHours: number,
-  startTime: Date
+  startTime: Date,
+  options?: OptionsProps
 ) => {
   // If no data, do nothing
   if (data === null) return (
@@ -90,7 +92,7 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
       inline = false;
     } else { // Not, staggered but different line
       if (!inline) { // Commit the staggered bits and flush the buffer
-        returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end, numHours, startTime));
+        returns.push(...placeStaggeredBlocks(line, data, filter, renderBlockType, edge, start, end, numHours, startTime, options));
         line = [];
         inline = true;
       } else {
@@ -104,10 +106,10 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
     line.push(block);
   });
 
-  if (!inline) returns.push(...placeStaggeredBlocks(line, filter, renderBlockType, edge, start, end, numHours, startTime));
+  if (!inline) returns.push(...placeStaggeredBlocks(line, data, filter, renderBlockType, edge, start, end, numHours, startTime, options));
   else if (line.length > 0) layered.push(line);
 
-  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, filter, renderBlockType, edge, start, end, numHours, startTime));
+  if (layered.length > 0) returns.push(...placeInlineBlocks(layered, data, filter, renderBlockType, edge, start, end, numHours, startTime, options));
 
   return returns;
 }
@@ -115,13 +117,15 @@ const placeBlocks = <DataCourseBlock extends CourseBlock>(
 // Requires input to be pre-layered
 const placeInlineBlocks = (
   layered_data: CourseBlock[][], 
+  allblocks: CourseBlock[], 
   filter: Map<number, boolean>, 
   renderBlockType: React.FC<RenderBlockProps>, 
   edge: "left" | "right" | "center", 
   start: Date, 
   end: Date,
   numHours: number,
-  startTime: Date
+  startTime: Date,
+  options?: OptionsProps
 ): JSX.Element[] => {
   const isBottom = (st: Date) => {
     const diffSt = st.getTime() - start.getTime();
@@ -145,6 +149,8 @@ const placeInlineBlocks = (
             edge,
             bottom: isBottom(block.start_time),
             key: `deep-unravel-block-${JSON.stringify(block)}`,
+            options,
+            blocks: allblocks
           })
         ))}
       </div>
@@ -154,13 +160,15 @@ const placeInlineBlocks = (
 
 const placeStaggeredBlocks = (
   blocks: CourseBlock[], 
+  allblocks: CourseBlock[], 
   filter: Map<number, boolean>,
   renderBlockType: React.FC<RenderBlockProps>,
   edge: "left" | "right" | "center",
   start: Date,
   end: Date,
   numHours: number,
-  startTime: Date
+  startTime: Date,
+  options?: OptionsProps
 ) => {
   // Combines the findCollision functions to produce a range of blocks that fall between region_start and region_end
   const registerCollisions = (block: CourseBlock, idx: number): RenderCourseBlock => ({...block, ...findCollisions(block.start_time, block.end_time, idx)});
@@ -284,6 +292,8 @@ const placeStaggeredBlocks = (
             edge,
             bottom: isBottom(block.start_time),
             key: `block-${JSON.stringify(block)}`,
+            options,
+            blocks: allblocks
           })}
           { rightSpacers.render }
         </div>

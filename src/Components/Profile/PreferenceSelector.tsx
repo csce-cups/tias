@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import API, { CourseBlockWeek } from '../../modules/API'
-import { compressWeek } from '../../modules/BlockManipulation'
+import { compressWeek } from '../../modules/BlockFunctions'
 import uuid from '../../uuid'
 import contexts from '../APIContext'
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow'
@@ -12,6 +12,7 @@ export const PreferenceSelector = () => {
   const [userQuals,] = useContext(contexts.userQuals);
   const [userPrefs,] = useContext(contexts.userPrefs);
   const user = useContext(contexts.user);
+  const [desiredAssignments, setDesiredAssignements] = useState(user.user?.desired_number_assignments);
   const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
   const [filter, setFilter] = useState(new Map<number, boolean>());
   const [employees, setEmployees] = useContext(contexts.employees);
@@ -55,19 +56,20 @@ export const PreferenceSelector = () => {
         <div className="arrow-container"/>
       </div>
       <div className={`${collapsed? "collapsed " : ""}profile-render`}>
-        <div className="hstack">
-          <div className="dropdown-label">
-            Preferred Number of Lab Sections:  
-          </div>
-          <input id={input_id} type="number" placeholder={user.user? `${user.user.desired_number_assignments}` : '2'} style={{margin: '0 5px'}}/>
-        </div>
         < contexts.blocks.Provider value={blocksPayload} >
           < SchedulingWindow renderBlockType={PreferenceBlock} options={{
             noHeader: true,
             noBorder: true,
             selectable: false,
             filter: [filter, setFilter]
-          }}/>
+          }} top={
+            <div className="hstack">
+              <div className="dropdown-label">
+                Preferred Number of Lab Sections:  
+              </div>
+              <input id={input_id} type="number" value={desiredAssignments} onChange={e => setDesiredAssignements(+e.currentTarget.value)} style={{margin: '0 5px'}}/>
+            </div> 
+          }/>
         </ contexts.blocks.Provider >
         <input id="submit-prefs" onClick={submit} type="submit" className="blue button submit" value="Save Preferences"/>
       </div>

@@ -14,9 +14,12 @@ import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.postgresql.util.PGInterval;
+
 import java.lang.StringBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,12 +29,10 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
-import db.Unavailability;
 import db.Course;
 import db.Meeting;
 import db.Person;
 import db.Preference;
-import db.Qualification;
 import db.Section;
 
 // https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html
@@ -54,7 +55,16 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
-        headers.put("Access-Control-Allow-Origin", "http://localhost:3000");
+        String origin = event.getHeaders().getOrDefault("origin", null);
+        if (origin == null) {
+            event.getHeaders().getOrDefault("Origin", null);
+        }
+        if (origin == null) {
+            event.getHeaders().getOrDefault("ORIGIN", null);
+        }
+        if (origin != null && (origin.equals("https://www.csce-scheduler.com") || origin.equals("http://localhost:3000"))) {
+            headers.put("Access-Control-Allow-Origin", origin);
+        }
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
@@ -63,9 +73,11 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
                 .name("/tias/prod/db-password")
                 .withDecryption(true)
                 .build();
-        SsmClient ssmclient = SsmClient.create();
-        GetParameterResponse parameterResult = ssmclient.getParameter(parameterRequest);
-        String dbpassword = parameterResult.parameter().value();
+        String dbpassword = null;
+        try (SsmClient ssmclient = SsmClient.create()) {
+            GetParameterResponse parameterResult = ssmclient.getParameter(parameterRequest);
+            dbpassword = parameterResult.parameter().value();
+        }
 
         HashMap<String, ArrayList<Double>> eventBody = gson.fromJson(event.getBody(), HashMap.class);
 
@@ -104,10 +116,48 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         unscheduled = new ArrayList<Integer>();
 
         getCourses();
-        getPeople(peopleIds);
         getSections();
+        for (Section section : sections.values()) {
+            section.setCourseNumber(courses.get(section.getCourseId()).getCourseNumber());
+        }
+        getPeople(peopleIds);
+        getViability(peopleIds);
 
         schedulePeopleToSections();
+    }
+
+    static String constructPersonQuery(int numPeople) {
+        StringBuilder sb = new StringBuilder().append("SELECT * FROM \"Viability\" WHERE person_id IN (");
+        for (int i = 0; i < numPeople - 1; ++i) {
+            sb.append("?, ");
+        }
+        sb.append("?)");
+        return sb.toString();
+    }
+
+    static void getViability(int[] peopleIds) throws SQLException {
+        PreparedStatement st = conn.prepareStatement(constructPersonQuery(peopleIds.length));
+
+        for (int i = 0; i < peopleIds.length; ++i) {
+            st.setInt(i + 1, peopleIds[i]);
+        }
+
+        ResultSet rs = st.executeQuery();
+
+        while (rs.next())
+        {
+            Person person = people.get(rs.getInt("person_id"));
+
+            person.addViableSection(rs.getInt("section_id"));
+
+            String preference = rs.getString("preference");
+            if (preference != null) {
+                person.addPreference(new Preference(rs.getInt("section_id"), preference, rs.getString("course_number")));
+            }
+        }
+
+        rs.close();
+        st.close();
     }
 
     static void getCourses() throws SQLException {
@@ -128,11 +178,11 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             .append(table)
             .append(' ')
             .append("WHERE person_id IN (");
-            for (int i = 0; i < numPeople - 1; ++i) {
-                sb.append("?, ");
-            }
-            sb.append("?)");
-            return sb.toString();
+        for (int i = 0; i < numPeople - 1; ++i) {
+            sb.append("?, ");
+        }
+        sb.append("?)");
+        return sb.toString();
     }
 
     static void getPeople(int[] peopleIds) throws SQLException {
@@ -146,115 +196,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
         while (rs.next())
         {
-            people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.prepareStatement(constructPersonQuery("person_unavailability", peopleIds.length));
-
-        for (int i = 0; i < peopleIds.length; ++i) {
-            st.setInt(i + 1, peopleIds[i]);
-        }
-
-        rs = st.executeQuery();
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.prepareStatement(constructPersonQuery("section_assignment_preference", peopleIds.length));
-
-        for (int i = 0; i < peopleIds.length; ++i) {
-            st.setInt(i + 1, peopleIds[i]);
-        }
-
-        rs = st.executeQuery();
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.prepareStatement(constructPersonQuery("qualification", peopleIds.length));
-
-        for (int i = 0; i < peopleIds.length; ++i) {
-            st.setInt(i + 1, peopleIds[i]);
-        }
-
-        rs = st.executeQuery();
-
-        while (rs.next())
-        {
-            boolean qualified = rs.getBoolean("qualified");
-            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), qualified));
-        }
-
-        rs.close();
-        st.close();
-    }
-
-    static String constructPersonQuery(String table) {
-        StringBuilder sb = new StringBuilder()
-            .append("SELECT *")
-            .append("FROM ")
-            .append(table);
-            return sb.toString();
-    }
-
-    static void getPeople() throws SQLException {
-        Statement st = conn.createStatement();
-
-        ResultSet rs = st.executeQuery(constructPersonQuery("person"));
-
-        while (rs.next())
-        {
-            people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getInt("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.createStatement();
-
-        rs = st.executeQuery(constructPersonQuery("person_unavailability"));
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addUnavailability(new Unavailability(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.createStatement();
-
-        rs = st.executeQuery(constructPersonQuery("section_assignment_preference"));
-
-        while (rs.next())
-        {
-            people.get(rs.getInt("person_id")).addPreference(new Preference(rs.getInt("section_id"), rs.getString("preference")));
-        }
-
-        rs.close();
-        st.close();
-
-        st = conn.createStatement();
-
-        rs = st.executeQuery(constructPersonQuery("qualification"));
-
-        while (rs.next())
-        {
-            boolean qualified = rs.getBoolean("qualified");
-            people.get(rs.getInt("person_id")).addQualification(new Qualification(rs.getInt("course_id"), qualified));
+            people.put(rs.getInt("person_id"), new Person(rs.getInt("person_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"), rs.getFloat("desired_number_assignments"), rs.getBoolean("peer_teacher"), rs.getBoolean("teaching_assistant"), rs.getBoolean("administrator"), rs.getBoolean("professor")));
         }
 
         rs.close();
@@ -274,10 +216,10 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
         st.close();
 
         st = conn.createStatement();
-        rs = st.executeQuery("SELECT * FROM section_meeting WHERE meeting_type='Laboratory'");
+        rs = st.executeQuery("SELECT *, (end_time - start_time) AS duration FROM section_meeting WHERE meeting_type='Laboratory'");
         while (rs.next())
         {
-            sections.get(rs.getInt("section_id")).addMeeting(new Meeting(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time"), rs.getString("place"), rs.getString("meeting_type")));
+            sections.get(rs.getInt("section_id")).addMeeting(new Meeting(rs.getString("weekday"), rs.getTime("start_time"), rs.getTime("end_time"), rs.getString("place"), rs.getString("meeting_type"), (PGInterval)rs.getObject("duration")));
             onlineCourses.remove(rs.getInt("section_id"));
         }
         rs.close();
@@ -289,7 +231,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
     }
 
     static void addIfPossible(Person person, Section section) {
-        if (section.getAssignedPTs() < section.getCapacityPTs()) {
+        if (section.getAssignedPTs() < section.getCapacityPTs() && person.getHoursAssigned() + section.getHours() <= person.getDesiredNumberAssignments()) {
             boolean alreadyAssigned = false;
             for (Meeting meeting : section.getMeetings()) {
                 if (person.alreadyAssigned(meeting.getWeekday(), meeting.getStartTime(), meeting.getEndTime())) {
@@ -307,7 +249,7 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
     static void addLeftovers(Person person, Queue<Section> leftovers) {
         for (Section section : leftovers) {
-            if (person.getNumberCurrentlyAssigned() >= person.getDesiredNumberAssignments()) break;
+            if (person.getHoursAssigned() >= person.getDesiredNumberAssignments()) break;
             addIfPossible(person, section);
         }
         leftovers.clear();
@@ -325,18 +267,18 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
             HashSet<Integer> possibleSections = new HashSet<>();
             possibleSections.addAll(
-                sections.keySet().stream()
-                    .filter(sectionId ->  frontPerson.isGoodSection(sectionId, sections.get(sectionId)))
+                frontPerson.getViableSections().stream()
+                    .filter(sectionId ->  frontPerson.isGoodSection(sectionId))
                     .collect(Collectors.toSet())
             );
 
-            HashSet<Integer> badSections = new HashSet<>();
+            LinkedList<Integer> badSections = new LinkedList<>();
 
             LinkedList<Section> leftovers = new LinkedList<>(); // nonempty preferred sections
 
             // Schedule what you prefer or marked indifferent
             for (Preference preference : frontPerson.getSortedPreferences()) {
-                if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
+                if (frontPerson.getHoursAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                 if (!possibleSections.contains(preference.getSectionId())) continue;
                 if (preference.isPreferable()) {
                     Section section = sections.get(preference.getSectionId());
@@ -353,10 +295,14 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
 
             addLeftovers(frontPerson, leftovers);
 
+            LinkedList<Integer> nullPreferenceSections = new LinkedList<>();
+            nullPreferenceSections.addAll(possibleSections);
+            nullPreferenceSections.sort(Collections.reverseOrder());
+
             // Schedule what you didn't mark at all -- user never sets any preferences
-            if (frontPerson.getNumberCurrentlyAssigned() < frontPerson.getDesiredNumberAssignments()) {
-                for (int sectionId : possibleSections) {
-                    if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
+            if (frontPerson.getHoursAssigned() < frontPerson.getDesiredNumberAssignments()) {
+                for (int sectionId : nullPreferenceSections) {
+                    if (frontPerson.getHoursAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() > 0) {
                         leftovers.add(section);
@@ -369,9 +315,9 @@ public class Handler implements RequestHandler<APIGatewayProxyRequestEvent, APIG
             addLeftovers(frontPerson, leftovers);
 
             // Schedule what you marked as not preferred
-            if (frontPerson.getNumberCurrentlyAssigned() < frontPerson.getDesiredNumberAssignments()) {
+            if (frontPerson.getHoursAssigned() < frontPerson.getDesiredNumberAssignments()) {
                 for (int sectionId : badSections) {
-                    if (frontPerson.getNumberCurrentlyAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
+                    if (frontPerson.getHoursAssigned() >= frontPerson.getDesiredNumberAssignments()) break;
                     Section section = sections.get(sectionId);
                     if (section.getAssignedPTs() > 0) {
                         leftovers.add(section);

@@ -2,7 +2,7 @@ package db;
 
 import java.util.ArrayList;
 
-public class Section {
+public class Section implements Comparable<Section> {
     int sectionId;
 
     int courseId;
@@ -13,6 +13,8 @@ public class Section {
 
     int currentPTs;
     int currentTAs;
+
+    String courseNumber;
     
     public Section(int sectionId, int courseId, String sectionNumber, int capacityPTs, int capacityTAs) {
         this.sectionId = sectionId;
@@ -26,12 +28,24 @@ public class Section {
         currentTAs = 0;
     }
 
+    public float getHours() {
+        float total = 0;
+        for (Meeting meeting : meetings) {
+            total += meeting.getHours();
+        }
+        return total;
+    }
+
     public int getSectionId() {
         return sectionId;
     }
 
     public int getCourseId() {
         return courseId;
+    }
+
+    public void setCourseNumber(String courseNumber) {
+        this.courseNumber = courseNumber;
     }
 
     public String getSectionNumber() {
@@ -73,7 +87,12 @@ public class Section {
     @Override
     public String toString() {
         return "Section [capacityPTs=" + capacityPTs + ", capacityTAs=" + capacityTAs + ", courseId=" + courseId
-                + ", currentPTs=" + currentPTs + ", currentTAs=" + currentTAs + ", meetings=" + meetings
-                + ", sectionId=" + sectionId + ", sectionNumber=" + sectionNumber + "]";
+                + ", courseNumber=" + courseNumber + ", currentPTs=" + currentPTs + ", currentTAs=" + currentTAs
+                + ", meetings=" + meetings + ", sectionId=" + sectionId + ", sectionNumber=" + sectionNumber + "]";
+    }
+
+    @Override
+    public int compareTo(Section o) {
+        return courseNumber.compareTo(o.courseNumber);
     }
 }

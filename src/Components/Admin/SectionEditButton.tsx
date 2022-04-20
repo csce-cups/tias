@@ -44,7 +44,6 @@ export const SectionEditButton = () => {
           if (where !== -1 && where !== undefined) {
             const replacement = {professor: updatedSection.placeholder_professor_name, capacity_peer_teachers: updatedSection.capacity_peer_teachers};
             blocks[key]![where] = {...blocks[key]![where], ...replacement};
-            console.log(blocks[key]![where]);
             break;
           }
         }

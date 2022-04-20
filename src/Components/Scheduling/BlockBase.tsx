@@ -1,4 +1,5 @@
-import { APIUserPreferenceEnum } from "../../modules/API";
+import { APIUserPreferenceEnum, CourseBlock } from "../../modules/API";
+import { OptionsProps } from "./SchedulingWindow";
 
 // An interface that every block's props must follow
 export default interface RenderBlockProps {
@@ -8,6 +9,8 @@ export default interface RenderBlockProps {
   edge?: "left" | "right" | "center"
   bottom?: boolean
   data: any
+  options?: OptionsProps
+  blocks?: CourseBlock[]
 }
 
 export const blockColors = new Map([

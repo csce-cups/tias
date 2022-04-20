@@ -5,8 +5,9 @@ public class Preference implements Comparable<Preference> {
 
     int sectionId;
     DBPreference preference;
+    String courseNumber;
 
-    public Preference(int sectionId, String preference) {
+    public Preference(int sectionId, String preference, String courseNumber) {
         this.sectionId = sectionId;
         if (preference.equals("Can't Do")) {
             this.preference = DBPreference.CANT_DO;
@@ -17,6 +18,7 @@ public class Preference implements Comparable<Preference> {
         } else if (preference.equals("Prefer To Do")) {
             this.preference = DBPreference.PREFER_TO_DO;
         }
+        this.courseNumber = courseNumber;
     }
 
     public int getSectionId() {
@@ -38,6 +40,9 @@ public class Preference implements Comparable<Preference> {
 
     @Override
     public int compareTo(Preference o) {
-        return preference.ordinal() - o.preference.ordinal();
+        if (preference != o.preference) {
+            return preference.ordinal() - o.preference.ordinal();
+        }
+        return courseNumber.compareTo(o.courseNumber);
     }
 }

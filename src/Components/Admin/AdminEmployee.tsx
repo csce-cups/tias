@@ -3,6 +3,7 @@ import API, { Person } from '../../modules/API'
 import edit_icon from '../../assets/edit.svg'
 import uuid from '../../uuid'
 import contexts from '../APIContext'
+import { AdminEmployeeDetail } from './AdminEmployeeDetail'
 
 interface Props {
     employee: Person
@@ -14,6 +15,7 @@ export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee:
   const did = uuid();
   const user = useContext(contexts.user);
   const [collapsed, setCollapsed] = useState(true);
+  const [fullSized, setFullSized] = useState(false);
   const employeeState = useState<Person>(employee_super);
   const employee = employeeState[0];
   const setEmployee = (e: Person | null) => {
@@ -92,7 +94,7 @@ They will be able to run the scheduler, promote other users and delete them, and
   return (
     <div className="employee-row vstack">
       <div className="hstack header" onClick={() => setCollapsed(!collapsed)}>
-        <div>{employee.first_name} {employee.last_name}</div>
+        <div>{employee.first_name} {employee.last_name} <span className="email">({employee.email})</span></div>
         <div className="fill"/>
         {perms.filter(e => e !== '').join(', ')}
         <div className="mr15"/>
@@ -120,6 +122,7 @@ They will be able to run the scheduler, promote other users and delete them, and
         </div>
 
         <div className="hstack">
+          < AdminEmployeeDetail employee={employee}/>
           <button id={id} className="green button fill-restricted" onClick={updateUser}>Update user</button>
           <button id={did} className="red button fill-restricted" onClick={deleteUser}>Delete user</button>
         </div>

@@ -9,6 +9,10 @@ export interface OptionsProps {
   selectable?: boolean
   noHeader?: boolean
   noBorder?: boolean
+  editing?: {
+    bool: [boolean, React.Dispatch<React.SetStateAction<boolean>>],
+    count: [number, React.Dispatch<React.SetStateAction<number>>]
+  }
 
   // Lets you specify an externally controlled filter
   filter?: [Map<number, boolean>, React.Dispatch<React.SetStateAction<Map<number, boolean>>>]

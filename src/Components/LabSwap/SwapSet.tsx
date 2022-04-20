@@ -1,18 +1,24 @@
 import React, { FC, ReactNode } from 'react'
-import { CourseBlock } from '../../modules/API'
+import { CourseBlock, Person } from '../../modules/API'
 import { DisplayBlock } from './DisplayBlock'
+
+export interface TradeInfo {
+  block: CourseBlock | null
+  person: Person | null | undefined
+}
 
 interface Props {
   children?: ReactNode
-  selected: [CourseBlock | null, CourseBlock | null]
+  selected: [TradeInfo | null, TradeInfo | null]
+  height?: string;
 }
 
-export const SwapSet: FC<Props> = ({children, selected}) => {
+export const SwapSet: FC<Props> = ({children, selected, height}) => {
   return (
     <div className="hstack reqoff-col">
       <div className='interact-blocks standalone new-trade-col fill'>
         <div className="new-trade-col-content trade-left">
-          < DisplayBlock visible={true} data={{course_instance: selected[0], shift: false}}/>
+          < DisplayBlock size={height} visible={true} data={{course_instance: selected[0]?.block, person: selected[0]?.person, shift: false}}/>
         </div>
       </div>
       
@@ -22,7 +28,7 @@ export const SwapSet: FC<Props> = ({children, selected}) => {
 
       <div className='interact-blocks standalone new-trade-col fill'>
         <div className="new-trade-col-content trade-right">
-          < DisplayBlock visible={true} data={{course_instance: selected[1], shift: true}}/>
+          < DisplayBlock size={height} visible={true} data={{course_instance: selected[1]?.block, person: selected[1]?.person, shift: true}}/>
         </div>
       </div>
 
