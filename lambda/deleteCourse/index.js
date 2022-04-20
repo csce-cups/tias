@@ -17,19 +17,53 @@ exports.handler = async (event) => {
     const response = {
         "isBase64Encoded": false,
         "statusCode": 200,
-        "headers": { "Content-Type": "application/json", 
-                     "Access-Control-Allow-Origin": accessHeader }
+        "headers": { "Content-Type": "application/json" }
     };
+    
+    // Set the access header only upon an expected domain;
+    // setting the access header to null in the response isn't
+    // necessarily safe.
+    if (accessHeader !== null) {
+        response.headers['Access-Control-Allow-Origin'] = accessHeader;
+        response.headers['Vary'] = 'Origin';
+    }
+    
+    // If the API was called without specifying a course ID,
+    // then return an error.
+    if (courseId == null) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Course ID must be specified.');
+        return response;
+    }
+    
+    // Validate that a course with the specified ID exists
+    // in the database before attempting a delete.
+    const dbQueryValidate = `SELECT *
+                             FROM course
+                             WHERE course_id = $1`;
+    let params = [courseId];
+    
+    // Check if the course being deleted exists.
+    let courseRows = await helper_functions.queryDB(dbQueryValidate, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 500, 'Failed to query the specified course.');
+    });
+    
+    if (response.statusCode === 500) {
+        return response;
+    }
+    
+    // Error out if the course is not found.
+    if (courseRows.length === 0) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 404, 'Specified course does not exist.');
+    }
     
     // Query all course sections associated with
     // the course being deleted.
     const dbQuerySections = `SELECT section_id
                              FROM course_section
                              WHERE course_id = $1`;
-    let params = [courseId];
     
     let sectionIDObjs = await helper_functions.queryDB(dbQuerySections, params).catch((err) => {
-        helper_functions.GenerateErrorResponseAndLog(err, response, 'Failed to query sections associated with specified course.');
+        helper_functions.GenerateErrorResponseAndLog(err, response, 500, 'Failed to query sections associated with specified course.');
     });
     
     if (response.statusCode === 500) {
@@ -53,7 +87,7 @@ exports.handler = async (event) => {
         
         for (const dbQuery of dbQueries) {
             await helper_functions.queryDB(dbQuery, params).catch((err) => {
-                helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to delete course and associated dependencies.');
+                helper_functions.GenerateErrorResponseAndLog(err, response, 500, 'Unable to delete course and associated dependencies.');
             });
             
             if (response.statusCode === 500) {
@@ -67,10 +101,11 @@ exports.handler = async (event) => {
     params = [courseId];
     
     // Delete records related to the course itself, rather than
-    // the course's sections to finish deletion.
+    // the course's sections to finish deletion. Includes deletion
+    // of user qualification records for the course.
     for (const dbQuery of dbQueries) {
         await helper_functions.queryDB(dbQuery, params).catch((err) => {
-            helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to delete course and associated dependencies.');
+            helper_functions.GenerateErrorResponseAndLog(err, response, 500, 'Unable to delete course and associated dependencies.');
         });
         
         if (response.statusCode === 500) {
