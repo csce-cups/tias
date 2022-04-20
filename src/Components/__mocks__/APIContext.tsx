@@ -1,5 +1,6 @@
-import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie} from "../../modules/API";
+import React, { FC, ReactNode } from "react";
+import { Person } from "../../modules/API";
+import { contexts, _initstates } from "../_APIContextExtern";
 
 interface Props {
   children: ReactNode;
@@ -14,94 +15,42 @@ interface UserPerson {
   doShowLabSwap: boolean | null
 }
 
-export const contexts = {
-  googleData: createContext<[any, React.Dispatch<React.SetStateAction<any>>]>([
-    {}, 0 as any
-  ]),
-
-  employees: createContext<[Person[], React.Dispatch<React.SetStateAction<Person[]>>]>(
-    [[] as Person[], () => {}]
-  ),
-
-  blocks: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
-    { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
-    () => {},
-  ]),
-
-  loadedSchedule: createContext<[Map<string, number[]>, React.Dispatch<React.SetStateAction<Map<string, number[]>>>]>([
-    new Map<string, number[]>(),
-    () => {}
-  ]),
-
-  user: createContext<UserPerson>({
-    user: null,
-    doShowProfile: null,
-    doShowScheduling: null,
-    doShowLabSwap: null
-  }),
-
-  userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
-  [
-    [{ course_id: -1, course_number: "loading", qualified: false }] as APIUserQualification[],
-    () => {},
-  ]),
-
-  userPrefs: createContext<[APIUserPreferences, React.Dispatch<React.SetStateAction<APIUserPreferences>>]>(
-    [new Map<number, APIUserPreferenceEnum>(), () => {}]
-  ),
-
-  userViableCourses: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
-    { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null} as CourseBlockWeek,
-    () => {},
-  ]),
-};
-
 export const APIContext: FC<Props> = ({ children, args, test }) => {
-  const googleDataState = useState({} as any);
-  const employeeState = useState([] as Person[]);
-  const blockState = useState({
-    Monday: null,
-    Tuesday: null,
-    Wednesday: null,
-    Thursday: null,
-    Friday: null,
-  } as CourseBlockWeek);
-
-  const loadedScheduleState = useState(new Map<string, number[]>());
-  const [user, setUser] = useState<UserPerson>({
-    user: null,
-    doShowProfile: null,
-    doShowScheduling: null,
-    doShowLabSwap: null
-  })
-
-  const userQualState = useState([
-    { course_id: -1, course_number: "loading", qualified: false },
-  ] as APIUserQualification[]);
-
-  const userPrefState = useState(new Map<number, APIUserPreferenceEnum>());
-  const userViableCourses = useState({
-    Monday: null,
-    Tuesday: null,
-    Wednesday: null,
-    Thursday: null,
-    Friday: null,
-  } as CourseBlockWeek);
+  const {
+    googleDataState,
+    employeeState,
+    blockState,
+    blockUpdate,
+    loadedScheduleState,
+    allViableCoursesState,
+    allViableCoursesMap,
+    user,
+    userQualState,
+    userPrefState,
+    userViableCourses,
+    userTrades,
+  } = _initstates();
 
   return (
     <contexts.googleData.Provider value={googleDataState}>
       <contexts.employees.Provider value={employeeState}>
         <contexts.user.Provider value={user}>
           <contexts.blocks.Provider value={blockState}>
-            <contexts.loadedSchedule.Provider value={loadedScheduleState}>
-              <contexts.userQuals.Provider value={userQualState}>
-                <contexts.userPrefs.Provider value={userPrefState}>
-                  <contexts.userViableCourses.Provider value={userViableCourses}>
-                    {children}
-                  </contexts.userViableCourses.Provider>
-                </contexts.userPrefs.Provider>
-              </contexts.userQuals.Provider>
-            </contexts.loadedSchedule.Provider>
+            <contexts.blockUpdate.Provider value={blockUpdate}>
+              <contexts.loadedSchedule.Provider value={loadedScheduleState}>
+                <contexts.allViableCourses.Provider value={[...allViableCoursesState, allViableCoursesMap[0]]}>
+                  <contexts.userQuals.Provider value={userQualState}>
+                    <contexts.userPrefs.Provider value={userPrefState}>
+                      <contexts.userViableCourses.Provider value={userViableCourses}>
+                        <contexts.userTrades.Provider value={userTrades}>
+                          {children}
+                        </contexts.userTrades.Provider>
+                      </contexts.userViableCourses.Provider>
+                    </contexts.userPrefs.Provider>
+                  </contexts.userQuals.Provider>
+                </contexts.allViableCourses.Provider>
+              </contexts.loadedSchedule.Provider>
+            </contexts.blockUpdate.Provider>
           </contexts.blocks.Provider>
         </contexts.user.Provider>
       </contexts.employees.Provider>

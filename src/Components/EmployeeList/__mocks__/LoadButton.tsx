@@ -1,5 +1,5 @@
 export const LoadButton = () => {
   return (
-    <button id="load-schedule-button">Load Saved Schedule</button>
+    <button data-testid="LoadButton" id="load-schedule-button">Load Saved Schedule</button>
   )
 }

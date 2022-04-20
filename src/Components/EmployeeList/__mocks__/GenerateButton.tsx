@@ -6,6 +6,6 @@ interface Props {
 
 export const GenerateButton: FC<Props> = ({genState}) => {
   return (
-    <button id="generate-schedule-button">Generate Schedule</button>
+    <button data-testid="GenerateButton" id="generate-schedule-button">Generate Schedule</button>
   )
 }

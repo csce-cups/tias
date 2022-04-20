@@ -8,7 +8,7 @@ interface Props {
   genState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
 }
 
-export const EmployeeRow: FC<Props> = ({employee, setEmployee, linkID, genState}) => {
+export const EmployeeRow: FC<Props> = ({employee}) => {
   return (
     <div>{employee.first_name} {employee.last_name}</div>
   )
