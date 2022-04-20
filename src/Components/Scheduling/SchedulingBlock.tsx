@@ -77,9 +77,10 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blo
   const createList = () => {
     let elements: JSX.Element[] = [];
     let es: {employee: Person, pref: APIUserPreferenceEnum}[] = [];
+    console.log(viableEmployees);
     viableEmployees.forEach(({person_id, pref}) => {
       const employee = employees.find(e => e.person_id === person_id)!;
-      if (pref === "Can't Do") return;
+      if (pref === "Can't Do" || employee === undefined) return;
       es.push({employee, pref});
     });
 
@@ -88,7 +89,8 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blo
         Select a peer teacher
       </option>  
     )
-
+    
+    console.log(es);
     es.sort((a, b) => {
       const aForbidden = course_instance.forbidden?.includes(a.employee.person_id);
       const bForbidden = course_instance.forbidden?.includes(b.employee.person_id);
