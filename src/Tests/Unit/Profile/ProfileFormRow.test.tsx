@@ -9,6 +9,6 @@ jest.mock('../../../Components/APIContext');
 
 describe('ProfileFormRow', () => {
     it('renders properly', () => {
-       //render(<ProfileFormRow/>); 
+       render(<ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>); 
     });
 }); 
