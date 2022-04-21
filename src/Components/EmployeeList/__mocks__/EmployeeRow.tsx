@@ -11,7 +11,7 @@ interface Props {
 export const EmployeeRow: FC<Props> = ({employee}) => {
   return (
     <>
-      <input type="checkbox" checked={true} name="employee-row-checkbox" person-id={employee.person_id}/>
+      <input type="checkbox" checked={true} onChange={() => {}} name="employee-row-checkbox" person-id={employee.person_id}/>
       <div data-testid="EmployeeRow">{employee.first_name} {employee.last_name}</div>
     </>
   )

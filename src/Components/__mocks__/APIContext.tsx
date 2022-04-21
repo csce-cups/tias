@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useEffect } from "react";
 import { CourseBlockWeekKey, Person } from "../../modules/API";
-import API from "../../modules/__mocks__/API";
+import { APINoAsync } from "../../modules/__mocks__/API";
 import { contexts, PersonPrefLink, _initstates } from "../APIContextHelper";
 
 interface Props {
@@ -25,34 +25,34 @@ export const APIContext: FC<Props> = ({ children }) => {
     userTrades,
   } = _initstates();
 
-  API.fetchPTList(true).then(resp => employeeState[0] = resp);
-  API.fetchCourseBlocks(true).then(resp => blockState[0] = resp);
-  API.getSavedSchedule().then(resp => loadedScheduleState[0] = resp);
-  API.fetchUserQualifications(0, true).then(resp => userQualState[0] = resp);
-  API.fetchUserPreferences(0, true).then(resp => userPrefState[0] = resp);
-  API.fetchUserViableCourses(0, true).then(resp => userViableCourses[0] = resp);
-  API.fetchUserTrades(0, true).then(resp => userTrades[0] = resp);
-  API.fetchAllViableCourses(true).then(resp => {
-    allViableCoursesState[0] = resp
+  employeeState[0] = (APINoAsync.fetchPTList());
+  blockState[0] = (APINoAsync.fetchCourseBlocks());
+  loadedScheduleState[0] = (APINoAsync.getSavedSchedule());
+  userQualState[0] = (APINoAsync.fetchUserQualifications());
+  userPrefState[0] = (APINoAsync.fetchUserPreferences(0));
+  userViableCourses[0] = (APINoAsync.fetchUserViableCourses(0));
+  userTrades[0] = (APINoAsync.fetchUserTrades(0));
 
-    let newMap = new Map<number, PersonPrefLink[]>();
-    const keys: CourseBlockWeekKey[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    allViableCoursesState[0].forEach((week, id) => {
-      keys.forEach(k => {
-        week[k]?.forEach(course => {
-          if (newMap.has(course.section_id)) {
-            const get = newMap.get(course.section_id);
-            if (!get?.find(e => e.person_id === id)) newMap.get(course.section_id)!.push({
-              person_id: id, pref: (course as any).preference
-            });
-          } else {
-            newMap.set(course.section_id, [{person_id: id, pref: (course as any).pref}]);
-          }
-        })
-      });
+  const resp = APINoAsync.fetchAllViableCourses()
+  allViableCoursesState[0] = (resp);
+
+  let newMap = new Map<number, PersonPrefLink[]>();
+  const keys: CourseBlockWeekKey[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  allViableCoursesState[0].forEach((week, id) => {
+    keys.forEach(k => {
+      week[k]?.forEach(course => {
+        if (newMap.has(course.section_id)) {
+          const get = newMap.get(course.section_id);
+          if (!get?.find(e => e.person_id === id)) newMap.get(course.section_id)!.push({
+            person_id: id, pref: (course as any).preference
+          });
+        } else {
+          newMap.set(course.section_id, [{person_id: id, pref: (course as any).pref}]);
+        }
+      })
     });
-    allViableCoursesMap[0] = newMap;
   });
+  allViableCoursesMap[0] = (newMap);
 
   
   

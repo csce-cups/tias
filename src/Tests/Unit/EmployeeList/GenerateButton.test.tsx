@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { GenerateButton } from "../../../Components/EmployeeList/GenerateButton";
 import contexts, { APIContext } from "../../../Components/APIContext";
-import API, { CourseBlockWeek, Person } from "../../../modules/API";
+import { APINoAsync } from "../../../modules/__mocks__/API";
 import { ContextSetterSpy } from "../../helpers/ContextSetterSpy";
+import API, { CourseBlockWeek, Person } from "../../../modules/API";
+import { EmployeeRow } from "../../../Components/EmployeeList/__mocks__/EmployeeRow";
 
 jest.mock("../../../modules/API");
 jest.mock("../../../Components/APIContext");
@@ -24,6 +26,16 @@ describe("GenerateButton", () => {
     ])
   })
 
+  let windowConfirm: jest.SpyInstance<boolean, [message?: string | undefined]>;
+  beforeEach(() => {
+    windowConfirm = jest.spyOn(window, "confirm").mockImplementation(() => true);
+  })
+
+  afterEach(() => {
+    windowConfirm.mockReset();
+    windowConfirm.mockRestore();
+  })
+
   it("should say generate schedule", () => {
     render(<GenerateButton genState={0 as any} />);
     expect(screen.getByText("Generate Schedule")).toBeInTheDocument();
@@ -31,10 +43,18 @@ describe("GenerateButton", () => {
 
   it("should run the scheduler when clicked", async () => {
     const spy = jest.spyOn(API, "runScheduler");
+    const employees = APINoAsync.fetchPTList();
     render(
-      <APIContext>
-        <GenerateButton genState={[false, () => {}]} />
-      </APIContext>
+      <>
+        { employees.map(e => (
+          < EmployeeRow employee={e} setEmployee={() => {}} linkID={e.person_id} genState={[false, () => {}]} key={e.person_id} />
+        ))}
+        <APIContext>
+          < ContextSetterSpy what={contexts.loadedSchedule} value={new Map<string, number[]>()}>
+            <GenerateButton genState={[false, () => {}]} />
+          </ContextSetterSpy>
+        </APIContext>
+      </>
     );
 
     const button = screen.getByRole("button");
