@@ -30,7 +30,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   const [all, setAll] = useState([] as Person[]);
 
   useEffect(() => {
-    const dataPromises = test ? API.fetchAllStaticDummy() : API.fetchAllStatic();
+    const dataPromises = API.fetchAllStatic();
     let employees: Person[];
     let blocks: CourseBlockWeek;
 
@@ -65,7 +65,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
 
   useEffect(() => {
     const user = all.find((e) => e.person_id === googleDataState[0].tias_user_id) || null;
-    const userPromises = test ? API.fetchAllUserDummy(user?.person_id) : API.fetchAllUser(user?.person_id);
+    const userPromises = API.fetchAllUser(user?.person_id);
 
     userPromises.userQuals.then((resp) => {
       userQualState[1](resp);

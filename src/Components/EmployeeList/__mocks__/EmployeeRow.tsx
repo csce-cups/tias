@@ -10,6 +10,9 @@ interface Props {
 
 export const EmployeeRow: FC<Props> = ({employee}) => {
   return (
-    <div>{employee.first_name} {employee.last_name}</div>
+    <>
+      <input type="checkbox" checked={true} name="employee-row-checkbox" person-id={employee.person_id}/>
+      <div data-testid="EmployeeRow">{employee.first_name} {employee.last_name}</div>
+    </>
   )
 }

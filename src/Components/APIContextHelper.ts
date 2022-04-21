@@ -14,25 +14,26 @@ export interface PersonPrefLink {
 	pref: APIUserPreferenceEnum
 }
 
+const defaultError = (what: string) => console.error(`ERR: Default context triggered for ${what}. Please rememeber to pass a state with a context provider`)
 export const contexts = {
 	googleData: createContext<[any, React.Dispatch<React.SetStateAction<any>>]>([
-		{}, 0 as any
+		{}, () => defaultError("googleData")
 	]),
 
 	employees: createContext<[Person[], React.Dispatch<React.SetStateAction<Person[]>>]>(
-		[[] as Person[], 0 as any]
+		[[] as Person[], () => defaultError("employees")]
 	),
 
 	blocks: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
 		{ Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null } as CourseBlockWeek,
-		0 as any,
+		() => defaultError("blocks"),
 	]),
 
-	blockUpdate: createContext<(actions: BlockUpdateAction[]) => void>(0 as any),
+	blockUpdate: createContext<(actions: BlockUpdateAction[]) => void>(() => defaultError(".")),
 
 	loadedSchedule: createContext<[Map<string, number[]>, React.Dispatch<React.SetStateAction<Map<string, number[]>>>]>([
 		new Map<string, number[]>(),
-		0 as any
+		() => defaultError("loadedSchedule")
 	]),
 
 	allViableCourses: createContext<[
@@ -40,7 +41,7 @@ export const contexts = {
 		Map<number, PersonPrefLink[]>
 	]>([
 		new Map<number, CourseBlockWeek>(),
-		0 as any,
+		() => defaultError("allViableCourses"),
 		new Map<number, PersonPrefLink[]>()
 	]),
 
@@ -55,21 +56,21 @@ export const contexts = {
 	userQuals: createContext<[APIUserQualification[], React.Dispatch<React.SetStateAction<APIUserQualification[]>>]>(
 		[
 			[{ course_id: -1, course_number: "loading", qualified: false }] as APIUserQualification[],
-			0 as any,
+			() => defaultError("userQuals"),
 		]),
 
 	userPrefs: createContext<[APIUserPreferences, React.Dispatch<React.SetStateAction<APIUserPreferences>>]>(
-		[new Map<number, APIUserPreferenceEnum>(), 0 as any]
+		[new Map<number, APIUserPreferenceEnum>(), () => defaultError("userPrefs")]
 	),
 
 	userViableCourses: createContext<[CourseBlockWeek, React.Dispatch<React.SetStateAction<CourseBlockWeek>>]>([
 		{ Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null } as CourseBlockWeek,
-		0 as any,
+		() => defaultError("userViableCourses"),
 	]),
 
 	userTrades: createContext<[TradeRequest[], React.Dispatch<React.SetStateAction<TradeRequest[]>>]>([
 		[] as TradeRequest[],
-		0 as any,
+		() => defaultError("userTrades"),
 	]),
 };
 
