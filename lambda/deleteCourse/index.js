@@ -29,9 +29,9 @@ exports.handler = async (event) => {
     }
     
     // If the API was called without specifying a course ID,
-    // then return an error.
-    if (courseId == null) {
-        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Course ID must be specified.');
+    // or if the course ID is malformed, then return an error.
+    if (courseId == null || courseId == '' || isNaN(+courseId)) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Course ID must be specified and must be numeric.');
         return response;
     }
     

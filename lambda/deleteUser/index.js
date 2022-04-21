@@ -5,7 +5,7 @@ exports.handler = async (event) => {
     
     let accessHeader = null;
     
-    // Enable CORS for the requesting domain, if the domain
+    // A CORS for the requesting domain, if the domain
     // is one that we expect.
     if (event.headers.origin === 'https://www.csce-scheduler.com') {
         accessHeader = 'https://www.csce-scheduler.com';
@@ -29,9 +29,9 @@ exports.handler = async (event) => {
     }
     
     // If the API was called without specifying a user ID,
-    // then return an error.
-    if (userId == null) {
-        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'User ID must be specified.');
+    // or if the user ID is malformed, then return an error.
+    if (userId == null || userId == '' || isNaN(+userId)) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'User ID must be specified and must be numeric.');
         return response;
     }
     
@@ -56,6 +56,8 @@ exports.handler = async (event) => {
         return response;
     }
     
+    // Succession of queries necessary to fully
+    // delete a user from the system.
     let dbQueries = ['DELETE FROM person_unavailability WHERE person_id = $1',
                      'DELETE FROM qualification WHERE person_id = $1',
                      'DELETE FROM section_assignment WHERE person_id = $1',
