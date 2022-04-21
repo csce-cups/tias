@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { Person } from "../../modules/API";
-import { contexts, _initstates } from "../_APIContextExtern";
+import { contexts, _initstates } from "../APIContextHelper";
 
 interface Props {
   children: ReactNode;

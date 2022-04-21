@@ -2,8 +2,9 @@ import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import API, { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '../../modules/API';
 import { findCollisions } from '../../modules/BlockFunctions';
 import uuid from '../../uuid';
-import contexts, { BlockUpdateAction, PersonPrefLink } from '../APIContext';
+import contexts from '../APIContext';
 import { Hat } from '../Misc/Hat';
+import { BlockUpdateAction, PersonPrefLink } from '../APIContextHelper';
 import RenderBlockProps, { blockColors, calcFlex, statusColors } from './BlockBase';
 
 interface Props extends RenderBlockProps {

@@ -1,7 +1,7 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
 import { loadSchedule, updateWithSchedule } from "../modules/BlockFunctions";
 import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest, CourseBlock} from "../modules/API";
-import { _initstates, contexts } from "./_APIContextExtern";
+import { _initstates, contexts, PersonPrefLink } from "./APIContextHelper";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
 
