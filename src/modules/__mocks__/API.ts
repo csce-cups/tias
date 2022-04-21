@@ -17,7 +17,7 @@ const generateBlock = (course: number, section: string, start: Date, end: Date, 
 
 class API {
 	private static promiseVoid = (instant?: boolean): Promise<void> => new Promise(res => {
-		console.error("API send call not mocked, promiseVoid called");
+		// console.error("API send call not mocked, promiseVoid called");
 		setTimeout(() => res(), instant ? 0 : 100)
 	});
 

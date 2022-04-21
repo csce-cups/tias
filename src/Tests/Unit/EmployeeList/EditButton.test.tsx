@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { EditButton } from '../../../Components/EmployeeList/EditButton';
 import contexts, { APIContext } from '../../../Components/APIContext';
+import API from '../../../modules/API';
+import { ContextSetterSpy } from '../../helpers/ContextSetterSpy';
 
 jest.mock('../../../Components/APIContext');
 jest.mock('../../../modules/API');
@@ -89,7 +91,7 @@ describe('EditButton', () => {
 				expect(screen.getByText('Stop Editing')).toBeInTheDocument();
 			});
 
-			it("Says 'Save ___ edits' when there are edits to save", async () => {
+			it("Says 'Save ___ changes' when there are edits to save", async () => {
 				editingState.bool[0] = true;
 				editingState.count[0] = 5;
 				render (
@@ -133,7 +135,7 @@ describe('EditButton', () => {
 			})
 
 			it("resets when pressed", () => {
-				const confirm = jest.spyOn(window, "confirm").mockImplementation(() => true);
+				jest.spyOn(window, "confirm").mockImplementation(() => true);
 
 				render (
 					< APIContext >
@@ -143,8 +145,86 @@ describe('EditButton', () => {
 
 				const cancelBtn = screen.getByRole("button", {name: "Cancel"});
 				cancelBtn.click();
-				expect(editingState.bool[0]).toBe(false);
-				expect(editingState.count[0]).toBe(0);
+				expect(boolSpy).toHaveBeenCalledWith(false);
+				expect(countSpy).toHaveBeenCalledWith(0);
+			})
+		})
+
+		describe("saving", () => {
+			beforeEach(() => {
+				editingState.bool[0] = true;
+				editingState.count[0] = 1;
+			})
+
+			it("removes the cancel button on save", () => {
+				render (
+					< APIContext >
+						<EditButton editingState={editingState} />
+					</APIContext>
+				);
+
+				const saveBtn = screen.getByText(`Save ${editingState.count[0]} change`);
+				saveBtn.click();
+				expect(screen.queryByRole("button", {name: "Cancel"})).toBe(null);
+			});
+
+			it("saves the schedule", async () => {
+				const spy = jest.spyOn(API, "sendSavedSchedule");
+				render(
+					< APIContext >
+						<EditButton editingState={editingState} />
+					</ APIContext >
+				)
+
+				const saveBtn = screen.getByText(`Save ${editingState.count[0]} change`);
+				saveBtn.click();
+
+				await waitFor(() => {
+					expect(spy).toHaveBeenCalled();
+				})
+				spy.mockRestore();
+			})
+
+			it("updates the cache", async () => {
+				const spy = jest.spyOn(API, "sendSavedSchedule").mockImplementation(() => new Promise(r => r()));
+				const blockfn = jest.fn();
+				const schedfn = jest.fn();
+				render(
+					< APIContext >
+						< ContextSetterSpy what={contexts.blocks} spy={blockfn} >
+							< ContextSetterSpy what={contexts.loadedSchedule} spy={schedfn} >
+								<EditButton editingState={editingState} />
+							</ContextSetterSpy>
+						</ContextSetterSpy>
+					</ APIContext >
+				)
+
+				const saveBtn = screen.getByText(`Save ${editingState.count[0]} change`);
+				saveBtn.click();
+
+				await waitFor(() => {
+					expect(blockfn).toHaveBeenCalled();
+				})
+				await waitFor(() => {
+					expect(schedfn).toHaveBeenCalled();
+				})
+				spy.mockRestore();
+			})
+
+			it("doesn't upload the schedule if no changes were made", () => {
+				editingState.count[0] = 0;
+				const spy = jest.spyOn(API, "sendSavedSchedule");
+				render(
+					< APIContext >
+						<EditButton editingState={editingState} />
+					</ APIContext >
+				)
+
+				const saveBtn = screen.getByText(`Stop Editing`);
+				saveBtn.click();
+
+				expect(spy).not.toHaveBeenCalled();
+				spy.mockRestore();
 			})
 		})
 	})
