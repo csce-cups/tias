@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { GenerateButton } from "../../../Components/EmployeeList/GenerateButton";
 import contexts, { APIContext } from "../../../Components/APIContext";
-import { APINoAsync } from "../../../modules/__mocks__/API";
 import { ContextSetterSpy } from "../../helpers/ContextSetterSpy";
 import API, { CourseBlockWeek, Person } from "../../../modules/API";
-import { EmployeeRow } from "../../../Components/EmployeeList/__mocks__/EmployeeRow";
+import { EmployeeRow } from "../../../Components/EmployeeList/EmployeeRow";
+
+// We want to use the API mock in our tests to populate data manually from outside
+// eslint-disable-next-line jest/no-mocks-import
+import { APINoAsync } from "../../../modules/__mocks__/API";
 
 jest.mock("../../../modules/API");
 jest.mock("../../../Components/APIContext");
+jest.mock("../../../Components/EmployeeList/EmployeeRow");
 
 describe("GenerateButton", () => {
   let employees: Person[];
@@ -132,6 +136,8 @@ describe("GenerateButton", () => {
       button.click();
       await waitFor(() => { 
         expect(fn).toHaveBeenCalled();
+      });
+      await waitFor(() => { 
         expect(screen.getByText("Done generating!")).toBeInTheDocument(); // Required to prevent unmount errors
       });
     });
@@ -150,6 +156,8 @@ describe("GenerateButton", () => {
       button.click();
       await waitFor(() => { 
         expect(fn).toHaveBeenCalled();
+      });
+      await waitFor(() => { 
         expect(screen.getByText("Done generating!")).toBeInTheDocument(); // Required to prevent unmount errors
       });
     });
@@ -168,6 +176,8 @@ describe("GenerateButton", () => {
       button.click();
       await waitFor(() => { 
         expect(fn).toHaveBeenCalled();
+      });
+      await waitFor(() => { 
         expect(screen.getByText("Done generating!")).toBeInTheDocument(); // Required to prevent unmount errors
       });
     });

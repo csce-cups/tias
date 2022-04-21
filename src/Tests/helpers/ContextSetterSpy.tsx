@@ -1,5 +1,4 @@
 import React from 'react'
-import { WatchDirectoryFlags } from 'typescript';
 
 interface Props<context> {
   what: React.Context<[context, React.Dispatch<React.SetStateAction<context>>]>

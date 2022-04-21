@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { SaveButton } from '../../../Components/EmployeeList/SaveButton';
 import contexts from '../../../Components/APIContext';
 import API from '../../../modules/API';
@@ -21,6 +21,12 @@ describe('SaveButton', () => {
     });
 
     describe('active with a loaded schedule', () => {
+        let sendSavedSchedule = jest.spyOn(API, 'sendSavedSchedule').mockImplementation((...args) => new Promise(res => res()));
+        afterEach(() => {
+            sendSavedSchedule.mockReset();
+            sendSavedSchedule.mockRestore();
+        })
+
         it('should say save schedule', () => {
             render(
                 < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
@@ -31,7 +37,6 @@ describe('SaveButton', () => {
         });
 
         it('should send the schedule to the server when clicked', () => {
-            const spy = jest.spyOn(API, 'sendSavedSchedule');
             render(
                 < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
                     <SaveButton />
@@ -40,10 +45,8 @@ describe('SaveButton', () => {
 
             const button = screen.getByRole('button');
             button.click();
-            expect(spy).toHaveBeenCalled();
-            spy.mockReset();
-            spy.mockRestore();
-        }); 
+            expect(sendSavedSchedule).toHaveBeenCalled();
+        });
 
         it('should change it\'s text when clicked', () => {
             render(
@@ -57,7 +60,7 @@ describe('SaveButton', () => {
             expect(screen.getByText('Saving...')).toBeInTheDocument();
         }); 
 
-        it('should change it\'s text when finished', (done) => { // I don't know why the button doesn't change, so we go slow
+        it('should change it\'s text when finished', async () => {
             render(
                 < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
                     <SaveButton />
@@ -66,10 +69,36 @@ describe('SaveButton', () => {
             
             const button = screen.getByRole('button');
             button.click();
-            setTimeout(() => {
+            await waitFor(() => {
                 expect(screen.getByText('Saved!')).toBeInTheDocument();
-                done();
-            }, 100);
+            });
         }); 
+
+        it('should report errors', async () => {
+            sendSavedSchedule = jest.spyOn(API, 'sendSavedSchedule').mockImplementation((...args) => new Promise((res, rej) => rej()));
+            render(
+                < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
+                    <SaveButton />
+                </ contexts.loadedSchedule.Provider >
+            )
+            
+            const button = screen.getByRole('button');
+            button.click();
+            await waitFor(() => {
+                expect(screen.getByText(/error/i)).toBeInTheDocument();
+            });
+        });
+
+        it('should report when there is nothing to save', () => {
+            render(
+                < contexts.loadedSchedule.Provider value={[new Map<string, number[]>(), () => {}]}>
+                    <SaveButton />
+                </ contexts.loadedSchedule.Provider >
+            )
+
+            const button = screen.getByRole('button');
+            button.click();
+            expect(screen.getByText('Nothing to Save')).toBeInTheDocument();
+        })
     });
 });
