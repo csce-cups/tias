@@ -33,6 +33,11 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
         }
       });
       if (allBlocksFlat.length === 0) return;
+      if (allBlocksFlat[0].course_number === -1) {
+        setHours(0);
+        setStart(new Date(0));
+        return;
+      }
 
       let startDate = new Date(allBlocksFlat.map(b => b.start_time).reduce((acc, curr) => (curr < acc ? curr : acc)));
       startDate.setMinutes(0);

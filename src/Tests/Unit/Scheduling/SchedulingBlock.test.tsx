@@ -3,7 +3,9 @@ import { render, screen } from '@testing-library/react';
 import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock';
 import { CourseBlock } from '../../../modules/API';
 import { OptionsProps } from '../../../Components/Scheduling/SchedulingWindow';
+import { APIContext } from '../../../Components/APIContext';
 
+jest.mock('../../../Components/APIContext');
 jest.mock('../../../Components/Misc/Hat');
 
 describe('SchedulingBlock', () => {
@@ -33,12 +35,14 @@ describe('SchedulingBlock', () => {
     })
 
     const renderSubject = (classes: string, hats?: number) => render(
-        <div className={classes}>
-            < SchedulingBlock visible={true} data={{
-                course_instance: renderData,
-                linkIDs: hats? Array.from(Array(hats).keys()) : []
-            }} options={options}/>
-        </div>
+        < APIContext >
+            <div className={classes}>
+                < SchedulingBlock visible={true} data={{
+                    course_instance: renderData,
+                    linkIDs: hats? Array.from(Array(hats).keys()) : []
+                }} options={options}/>
+            </div>
+        </APIContext>
     );
 
     describe('standard view', () => {
@@ -213,7 +217,16 @@ describe('SchedulingBlock', () => {
 
         describe("function", () => {
             describe("dropdown", () => {
-                it.todo('the dropdown contains valid peer teachers for the section');
+                it('the dropdown contains valid peer teachers for the section', () => {
+                    const r = renderSubject("editing");
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+                    r.debug();
+
+                    const elements = screen.getAllByText(/Peer Teacher 1/i);
+                    expect(elements.length).toBeGreaterThan(0);
+                });
+
                 it.todo('the dropdown does not contain invalid peer teachers for the section');
                 it.todo('in the dropdown, peer teachers who prefer the section are labeled as such');
                 it.todo('in the dropdown, peer teachers who are indifferent about the section are labeled as such');
