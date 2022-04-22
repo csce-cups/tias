@@ -6,7 +6,6 @@ import contexts, { APIContext } from "../../../Components/APIContext";
 jest.mock("../../../Components/APIContext");
 jest.mock("../../../Components/EmployeeList/EmployeeRow");
 jest.mock("../../../Components/EmployeeList/GenerateButton");
-jest.mock("../../../Components/EmployeeList/LoadButton");
 jest.mock("../../../Components/EmployeeList/EditButton");
 jest.mock("../../../Components/EmployeeList/SaveButton");
 

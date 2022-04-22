@@ -20,7 +20,7 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
     }
   };
   const [blocks,] = useContext(contexts.blocks);
-  const [hours, setHours] = useState<number>(12);
+  const [hours, setHours] = useState<number>(0);
   const [start, setStart] = useState<Date>(new Date(0));
 
   useEffect(() => {
@@ -32,13 +32,14 @@ export const SchedulingRender: FC<Props> = ({renderBlockType, filter, options}) 
           allBlocksFlat.push(...(blocks[k]!));
         }
       });
+      if (allBlocksFlat.length === 0) return;
 
-      let startDate = new Date(allBlocksFlat.reduce((acc, curr) => Math.min(acc, curr.start_time.getTime()), 0));
+      let startDate = new Date(allBlocksFlat.map(b => b.start_time).reduce((acc, curr) => (curr < acc ? curr : acc)));
       startDate.setMinutes(0);
       const start = startDate.getTime();
       const end = allBlocksFlat.reduce((max, block) => Math.max(max, block.end_time.getTime()), 0);
-
-      setHours(Math.ceil((end - start) / 1000/ 60 / 60));
+      
+      setHours(Math.ceil((end - start) / 1000 / 60 / 60));
       
       setStart(startDate);
     }

@@ -39,199 +39,49 @@ class API {
 	}
 
 	static fetchPTList = async (instant?: boolean): Promise<Person[]> => {
-		// console.log("MOCK API: static");
-		return this.fetchEveryone(instant).then(res => res.filter(p => p.peer_teacher));
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchPTList()) }, instant? 0 : 100));
 	}
 
 	static fetchEveryone = async (instant?: boolean): Promise<Person[]> => {
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				resolve(
-					Array.from(Array(30).keys()).map(i => `Test User ${i}`)
-					.map((e, i) => ({
-						person_id: i, 
-						email: "",
-						first_name: e.substring(0, e.indexOf(' ')), 
-						last_name: e.substring(e.indexOf(' ')),
-						profile_photo_url: "",
-						peer_teacher: i % 5 !== 0,
-						teaching_assistant: false,
-						administrator: i === 5,
-						professor: false,
-						isScheduled: null,
-						isChecked: i % 4 !== 1,
-						desired_number_assignments: 2
-					})
-				))
-			}, instant? 0 : 100)
-		})
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchEveryone()) }, instant? 0 : 100));
 	}
 
 	static fetchCourseBlocks = async (instant?: boolean): Promise<CourseBlockWeek> => {
-		// console.log("MOCK API: static");
-		const buildings = ["BUILDING A", "BUILDING B", "BUILDING C", "BUILDING D", "BUILDING E"];
-		const courses = [110, 111, 121, 221, 312, 313, 314, 315];
-		const modi = {
-			"Monday": 1,
-			"Tuesday": 2,
-			"Wednesday": 1,
-			"Thursday": 2,
-			"Friday": 3,
-		}
-		const genDay = (length: number, day: CourseBlockWeekKey) => {
-			let ret: CourseBlock[] = [];
-			let startTime = new Date(8*60*60*1000);
-			Array.from(Array(Math.floor(Math.random() * 60 + 20)).keys()).forEach(i => {
-				if (Math.random() > 0.7) {
-					ret.push(
-						generateBlock(
-							courses[Math.floor(Math.random() * courses.length)],
-							`${modi[day]*100 + i}`,
-							startTime,
-							new Date(8*60*60*1000 + length*60*1000),
-							day,
-							buildings[Math.floor(Math.random() * buildings.length)],
-							modi[day]*100 + i
-						)
-					)
-					if (Math.random() > 0.7) {
-						startTime = new Date(8*60*60*1000 + length*60*1000 + 20*60*1000);
-					}
-				}
-			})
-			return ret;
-		}
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				resolve({
-					Monday: genDay(50, "Monday"),
-					Tuesday: genDay(75, "Tuesday"),
-					Wednesday: genDay(50, "Wednesday"),
-					Thursday: genDay(75, "Thursday"),
-					Friday: genDay(50, "Friday")
-				})
-			}, instant? 0 : 100);
-		})
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchCourseBlocks()) }, instant? 0 : 100));
 	}
 
 	static fetchUserPreferences = async (user_id?: number, instant?: boolean): Promise<APIUserPreferences> => {
-		// console.log("MOCK API: static");
-		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
-
-		const pref = () => {
-			const r = Math.random();
-			if (r < 0.2) return "Can't Do";
-			if (r < 0.4) return "Prefer Not To Do";
-			if (r < 0.8) return "Indifferent";
-			else return "Prefer To Do";
-		}
-		return API.fetchCourseBlocks(instant).then(blocks => {
-			const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
-			let resp = new Map<number, APIUserPreferenceEnum>();
-
-			allBlocks.forEach(day => {
-				day?.forEach(block => {
-					resp.set(block.section_id, pref());
-				});
-			});
-
-			return resp;
-		})
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchUserPreferences()) }, instant? 0 : 100));
 	}
 
 	static fetchUserViableCourses = async (user_id?: number, instant?: boolean): Promise<CourseBlockWeek> => {
-		// console.log("MOCK API: fetchUserViableCourses");
-		if (user_id === undefined) return new Promise((resolve) => {resolve({} as CourseBlockWeek);});
-		return API.fetchCourseBlocks(instant).then(week => {
-			return {
-				Monday: week?.Monday?.filter(() => Math.random() > 0.5) || null,
-				Tuesday: week?.Tuesday?.filter(() => Math.random() > 0.5) || null,
-				Wednesday: week?.Wednesday?.filter(() => Math.random() > 0.5) || null,
-				Thursday: week?.Thursday?.filter(() => Math.random() > 0.5) || null,
-				Friday: week?.Friday?.filter(() => Math.random() > 0.5) || null
-			}
-		});
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchUserViableCourses()) }, instant? 0 : 100));
 	}
 
 	static fetchAllViableCourses = async (instant?: boolean): Promise<Map<number, CourseBlockWeek>> => {
-		// console.log("MOCK API: fetchAllViableCourses");
-		const blocks = await API.fetchCourseBlocks(true);
-		return new Promise(resolve => {
-			setTimeout(() => {
-				resolve(new Map<number, CourseBlockWeek>(
-					Array.from(Array(30).keys()).map(i => [i, {
-						Monday: blocks.Monday?.filter(b => Math.random() > 0.4),
-						Tuesday: blocks.Tuesday?.filter(b => Math.random() > 0.4),
-						Wednesday: blocks.Wednesday?.filter(b => Math.random() > 0.4),
-						Thursday: blocks.Thursday?.filter(b => Math.random() > 0.4),
-						Friday: blocks.Friday?.filter(b => Math.random() > 0.4)
-					}] as [number, CourseBlockWeek])
-				));
-			}, instant? 0 : 100);
-		})
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchAllViableCourses()) }, instant? 0 : 100));
 	}
 
 	static fetchUserTrades = async (user_id?: number, instant?: boolean): Promise<TradeRequest[]> => {
-		const PTids = (await this.fetchPTList(instant)).map(p => p.person_id);
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				resolve(
-					Array.from(Array(20).keys()).map(i => (
-						{
-							person_id_sender: (i % 2)? PTids[Math.floor(Math.random() * PTids.length)] : user_id,
-							person_id_receiver: (!(i % 2))? PTids[Math.floor(Math.random() * PTids.length)] : user_id,
-							section_id_receiver: Math.floor(Math.random() * 20),
-							section_id_sender: Math.floor(Math.random() * 20),
-							request_status: ["Rejected", "Accepted", "Pending", "Cancelled"][Math.floor(Math.random() * 4)]
-						} as TradeRequest
-					))
-				);
-			}, instant? 0 : 100);
-		})
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchUserTrades()) }, instant? 0 : 100));
 	}
 
 	// static fetchExportedSchedule = async (): Promise<ExportedSchedule> => {} // TODO: implement
 
 	static runScheduler = async (peer_teachers: number[], instant?: boolean): Promise<APIAlgoResponse> => {
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				let resp = JSON.parse(`{"scheduled": {"1":[1],"2":[1, 2],"3":[2]}, "unscheduled": [3]}`)
-				let map = new Map<string, number[]>();
-				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
-				resp.scheduled = map;
-				resolve(resp);
-			}, instant? 0 : 100);
-		})
+		return new Promise(r => setTimeout(() => { r(APINoAsync.runScheduler(peer_teachers)) }, instant? 0 : 100));
 	}
 
 	static fetchUserQualifications = async (user_id?: number, instant?: boolean): Promise<APIUserQualification[]> => {
-		// console.log("MOCK API: static");
-		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
-		return (await this.getCourses(instant)).map(course => ({
-			course_id: course.course_id,
-			course_number: course.course_number,
-			qualified: Math.random() > 0.5
-		}))
+		return new Promise(r => setTimeout(() => { r(APINoAsync.fetchUserQualifications()) }, instant? 0 : 100));
 	}
 
-	static getSavedSchedule = async (): Promise<Map<string, number[]>> => {
-		// console.log("MOCK API: getSavedSchedule");
-		return API.runScheduler([], true).then(resp => resp.scheduled);
+	static getSavedSchedule = async (instant?: boolean): Promise<Map<string, number[]>> => {
+		return new Promise(r => setTimeout(() => { r(APINoAsync.getSavedSchedule()) }, instant? 0 : 100));
 	}
 
 	static getCourses = async (instant?: boolean): Promise<Course[]> => {
-		return new Promise(resolve => {
-			setTimeout(() => {
-				resolve(
-					[110, 111, 121, 221, 312, 313, 314, 315].map((cn, i) => ({
-						course_id: i,
-						course_number: cn.toString(),
-						course_name: `Course ${cn}`,
-						department: "CSCE"
-					}))
-				)
-			}, instant? 0 : 100);
-		})
+		return new Promise(r => setTimeout(() => { r(APINoAsync.getCourses()) }, instant? 0 : 100));
 	}
 
 	static sendUserPreferences = async (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number, instant?: boolean): Promise<void> => this.promiseVoid(instant)
@@ -310,14 +160,15 @@ export class APINoAsync {
 							courses[Math.floor(Math.random() * courses.length)],
 							`${modi[day]*100 + i}`,
 							startTime,
-							new Date(8*60*60*1000 + length*60*1000),
+							new Date(startTime.getTime() + (length * 60 * 1000)),
 							day,
 							buildings[Math.floor(Math.random() * buildings.length)],
 							modi[day]*100 + i
 						)
 					)
 					if (Math.random() > 0.7) {
-						startTime = new Date(8*60*60*1000 + length*60*1000 + 20*60*1000);
+						let newStartTime = new Date(startTime.getTime() + length*60*1000 + 20*60*1000);
+						if (newStartTime.getTime() < 12*60*60*1000) startTime = newStartTime
 					}
 				}
 			})

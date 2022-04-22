@@ -21,7 +21,7 @@ describe('SaveButton', () => {
     });
 
     describe('active with a loaded schedule', () => {
-        let sendSavedSchedule = jest.spyOn(API, 'sendSavedSchedule').mockImplementation((...args) => new Promise(res => res()));
+        const sendSavedSchedule = jest.spyOn(API, 'sendSavedSchedule').mockImplementation(() => new Promise(res => res()));
         afterEach(() => {
             sendSavedSchedule.mockReset();
             sendSavedSchedule.mockRestore();
@@ -37,6 +37,7 @@ describe('SaveButton', () => {
         });
 
         it('should send the schedule to the server when clicked', () => {
+            const sendSavedSchedule = jest.spyOn(API, 'sendSavedSchedule').mockImplementation(() => new Promise(res => res()));
             render(
                 < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
                     <SaveButton />
@@ -75,7 +76,7 @@ describe('SaveButton', () => {
         }); 
 
         it('should report errors', async () => {
-            sendSavedSchedule = jest.spyOn(API, 'sendSavedSchedule').mockImplementation((...args) => new Promise((res, rej) => rej()));
+            jest.spyOn(API, 'sendSavedSchedule').mockImplementation(() => new Promise((res, rej) => rej()));
             render(
                 < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
                     <SaveButton />
