@@ -16,7 +16,14 @@ exports.handler = async (event) => {
     if (['https://www.csce-scheduler.com', 'http://localhost:3000'].includes(event.headers.origin)) {
         accessHeader = event.headers.origin;
     }
-    
+
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
+        "body": JSON.stringify({})
+    };
+
     let dbQuery = `
     SELECT person.*, course_section.*, course.department, course.course_number, course_name, section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, (section_meeting.end_time - section_meeting.start_time) AS duration, section_meeting.place
     FROM section_assignment
@@ -85,12 +92,7 @@ exports.handler = async (event) => {
         courses: Object.values(courseObj)
     }
 
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
-        "body": JSON.stringify(responseBody)
-    };
+    response.body = JSON.stringify(responseBody)
 
     return response;
 };
