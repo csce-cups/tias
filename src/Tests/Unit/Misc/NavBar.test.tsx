@@ -3,16 +3,19 @@ import { render, screen } from '@testing-library/react';
 import { NavBar } from '../../../Components/Misc/NavBar';
 import { MemoryRouter as Router } from 'react-router-dom';
 import contexts from '../../../Components/APIContext';
-import API from '../../../modules/API';
+
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
 
-
 describe('Navbar', () => {
     it('has all the links', () => {
-        render(<contexts.employees.Provider value={[[], () => {}]}>
-            <Router><NavBar/></Router>
-            </contexts.employees.Provider>)
+        render(
+            <contexts.employees.Provider value={[[], () => {}]}>
+                <Router>
+                    <NavBar/>
+                </Router>
+            </contexts.employees.Provider>
+        )
         expect(screen.getByText('TIAS')).toBeInTheDocument();
         expect(screen.getByText('Profile')).toBeInTheDocument();
         expect(screen.getByText('Scheduling')).toBeInTheDocument();
@@ -20,7 +23,11 @@ describe('Navbar', () => {
     })
 
     it('should link to the proper pages', () => {
-        render(<Router><NavBar/></Router>)
+        render(
+            <Router>
+                <NavBar/>
+            </Router>
+        )
         expect(screen.getByText('TIAS')).toHaveAttribute("href", "/");
         expect(screen.getByText('Profile')).toHaveAttribute("href", "/profile");
         expect(screen.getByText('Scheduling')).toHaveAttribute("href", "/scheduling");

@@ -3,8 +3,6 @@ import { render, screen, configure } from '@testing-library/react';
 import { EmployeeRow } from '../../../Components/EmployeeList/EmployeeRow';
 import { Person } from '../../../modules/API';
 
-configure({testIdAttribute: 't-id'});
-
 describe('EmployeeRow', () => {
     let employee: Person = {} as any;
 
