@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import { CourseBlock, CourseBlockWeek } from '../../modules/API'
+import { formatDate } from '../../modules/BlockFunctions';
 import { findScheduled } from '../../modules/FindSchedule'
 import contexts from '../APIContext'
 
@@ -11,15 +12,7 @@ interface DisplayBlock extends CourseBlock {
 export const ProfileSidebar = () => {
   const user = useContext(contexts.user);
   const [schedule,] = useContext(contexts.loadedSchedule);
-  const formatDate = (date: Date) => {
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const ampm = hour >= 12 ? 'pm' : 'am';
-    const hour12 = (hour === 12) ? 12 : hour % 12;
-    const minutes = minute < 10 ? `0${minute}` : minute;
-    return `${hour12}:${minutes} ${ampm}`;
-  }
-
+  
   const renderScheduled = (retData: CourseBlock[]) => {    
     let retFormat: DisplayBlock[] = [];
     let ret: JSX.Element[] = [];

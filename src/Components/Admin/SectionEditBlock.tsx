@@ -1,5 +1,6 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { CourseBlock } from '../../modules/API';
+import { formatDate } from '../../modules/BlockFunctions';
 import RenderBlockProps, { blockColors, calcFlex } from '../Scheduling/BlockBase';
 import { toUpdateContext } from './SectionEditButton';
 
@@ -19,16 +20,6 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
   const [changed, setChanged] = useState(false);
 
   const ref: any = useRef(null);
-
-
-  const formatDate = (date: Date) => {
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const ampm = hour >= 12 ? 'pm' : 'am';
-    const hour12 = (hour === 12) ? 12 : hour % 12;
-    const minutes = minute < 10 ? `0${minute}` : minute;
-    return `${hour12}:${minutes} ${ampm}`;
-  }
 
   const revert = () => {
     const where = toUpdate.findIndex(({section_id}) => section_id === course_instance.section_id);

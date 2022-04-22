@@ -6,7 +6,6 @@ import contexts, { APIContext } from '../../../Components/APIContext';
 import { APINoAsync } from '../../../modules/__mocks__/API';
 import { ContextSetterSpy } from '../../helpers/ContextSetterSpy';
 import { CourseBlock, CourseBlockWeekKey } from '../../../modules/API';
-import { mockComponent } from 'react-dom/test-utils';
 
 jest.mock("../../../Components/Scheduling/SchedulingColumn");
 jest.mock('../../../Components/APIContext');
