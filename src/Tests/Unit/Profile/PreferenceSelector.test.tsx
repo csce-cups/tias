@@ -23,4 +23,14 @@ describe('PreferenceSelector', () => {
         spy.mockReset();
         spy.mockRestore();
     });
+
+    it('should update preferences', () => { //this doesn't seem to catch the lines I meant it to? targeting line 34
+        const spy = jest.spyOn(API, 'sendUserPreferences');
+        render(<PreferenceSelector/>);
+        const button = screen.getByRole('submit-prefs');
+        button.setAttribute('value', 'Saved!');
+        expect(spy).toHaveBeenCalled();
+        spy.mockReset();
+        spy.mockRestore();
+    });
 }); 

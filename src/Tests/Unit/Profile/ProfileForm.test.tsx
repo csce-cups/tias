@@ -44,4 +44,8 @@ describe('ProfileForm', () => {
         spy.mockRestore();
     }); 
 
+    //most of the untested lines are after the PUT request
+    //I tried to test the API hit with the third test but it 
+    //didn't seem to set off the lines? 
+
 }); 

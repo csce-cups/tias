@@ -14,4 +14,5 @@ describe('ProfileSidebar', () => {
     });
 
     it.todo('test the date stuff');
+    it.todo('test that the right role is displayed');
 }); 

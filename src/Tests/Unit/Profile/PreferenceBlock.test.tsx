@@ -13,4 +13,6 @@ describe('PreferenceBlock', () => {
     it('renders properly', () => {
        //render(<PreferenceBlock data={null} visible={false}/>); 
     });
+
+    //issue: can't figure out how to render it/pass in data properly
 }); 
