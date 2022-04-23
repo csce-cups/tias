@@ -5,10 +5,13 @@ import contexts from '../../../Components/APIContext';
 import API from '../../../modules/API';
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
+import { Person } from '../../../modules/API';
 
 
 describe('ProfileSidebar', () => {
     it('renders properly', () => {
       render(<ProfileSidebar/>); 
     });
+
+    it.todo('test the date stuff');
 }); 

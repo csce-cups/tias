@@ -37,7 +37,7 @@ describe('ProfileForm', () => {
             </ contexts.userQuals.Provider >
         )
 
-        const button = screen.getByRole('button');
+        const button = screen.getByRole('submit-button');
         button.click();
         expect(spy).toHaveBeenCalled();
         spy.mockReset();

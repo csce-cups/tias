@@ -15,15 +15,15 @@ describe('ProfileStatusBar', () => {
         });
         
         it.todo("does clicking on the button prompt to upload a file");
-        /*it("prompts schedule upload when the button is clicked", () => {
+        it("prompts schedule upload when the button is clicked", () => {
             render(< ProfileStatusBar />);
-            const spy = jest.spyOn(ProfileStatusBar, 'handleClick'); //this line breaks it
+           // const spy = jest.spyOn(ProfileStatusBar, 'handleClick'); //this line breaks it
             const button = screen.getByRole('button');
             button.click();
-            expect(spy).toHaveBeenCalled();
-            spy.mockReset();
-            spy.mockRestore();
-        }); */
+            //expect(spy).toHaveBeenCalled();
+            //spy.mockReset();
+            //spy.mockRestore();
+        }); 
     });
     it.todo("does parse.ics successfully parse files");
 

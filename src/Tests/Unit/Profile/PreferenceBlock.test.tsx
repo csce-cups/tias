@@ -5,7 +5,7 @@ import contexts from '../../../Components/APIContext';
 import API from '../../../modules/API';
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
-import { CompressedCourseBlock } from '../../../modules/BlockFunctions';
+//import { CompressedCourseBlock } from '../../../modules/BlockFunctions';
 
 
 
