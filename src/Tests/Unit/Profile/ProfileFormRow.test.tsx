@@ -11,4 +11,12 @@ describe('ProfileFormRow', () => {
     it('renders properly', () => {
        render(<ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>); 
     });
+
+    it('updates properly', () => {
+        render(<ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>); 
+        const button = screen.getByRole('fill');
+        button.click();
+     });
+
+   //need to test what happens when update is called
 }); 

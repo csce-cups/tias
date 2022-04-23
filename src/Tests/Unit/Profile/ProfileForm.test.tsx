@@ -37,11 +37,15 @@ describe('ProfileForm', () => {
             </ contexts.userQuals.Provider >
         )
 
-        const button = screen.getByRole('button');
+        const button = screen.getByRole('submit-button');
         button.click();
         expect(spy).toHaveBeenCalled();
         spy.mockReset();
         spy.mockRestore();
     }); 
+
+    //most of the untested lines are after the PUT request
+    //I tried to test the API hit with the third test but it 
+    //didn't seem to set off the lines? 
 
 }); 

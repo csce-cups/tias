@@ -5,7 +5,7 @@ import contexts from '../../../Components/APIContext';
 import API from '../../../modules/API';
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
-import { CompressedCourseBlock } from '../../../modules/BlockFunctions';
+//import { CompressedCourseBlock } from '../../../modules/BlockFunctions';
 
 
 
@@ -13,4 +13,6 @@ describe('PreferenceBlock', () => {
     it('renders properly', () => {
        //render(<PreferenceBlock data={null} visible={false}/>); 
     });
+
+    //issue: can't figure out how to render it/pass in data properly
 }); 
