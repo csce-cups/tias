@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { APIUserPreferenceEnum, APIUserPreferences, APIUserQualification, CourseBlock, CourseBlockWeek, Person, TradeRequest } from "../modules/API";
+import { APIUserPreferenceEnum, APIUserPreferences, APIUserQualification, CourseBlock, CourseBlockWeek, CourseBlockWeekKey, Person, TradeRequest } from "../modules/API";
 
 interface UserPerson {
 	user: Person | null
@@ -156,4 +156,24 @@ export const _initstates = () => {
 		userViableCourses,
 		userTrades,
 	}
+}
+
+export const reverseViableCourses = (map: Map<number, CourseBlockWeek>) => {
+	let newMap = new Map<number, PersonPrefLink[]>();
+	const keys: CourseBlockWeekKey[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+	map.forEach((week, id) => {
+		keys.forEach(k => {
+			week[k]?.forEach(course => {
+				if (newMap.has(course.section_id)) {
+					const get = newMap.get(course.section_id);
+					if (!get?.find(e => e.person_id === id)) newMap.get(course.section_id)!.push({
+						person_id: id, pref: (course as any).preference
+					});
+				} else {
+					newMap.set(course.section_id, [{ person_id: id, pref: (course as any).preference }]);
+				}
+			})
+		});
+	});
+	return newMap;
 }

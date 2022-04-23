@@ -3,29 +3,20 @@ import { render, screen } from '@testing-library/react';
 import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock';
 import { CourseBlock } from '../../../modules/API';
 import { OptionsProps } from '../../../Components/Scheduling/SchedulingWindow';
-import { APIContext } from '../../../Components/APIContext';
+import contexts, { APIContext } from '../../../Components/APIContext';
+import { PersonPrefLink, reverseViableCourses } from '../../../Components/APIContextHelper';
+import { APINoAsync } from '../../../modules/__mocks__/API';
 
 jest.mock('../../../Components/APIContext');
 jest.mock('../../../Components/Misc/Hat');
 
 describe('SchedulingBlock', () => {
-    let renderData: CourseBlock;
+    let renderData = APINoAsync.fetchCourseBlocks().Monday![0];
+    const employees = APINoAsync.fetchPTList();
+    let cmap = reverseViableCourses(APINoAsync.fetchAllViableCourses());
     let options: OptionsProps;
 
     beforeEach(() => {
-        renderData = {
-            department: "CSCE",
-            course_number: 121,
-            section_number: '100',
-            section_id: 1,
-            start_time: new Date((8+6)*60*60*1000),
-            end_time: new Date((8+6)*60*60*1000 + 50*60*1000), // 50 minutes long
-            weekday: "none listed",
-            place: "nowhere",
-            scheduled: null,
-            professor: "",
-            capacity_peer_teachers: 2,
-        }
         options = {
             editing: {
                 bool: [false, () => {}],
@@ -34,14 +25,21 @@ describe('SchedulingBlock', () => {
         }
     })
 
-    const renderSubject = (classes: string, hats?: number) => render(
+    const renderSubject = (classes: string, hats?: number[]) => render(
         < APIContext >
-            <div className={classes}>
-                < SchedulingBlock visible={true} data={{
-                    course_instance: renderData,
-                    linkIDs: hats? Array.from(Array(hats).keys()) : []
-                }} options={options}/>
-            </div>
+            < contexts.allViableCourses.Consumer >
+                {([,,allViableCoursesMap]) => {
+                    cmap = allViableCoursesMap;
+                    return (
+                        <div className={classes}>
+                            < SchedulingBlock visible={true} data={{
+                                course_instance: renderData,
+                                linkIDs: (hats === undefined)? [] : hats
+                            }} options={options}/>
+                        </div>
+                    )
+                }}
+            </contexts.allViableCourses.Consumer>
         </APIContext>
     );
 
@@ -49,14 +47,14 @@ describe('SchedulingBlock', () => {
         it('displays the course', () => {
             renderSubject("");
             
-            const elements = screen.getAllByText(/121/);
+            const elements = screen.getAllByText(new RegExp(renderData.course_number.toString()));
             expect(elements.length).toBeGreaterThan(0);
         });
     
         it('displays the section', () => {
             renderSubject("");
             
-            const elements = screen.getAllByText(/100/);
+            const elements = screen.getAllByText(new RegExp(renderData.section_number.toString()));
             expect(elements.length).toBeGreaterThan(0);
         });
 
@@ -84,7 +82,7 @@ describe('SchedulingBlock', () => {
             });
     
             it('makes hats with link IDs', () => {
-                renderSubject("", 3);
+                renderSubject("", [1, 2, 3]);
     
                 const elements = screen.queryAllByTestId("hat");
                 expect(elements.length).toBe(3);
@@ -96,21 +94,21 @@ describe('SchedulingBlock', () => {
         it('shows the department', () => {
             renderSubject("detailed");
 
-            const elements = screen.getAllByText(/CSCE/);
+            const elements = screen.getAllByText(new RegExp(renderData.department.toString()));
             expect(elements.length).toBeGreaterThan(0);
         });
 
         it('shows the course number', () => {
             renderSubject("detailed");
 
-            const elements = screen.getAllByText(/121/);
+            const elements = screen.getAllByText(new RegExp(renderData.course_number.toString()));
             expect(elements.length).toBeGreaterThan(0);
         });
 
         it('shows the section number', () => {
             renderSubject("detailed");
 
-            const elements = screen.getAllByText(/100/);
+            const elements = screen.getAllByText(new RegExp(renderData.section_number.toString()));
             expect(elements.length).toBeGreaterThan(0);
         });
 
@@ -131,12 +129,18 @@ describe('SchedulingBlock', () => {
         it('shows the location', () => {
             renderSubject("detailed");
 
-            const elements = screen.getAllByText(/nowhere/i);
+            const elements = screen.getAllByText(/BUILDING .*/i);
             expect(elements.length).toBeGreaterThan(0);
         })
     })
 
     describe('editing', () => {
+        beforeEach(() => {
+            options.editing!.bool[0] = true;
+            renderData.forbidden = [];
+            renderData.scheduled = [];
+        })
+
         it('enters edit detail when clicked', () => {
             options.editing!.bool[0] = true;
             renderSubject("editing");
@@ -147,16 +151,12 @@ describe('SchedulingBlock', () => {
         });
 
         describe('displays', () => {
-            beforeEach(() => {
-                options.editing!.bool[0] = true;
-            })
-
             it('the department', () => {
                 renderSubject("editing");
                 const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
                 subject.click();
 
-                const elements = screen.getAllByText(/CSCE/);
+                const elements = screen.getAllByText(new RegExp(renderData.department.toString()));
                 expect(elements.length).toBeGreaterThan(0);
             });
 
@@ -165,7 +165,7 @@ describe('SchedulingBlock', () => {
                 const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
                 subject.click();
 
-                const elements = screen.getAllByText(/121/);
+                const elements = screen.getAllByText(new RegExp(renderData.course_number.toString()));
                 expect(elements.length).toBeGreaterThan(0);
             });
 
@@ -174,7 +174,7 @@ describe('SchedulingBlock', () => {
                 const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
                 subject.click();
 
-                const elements = screen.getAllByText(/100/);
+                const elements = screen.getAllByText(new RegExp(renderData.section_number.toString()));
                 expect(elements.length).toBeGreaterThan(0);
             });
 
@@ -201,7 +201,7 @@ describe('SchedulingBlock', () => {
                 const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
                 subject.click();
 
-                const elements = screen.getAllByText(/nowhere/i);
+                const elements = screen.getAllByText(/BUILDING .*/i);
                 expect(elements.length).toBeGreaterThan(0);
             })
 
@@ -210,7 +210,7 @@ describe('SchedulingBlock', () => {
                 const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
                 subject.click();
 
-                const elements = screen.getAllByText(/Desired PT Count: 2/i);
+                const elements = screen.getAllByText(new RegExp("Desired PT Count: " + renderData.capacity_peer_teachers.toString()));
                 expect(elements.length).toBeGreaterThan(0);
             })
         })
@@ -218,21 +218,111 @@ describe('SchedulingBlock', () => {
         describe("function", () => {
             describe("dropdown", () => {
                 it('the dropdown contains valid peer teachers for the section', () => {
-                    const r = renderSubject("editing");
+                    renderSubject("editing");
                     const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
                     subject.click();
-                    r.debug();
 
-                    const elements = screen.getAllByText(/Peer Teacher 1/i);
-                    expect(elements.length).toBeGreaterThan(0);
+                    cmap.get(renderData.section_id)!.filter(link => link.pref !== "Can't Do").forEach(link => {
+                        const fella = employees.find(e => e.person_id === link.person_id)!;
+                        const matcher = new RegExp(`${fella.first_name} ${fella.last_name}( |$)`);
+                        expect(screen.getByText(matcher)).toBeInTheDocument();
+                    });
                 });
 
-                it.todo('the dropdown does not contain invalid peer teachers for the section');
-                it.todo('in the dropdown, peer teachers who prefer the section are labeled as such');
-                it.todo('in the dropdown, peer teachers who are indifferent about the section are labeled as such');
-                it.todo('in the dropdown, peer teachers who do not prefer the section are labeled as such');
-                it.todo("in the dropdown, peer teachers who can't do the section don't show up");
-                it.todo("in the dropdown, peer teachers with a time conflic are labeled as such");
+                it('the dropdown does not contain invalid peer teachers for the section', () => {
+                    renderSubject("editing");
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+
+                    const validPtids = cmap.get(renderData.section_id)!.map(link => link.person_id);
+                    const invalidPts = employees.filter(e => !validPtids.includes(e.person_id));
+                    
+                    invalidPts.forEach(pt => {
+                        const matcher = new RegExp(`${pt.first_name} ${pt.last_name}( |$)`);
+                        expect(screen.queryByText(matcher)).not.toBeInTheDocument();
+                    });
+                });
+
+                it('in the dropdown, peer teachers who prefer the section are labeled as such', () => {
+                    renderSubject("editing");
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+
+                    cmap.get(renderData.section_id)!.filter(link => link.pref === "Prefer To Do").forEach(link => {
+                        const fella = employees.find(e => e.person_id === link.person_id)!;
+                        expect(screen.getByText(`${fella.first_name} ${fella.last_name} (Want)`)).toBeInTheDocument();
+                    });
+                });
+
+                it('in the dropdown, peer teachers who are indifferent about the section are labeled as such', () => {
+                    renderSubject("editing");
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+
+                    cmap.get(renderData.section_id)!.filter(link => link.pref === "Indifferent").forEach(link => {
+                        const fella = employees.find(e => e.person_id === link.person_id)!;
+                        const matcher = new RegExp(`${fella.first_name} ${fella.last_name}$`);
+                        expect(screen.getByText(matcher)).toBeInTheDocument();
+                    });
+                });
+
+                it('in the dropdown, peer teachers who do not prefer the section are labeled as such', () => {
+                    renderSubject("editing");
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+
+                    cmap.get(renderData.section_id)!.filter(link => link.pref === "Prefer Not To Do").forEach(link => {
+                        const fella = employees.find(e => e.person_id === link.person_id)!;
+                        expect(screen.getByText(`${fella.first_name} ${fella.last_name} (Don't Want)`)).toBeInTheDocument();
+                    });
+                });
+
+                it("in the dropdown, peer teachers who can't do the section don't show up", () => {
+                    renderSubject("editing");
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+
+                    cmap.get(renderData.section_id)!.filter(link => link.pref === "Can't Do").forEach(link => {
+                        const fella = employees.find(e => e.person_id === link.person_id)!;
+                        expect(screen.queryByText(`${fella.first_name} ${fella.last_name}`)).not.toBeInTheDocument();
+                    });
+                });
+
+                it("in the dropdown, peer teachers with a time conflict are labeled as such", () => {
+                    const dropdownPeople = cmap.get(renderData.section_id)?.filter(l => l.pref !== "Can't Do")!
+                    renderData.forbidden = [
+                        dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id,
+                        dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id,
+                        dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id
+                    ];
+                    
+                    renderSubject("editing");
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+
+                    dropdownPeople.filter(link => renderData.forbidden?.includes(link.person_id)).forEach(link => {
+                        const fella = employees.find(e => e.person_id === link.person_id)!;
+                        expect(screen.getByText(`${fella.first_name} ${fella.last_name} (TIME CONFLICT)`)).toBeInTheDocument();
+                    });
+                });
+
+                it("in the dropdown, peer teachers scheduled for the section are labeled as such", () => {
+                    const dropdownPeople = cmap.get(renderData.section_id)!
+
+                    renderSubject("editing", [
+                        dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id,
+                        dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id,
+                        dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id
+                    ]);
+                    const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                    subject.click();
+
+                    dropdownPeople.filter(link => renderData.scheduled?.includes(link.person_id)).forEach(link => {
+                        const fella = employees.find(e => e.person_id === link.person_id)!;
+                        const matcher = new RegExp(`> ${fella.first_name} ${fella.last_name} .*`);
+                        expect(screen.getByText(matcher)).toBeInTheDocument();
+                    });
+                });
             });
 
             describe("buttons", () => {
