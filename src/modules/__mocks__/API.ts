@@ -12,7 +12,8 @@ const generateBlock = (course: number, section: string, start: Date, end: Date, 
 	weekday: day,
 	place: place,
 	scheduled: null,
-	professor: ""
+	professor: "",
+	capacity_peer_teachers: 1,
 });
 
 class API {
@@ -98,6 +99,16 @@ class API {
 	static updateSections = async (sections: EditableSection[], instant?: boolean) => this.promiseVoid(instant)
 }
 
+const users = 50;
+let lastGeneratedEveryone: Person[] = [];
+let lastGeneratedCourseBlocks: CourseBlockWeek = {
+	Monday: [],
+	Tuesday: [],
+	Wednesday: [],
+	Thursday: [],
+	Friday: []
+}
+let allViable: Map<number, CourseBlockWeek>;
 export class APINoAsync {
 	static fetchAllStatic = () => {
 		// console.log("MOCK API: fetchAllStatic");
@@ -122,12 +133,13 @@ export class APINoAsync {
 	}
 
 	static fetchEveryone = (): Person[] => {
-		return Array.from(Array(30).keys()).map(i => `Test User ${i}`)
+		if (lastGeneratedEveryone.length !== 0) return lastGeneratedEveryone;
+		lastGeneratedEveryone = Array.from(Array(users).keys()).map(i => `Test User ${i}`)
 			.map((e, i) => ({
 				person_id: i, 
 				email: "",
 				first_name: e.substring(0, e.indexOf(' ')), 
-				last_name: e.substring(e.indexOf(' ')),
+				last_name: e.substring(e.indexOf(' ') + 1),
 				profile_photo_url: "",
 				peer_teacher: i % 5 !== 0,
 				teaching_assistant: false,
@@ -137,9 +149,13 @@ export class APINoAsync {
 				isChecked: i % 4 !== 1,
 				desired_number_assignments: 2
 			}))
+
+		return lastGeneratedEveryone;
 	}
 
 	static fetchCourseBlocks = (): CourseBlockWeek => {
+		if (!(lastGeneratedCourseBlocks.Monday && lastGeneratedCourseBlocks.Monday.length === 0)) return lastGeneratedCourseBlocks;
+
 		// console.log("MOCK API: static");
 		const buildings = ["BUILDING A", "BUILDING B", "BUILDING C", "BUILDING D", "BUILDING E"];
 		const courses = [110, 111, 121, 221, 312, 313, 314, 315];
@@ -152,7 +168,7 @@ export class APINoAsync {
 		}
 		const genDay = (length: number, day: CourseBlockWeekKey) => {
 			let ret: CourseBlock[] = [];
-			let startTime = new Date(8*60*60*1000);
+			let startTime = new Date((8+6)*60*60*1000);
 			Array.from(Array(Math.floor(Math.random() * 60 + 20)).keys()).forEach(i => {
 				if (Math.random() > 0.7) {
 					ret.push(
@@ -174,16 +190,17 @@ export class APINoAsync {
 			})
 			return ret;
 		}
-		return {
+		lastGeneratedCourseBlocks = {
 			Monday: genDay(50, "Monday"),
 			Tuesday: genDay(75, "Tuesday"),
 			Wednesday: genDay(50, "Wednesday"),
 			Thursday: genDay(75, "Thursday"),
 			Friday: genDay(50, "Friday")
 		}
+		return lastGeneratedCourseBlocks;
 	}
 
-	static fetchUserPreferences = (user_id?: number, ): APIUserPreferences => {
+	static fetchUserPreferences = (user_id?: number): APIUserPreferences => {
 
 		const pref = () => {
 			const r = Math.random();
@@ -205,27 +222,35 @@ export class APINoAsync {
 		return resp;
 	}
 
-	static fetchUserViableCourses = (user_id?: number, ): CourseBlockWeek => {
+	static fetchUserViableCourses = (user_id?: number): CourseBlockWeek => {
 		const week = APINoAsync.fetchCourseBlocks()
+		const prefs = APINoAsync.fetchUserPreferences();
 		return {
-			Monday: week?.Monday?.filter(() => Math.random() > 0.5) || null,
-			Tuesday: week?.Tuesday?.filter(() => Math.random() > 0.5) || null,
-			Wednesday: week?.Wednesday?.filter(() => Math.random() > 0.5) || null,
-			Thursday: week?.Thursday?.filter(() => Math.random() > 0.5) || null,
-			Friday: week?.Friday?.filter(() => Math.random() > 0.5) || null
+			Monday: week?.Monday?.filter(() => Math.random() > 0.5)?.map(b => ({...b, preference: prefs.get(b.section_id)})) || null,
+			Tuesday: week?.Tuesday?.filter(() => Math.random() > 0.5)?.map(b => ({...b, preference: prefs.get(b.section_id)})) || null,
+			Wednesday: week?.Wednesday?.filter(() => Math.random() > 0.5)?.map(b => ({...b, preference: prefs.get(b.section_id)})) || null,
+			Thursday: week?.Thursday?.filter(() => Math.random() > 0.5)?.map(b => ({...b, preference: prefs.get(b.section_id)})) || null,
+			Friday: week?.Friday?.filter(() => Math.random() > 0.5)?.map(b => ({...b, preference: prefs.get(b.section_id)})) || null
 		}
 	}
 
 	static fetchAllViableCourses = (): Map<number, CourseBlockWeek> => {
 		const blocks = APINoAsync.fetchCourseBlocks();
-		return new Map<number, CourseBlockWeek>(
-			Array.from(Array(30).keys()).map(i => [i, {
-				Monday: blocks.Monday?.filter(b => Math.random() > 0.4),
-				Tuesday: blocks.Tuesday?.filter(b => Math.random() > 0.4),
-				Wednesday: blocks.Wednesday?.filter(b => Math.random() > 0.4),
-				Thursday: blocks.Thursday?.filter(b => Math.random() > 0.4),
-				Friday: blocks.Friday?.filter(b => Math.random() > 0.4)
-			}] as [number, CourseBlockWeek]))
+		const employees = APINoAsync.fetchPTList();
+		if (allViable) return allViable;
+		allViable = new Map<number, CourseBlockWeek>(
+			employees.map(e => {
+				const prefs = APINoAsync.fetchUserPreferences();
+				return [e.person_id, {
+					Monday: blocks.Monday?.filter(b => Math.random() > 0.4)?.map(b => ({...b, preference: prefs.get(b.section_id)})),
+					Tuesday: blocks.Tuesday?.filter(b => Math.random() > 0.4)?.map(b => ({...b, preference: prefs.get(b.section_id)})),
+					Wednesday: blocks.Wednesday?.filter(b => Math.random() > 0.4)?.map(b => ({...b, preference: prefs.get(b.section_id)})),
+					Thursday: blocks.Thursday?.filter(b => Math.random() > 0.4)?.map(b => ({...b, preference: prefs.get(b.section_id)})),
+					Friday: blocks.Friday?.filter(b => Math.random() > 0.4)?.map(b => ({...b, preference: prefs.get(b.section_id)}))
+				}] as [number, CourseBlockWeek]
+			})
+		)
+		return allViable;
 	}
 
 	static fetchUserTrades = (user_id?: number, ): TradeRequest[] => {

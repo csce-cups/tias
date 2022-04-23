@@ -25,7 +25,8 @@ class BlockFormer {
         weekday: day,
         place: place,
         scheduled: null,
-        professor: ""
+        professor: "",
+        capacity_peer_teachers: 1,
     })
 
     static starts = {

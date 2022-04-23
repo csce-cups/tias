@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import API, { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '../../modules/API';
+import { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '../../modules/API';
 import { findCollisions, formatDate } from '../../modules/BlockFunctions';
 import uuid from '../../uuid';
 import contexts from '../APIContext';
@@ -80,7 +80,6 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
         Select a peer teacher
       </option>  
     )
-    
     es.sort((a, b) => {
       const aForbidden = course_instance.forbidden?.includes(a.employee.person_id);
       const bForbidden = course_instance.forbidden?.includes(b.employee.person_id);

@@ -1,7 +1,7 @@
 import React, { FC, ReactNode, useEffect } from "react";
-import { CourseBlockWeekKey, Person } from "../../modules/API";
+import { CourseBlockWeek, CourseBlockWeekKey, Person } from "../../modules/API";
 import { APINoAsync } from "../../modules/__mocks__/API";
-import { contexts, PersonPrefLink, _initstates } from "../APIContextHelper";
+import { contexts, PersonPrefLink, reverseViableCourses, _initstates } from "../APIContextHelper";
 
 interface Props {
   children: ReactNode;
@@ -25,40 +25,15 @@ export const APIContext: FC<Props> = ({ children }) => {
     userTrades,
   } = _initstates();
 
-  employeeState[0] = (APINoAsync.fetchPTList());
-  blockState[0] = (APINoAsync.fetchCourseBlocks());
-  loadedScheduleState[0] = (APINoAsync.getSavedSchedule());
-  userQualState[0] = (APINoAsync.fetchUserQualifications());
-  userPrefState[0] = (APINoAsync.fetchUserPreferences(0));
-  userViableCourses[0] = (APINoAsync.fetchUserViableCourses(0));
-  userTrades[0] = (APINoAsync.fetchUserTrades(0));
-
-  const resp = APINoAsync.fetchAllViableCourses()
-  allViableCoursesState[0] = (resp);
-
-  let newMap = new Map<number, PersonPrefLink[]>();
-  const keys: CourseBlockWeekKey[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-  allViableCoursesState[0].forEach((week, id) => {
-    keys.forEach(k => {
-      week[k]?.forEach(course => {
-        if (newMap.has(course.section_id)) {
-          const get = newMap.get(course.section_id);
-          if (!get?.find(e => e.person_id === id)) newMap.get(course.section_id)!.push({
-            person_id: id, pref: (course as any).preference
-          });
-        } else {
-          newMap.set(course.section_id, [{person_id: id, pref: (course as any).pref}]);
-        }
-      })
-    });
-  });
-  allViableCoursesMap[0] = (newMap);
-
-  
-  
-  
-  
-  
+  employeeState[0] = APINoAsync.fetchPTList();
+  blockState[0] = APINoAsync.fetchCourseBlocks();
+  loadedScheduleState[0] = APINoAsync.getSavedSchedule();
+  userQualState[0] = APINoAsync.fetchUserQualifications();
+  userPrefState[0] = APINoAsync.fetchUserPreferences(0);
+  userViableCourses[0] = APINoAsync.fetchUserViableCourses(0);
+  userTrades[0] = APINoAsync.fetchUserTrades(0);
+  allViableCoursesState[0] = APINoAsync.fetchAllViableCourses();
+  allViableCoursesMap[0] = reverseViableCourses(allViableCoursesState[0]);
 
   return (
     <contexts.googleData.Provider value={googleDataState}>

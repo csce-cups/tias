@@ -1,7 +1,7 @@
 import React, { createContext, FC, ReactNode, useEffect, useState } from "react";
 import { loadSchedule, updateWithSchedule } from "../modules/BlockFunctions";
-import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest, CourseBlock} from "../modules/API";
-import { _initstates, contexts, PersonPrefLink } from "./APIContextHelper";
+import API, { Person, CourseBlockWeek, APIUserQualification, APIUserPreferences, APIUserPreferenceEnum, parseCookie, TradeRequest, CourseBlock, CourseBlockWeekKey} from "../modules/API";
+import { _initstates, contexts, PersonPrefLink, reverseViableCourses } from "./APIContextHelper";
 
 const permAdmin : string | undefined = process.env.REACT_APP_ADMIN_EMAIL
 
@@ -104,24 +104,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   }, [googleDataState[0]]); // Fetch user specific data when user is logged in
 
   useEffect(() => {
-    let newMap = new Map<number, PersonPrefLink[]>();
-    const keys: (keyof CourseBlockWeek)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    allViableCoursesState[0].forEach((week, id) => {
-      keys.forEach(k => {
-        week[k]?.forEach(course => {
-          if (newMap.has(course.section_id)) {
-            const get = newMap.get(course.section_id);
-            if (!get?.find(e => e.person_id === id)) newMap.get(course.section_id)!.push({
-              person_id: id, pref: (course as any).preference
-            });
-          } else {
-            newMap.set(course.section_id, [{person_id: id, pref: (course as any).pref}]);
-          }
-        })
-      });
-    });
-    
-    allViableCoursesMap[1](newMap);
+    allViableCoursesMap[1](reverseViableCourses(allViableCoursesState[0]));
   }, [allViableCoursesState[0]])
 
   return ( // Wish we'd used redux

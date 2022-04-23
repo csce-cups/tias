@@ -84,7 +84,7 @@ export interface CourseBlock {
 	scheduled: number[] | null
 	ronly_scheduled?: number[] | null
 	professor: string
-	capacity_peer_teachers?: number
+	capacity_peer_teachers: number
 	updated?: boolean
 	opened?: boolean
 	forbidden?: number[]
