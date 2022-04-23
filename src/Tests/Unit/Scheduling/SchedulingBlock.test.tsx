@@ -327,7 +327,20 @@ describe('SchedulingBlock', () => {
 
             describe("buttons", () => {
                 describe("view", () => {
-                    it.todo('selecting a peer teacher enables the button');
+                    const dropdownPeople = cmap.get(renderData.section_id)!.filter(l => l.pref !== "Can't Do")!
+                    const target = employees.find(e => e.person_id === dropdownPeople[0].person_id)!;
+
+                    it('selecting a peer teacher enables the button', () => {
+                        renderSubject("editing");
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+
+                        const select = screen.getByRole('combobox');
+                        select.dispatchEvent(new CustomEvent('change', {target: {value: target.person_id} } as any));
+                        // const option = screen.getByRole('option', {name: new RegExp(`${target.first_name} ${target.last_name}($|.*)`)}) as HTMLOptionElement;
+                        
+                        expect(screen.getByText("foo")).toBeInTheDocument();
+                    });
                     it.todo('selecting a peer teacher with a time conflict disables the button');
                     it.todo('making an edit enables the reset button');
 
