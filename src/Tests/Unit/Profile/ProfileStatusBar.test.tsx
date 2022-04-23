@@ -27,11 +27,7 @@ describe('ProfileStatusBar', () => {
     });
     it.todo("does parse.ics successfully parse files");
 
-    describe('parse ics function', () => {
-        it('successfully parses when given a file', () => {
-            ;
-        });
-    });
+   
     it.todo("is the API called on change (jest spy and unit integration test??");
     it.todo("does click on button do the API");
 

@@ -14,9 +14,9 @@ describe('ProfileFormRow', () => {
 
     it('updates properly', () => {
         render(<ProfileFormRow course_id={-1} course_name={"none"} qual={false} key={`pfrow-none`}/>); 
-        const button = screen.getByRole('fill');
-        button.click();
+        const e = document.getElementById('${course_name}-prefs') as HTMLSelectElement;
+        e.onchange;
      });
 
-   //need to test what happens when update is called
+   //still isn't testing update? 
 }); 
