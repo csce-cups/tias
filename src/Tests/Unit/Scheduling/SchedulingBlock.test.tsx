@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock';
 import { CourseBlock } from '../../../modules/API';
 import { OptionsProps } from '../../../Components/Scheduling/SchedulingWindow';
@@ -336,11 +336,14 @@ describe('SchedulingBlock', () => {
                         subject.click();
 
                         const select = screen.getByRole('combobox');
-                        select.dispatchEvent(new CustomEvent('change', {target: {value: target.person_id} } as any));
-                        // const option = screen.getByRole('option', {name: new RegExp(`${target.first_name} ${target.last_name}($|.*)`)}) as HTMLOptionElement;
-                        
-                        expect(screen.getByText("foo")).toBeInTheDocument();
+                        fireEvent.change(select, {
+                            target: { value: target.person_id }
+                        });
+
+                        const regex = new RegExp(`Add to ${renderData.department} ${renderData.course_number}-${renderData.section_number}`);
+                        expect(screen.getByText(regex)).toBeInTheDocument();
                     });
+
                     it.todo('selecting a peer teacher with a time conflict disables the button');
                     it.todo('making an edit enables the reset button');
 
