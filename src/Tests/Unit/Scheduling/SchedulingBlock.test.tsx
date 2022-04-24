@@ -6,6 +6,7 @@ import { OptionsProps } from '../../../Components/Scheduling/SchedulingWindow';
 import contexts, { APIContext } from '../../../Components/APIContext';
 import { PersonPrefLink, reverseViableCourses } from '../../../Components/APIContextHelper';
 import { APINoAsync } from '../../../modules/__mocks__/API';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../../Components/APIContext');
 jest.mock('../../../Components/Misc/Hat');
@@ -149,6 +150,18 @@ describe('SchedulingBlock', () => {
             subject.click();
             expect(subject).toHaveClass("interacted");
         });
+
+        it('exits edit detail when clicked outside of the block', () => {
+            options.editing!.bool[0] = true;
+            renderSubject("editing");
+
+            const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+            subject.click();
+            expect(subject).toHaveClass("interacted");
+
+            userEvent.click(document.body);
+            expect(subject).not.toHaveClass("interacted");
+        })
 
         describe('displays', () => {
             it('the department', () => {
@@ -326,9 +339,18 @@ describe('SchedulingBlock', () => {
             });
 
             describe("buttons", () => {
+                const dropdownPeople = cmap.get(renderData.section_id)!.filter(l => l.pref !== "Can't Do")!
+                const target = employees.find(e => e.person_id === dropdownPeople[0].person_id)!;
+
                 describe("view", () => {
-                    const dropdownPeople = cmap.get(renderData.section_id)!.filter(l => l.pref !== "Can't Do")!
-                    const target = employees.find(e => e.person_id === dropdownPeople[0].person_id)!;
+                    it('the reset and submit buttons are disabled by default', () => {
+                        renderSubject("editing");
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+                        screen.getAllByRole('button').forEach(button => {
+                            expect(button).not.toBeEnabled();
+                        })
+                    })
 
                     it('selecting a peer teacher enables the button', () => {
                         renderSubject("editing");
@@ -340,21 +362,144 @@ describe('SchedulingBlock', () => {
                             target: { value: target.person_id }
                         });
 
-                        const regex = new RegExp(`Add to ${renderData.department} ${renderData.course_number}-${renderData.section_number}`);
-                        expect(screen.getByText(regex)).toBeInTheDocument();
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        expect(submitButton).toBeEnabled();
                     });
 
-                    it.todo('selecting a peer teacher with a time conflict disables the button');
-                    it.todo('making an edit enables the reset button');
+                    it("selecting a peer teacher that isn't scheduled for the section makes the button say they can be added", () => {
+                        renderSubject("editing");
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
 
-                    it.todo("selecting a peer teacher that isn't scheduled for the section makes the button say they can be added");
-                    it.todo("selecting a peer teacher that is scheduled for the section makes the button say they can be removed");
+                        const select = screen.getByRole('combobox');
+                        fireEvent.change(select, {
+                            target: { value: target.person_id }
+                        });
+
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        expect(submitButton).toHaveTextContent(`Add to ${renderData.department} ${renderData.course_number}-${renderData.section_number}`);
+                    });
+
+                    it("selecting a peer teacher that is scheduled for the section makes the button say they can be removed", () => {
+                        renderSubject("editing", [target.person_id]);
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+
+                        const select = screen.getByRole('combobox');
+                        fireEvent.change(select, {
+                            target: { value: target.person_id }
+                        });
+
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        expect(submitButton).toHaveTextContent(`Remove from ${renderData.department} ${renderData.course_number}-${renderData.section_number}`);
+                    });
+
+                    it('selecting a peer teacher with a time conflict disables the button', () => {
+                        const dropdownPeople = cmap.get(renderData.section_id)?.filter(l => l.pref !== "Can't Do")!
+                        renderData.forbidden = [
+                            dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id,
+                            dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id,
+                            dropdownPeople[Math.floor(Math.random() * dropdownPeople.length)].person_id
+                        ];
+                    
+                        renderSubject("editing");
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+
+                        const target = employees.find(e => e.person_id === renderData.forbidden![0])!;
+                        const select = screen.getByRole('combobox');
+                        fireEvent.change(select, {
+                            target: { value: target.person_id }
+                        });
+
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        expect(submitButton).not.toBeEnabled();
+                        expect(submitButton).toHaveTextContent(/TIME CONFLICT.*/);
+
+                    });
+                    
+                    it('making an edit enables the reset button (requires manual add user to pass)', () => {
+                        renderSubject("editing");
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+
+                        const select = screen.getByRole('combobox');
+                        fireEvent.change(select, {
+                            target: { value: target.person_id }
+                        });
+
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        expect(submitButton).toHaveTextContent(`Add to ${renderData.department} ${renderData.course_number}-${renderData.section_number}`);
+                        submitButton.click();
+                        
+                        const resetButton = screen.getAllByRole('button').filter(b => b.textContent === "Reset")[0];
+                        expect(resetButton).toBeEnabled();
+                    });
                 });
 
                 describe("functionality", () => {
-                    it.todo("selecting a peer teacher that isn't scheduled for the section and clicking the button adds the peer teacher to the section");
-                    it.todo("selecting a peer teacher that is scheduled for the section and clicking the button removes the peer teacher from the section");
-                    it.todo("clicking the reset button after an edit restores the section to before the edit");
+                    it("selecting a peer teacher that isn't scheduled for the section and clicking the button adds the peer teacher to the section", () => {
+                        renderSubject("editing");
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+
+                        const select = screen.getByRole('combobox');
+                        fireEvent.change(select, {
+                            target: { value: target.person_id }
+                        });
+
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        submitButton.click();
+                        
+                        const hats = screen.getAllByTestId("hat");
+                        expect(hats.find(h => +h.getAttribute('link-id')! === target.person_id)).toBeTruthy();
+                    });
+
+                    it("selecting a peer teacher that is scheduled for the section and clicking the button removes the peer teacher from the section", () => {
+                        renderSubject("editing", [target.person_id, 0]);
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+
+                        const select = screen.getByRole('combobox');
+                        fireEvent.change(select, {
+                            target: { value: target.person_id }
+                        });
+
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        submitButton.click();
+                        
+                        const hats = screen.getAllByTestId("hat");
+                        expect(hats.find(h => +h.getAttribute('link-id')! === target.person_id)).toBeFalsy();
+                    });
+
+                    it("clicking the reset button after an edit restores the section to before the edit (depends on add and remove functionality)", () => {
+                        renderData.ronly_scheduled = [target.person_id, 0];
+                        renderSubject("editing", [target.person_id, 0]);
+                        const expectedHats = screen.getAllByTestId("hat");
+
+                        const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
+                        subject.click();
+
+                        const select = screen.getByRole('combobox');
+                        const submitButton = screen.getAllByRole('button').filter(b => b.textContent !== "Reset")[0];
+                        [
+                            target,
+                            employees.find(e => e.person_id === dropdownPeople[1].person_id)!,
+                            employees.find(e => e.person_id === dropdownPeople[2].person_id)!,
+                            employees.find(e => e.person_id === dropdownPeople[3].person_id)!
+                        ].forEach(e => {
+                            fireEvent.change(select, {
+                                target: { value: e.person_id }
+                            });
+                            submitButton.click();
+                        });
+                        expect(screen.getAllByTestId("hat")).not.toEqual(expectedHats);
+                        
+                        const reset = screen.getAllByRole('button').filter(b => b.textContent === "Reset")[0];
+                        reset.click();
+                        
+                        expect(screen.getAllByTestId("hat")).toEqual(expectedHats);
+                    });
 
                     describe("section link", () => {
                         it.todo("edits on one block are reflected on other blocks of the same section (Adding)");

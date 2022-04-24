@@ -118,9 +118,8 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
       if (course_instance.forbidden?.includes(+val)) {
         t.innerHTML = "TIME CONFLICT: A scheduled section makes this peer teacher unavailable at this time";
         t.setAttribute('action-type', 'error');
-        return;
-      }
-      if (linkIDs?.includes(+e.target.value)) {
+        setDisabled(true);
+      } else if (linkIDs?.includes(+e.target.value)) {
         t.innerHTML = `Remove from ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
         t.setAttribute('action-type', 'remove');
       } else {
