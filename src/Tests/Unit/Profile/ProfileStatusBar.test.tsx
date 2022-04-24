@@ -25,10 +25,6 @@ describe('ProfileStatusBar', () => {
             //spy.mockRestore();
         }); 
     });
-    it.todo("does parse.ics successfully parse files");
-
-   
-    it.todo("is the API called on change (jest spy and unit integration test??");
-    it.todo("does click on button do the API");
-
+    it.todo("successfully parses files");
+    it.todo("calls the API on change (jest spy and unit integration test??");
 }); 

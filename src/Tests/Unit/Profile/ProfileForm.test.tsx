@@ -9,13 +9,13 @@ jest.mock('../../../Components/APIContext');
 
 
 describe('ProfileForm', () => {
-    it('renders properly', () => {
+    it('includes the Course Qualifications dropdown', () => {
        render(<ProfileForm/>); 
        expect(screen.getByText('Course Qualifications')).toBeInTheDocument();
        expect(screen.getByText('Save Qualifications')).toBeInTheDocument();
     });
 
-    it('expands dropdowns when clicked', () => {
+    it('expands dropdowns when they are clicked', () => {
         render(<ProfileForm/>);
         const select = screen.getByRole('heading');
         select.click();
