@@ -13,7 +13,8 @@ describe("DisplayBlock", ()=>{
         weekday: "W",
         place: "ZACH 420",
         scheduled: [1, 2, 3],
-        professor: "Leyk"
+        professor: "Leyk",
+        capacity_peer_teachers: 1
     };
     const person:Person = {
         person_id: 0,
