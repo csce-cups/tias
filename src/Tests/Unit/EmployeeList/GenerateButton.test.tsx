@@ -72,7 +72,7 @@ describe("GenerateButton", () => {
     });
   });
 
-  it("should change it's text while the scheduler runs", async () => {
+  it("should change its text while the scheduler runs", async () => {
     render(
       <APIContext>
         <GenerateButton genState={[false, () => {}]} />
@@ -88,7 +88,7 @@ describe("GenerateButton", () => {
     });
   });
 
-  it("should change it's text after the scheduler runs", async () => {
+  it("should change its text after the scheduler runs", async () => {
     render(
       <APIContext>
         <GenerateButton genState={[false, () => {}]} />
