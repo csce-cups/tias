@@ -8,7 +8,7 @@ jest.mock('../../../Components/APIContext');
 
 
 describe('PreferenceSelector', () => {
-    it('renders properly', () => {
+    it('includes the correct text', () => {
        render(<PreferenceSelector/>); 
        expect(screen.getByText('Section Preferences')).toBeInTheDocument();
        expect(screen.getByText('Preferred Number of Lab Sections:')).toBeInTheDocument();
