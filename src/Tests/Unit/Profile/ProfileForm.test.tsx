@@ -1,8 +1,9 @@
 import React, {useContext} from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { ProfileForm } from '../../../Components/Profile/ProfileForm';
 import contexts from '../../../Components/APIContext';
 import API from '../../../modules/API';
+import { click } from '@testing-library/user-event/dist/click';
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
 
@@ -12,6 +13,16 @@ describe('ProfileForm', () => {
        render(<ProfileForm/>); 
        expect(screen.getByText('Course Qualifications')).toBeInTheDocument();
        expect(screen.getByText('Save Qualifications')).toBeInTheDocument();
+    });
+
+    it('expands dropdowns when clicked', () => {
+        render(<ProfileForm/>);
+        const select = screen.getByRole('heading');
+        select.click();
+        fireEvent.change(select, {
+            target: {value: click}
+        })
+        expect(screen.getByText('CSCE 110')).toBeInTheDocument();
     });
 
     it('should save qualifications when button is clicked', () => {
