@@ -46,7 +46,7 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top}) => 
   }
 
   return (
-    <div className="vstack main" style={styles}>
+    <div className="vstack main" data-testid="SchedulingWindow" style={styles}>
       { top?
         top
         : <div style={{height: '1.5em'}}/>
