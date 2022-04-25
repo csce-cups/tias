@@ -8,13 +8,22 @@ export const AdminCourseList = () => {
   const [courses, setCourses] = useState<Course[]>([{course_id: -1} as Course]);
   const [isEditing, setIsEditing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [dropdownRendered, setDropdownRendered] = useState(false);
   const ref: any = useRef(null);
+
+  const toggleMenu = (to: boolean) => {
+    setTimeout(() => {
+      setShowMenu(to);
+    }, 1);
+    if (to) setDropdownRendered(true);
+    else setTimeout(() => setDropdownRendered(false), 210);
+  }
   
   // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
   useEffect(() => { // Disables focus view on mouse click outside
     const handleClickOutside = (event: any) => {
       if (ref.current && !ref.current.contains(event.target) && showMenu) {
-        setShowMenu(false);
+        toggleMenu(false);
       }
     };
 
@@ -25,9 +34,12 @@ export const AdminCourseList = () => {
   });
   
   useEffect(() => {
+    let rendered = true;
     API.getCourses().then(res => {
-      setCourses(res);
+      if (rendered) setCourses(res);
     });
+
+    return () => {rendered = false};
   }, []);
 
   const deleteCourse = (course: Course, btn: EventTarget & HTMLButtonElement) => {
@@ -76,11 +88,10 @@ export const AdminCourseList = () => {
         API.getCourses().then(res => {
           setCourses(res);
           if (btn !== null) btn.setAttribute('value', "Done!");
-        }).catch(() => {
+        }).catch(rej => {
           if (btn !== null) btn.setAttribute('value', "Error updating list, please refresh");
         })
-        
-      }).catch(() => {
+      }).catch(rej => {
         if (btn !== null) btn.setAttribute('value', "An error occurred.");
 
       })
@@ -97,17 +108,19 @@ export const AdminCourseList = () => {
       <span className="element">These are the courses that are registered with the scheduler. Make sure these are up to date before uploading a new semester.</span>
       <div className="hstack header-end">
         <div className="vstack fill">
-          <button style={courseBtnStyles} className="short green button fill" onClick={() => setShowMenu(true)}>Add Course</button>
-          <div ref={ref} className="add-menu-container">
-            <form className={`add-menu ${!showMenu? 'hidden' : ''}`} onSubmit={(e) => submit(e)}>
-              <div className="hstack">
-                <input id="dpt-new-course-text" className="fill" type="text" placeholder="Department"/>
-                <input id="num-new-course-text" className="fill" type="text" placeholder="Course Number"/>
-              </div>
-              <input id="name-new-course-text" className="fill" type="text" placeholder="Course Name"/>
-              <input id="submit-new-course-button" type="submit" style={courseBtnStyles} className="short green button fill" value="Save"/>
-            </form>
-          </div>
+          <button style={courseBtnStyles} className="short green button fill" onClick={() => toggleMenu(true)}>Add Course</button>
+          { dropdownRendered?
+            <div ref={ref} className="add-menu-container">
+              <form className={`add-menu ${!showMenu? 'hidden' : ''}`} onSubmit={(e) => submit(e)}>
+                <div className="hstack">
+                  <input id="dpt-new-course-text" className="fill" type="text" placeholder="Department"/>
+                  <input id="num-new-course-text" className="fill" type="text" placeholder="Course Number"/>
+                </div>
+                <input id="name-new-course-text" className="fill" type="text" placeholder="Course Name"/>
+                <input id="submit-new-course-button" type="submit" style={courseBtnStyles} className="short green button fill" value="Save"/>
+              </form>
+            </div>
+          : <></> }
         </div>
         <button 
           onClick={() => setIsEditing(!isEditing)} style={courseBtnStyles} className={`short purple button ${isEditing? 'toggled' : ''}`}
