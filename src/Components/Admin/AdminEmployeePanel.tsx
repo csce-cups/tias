@@ -11,10 +11,7 @@ export const AdminEmployeePanel = () => {
     sortLastAlg: ((a: Person, b: Person) => a.last_name.localeCompare(b.last_name)),
     sortFirstAlg: ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name)),
     sortRoleAlg: ((a: Person, b: Person) => {
-      if (a && !b) return -1;
-      else if (!a && b) return 1;
-      else if (!a && !b) return 0;
-      else if (a.administrator && !b.administrator) return -1;
+      if (a.administrator && !b.administrator) return -1;
       else if (!a.administrator && b.administrator) return 1;
       else if (a.professor && !b.professor) return -1;
       else if (!a.professor && b.professor) return 1;
