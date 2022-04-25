@@ -1,6 +1,4 @@
-import React, { FC, useContext } from 'react'
-import { CourseBlock } from '../../modules/API';
-import { DisplayBlock } from './DisplayBlock';
+import React, { FC } from 'react';
 
 interface Props {
   titles: [string, string]

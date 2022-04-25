@@ -197,3 +197,12 @@ const findCollisionIndices = (blocks: CourseBlock[], target: CourseBlock) => {
 
   return collisions; 
 }
+
+export const formatDate = (date: Date) => {
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const ampm = hour >= 12 ? 'pm' : 'am';
+  const hour12 = (hour === 12) ? 12 : hour % 12;
+  const minutes = minute < 10 ? `0${minute}` : minute;
+  return `${hour12}:${minutes} ${ampm}`;
+}

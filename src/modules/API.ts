@@ -84,7 +84,7 @@ export interface CourseBlock {
 	scheduled: number[] | null
 	ronly_scheduled?: number[] | null
 	professor: string
-	capacity_peer_teachers?: number
+	capacity_peer_teachers: number
 	updated?: boolean
 	opened?: boolean
 	forbidden?: number[]
@@ -196,22 +196,6 @@ class API {
 			userPrefs: API.fetchUserPreferences(user_id),
 			userViableCourses: API.fetchUserViableCourses(user_id),
 			userTrades: API.fetchUserTrades(user_id)
-		}
-	}
-
-	static fetchAllStaticDummy = () => {
-		return {
-			employees: API.fetchPTListDummy(),
-			blocks: API.fetchCourseBlocksDummy()
-		}
-	}
-
-	static fetchAllUserDummy = (user_id: number | undefined) => {
-		return {
-			userQuals: API.fetchUserQualificationsDummy(user_id),
-			userPrefs: API.fetchUserPreferencesDummy(user_id),
-			userViableCourses: API.fetchUserViableCourses(undefined),
-			userTrades: API.fetchUserTrades(undefined)
 		}
 	}
 
@@ -414,7 +398,8 @@ class API {
 	}
 
 	static fetchExportedSchedule = async (): Promise<ExportedSchedule> => {
-		return axios.get('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/export-schedule').then(response => response.data as ExportedSchedule)
+		return axios.get('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/export-schedule')
+			.then(response => response.data as ExportedSchedule)
 	}
 
 	static sendUserPreferences = async (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number): Promise<void> => {
@@ -553,153 +538,6 @@ class API {
 			method: 'PUT',
 			body: JSON.stringify({updated_sections: sections})
 		}).then(() => {});
-	}
-
-
-	private static fetchPTListDummy = async (response?: Person[]): Promise<Person[]> => {
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				resolve(response || [
-						"Geralt of Rivia",
-						"Gary Chess", 
-						"Sandy Banks", 
-						"King Gerold III",
-						"Mayde Enless",
-						"Sharpness IV", 
-						"Zelda DeLegendof",
-						"Star Fox", 
-						"Luigi Smansion", 
-						"John Doom", 
-						"Spongebob Squarepants",
-						"Crash Bandishoot",
-						"Suzzie Sunshine",
-						"Mr. Generic",
-						"Honda Accord",
-						"K.K. Slider",
-						"Gee Wilikers",
-						"Mario Galaxy",
-						"Ms. Generic",
-						"Bubble Bass",
-						"Sandy Cheeks",
-						"Patrick",
-						"Samus Errands",
-						"Timmy Twix",
-						"Marvin M&M",
-						"Bikeal Roads",
-						"Spicy Peppers",
-						"Quintin QWERTY",
-						"Asmorald ASDF",
-						"Timmothy Tingle",
-						"Kimmothy Kartz",
-						"Zimmothy Zions",
-						"Phoenix Wright",
-						"Mia Fey",
-						"Miles Edgeworth",
-						"Maya Fey",
-						"Pearl Fey",
-						"Dick Gumshoe",
-						"Franziska von Karma",
-						"Ema Skye",
-						"The Judge",
-						"Apollo Justice",
-						"Trucy Wright",
-						"Athena Cykes",
-						"Ryunosuke Naruhodo",
-						"Susato Mikotoba",
-						"Herlock Sholmes",
-						"Iris Wilson",
-						"Barok van Zieks",
-						"Tetsutetsu Tetsutetsu",
-						"Bobaboba Bobaboba",
-						"Spike the Cowboy",
-						"Guard the Reserve",
-						"Hero Sandwich"
-					].map((e, i) => ({
-						person_id: i, 
-						email: "",
-						first_name: e.substring(0, e.indexOf(' ')), 
-						last_name: e.substring(e.indexOf(' ')),
-						profile_photo_url: "",
-						peer_teacher: true,
-						teaching_assistant: false,
-						administrator: false,
-						professor: false,
-						isScheduled: null,
-						isChecked: false,
-						desired_number_assignments: 2
-					})
-				))
-			}, 1000)
-		})
-	}
-
-	private static fetchCourseBlocksDummy = async (): Promise<CourseBlockWeek> => {
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				resolve({
-					Monday: BlockFormer.samples.Test_schedule2,
-					Tuesday: BlockFormer.samples.Test_schedule,
-					Wednesday: BlockFormer.samples.TH_schedule,
-					Thursday: BlockFormer.samples.W_schedule,
-					Friday: BlockFormer.samples.F_schedule
-				})
-			}, 1500);
-		})
-	}
-
-	private static fetchUserQualificationsDummy = async (user_id?: number): Promise<APIUserQualification[]> => {
-		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				resolve([
-					{course_id: 1, course_number: "110", qualified: true},
-					{course_id: 2, course_number: "111", qualified: true},
-					{course_id: 3, course_number: "120", qualified: true},
-					{course_id: 4, course_number: "121", qualified: true},
-					{course_id: 5, course_number: "206", qualified: true},
-					{course_id: 6, course_number: "221", qualified: true},
-					{course_id: 7, course_number: "222", qualified: true},
-					{course_id: 8, course_number: "312", qualified: true},
-					{course_id: 9, course_number: "313", qualified: true},
-					{course_id: 10, course_number: "314", qualified: true},
-					{course_id: 11, course_number: "315", qualified: true},
-					{course_id: 11, course_number: "331", qualified: true}
-				])
-			}, 800);
-		})
-	}
-
-	private static fetchUserPreferencesDummy = async (user_id?: number): Promise<APIUserPreferences> => {
-		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});
-		return API.fetchCourseBlocksDummy().then(blocks => {
-			const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
-			const choose = () => {
-				const possiblePrefs: APIUserPreferenceEnum[] = ["Can't Do", "Prefer Not To Do", "Indifferent", "Prefer To Do"];
-				return possiblePrefs[2];
-			}
-
-			let resp = new Map<number, APIUserPreferenceEnum>();
-
-			allBlocks.forEach(day => {
-				day?.forEach(block => {
-					resp.set(block.section_id, choose());
-				});
-			});
-
-			return resp;
-		})
-	}
-
-	static runSchedulerDummy = async (peer_teachers: number[]): Promise<APIAlgoResponse> => {
-		return new Promise((resolve, _) => {
-			setTimeout(() => {
-				let resp = JSON.parse(`{ "scheduled": {"1":[17],"129":[9, 10],"66":[9, 10],"3":[14,16],"4":[14],"71":[4],"72":[12],"78":[8],"79":[8,12],"80":[2,15],"16":[3],"81":[2,15],"88":[17],"32":[1,16],"96":[5],"97":[5],"43":[1],"109":[6],"110":[6],"112":[13,10],"48":[11],"113":[13,10],"50":[11],"127":[3],"63":[4]}, "unscheduled": [7] }`)
-				let map = new Map<string, number[]>();
-				Object.keys(resp.scheduled).map(key => map.set(key, resp.scheduled[key]));
-				resp.scheduled = map;
-				resolve(resp);
-			}, 10000);
-		})
 	}
 }
 

@@ -1,5 +1,6 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { CourseBlock } from '../../modules/API';
+import { formatDate } from '../../modules/BlockFunctions';
 import RenderBlockProps, { blockColors, calcFlex } from '../Scheduling/BlockBase';
 import { toUpdateContext } from './SectionEditButton';
 
@@ -19,16 +20,6 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
   const [changed, setChanged] = useState(false);
 
   const ref: any = useRef(null);
-
-
-  const formatDate = (date: Date) => {
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const ampm = hour >= 12 ? 'pm' : 'am';
-    const hour12 = (hour === 12) ? 12 : hour % 12;
-    const minutes = minute < 10 ? `0${minute}` : minute;
-    return `${hour12}:${minutes} ${ampm}`;
-  }
 
   const revert = () => {
     const where = toUpdate.findIndex(({section_id}) => section_id === course_instance.section_id);
@@ -114,14 +105,14 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
       { interacted? 
         <div className="pref-pane">
           <div className="pref-pane-title">Edit {course_instance.department} {course_instance.course_number} section {course_instance.section_number}</div>
-          <div className='ms5' style={{display: 'flex'}}>
+          <label className='ms5' style={{display: 'flex'}}>
             Desired Peer Teachers: &nbsp;
             <input className="fill" type='number' value={desiredPTCount} onChange={e => handleChange(e, setDesiredPTCount, +e.currentTarget.value)} style={{width: '3em'}}/>
-          </div>
-          <div className='ms5' style={{display: 'flex'}}>
+          </label>
+          <label className='ms5' style={{display: 'flex'}}>
             Professor: &nbsp;
             <input className="fill" type='text' value={prof} onChange={e => handleChange(e, setProf, e.currentTarget.value)}/>
-          </div>
+          </label>
           <div className="m5"/>
           <button disabled={!changed} request-type="request" className='submit-button cantdo' onClick={revert}>Revert Changes</button>
         </div>

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { Course, CourseBlock } from "../../modules/API";
+import { Course } from "../../modules/API";
 import uuid from "../../uuid";
 
 interface Props {
@@ -14,7 +14,6 @@ export const AdminCourseRow: FC<Props> = ({course, isEditing, deleteSelf, isBott
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const ref: any = useRef(null);
   const id = uuid();
-  const bid = uuid();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === course.course_number) setButtonDisabled(false);

@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useRef, useState } from 'react'
-import { Hat } from '../Misc/Hat';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { CourseBlock, Person } from '../../modules/API';
-import RenderBlockProps, { calcFlex, blockColors } from '../Scheduling/BlockBase';
+import { formatDate } from '../../modules/BlockFunctions';
+import RenderBlockProps, { blockColors, calcFlex } from '../Scheduling/BlockBase';
 
 type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 interface DisplayBlock extends CourseBlock {
@@ -20,15 +20,6 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
   const {course_instance, person, shift} = data;
   const ref: any = useRef(null);
   const [interacted, setInteracted] = useState<boolean>(false);
-
-  const formatDate = (date: Date) => {
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const ampm = hour >= 12 ? 'pm' : 'am';
-    const hour12 = (hour === 12) ? 12 : hour % 12;
-    const minutes = minute < 10 ? `0${minute}` : minute;
-    return `${hour12}:${minutes} ${ampm}`;
-  }
 
   // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
   useEffect(() => { // Disables focus view on mouse click outside
@@ -94,7 +85,7 @@ export const DisplayBlock: FC<Props> = ({visible, size, inline, data}) => {
             {course_instance.department}: {course_instance.course_number}-{course_instance.section_number}
           </div>
           <div>
-            {''} {formatDate(new Date(course_instance.start_time))} - {formatDate(new Date(course_instance.end_time))}
+            {formatDate(new Date(course_instance.start_time))} - {formatDate(new Date(course_instance.end_time))}
           </div>
           <div>
             Professor {course_instance.professor}

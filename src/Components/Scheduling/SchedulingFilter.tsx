@@ -7,19 +7,24 @@ interface Props {
 
 export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
   let filter_subjects = Array.from(filter.keys()).map(key => `${key}`).sort();
-  const showAll = 'Show All'
+  const [toggleAll, setToggleAll] = React.useState("Show none");
   let filter_elements = [];
 
   const update = (target: string) => () => {
-    if (target === showAll) {
+    if (target === "Show all") {
       setFilter(new Map(filter_subjects.map(key => [parseInt(key), true]))) // All courses shown true
+      setToggleAll("Show none");
+    } else if (target === "Show none") {
+      setFilter(new Map(filter_subjects.map(key => [parseInt(key), false]))) // All courses shown false
+      setToggleAll("Show all");
     } else {
       let n: number = parseInt(target);
       setFilter(new Map(filter.set(n, !filter.get(n))));
+      if (filter_subjects.some(key => filter.get(parseInt(key)))) {
+        setToggleAll("Show all");
+      }
     }   
   }
-
-  const len = filter_subjects.length
 
   filter_subjects.forEach((subject, i) => {
     filter_elements[i] = <div onClick={update(subject)} className="center filter element" key={`filter-${subject}-${filter.get(parseInt(subject))}`} style={{ 
@@ -28,11 +33,11 @@ export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
   })
 
   // The last element is the toggle  
-  filter_elements.push(<div onClick={update(showAll)} className="center filter element" key={`filter-showall`} style={{ 
+  filter_elements.push(<div onClick={update(toggleAll)} className="center filter element" key={`filter-showall`} style={{ 
     borderRight: 0,
     flex: 'none',
     padding: '0 5px'
-  }}>{showAll}</div>)
+  }}>{toggleAll}</div>)
 
   return (
     <div className="hstack filter">

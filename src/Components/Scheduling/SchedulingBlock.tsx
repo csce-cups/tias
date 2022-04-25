@@ -1,8 +1,9 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import API, { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '../../modules/API';
-import { findCollisions } from '../../modules/BlockFunctions';
+import { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '../../modules/API';
+import { findCollisions, formatDate } from '../../modules/BlockFunctions';
 import uuid from '../../uuid';
-import contexts, { BlockUpdateAction, PersonPrefLink } from '../APIContext';
+import contexts from '../APIContext';
+import { BlockUpdateAction, PersonPrefLink } from '../APIContextHelper';
 import { Hat } from '../Misc/Hat';
 import RenderBlockProps, { blockColors, calcFlex, statusColors } from './BlockBase';
 
@@ -13,7 +14,7 @@ interface Props extends RenderBlockProps {
   }
 }
 
-export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blocks, data}) => {
+export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, data}) => {
   const {course_instance, linkIDs: linkIDs_super} = data;
   const [linkIDs, setLinkIDs] = useState<number[] | null>(linkIDs_super);
   const [interacted, setInteracted] = useState(course_instance.opened || false);
@@ -28,16 +29,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blo
   const sid = `drowdown-${uuid()}`;
 
   const ref: any = useRef(null);
-  const formatDate = (date: Date) => {
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const ampm = hour >= 12 ? 'pm' : 'am';
-    const hour12 = (hour === 12) ? 12 : hour % 12;
-    const minutes = minute < 10 ? `0${minute}` : minute;
-    return `${hour12}:${minutes} ${ampm}`;
-  }
-
-
+  
   let flex = calcFlex(visible, inline, size);
 
   const isVisible = {
@@ -77,7 +69,6 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blo
   const createList = () => {
     let elements: JSX.Element[] = [];
     let es: {employee: Person, pref: APIUserPreferenceEnum}[] = [];
-    console.log(viableEmployees);
     viableEmployees.forEach(({person_id, pref}) => {
       const employee = employees.find(e => e.person_id === person_id)!;
       if (pref === "Can't Do" || employee === undefined) return;
@@ -89,8 +80,6 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blo
         Select a peer teacher
       </option>  
     )
-    
-    console.log(es);
     es.sort((a, b) => {
       const aForbidden = course_instance.forbidden?.includes(a.employee.person_id);
       const bForbidden = course_instance.forbidden?.includes(b.employee.person_id);
@@ -129,9 +118,8 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blo
       if (course_instance.forbidden?.includes(+val)) {
         t.innerHTML = "TIME CONFLICT: A scheduled section makes this peer teacher unavailable at this time";
         t.setAttribute('action-type', 'error');
-        return;
-      }
-      if (linkIDs?.includes(+e.target.value)) {
+        setDisabled(true);
+      } else if (linkIDs?.includes(+e.target.value)) {
         t.innerHTML = `Remove from ${course_instance.department} ${course_instance.course_number}-${course_instance.section_number}`;
         t.setAttribute('action-type', 'remove');
       } else {
@@ -296,6 +284,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, blo
       title={`${course_instance.course_number}-${course_instance.section_number}`} 
       style={{...bgcolor, ...isVisible}}
       onClick={handleClick}
+      data-testid="block"
     >
       { hats() }
       <div className="fill"/>

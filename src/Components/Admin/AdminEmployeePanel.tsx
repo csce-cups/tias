@@ -1,20 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import API, { Person, Person_INIT } from '../../modules/API';
 import uuid from '../../uuid';
-import contexts from '../APIContext'
+import contexts from '../APIContext';
 import { Scrollable } from '../Misc/Scrollable';
 import { AdminEmployee } from './AdminEmployee';
 
 export const AdminEmployeePanel = () => {
+  let clocks: NodeJS.Timeout[] = [];
   const rid = uuid();
   const algs = {
     sortLastAlg: ((a: Person, b: Person) => a.last_name.localeCompare(b.last_name)),
     sortFirstAlg: ((a: Person, b: Person) => a.first_name.localeCompare(b.first_name)),
     sortRoleAlg: ((a: Person, b: Person) => {
-      if (a && !b) return -1;
-      else if (!a && b) return 1;
-      else if (!a && !b) return 0;
-      else if (a.administrator && !b.administrator) return -1;
+      if (a.administrator && !b.administrator) return -1;
       else if (!a.administrator && b.administrator) return 1;
       else if (a.professor && !b.professor) return -1;
       else if (!a.professor && b.professor) return 1;
@@ -31,6 +29,7 @@ export const AdminEmployeePanel = () => {
   const [everyone, setEveryone] = useState([{person_id: -1}] as Person[]);
   const [sortAlg, setSortAlg] = useState<string>('sortLastAlg');
   const [collapsed, setCollapsed] = useState(true);
+  const [hidden, setHidden] = useState(true);
 
   const [formPtCheck, setFormPtCheck] = useState<boolean>(false);
   const [formTACheck, setFormTACheck] = useState<boolean>(false);
@@ -42,21 +41,27 @@ export const AdminEmployeePanel = () => {
     const btn = document.getElementById(rid);
     if (btn !== null) btn.innerHTML = "Register";
 
-    if (collapsed) document.getElementById('new-user-form-collapsable')?.classList.remove('hidden');
-    else setTimeout(() => {
-      document.getElementById('new-user-form-collapsable')?.classList.add('hidden');
-    }, 500);
+    if (collapsed) setHidden(false);
+    else clocks.push(setTimeout(() => {
+      setHidden(true);
+    }, 500));
 
-    setTimeout(() => { // For animation's sake, we add the tiniest delay to toggling
+    clocks.push(setTimeout(() => { // For animation's sake, we add the tiniest delay to toggling
       setCollapsed(!collapsed);
-    }, 1);
+    }, 1));
   }
 
   useEffect(() => {
-    if (collapsed) document.getElementById('new-user-form-collapsable')?.classList.add('hidden');
+    let rendered = true;
+    if (collapsed) setHidden(true);
     API.fetchEveryone().then(res => {
-      setEveryone(res);
+      if (rendered) setEveryone(res);
     });
+
+    return () => {
+      clocks.forEach(to => clearTimeout(to))
+      rendered = false;
+    };
   }, [])
 
   const registerUser = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
@@ -70,7 +75,7 @@ export const AdminEmployeePanel = () => {
       return;
     } else if (values.some((e, i) => !expected[i].test(e))) {
       const wrong = values.findIndex((e, i) => !expected[i].test(e));
-      if (wrong === 0) btn?.setAttribute('value', `"${values[wrong]}" is not a valid @tamu.edu email)`);
+      if (wrong === 0) btn?.setAttribute('value', `"${values[wrong]}" is not a valid @tamu.edu email`);
       else btn?.setAttribute('value', `"${values[wrong]}" is not a valid name`);
       return;
     } else if (formAdminCheck) {
@@ -133,38 +138,41 @@ They will be able to run the scheduler, promote other users and delete them, and
           <div className="arrow-container"/>
         </div>
 
-        <div id="new-user-form-collapsable" className={`collapsible${collapsed? ' collapsed' : ' uncollapsed'}`}>
-          <div className="new-user-form hstack">
-            <div className="vstack fill">
-              <div className="hstack">
-                <input id="fname-register-text" type="text" title="A first name must only contain letters" pattern="^[a-zA-Z\s]*$" placeholder="First Name"/>
-                <input id="lname-register-text" type="text" title="A last name must only contain letters" pattern="^[a-zA-Z\s]*$" placeholder="Last Name"/>
-                <input id="email-register-text" type="text" title="Only a tamu email may be registered" pattern=".*@tamu\.edu$" placeholder="email@tamu.edu"/>
-              </div>
-              <div className='hstack'>
-                <div className="fill">
-                  <input id="pt-register-checkbox" type="checkbox" checked={formPtCheck} onChange={() => setFormPtCheck(!formPtCheck)}/>
-                  <label htmlFor="pt-register-checkbox">Peer Teacher</label>
+        { !hidden? 
+          <div id="new-user-form-collapsable" className={`collapsible${collapsed? ' collapsed' : ' uncollapsed'}`}>
+            <div className="new-user-form hstack">
+              <div className="vstack fill">
+                <div className="hstack">
+                  <input id="fname-register-text" type="text" title="A first name must only contain letters" pattern="^[a-zA-Z\s]*$" placeholder="First Name"/>
+                  <input id="lname-register-text" type="text" title="A last name must only contain letters" pattern="^[a-zA-Z\s]*$" placeholder="Last Name"/>
+                  <input id="email-register-text" type="text" title="Only a tamu email may be registered" pattern=".*@tamu\.edu$" placeholder="email@tamu.edu"/>
                 </div>
-                <div className="fill">
-                  <input id="ta-register-checkbox" type="checkbox" checked={formTACheck} onChange={() => setFormTACheck(!formTACheck)}/>
-                  <label htmlFor="ta-register-checkbox">Teaching Assistant</label>
-                </div>
-                <div className="fill">
-                  <input id="prof-register-checkbox" type="checkbox" checked={formProfCheck} onChange={() => setFormProfCheck(!formProfCheck)}/>
-                  <label htmlFor="prof-register-checkbox">Professor</label>
-                </div>
-                <div className="fill">
-                  <input id="admin-register-checkbox" type="checkbox" checked={formAdminCheck} onChange={() => setFormAdminCheck(!formAdminCheck)}/>
-                  <label htmlFor="admin-register-checkbox">Administrator</label>
+                <div className='hstack'>
+                  <div className="fill">
+                    <input id="pt-register-checkbox" type="checkbox" checked={formPtCheck} onChange={() => setFormPtCheck(!formPtCheck)}/>
+                    <label htmlFor="pt-register-checkbox">Peer Teacher</label>
+                  </div>
+                  <div className="fill">
+                    <input id="ta-register-checkbox" type="checkbox" checked={formTACheck} onChange={() => setFormTACheck(!formTACheck)}/>
+                    <label htmlFor="ta-register-checkbox">Teaching Assistant</label>
+                  </div>
+                  <div className="fill">
+                    <input id="prof-register-checkbox" type="checkbox" checked={formProfCheck} onChange={() => setFormProfCheck(!formProfCheck)}/>
+                    <label htmlFor="prof-register-checkbox">Professor</label>
+                  </div>
+                  <div className="fill">
+                    <input id="admin-register-checkbox" type="checkbox" checked={formAdminCheck} onChange={() => setFormAdminCheck(!formAdminCheck)}/>
+                    <label htmlFor="admin-register-checkbox">Administrator</label>
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="hstack">
+              <input onClick={e => registerUser(e)} id={rid} type="submit" className="short green button fill submit" value="Register" style={{padding: '0 5px'}}/>
+            </div>
           </div>
-          <div className="hstack">
-            <input onClick={e => registerUser(e)} id={rid} type="submit" className="short green button fill submit" value="Register" style={{padding: '0 5px'}}/>
-          </div>
-        </div>
+          : <></>
+        }
 
         <div className="m5"/>
         

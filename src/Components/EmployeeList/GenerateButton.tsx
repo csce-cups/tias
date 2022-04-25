@@ -1,5 +1,5 @@
 import React, { FC, useContext } from 'react'
-import API, { CourseBlock, CourseBlockWeek, Person } from '../../modules/API'
+import API, { CourseBlock, Person } from '../../modules/API'
 import contexts from '../APIContext'
 
 interface Props {
@@ -15,7 +15,6 @@ export const GenerateButton: FC<Props> = ({genState}) => {
     }
 
     genState[1](true);
-    
     employees.forEach((e, i) => { // At the start of scheduling, nobody is scheduled.
       employees[i].isScheduled = false;
     });
@@ -33,10 +32,11 @@ export const GenerateButton: FC<Props> = ({genState}) => {
 
     API.runScheduler(eIDs).then((resp) => {
       clearTimeout(timer);
+      
       if (btn !== null) btn.innerHTML = 'Rendering...';
       const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday]; // For easier iteration
       allBlocks.forEach((day: CourseBlock[], oidx: number) => {
-        day.forEach((block: CourseBlock, iidx: number) => {
+        day?.forEach((block: CourseBlock, iidx: number) => {
           const pids = resp.scheduled.has(`${block.section_id}`)? resp.scheduled.get(`${block.section_id}`)! : [];
           allBlocks[oidx][iidx].scheduled = pids;
         });
@@ -51,11 +51,11 @@ export const GenerateButton: FC<Props> = ({genState}) => {
       setEmployees(employees);
       setBlocks({Monday: allBlocks[0], Tuesday: allBlocks[1], Wednesday: allBlocks[2], Thursday: allBlocks[3], Friday: allBlocks[4]});
       setUserViableCourses({
-        Monday: allBlocks[0].filter((b: CourseBlock) => userViableCourses.Monday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
-        Tuesday: allBlocks[1].filter((b: CourseBlock) => userViableCourses.Tuesday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
-        Wednesday: allBlocks[2].filter((b: CourseBlock) => userViableCourses.Wednesday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
-        Thursday: allBlocks[3].filter((b: CourseBlock) => userViableCourses.Thursday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined ), 
-        Friday: allBlocks[4].filter((b: CourseBlock) => userViableCourses.Friday.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined )
+        Monday: allBlocks[0]?.filter((b: CourseBlock) => userViableCourses.Monday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined || []), 
+        Tuesday: allBlocks[1]?.filter((b: CourseBlock) => userViableCourses.Tuesday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined || []), 
+        Wednesday: allBlocks[2]?.filter((b: CourseBlock) => userViableCourses.Wednesday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined || []), 
+        Thursday: allBlocks[3]?.filter((b: CourseBlock) => userViableCourses.Thursday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined || []), 
+        Friday: allBlocks[4]?.filter((b: CourseBlock) => userViableCourses.Friday?.find((bv: CourseBlock) => bv.section_id == b.section_id) !== undefined || [])
       });
 
       if (btn !== null) btn.innerHTML = 'Done generating!';

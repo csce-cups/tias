@@ -1,5 +1,5 @@
-import React, { FC, useContext, useState } from 'react'
-import API, { CourseBlock, CourseBlockWeek } from '../../modules/API';
+import React, { FC, useContext, useState } from 'react';
+import API, { CourseBlockWeek } from '../../modules/API';
 import { inferSchedule } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';
 

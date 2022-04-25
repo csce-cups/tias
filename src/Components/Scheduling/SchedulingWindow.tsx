@@ -30,7 +30,7 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top}) => 
   const filterActual = options?.filter?.[0] ?? filter;
 
   useEffect(() => {
-    if (options?.filter) return; // Externally controlled filter shouldn't be handled
+    if (options?.filter || filter.size !== 0) return; // Externally controlled filter shouldn't be handled
     let filterMap = new Map<number, boolean>();
     const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
     allBlocks.forEach((blocks: CourseBlock[] | null) => {
@@ -46,7 +46,7 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top}) => 
   }
 
   return (
-    <div className="vstack main" style={styles}>
+    <div className="vstack main" data-testid="SchedulingWindow" style={styles}>
       { top?
         top
         : <div style={{height: '1.5em'}}/>

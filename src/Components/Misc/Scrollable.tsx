@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useState } from 'react'
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import uuid from '../../uuid';
 
 interface Props {
