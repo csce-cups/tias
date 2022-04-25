@@ -137,7 +137,7 @@ export class APINoAsync {
 		lastGeneratedEveryone = Array.from(Array(users).keys()).map(i => `Test User ${i}`)
 			.map((e, i) => ({
 				person_id: i, 
-				email: "",
+				email: e.replace(/ /g, '_').toLowerCase() + '@test.com',
 				first_name: e.substring(0, e.indexOf(' ')), 
 				last_name: e.substring(e.indexOf(' ') + 1),
 				profile_photo_url: "",
