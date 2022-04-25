@@ -105,14 +105,14 @@ export const SectionEditBlock: FC<Props> = ({visible, size, inline, data}) => {
       { interacted? 
         <div className="pref-pane">
           <div className="pref-pane-title">Edit {course_instance.department} {course_instance.course_number} section {course_instance.section_number}</div>
-          <div className='ms5' style={{display: 'flex'}}>
+          <label className='ms5' style={{display: 'flex'}}>
             Desired Peer Teachers: &nbsp;
             <input className="fill" type='number' value={desiredPTCount} onChange={e => handleChange(e, setDesiredPTCount, +e.currentTarget.value)} style={{width: '3em'}}/>
-          </div>
-          <div className='ms5' style={{display: 'flex'}}>
+          </label>
+          <label className='ms5' style={{display: 'flex'}}>
             Professor: &nbsp;
             <input className="fill" type='text' value={prof} onChange={e => handleChange(e, setProf, e.currentTarget.value)}/>
-          </div>
+          </label>
           <div className="m5"/>
           <button disabled={!changed} request-type="request" className='submit-button cantdo' onClick={revert}>Revert Changes</button>
         </div>
