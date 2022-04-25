@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useContext, useState } from 'react';
+import React, { FC, ReactNode, useContext, useEffect, useState } from 'react';
 import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline, GoogleLogout } from "react-google-login";
 import { useNavigate } from 'react-router-dom';
 import contexts from '../APIContext';
@@ -35,9 +35,12 @@ interface Props {
 
 export const GoogleButton: FC<Props> = ({renderAs}) => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [employees,] = useContext(contexts.employees);
+  const [employees_c,] = useContext(contexts.employees);
+  const [employees, setEmployees] = useState(employees_c);
   const user = useContext(contexts.user);
   const navigate = useNavigate();
+
+  useEffect(() => setEmployees(employees_c), [employees_c]);
 
   const googleResponseCallback = (response: any, setGoogleData: any) => {
     // Acquire the Google sign-in token.

@@ -2023,3 +2023,26 @@ span.email {
 	border-radius: 3px;
 	filter: brightness(90%);
 }
+
+.tutorial-icon {
+	height: 80%;
+	aspect-ratio: 1 / 1;
+	display: flex;
+	margin: 3px 15px;
+	align-items: center;
+	color: $light;
+	font-size: 1.4em;
+	border-radius: 50%;
+	outline: 2px solid white;
+	outline-offset: -2px;
+	justify-content: center;
+
+	transition: all 0.5s ease-in-out;
+}
+
+.tutorial-icon:hover {
+	background-color: $light;
+	color: $render_divider;
+	transform: rotate(360deg) scale(1.1);
+	cursor: pointer;
+}

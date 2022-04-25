@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
 import contexts from '../APIContext';
 import { GoogleButton } from "./GoogleButton";
+import { TutorialModal } from './TutorialModal';
 
 export const NavBar = () => {
   const {doShowScheduling, doShowProfile, doShowLabSwap, doShowAdmin} = useContext(contexts.user);
@@ -13,7 +14,8 @@ export const NavBar = () => {
       {doShowAdmin &&      <Link to='admin' className="left element" style={{textDecoration: 'none'}}>Admin</Link>}
       {doShowProfile &&    <Link to='profile' className="left element" style={{textDecoration: 'none'}}>Profile</Link>}
       {doShowLabSwap &&    <Link to='labswap' className="left element" style={{textDecoration: 'none'}}>LabSwap™</Link>}
-      <div className="fill element"></div>
+      <div className="fill element"/>
+      < TutorialModal />
       < GoogleButton />
     </div>
   )
