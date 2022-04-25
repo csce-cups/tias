@@ -40,8 +40,6 @@ describe("LabSwapBlock", ()=>{
         desired_number_assignments: 0
     };
     describe("Content", ()=>{
-
-
         it("Contains correct text when clicked", ()=>{
             render(<LabSwapBlock visible={true} data= {{ course_instance: data, linkIDs: null }}/>)
             fireEvent.click(screen.getByTitle(`${course_instance.course_number}-${course_instance.section_number}`))
@@ -64,6 +62,14 @@ describe("LabSwapBlock", ()=>{
             }
         })
     })
-
+    describe("select sections", ()=>{
+        it("Select Request", ()=>{
+            render(<LabSwapBlock visible={true} data= {{ course_instance: data, linkIDs: null }}/>)
+            fireEvent.click(screen.getByTitle(`${course_instance.course_number}-${course_instance.section_number}`))
+            const reqButton = screen.getByText("Request selected section");
+            reqButton.click();
+            
+        })
+    })
 
 })
