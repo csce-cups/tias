@@ -14,7 +14,6 @@ export const AdminCourseRow: FC<Props> = ({course, isEditing, deleteSelf, isBott
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const ref: any = useRef(null);
   const id = uuid();
-  const bid = uuid();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === course.course_number) setButtonDisabled(false);

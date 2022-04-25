@@ -4,7 +4,7 @@ import { Scrollable } from "../Misc/Scrollable";
 import { AdminCourseRow } from "./AdminCourseRow";
 
 export const AdminCourseList = () => {
-  const [courses, setCourses] = useState<Course[]>([{course_id: -1} as Course]);
+  const [courses, setCourses] = useState<Course[]>([{course_id: -1} as Course]); // Local storage for courses from the API
   const [isEditing, setIsEditing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [dropdownRendered, setDropdownRendered] = useState(false);
@@ -32,6 +32,7 @@ export const AdminCourseList = () => {
     };
   });
   
+  // Grabs the courses from the API when the component mounts
   useEffect(() => {
     let rendered = true;
     API.getCourses().then(res => {
@@ -45,10 +46,12 @@ export const AdminCourseList = () => {
     btn.innerHTML = "Deleting...";
     API.deleteCourse(course.course_id).then(() => {
       btn.innerHTML = "Done!";
+      // Timeouts for UX, it is jarring to have things happen immediately after text changes
       setTimeout(() => {
         btn.classList.remove("prompt");
       }, 1000);
       
+      // Fetch courses after the animation for removing "prompt is gone"
       setTimeout(() => {
         API.getCourses().then(res => {
           setCourses(res);
@@ -62,19 +65,22 @@ export const AdminCourseList = () => {
     const btn = document.getElementById("submit-new-course-button") as HTMLButtonElement;
     if (btn !== null) btn.setAttribute('value', "Saving...");
 
-    const validations = {
+    // Basic regex to ensure the department is an all caps 4 letter string, course number is only numbers, and course name isn't empty
+    const validations = { 
       department: /^[A-Z]{4}$/,
       course_number: /^[0-9]+$/,
       course_name: /.+/,
     }
 
+    // We set the course_id to -1 because it is assigned by backend. It'll get populated after API,getCourses
     const newCourse: Course = {
-      course_id: -1,
+      course_id: -1, 
       department: (document.getElementById("dpt-new-course-text") as HTMLInputElement)?.value,
       course_number: (document.getElementById("num-new-course-text") as HTMLInputElement)?.value,
       course_name: (document.getElementById("name-new-course-text") as HTMLInputElement)?.value
     }
 
+    // Validations first, then API call
     if (!validations.department.test(newCourse.department)) {
       if (btn !== null) btn.setAttribute('value', "Department must be 4 capital letters (ie. CSCE)");
     } else if (!validations.course_number.test(newCourse.course_number)) {
@@ -84,6 +90,7 @@ export const AdminCourseList = () => {
     } else {
       API.addCourse(newCourse).then(res => {
         if (btn !== null) btn.setAttribute('value', "Updating list...");
+        // Refetch courses from backend to ensure consistancy
         API.getCourses().then(res => {
           setCourses(res);
           if (btn !== null) btn.setAttribute('value', "Done!");

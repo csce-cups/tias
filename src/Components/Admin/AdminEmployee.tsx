@@ -18,14 +18,17 @@ export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee:
   const employeeState = useState<Person>(employee_super);
   const employee = employeeState[0];
   const setEmployee = (e: Person | null) => {
-    setEmployee_super(e);
+    setEmployee_super(e); // Passed in from parent, allows us to update the cache without subscribing to it
     if (e) employeeState[1](e);
   }
 
+  // State for each checkbox
   const [ptcheck, setPtcheck] = useState(employee.peer_teacher);
   const [tacheck, setTacheck] = useState(employee.teaching_assistant);
   const [profcheck, setProfcheck] = useState(employee.professor);
   const [admincheck, setAdmincheck] = useState(employee.administrator);
+
+  // For display to the right of each name
   const perms = [
     employee.administrator? 'Administrator' : '',
     employee.professor? 'Professor' : '',
@@ -77,7 +80,7 @@ They will be able to run the scheduler, promote other users and delete them, and
     if (btn !== null) btn.innerHTML = 'Deleting...';
     API.deleteUser(employee.person_id).then(() => {
       if (btn !== null) btn.innerHTML = 'Deleted!';
-
+      // Timeouts give the user a chance to read the "Deleted!" message on the button before the user is removed from the interface
       setTimeout(() => {
         setCollapsed(true);
       }, 1000);
