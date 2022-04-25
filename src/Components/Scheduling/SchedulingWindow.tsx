@@ -30,7 +30,7 @@ export const SchedulingWindow: FC<Props> = ({renderBlockType, options, top}) => 
   const filterActual = options?.filter?.[0] ?? filter;
 
   useEffect(() => {
-    if (options?.filter) return; // Externally controlled filter shouldn't be handled
+    if (options?.filter || filter.size !== 0) return; // Externally controlled filter shouldn't be handled
     let filterMap = new Map<number, boolean>();
     const allBlocks = [blocks.Monday, blocks.Tuesday, blocks.Wednesday, blocks.Thursday, blocks.Friday];
     allBlocks.forEach((blocks: CourseBlock[] | null) => {
