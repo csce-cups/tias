@@ -1,10 +1,10 @@
-import React, { FC, useContext, useEffect, useRef, useState } from 'react'
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { CompressedCourseBlock } from '../../modules/BlockFunctions';
-import contexts from '../APIContext';
-import RenderBlockProps, { calcFlex, blockColors } from '../Scheduling/BlockBase';
-import "../common.scss";
-import { selectedTradeBlocksContext } from './LabSwap';
 import uuid from '../../uuid';
+import contexts from '../APIContext';
+import "../common.scss";
+import RenderBlockProps, { blockColors, calcFlex } from '../Scheduling/BlockBase';
+import { selectedTradeBlocksContext } from './LabSwap';
 
 interface Props extends RenderBlockProps {
   data: {

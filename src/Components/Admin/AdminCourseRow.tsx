@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { Course, CourseBlock } from "../../modules/API";
+import { Course } from "../../modules/API";
 import uuid from "../../uuid";
 
 interface Props {

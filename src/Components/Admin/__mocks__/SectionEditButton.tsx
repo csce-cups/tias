@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { EditableSection } from '../../../modules/API';
 
 export const toUpdateContext = React.createContext<[

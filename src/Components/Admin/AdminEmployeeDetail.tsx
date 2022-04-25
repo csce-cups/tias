@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useState } from 'react'
+import React, { FC, useContext, useState } from 'react';
 import API, { APIUserQualification, CourseBlockWeek, Person } from '../../modules/API';
 import { compressWeek } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';

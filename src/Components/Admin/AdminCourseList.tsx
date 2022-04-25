@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import API, { Course } from "../../modules/API";
-import contexts from "../APIContext";
 import { Scrollable } from "../Misc/Scrollable";
 import { AdminCourseRow } from "./AdminCourseRow";
 

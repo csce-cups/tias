@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import API, { CourseBlockWeek, CourseBlockWeekKey, EditableSection } from '../../modules/API';
+import API, { CourseBlockWeekKey, EditableSection } from '../../modules/API';
 import contexts from '../APIContext';
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow';
 import { SectionEditBlock } from './SectionEditBlock';

@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import API, { Person, Person_INIT } from '../../modules/API';
 import uuid from '../../uuid';
-import contexts from '../APIContext'
+import contexts from '../APIContext';
 import { Scrollable } from '../Misc/Scrollable';
 import { AdminEmployee } from './AdminEmployee';
 

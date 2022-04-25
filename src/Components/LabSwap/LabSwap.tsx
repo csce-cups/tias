@@ -1,9 +1,7 @@
 import React, { createContext, ReactElement, useContext, useEffect, useState } from "react";
 import API, {
   CourseBlock,
-  CourseBlockWeek,
-  parseCookie,
-  TradeRequest,
+  CourseBlockWeek, TradeRequest
 } from "../../modules/API";
 import { compressWeek, loadSchedule, updateWithSchedule } from "../../modules/BlockFunctions";
 import contexts from "../APIContext";

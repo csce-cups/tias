@@ -1,9 +1,7 @@
-import React, { FC, useEffect, useRef, useState } from 'react'
-import { Hat } from '../../Misc/__mocks__/Hat';
-
-import RenderBlockProps, { calcFlex, blockColors } from '../../Scheduling/BlockBase';
-import { formatDate } from '../../../modules/BlockFunctions';
+import React, { FC } from 'react';
 import { CourseBlock, Person } from '../../../modules/API';
+import RenderBlockProps from '../../Scheduling/BlockBase';
+
 
 type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 interface DisplayBlock extends CourseBlock {

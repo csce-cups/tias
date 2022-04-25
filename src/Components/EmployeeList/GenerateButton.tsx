@@ -1,5 +1,5 @@
 import React, { FC, useContext } from 'react'
-import API, { CourseBlock, CourseBlockWeek, Person } from '../../modules/API'
+import API, { CourseBlock, Person } from '../../modules/API'
 import contexts from '../APIContext'
 
 interface Props {

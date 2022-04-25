@@ -3,8 +3,8 @@ import { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '
 import { findCollisions, formatDate } from '../../modules/BlockFunctions';
 import uuid from '../../uuid';
 import contexts from '../APIContext';
-import { Hat } from '../Misc/Hat';
 import { BlockUpdateAction, PersonPrefLink } from '../APIContextHelper';
+import { Hat } from '../Misc/Hat';
 import RenderBlockProps, { blockColors, calcFlex, statusColors } from './BlockBase';
 
 interface Props extends RenderBlockProps {
@@ -54,7 +54,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
   }
 
   let bgcolor = { backgroundColor: 'red' };
-  if (linkIDs === null || linkIDs.length !== 0 || course_instance.capacity_peer_teachers === 0 || true) {
+  if (linkIDs === null || linkIDs.length !== 0 || course_instance.capacity_peer_teachers === 0) {
     bgcolor.backgroundColor = blockColors.get(course_instance.course_number)!
     if (bgcolor.backgroundColor === undefined) console.error('Color not defined for:', JSON.stringify(course_instance))
   } else {
@@ -62,7 +62,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
   }
 
   let className = 'block';
-  if (linkIDs !== null && linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0 && false) className += ' alert';
+  if (linkIDs !== null && linkIDs.length === 0 && course_instance.capacity_peer_teachers !== 0) className += ' alert';
   if (interacted) className += ' interacted';
   if (toUpdate) className += ' edited';
 

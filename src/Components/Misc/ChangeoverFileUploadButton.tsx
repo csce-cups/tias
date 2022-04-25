@@ -5,10 +5,9 @@
    https://medium.com/web-dev-survey-from-kyoto/how-to-customize-the-file-upload-button-in-react-b3866a5973d8 
 */
 
-import React, { useContext, useEffect } from 'react'
-import API, { Meeting, Weekday } from '../../modules/API';
 import axios from 'axios';
-import uuid from '../../uuid';
+import React, { useEffect } from 'react';
+import API, { Meeting, Weekday } from '../../modules/API';
 
 interface Course {
   course_id: number

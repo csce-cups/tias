@@ -1,8 +1,8 @@
-import React, { useContext } from 'react'
-import { CourseBlock, CourseBlockWeek } from '../../modules/API'
+import React, { useContext } from 'react';
+import { CourseBlock } from '../../modules/API';
 import { formatDate } from '../../modules/BlockFunctions';
-import { findScheduled } from '../../modules/FindSchedule'
-import contexts from '../APIContext'
+import { findScheduled } from '../../modules/FindSchedule';
+import contexts from '../APIContext';
 
 type shortday = 'M' | 'T' | 'W' | 'R' | 'F';
 interface DisplayBlock extends CourseBlock {

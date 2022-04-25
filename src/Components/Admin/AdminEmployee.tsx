@@ -1,6 +1,6 @@
 import React, { FC, useContext, useState } from 'react'
-import API, { Person } from '../../modules/API'
 import edit_icon from '../../assets/edit.svg'
+import API, { Person } from '../../modules/API'
 import uuid from '../../uuid'
 import contexts from '../APIContext'
 import { AdminEmployeeDetail } from './AdminEmployeeDetail'
