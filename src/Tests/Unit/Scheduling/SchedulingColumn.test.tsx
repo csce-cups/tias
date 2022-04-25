@@ -5,6 +5,7 @@ import BlockFormer from '../../../modules/BlockFormer'
 import { SchedulingBlock } from '../../../Components/Scheduling/SchedulingBlock';
 import { CourseBlock } from '../../../modules/API';
 import { APINoAsync } from '../../../modules/__mocks__/API';
+import { calcFlex } from '../../../Components/Scheduling/BlockBase';
 
 jest.mock('../../../Components/Scheduling/SchedulingBlock');
 
@@ -420,6 +421,20 @@ describe('SchedulingColumn', () => {
                 hideButton.click();
                 expect(hatContainer).not.toHaveClass('shrunk');
             });
+        })
+    });
+
+    describe("BlockBase", () => {
+        it("renders full flex", () => {
+            expect(calcFlex(true, true, 'auto')).toBe("1 1 auto");
+        });
+
+        it("renders static size", () => {
+            expect(calcFlex(true, true, '12px')).toBe("0 0 12px");
+        });
+
+        it("renders invisible", () => {
+            expect(calcFlex(false)).toBe("0 0 0");
         })
     })
 });
