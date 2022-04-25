@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, useContext, useState } from 'react';
-import { GoogleLogin, GoogleLogout } from "react-google-login";
+import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline, GoogleLogout } from "react-google-login";
 import { useNavigate } from 'react-router-dom';
 import contexts from '../APIContext';
 
@@ -69,7 +69,7 @@ export const GoogleButton: FC<Props> = ({renderAs}) => {
       .then(responseData => {
         document.cookie = `tias_user_id=${responseData.id}`
         setLoggedIn(true);
-        setGoogleData({...userBasicInfo, tias_user_id: responseData.id});
+        setGoogleData({...userBasicInfo, pfp: requestBody.profilePhoto, tias_user_id: responseData.id});
         const user = employees.find(p => p.person_id === responseData.id);
 
         if (renderAs) { // Landing button
