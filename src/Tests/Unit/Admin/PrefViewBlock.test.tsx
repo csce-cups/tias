@@ -1,34 +1,40 @@
 import {screen, render} from '@testing-library/react';
 import { PrefViewBlock } from '../../../Components/Admin/PrefViewBlock';
+import { APIContext } from '../../../Components/APIContext';
 import { CompressedCourseBlock } from '../../../modules/BlockFunctions';
+import { APINoAsync } from '../../../modules/__mocks__/API';
+
+jest.mock('../../../Components/APIContext');
 
 describe("PrefViewBlock", () => {
+  const block = APINoAsync.fetchCourseBlocks().Monday![0];
   const ci = {
-    department: "CSCE",
-    course_number: 100,
-    section_number: "501",
-    section_id: 1,
-    start_time: new Date((8+6)*60*60*1000),
-    end_time: new Date((8+6)*60*60*1000 + 50*60*1000),
-    weekday: "Monday",
-    place: "BUILDING A",
-    scheduled: [],
-    ronly_scheduled: [],
-    professor: "Abby",
-    capacity_peer_teachers: 1,
+    ...block,
     section_numbers: ["501", "502", "503"],
     professors: ["Abby", "Babby", "Crabby"],
     section_ids: [1, 2, 3],
     locations: ["BUILDING A", "BUILDING B", "BUILDING C"],
     scheduledAll: [[1, 2], [], [3]],
   } as CompressedCourseBlock;
-  const renderData = {
-    course_instance: ci,
-    linkIDs: []
-  }
+
+  const renderSubject = () => render(
+    <APIContext>
+      <PrefViewBlock data={{
+        course_instance: ci,
+        linkIDs: []
+      }} visible={true}/>
+    </APIContext>
+  );
 
   it("shows the course number", () => {
-    render(<PrefViewBlock data={renderData} visible={true}/>);
+    renderSubject();
     expect(screen.getByText(ci.course_number.toString())).toBeInTheDocument();
-  })
+  });
+  
+  it("becomes detailed when clicked", () => {
+    renderSubject();
+    screen.getByText(ci.course_number.toString()).click();
+
+    expect(screen.getByText("Preferences")).toBeInTheDocument();
+  });
 })
