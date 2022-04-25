@@ -9,11 +9,12 @@ describe("DisplayBlock", ()=>{
         section_number: "500",
         section_id: 0,
         start_time: new Date(Math.random()),
-        end_time: new Date(Math.random()+7),
+        end_time: new Date(Math.random() + 7),
         weekday: "W",
         place: "ZACH 420",
         scheduled: [1, 2, 3],
-        professor: "Leyk"
+        professor: "Leyk",
+        capacity_peer_teachers: 3
     };
     const person:Person = {
         person_id: 0,
@@ -35,7 +36,7 @@ describe("DisplayBlock", ()=>{
             expect(screen.getByText("None selected")).toBeInTheDocument()
         });
 
-        it("Contains correct text", ()=>{
+        it("Contains correct text when clicked", ()=>{
             render(<DisplayBlock visible={true} data= {{ course_instance: course_instance, person: person, shift: true }}/>)
             //need to trigger the mouse click
             fireEvent.click(screen.getByTitle(`${course_instance.course_number}-${course_instance.section_number}`))
@@ -47,6 +48,16 @@ describe("DisplayBlock", ()=>{
             expect(screen.getByText(`Trade with: ${person.first_name} ${person.last_name}`)).toBeInTheDocument();
 
             expect(screen.getByText(`Trade with: ${person.first_name} ${person.last_name}`)).toBeInTheDocument();
+
+        })
+        it("Contains correct text when not clicked", ()=>{
+            render(<DisplayBlock visible={true} data= {{ course_instance: course_instance, person: person, shift: true }}/>)
+            expect(screen.queryByText(`Trade with: ${person.first_name} ${person.last_name}`)).not.toBeInTheDocument();
+            expect(screen.queryByText(`${course_instance.department}: ${course_instance.course_number}-${course_instance.section_number}`)).not.toBeInTheDocument();
+            expect(screen.queryByText(`Professor ${course_instance.professor}`)).not.toBeInTheDocument();
+            expect(screen.queryByText(`Trade with: ${person.first_name} ${person.last_name}`)).not.toBeInTheDocument();
+            expect(screen.queryByText(`Trade with: ${person.first_name} ${person.last_name}`)).not.toBeInTheDocument();
+            expect(screen.getByText(`${course_instance.course_number}-${course_instance.section_number}`)).toBeInTheDocument();
 
         })
     })
