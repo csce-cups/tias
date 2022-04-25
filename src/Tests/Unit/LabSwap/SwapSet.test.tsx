@@ -18,7 +18,8 @@ describe("SwapSet", ()=>{
         weekday: "W",
         place: "ZACH 420",
         scheduled: [1, 2, 3],
-        professor: "Leyk"
+        professor: "Leyk",
+        capacity_peer_teachers: 1
     };
     const person1:Person = {
         person_id: 0,
@@ -44,7 +45,8 @@ describe("SwapSet", ()=>{
         weekday: "T",
         place: "ZACH 820",
         scheduled: [4, 5, 6],
-        professor: "Thomas"
+        professor: "Thomas",
+        capacity_peer_teachers: 1
     };
     const person2:Person = {
         person_id: 1,

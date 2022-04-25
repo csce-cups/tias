@@ -15,7 +15,6 @@ export const AdminEmployee: FC<Props> = ({employee: employee_super, setEmployee:
   const did = uuid();
   const user = useContext(contexts.user);
   const [collapsed, setCollapsed] = useState(true);
-  const [fullSized, setFullSized] = useState(false);
   const employeeState = useState<Person>(employee_super);
   const employee = employeeState[0];
   const setEmployee = (e: Person | null) => {

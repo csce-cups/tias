@@ -3,9 +3,6 @@ import API, { APIUserQualification, CourseBlockWeek, Person } from '../../module
 import { compressWeek } from '../../modules/BlockFunctions';
 import contexts from '../APIContext';
 import { SchedulingWindow } from '../Scheduling/SchedulingWindow';
-import back_arrow from '../../assets/back_arrow_icon.svg';
-import { PreferenceBlock } from '../Profile/PreferenceBlock';
-import { isReturnStatement } from 'typescript';
 import { PrefViewBlock } from './PrefViewBlock';
 
 interface Props {

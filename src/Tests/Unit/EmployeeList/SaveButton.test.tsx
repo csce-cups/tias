@@ -49,7 +49,7 @@ describe('SaveButton', () => {
             expect(sendSavedSchedule).toHaveBeenCalled();
         });
 
-        it('should change it\'s text when clicked', () => {
+        it('should change its text when clicked', () => {
             render(
                 < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
                     <SaveButton />
@@ -61,7 +61,7 @@ describe('SaveButton', () => {
             expect(screen.getByText('Saving...')).toBeInTheDocument();
         }); 
 
-        it('should change it\'s text when finished', async () => {
+        it('should change its text when finished', async () => {
             render(
                 < contexts.loadedSchedule.Provider value={[new Map<string, number[]>([['1', [1, 2, 3]]]), () => {}]}>
                     <SaveButton />

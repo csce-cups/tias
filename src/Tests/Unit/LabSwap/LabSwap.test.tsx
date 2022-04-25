@@ -9,7 +9,7 @@ jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
 jest.mock('../../../Components/LabSwap/LabSwapBlock');
 describe("LabSwap",()=>{
-    it("A GOOD TEST NAME", async () => {
+    it("Select Trades", async () => {
         const view = render(
           <APIContext>
             <LabSwap/>

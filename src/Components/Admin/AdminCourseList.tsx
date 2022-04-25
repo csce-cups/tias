@@ -5,7 +5,6 @@ import { Scrollable } from "../Misc/Scrollable";
 import { AdminCourseRow } from "./AdminCourseRow";
 
 export const AdminCourseList = () => {
-  const [blocks, ] = useContext(contexts.blocks);
   const [courses, setCourses] = useState<Course[]>([{course_id: -1} as Course]);
   const [isEditing, setIsEditing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);

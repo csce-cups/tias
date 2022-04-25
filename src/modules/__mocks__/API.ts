@@ -134,21 +134,27 @@ export class APINoAsync {
 
 	static fetchEveryone = (): Person[] => {
 		if (lastGeneratedEveryone.length !== 0) return lastGeneratedEveryone;
-		lastGeneratedEveryone = Array.from(Array(users).keys()).map(i => `Test User ${i}`)
-			.map((e, i) => ({
-				person_id: i, 
-				email: "",
-				first_name: e.substring(0, e.indexOf(' ')), 
-				last_name: e.substring(e.indexOf(' ') + 1),
-				profile_photo_url: "",
-				peer_teacher: i % 5 !== 0,
-				teaching_assistant: false,
-				administrator: i === 5,
-				professor: false,
-				isScheduled: null,
-				isChecked: i % 4 !== 1,
-				desired_number_assignments: 2
-			}))
+
+		const names = "abcdefghijklmnopqrstuvwxyz".split("").map((c, i, arr) => {
+			const char1 = c.toUpperCase();
+			const char2 = arr[arr.length - i - 1].toUpperCase();
+			return `${char1}-Test ${char2}-User ${i}`;
+		});
+
+		lastGeneratedEveryone = names.map((e, i) => ({
+			person_id: i, 
+			email: e.replace(/ /g, '_').toLowerCase() + '@test.com',
+			first_name: e.substring(0, e.indexOf(' ')), 
+			last_name: e.substring(e.indexOf(' ') + 1),
+			profile_photo_url: "",
+			peer_teacher: i % 7 !== 0,
+			teaching_assistant: i % 12 === 0,
+			administrator: i === 5 || i === 14,
+			professor: i === 10 || i === 11 || i === 12,
+			isScheduled: null,
+			isChecked: i % 4 !== 1,
+			desired_number_assignments: 2
+		}))
 
 		return lastGeneratedEveryone;
 	}
