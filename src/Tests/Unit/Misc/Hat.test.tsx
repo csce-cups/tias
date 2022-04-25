@@ -4,6 +4,8 @@ import { Person } from '../../../modules/API'
 import colorFromId from '../../../modules/color'
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Hat } from '../../../Components/Misc/Hat';
+import { Dot } from '../../../Components/Misc/Dot';
+
 import {APINoAsync} from '../../../modules/__mocks__/API'
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
@@ -30,9 +32,10 @@ describe("Hat",()=>{
                 expect(screen.getByText(`${p?.first_name} ${p?.last_name}`)).toBeInTheDocument();
             })
         })
-        it("Click",()=>{
+        it("Clickable",()=>{
             render(
                 <contexts.employees.Provider value={[people, ()=>[]]}>
+                    <Dot linkID={people[0].person_id} isScheduled={true}/>
                     <Hat linkID={people[0].person_id}/>
                 </contexts.employees.Provider>)
             const button = screen.getByTitle(`${people[0]?.first_name} ${people[0]?.last_name}`);
