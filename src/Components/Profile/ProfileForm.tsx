@@ -27,9 +27,8 @@ export const ProfileForm = () => {
     fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user.user?.person_id}/qualifications`, {
       method: 'PUT',
       body: JSON.stringify(requestBody)
-    }).then(response => response.json())
-      .then(responseJSON => {
-        if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
+    }).then(response => {
+        if (!response.ok) {
           document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
         } else {
           document.getElementById("submit-button")?.setAttribute('value', 'Updating Preferences...');
@@ -40,7 +39,7 @@ export const ProfileForm = () => {
           })
         }
       })
-      .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
+      .catch(err => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
 
     event.preventDefault();
   }
