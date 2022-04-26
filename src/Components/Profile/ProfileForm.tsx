@@ -39,10 +39,7 @@ export const ProfileForm = () => {
           })
         }
       })
-      .catch(err => {
-        console.error(err);
-        document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
-      });
+      .catch(err => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
 
     event.preventDefault();
   }
