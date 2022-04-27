@@ -32,7 +32,8 @@ export const statusColors = new Map<APIUserPreferenceEnum, string>([
   ["Can't Do",         '#FF8C8C'],
   ["Prefer Not To Do", '#F1FF28'],
   ["Indifferent",      'white'],
-  ["Prefer To Do",     '#75FF70']
+  ["Prefer To Do",     '#75FF70'],
+  ["ERROR",            '#FF0000'],
 ])
 
 export const calcFlex = (visible: boolean, inline?: boolean, size?: string) => {

@@ -65,7 +65,7 @@ export const PreferenceSelector = () => {
           }} top={
             <div className="hstack">
               <div className="dropdown-label">
-                Preferred Number of Lab Sections:  
+                Preferred Number of lab hours:  
               </div>
               <input id={input_id} type="number" value={desiredAssignments} onChange={e => setDesiredAssignements(+e.currentTarget.value)} style={{margin: '0 5px'}}/>
             </div> 

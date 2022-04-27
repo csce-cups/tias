@@ -11,7 +11,7 @@ describe('PreferenceSelector', () => {
     it('includes the correct text', () => {
        render(<PreferenceSelector/>); 
        expect(screen.getByText('Section Preferences')).toBeInTheDocument();
-       expect(screen.getByText('Preferred Number of Lab Sections:')).toBeInTheDocument();
+       expect(screen.getByText('Preferred Number of lab hours:')).toBeInTheDocument();
     });
 
     it('should update the desired number of labs', () => {
