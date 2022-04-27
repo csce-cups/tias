@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useRef, useState } from 'react';
-import { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '../../modules/API';
+import API, { APIUserPreferenceEnum, CourseBlock, CourseBlockWeekKey, Person } from '../../modules/API';
 import { findCollisions, formatDate } from '../../modules/BlockFunctions';
 import uuid from '../../uuid';
 import contexts from '../APIContext';
@@ -50,6 +50,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
       case undefined:
       case "Indifferent": return "";
       case "Prefer To Do": return "(Want)";
+      case "ERROR": return "(! REMOVE FROM SECTION !)";
     }
   }
 
@@ -67,8 +68,32 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
   if (toUpdate) className += ' edited';
 
   const createList = () => {
+    let everyone: Person[] | null = null;
     let elements: JSX.Element[] = [];
     let es: {employee: Person, pref: APIUserPreferenceEnum}[] = [];
+    linkIDs?.forEach(id => {
+      const employee = viableEmployees.find(e => e.person_id === id)
+      if (employee === undefined) {
+        let employee = employees.find(e => e.person_id === id);
+        if (employee === undefined) {
+          API.fetchEveryone().then(res => {
+            const e = res.find(e => e.person_id === id);
+            if (e === undefined) {
+              alert(`An employee for this section is no longer recorded with the application. We will remove them from this section automatically...`);
+              setLinkIDs(linkIDs.filter(e => e !== id));
+            } else {
+              alert(`Employee ${e.first_name} ${e.last_name} is no longer a peer teacher, but is still scheduled for this course. To remove them, add the peer teacher role to them, remove them from the section, and then remove the peer teacher role.`)
+            }
+          })
+          alert(`An error occured when editing this section. Please wait while we find a solution for you!`);
+        } else {
+          es.push({
+            employee: employees.find(e => e.person_id === id)!, 
+            pref: "ERROR"
+          });
+        }
+      }
+    });
     viableEmployees.forEach(({person_id, pref}) => {
       const employee = employees.find(e => e.person_id === person_id)!;
       if (pref === "Can't Do" || employee === undefined) return;
@@ -80,13 +105,14 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
         Select a peer teacher
       </option>  
     )
+
     es.sort((a, b) => {
       const aForbidden = course_instance.forbidden?.includes(a.employee.person_id);
       const bForbidden = course_instance.forbidden?.includes(b.employee.person_id);
       if (aForbidden && !bForbidden) return 1;
       if (!aForbidden && bForbidden) return -1;
 
-      const ranks = { "Can't Do": 0, "Prefer Not To Do": 1, "Indifferent": 2, "Prefer To Do": 3 };
+      const ranks = { "Can't Do": 0, "Prefer Not To Do": 1, "Indifferent": 2, "Prefer To Do": 3, "ERROR": 4 };
       const diff = (b.pref? ranks[b.pref] : 2) - (a.pref? ranks[a.pref] : 2);
       if (diff !== 0) return diff;
       return a.employee.last_name.localeCompare(b.employee.last_name);
@@ -227,7 +253,6 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
       
       if (newLinkIDs?.some(id => course_instance.forbidden?.includes(id))) {
         const conflict = employees.find(e => e.person_id === newLinkIDs?.find(id => course_instance.forbidden?.includes(id)))!;
-        alert(`Unable to reset section, ${conflict.first_name} ${conflict.last_name} has been manually scheduled to a time that conflicts with this section. Remove them from the conflicting section before resetting.`);
         return;
       }
 
