@@ -488,7 +488,8 @@ class API {
 		}).then(() => {});
 	}
 
-	static sendNewMeetings = async (meetings: Meeting[]) => {
+	static sendNewMeetings = async (meetings: Meeting[], user: Person | null) => {
+		if (user === null || !user.administrator) return new Promise((res, rej) => rej("Not an administrator"));
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/changeover`, {
 			method: 'POST',
 			body: JSON.stringify(meetings)

@@ -1,31 +1,34 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter as Router } from 'react-router-dom';
-import { GoogleButton } from '../../../Components/Misc/GoogleButton';
-jest.mock('../../../Components/APIContext');
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter as Router } from "react-router-dom";
+import contexts, { APIContext } from "../../../Components/APIContext";
+import { GoogleButton } from "../../../Components/Misc/GoogleButton";
+import { APINoAsync } from "../../../modules/__mocks__/API";
 
-describe('GoogleButton', () => {
-    describe('user is not signed in', () => {
-        it('should say Sign in with Google', () => {
-            render(
-                <Router>
-                    <GoogleButton/>
-                </Router>
-            );
-            expect(screen.getByText('Sign in with Google')).toBeInTheDocument();
-        });
-    });
+jest.mock("../../../Components/APIContext");
 
-    describe('user is signed in', () => {
-        it('should include Logged in as', () => {
-            render(
-                <Router>
-                    <GoogleButton/>
-                </Router>
-            );
-            expect(screen.getByText('Logged in as')).toBeInTheDocument();
-        });
-    });
+describe("GoogleButton", () => {
+  it("should say Sign in with Google when not signed in", () => {
+    render(
+      <APIContext>
+        <Router>
+          <GoogleButton />
+        </Router>
+      </APIContext>
+    );
+    expect(screen.getByText("Sign in with Google")).toBeInTheDocument();
+  });
 
-    it.todo("Test the callback function");
-    it.todo("Need to figure out how to spy the login function");
+  it("should say Logged in as when logged in", () => {
+    const person = APINoAsync.fetchPTList()[0];
+    render(
+      <APIContext>
+        < contexts.user.Provider value={{user: person, doShowAdmin: true, doShowLabSwap: true, doShowProfile: true, doShowScheduling: true}}>
+          <Router>
+            <GoogleButton />
+          </Router>
+        </contexts.user.Provider>
+      </APIContext>
+    );
+    expect(screen.getByText(`Logged in as ${person.first_name}. Click to sign out.`)).toBeInTheDocument();
+  });
 });
