@@ -269,6 +269,13 @@ class API {
 			.catch(err => console.log(err));
 	}
 
+	static sendUserQualifications = async (qualObj: any, user_id?: number): Promise<any> => {
+		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`, {
+			method: 'PUT',
+			body: JSON.stringify(qualObj)
+		}).then(response => response.json());
+	};
+
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/preferences
 	static fetchUserPreferences = async (user_id?: number): Promise<APIUserPreferences> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve(new Map<number, APIUserPreferenceEnum>());});

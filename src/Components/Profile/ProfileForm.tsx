@@ -11,7 +11,7 @@ export const ProfileForm = () => {
   const submit = (event: any, setQuals: any) => {
     const selections = Array.from(document.querySelectorAll(`select[id$="-prefs"]`));
     let newQuals: APIUserQualification[] = [];
-    let requestBody: any = {"qualifications": {}}
+    let requestBody: any = {};
     selections.forEach((dropdown) => {
       const e = dropdown as HTMLSelectElement;
       newQuals.push({
@@ -20,27 +20,22 @@ export const ProfileForm = () => {
         qualified: e.value === "true"
       })
 
-      requestBody.qualifications[e.getAttribute('for-cid')!] = e.value === "true";
+      requestBody[e.getAttribute('for-cid')!] = e.value === "true";
     })
 
     document.getElementById("submit-button")?.setAttribute('value', 'Saving...');
-    fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user.user?.person_id}/qualifications`, {
-      method: 'PUT',
-      body: JSON.stringify(requestBody)
-    }).then(response => response.json())
-      .then(responseJSON => {
-        if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
-          document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
-        } else {
-          document.getElementById("submit-button")?.setAttribute('value', 'Updating Preferences...');
-          API.fetchUserViableCourses(user.user?.person_id).then((resp) => {
-            setQuals(newQuals);
-            setUserViableCourses(resp);
-            document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
-          })
-        }
-      })
-      .catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
+    API.sendUserQualifications(requestBody, user.user?.person_id).then(responseJSON => {
+      if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
+        document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
+      } else {
+        document.getElementById("submit-button")?.setAttribute('value', 'Updating Preferences...');
+        API.fetchUserViableCourses(user.user?.person_id).then((resp) => {
+          setQuals(newQuals);
+          setUserViableCourses(resp);
+          document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
+        })
+      }
+    }).catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
 
     event.preventDefault();
   }

@@ -85,6 +85,7 @@ class API {
 		return new Promise(r => setTimeout(() => { r(APINoAsync.getCourses()) }, instant? 0 : 100));
 	}
 
+	static sendUserQualifications = async (qualObj: any, user_id?: number): Promise<any> => new Promise(resolve => resolve({}));
 	static sendUserPreferences = async (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number, instant?: boolean): Promise<void> => this.promiseVoid(instant)
 	static submitTrade = async (data: Submission, userId: number | undefined, instant?: boolean): Promise<any> => this.promiseVoid(instant);
 	static updateTrade = async (data: TradeRequest, userId: number | undefined, instant?: boolean): Promise<void> => this.promiseVoid(instant);
@@ -303,6 +304,7 @@ export class APINoAsync {
 		}))
 	}
 
+	static sendUserQualifications = async (qualObj: any, user_id?: number): Promise<any> => {};
 	static sendUserPreferences = (user_id: number | undefined, prefs: Map<number, APIUserPreferenceEnum>, pref_num?: number) => {}
 	static submitTrade = (data: Submission, userId: number | undefined) => {};
 	static updateTrade = (data: TradeRequest, userId: number | undefined) => {};
