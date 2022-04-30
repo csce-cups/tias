@@ -1,18 +1,58 @@
-import React, {useContext} from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
+import contexts, { APIContext } from '../../../Components/APIContext';
 import { ProfileSidebar } from '../../../Components/Profile/ProfileSidebar';
-import contexts from '../../../Components/APIContext';
-import API from '../../../modules/API';
+import { CourseBlock, CourseBlockWeek, Person } from '../../../modules/API';
+import { APINoAsync } from '../../../modules/__mocks__/API';
+import { ContextSetterSpy } from '../../helpers/ContextSetterSpy';
+
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
-import { Person } from '../../../modules/API';
 
 
 describe('ProfileSidebar', () => {
-    it('renders properly', () => {
-      render(<ProfileSidebar/>); 
-    });
+  const person: Person = {
+    ...APINoAsync.fetchPTList()[0],
+    peer_teacher: true,
+    teaching_assistant: true,
+    professor: true,
+    administrator: true
+  };
 
-    it.todo('test the date stuff');
-    it.todo('test that the right role is displayed');
+  const week = APINoAsync.fetchCourseBlocks();
+  const block = week.Wednesday![0];
+  const data: CourseBlockWeek = {
+    Monday: week.Monday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3),
+    Tuesday: week.Tuesday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3),
+    Wednesday: week.Wednesday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3),
+    Thursday: week.Thursday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3),
+    Friday: week.Friday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3)
+  };
+
+  it('displays when scheduling hasn\'t happened', () => {
+    render(<ProfileSidebar />);
+    expect(screen.getByText("Scheduling hasn't happened.")).toBeInTheDocument();
+  });
+  
+  it('displays when unscheduled', () => {
+    render(
+      <APIContext>
+        <ProfileSidebar />
+      </APIContext>
+    );
+    expect(screen.getByText("No assigned labs")).toBeInTheDocument();
+  });
+  
+  it('displays scheduled blocks', () => {
+    render(
+      <APIContext>
+        < ContextSetterSpy what={contexts.blocks} value={data} >
+          < contexts.user.Provider value={{user: person, doShowAdmin: true, doShowLabSwap: true, doShowProfile: true, doShowScheduling: true}} >
+            <ProfileSidebar />
+          </contexts.user.Provider>
+        </ContextSetterSpy>
+      </APIContext>
+    );
+
+    expect(screen.getByText(`${block.department}: ${block.course_number}-${block.section_number}`)).toBeInTheDocument();
+  })
 }); 
