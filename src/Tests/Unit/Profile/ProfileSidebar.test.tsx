@@ -1,7 +1,7 @@
 import { screen, render } from '@testing-library/react';
 import contexts, { APIContext } from '../../../Components/APIContext';
 import { ProfileSidebar } from '../../../Components/Profile/ProfileSidebar';
-import { CourseBlockWeek, Person } from '../../../modules/API';
+import { CourseBlockWeek, CourseBlockWeekKey, Person } from '../../../modules/API';
 import { APINoAsync } from '../../../modules/__mocks__/API';
 import { ContextSetterSpy } from '../../helpers/ContextSetterSpy';
 
@@ -53,6 +53,14 @@ describe('ProfileSidebar', () => {
       </APIContext>
     );
 
-    expect(screen.getByText(`${block.department}: ${block.course_number}-${block.section_number}`)).toBeInTheDocument();
+    (["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] as CourseBlockWeekKey[]).forEach((day: CourseBlockWeekKey) => {
+      data[day]?.forEach(block => {
+        if (block.scheduled?.includes(person.person_id)) {
+          expect(screen.getByText(`${block.department}: ${block.course_number}-${block.section_number}`)).toBeInTheDocument();
+        } else {
+          expect(screen.queryByText(`${block.department}: ${block.course_number}-${block.section_number}`)).not.toBeInTheDocument();
+        }
+      });
+    });
   })
 }); 

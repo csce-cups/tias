@@ -7,7 +7,7 @@ interface Props {
 
 export const SchedulingFilter: FC<Props> = ({ filter, setFilter }) => {
   let filter_subjects = Array.from(filter.keys()).map(key => `${key}`).sort();
-  const [toggleAll, setToggleAll] = React.useState("Show none");
+  const [toggleAll, setToggleAll] = React.useState(Array.from(filter).some(v => !v[1])? "Show all" : "Show none");
   let filter_elements = [];
 
   const update = (target: string) => () => {

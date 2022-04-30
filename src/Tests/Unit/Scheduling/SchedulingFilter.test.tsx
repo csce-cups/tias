@@ -6,14 +6,17 @@ import { APIContext } from '../../../Components/APIContext';
 jest.mock('../../../Components/APIContext')
 
 describe('SchedulingFilter', () => {
-    const map = new Map([
-        [121, true],
-        [221, true],
-        [312, true],
-        [313, true],
-        [314, true],
-        [315, true]
-    ])
+    let map: Map<number, boolean>;
+    beforeEach(() => {
+        map = new Map([
+            [121, true],
+            [221, true],
+            [312, true],
+            [313, true],
+            [314, true],
+            [315, true]
+        ]);
+    })
 
     describe("display", () => {
         it('displays courses', () => {
@@ -31,7 +34,18 @@ describe('SchedulingFilter', () => {
             expect(screen.getByText("315")).toBeInTheDocument();
         })
     
-        it('has has a show all button', () => {
+        it('has has a show none button', () => {
+            render(
+                <APIContext>
+                    < SchedulingFilter filter={map} setFilter={() => {}}/>
+                </APIContext>
+            )
+
+            expect(screen.getByText(/show none/i)).toBeInTheDocument();
+        });
+
+        it('has has a show all button when a filter is active', () => {
+            map.forEach((value, key) => map.set(key, key !== 121));
             render(
                 <APIContext>
                     < SchedulingFilter filter={map} setFilter={() => {}}/>

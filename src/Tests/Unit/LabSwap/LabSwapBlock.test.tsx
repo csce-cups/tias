@@ -58,9 +58,10 @@ describe("LabSwapBlock", () => {
             expect(screen.getByText("Select course to request")).toBeInTheDocument();
             expect(screen.getByText("Request selected section")).toBeInTheDocument();
 
-            for (let i = 0; i < data.section_ids.length; i++) {
-                expect(screen.getByText(`${data.course_number}-${data.section_numbers[i]} with ${data.professors[i]}`)).toBeInTheDocument();
-            }
+            data.professors.forEach((p, i) => {
+                if (p !== "TBA") expect(screen.getByText(`${data.course_number}-${data.section_numbers[i]} with ${p}`)).toBeInTheDocument();
+                else expect(screen.getByText(`${data.course_number}-${data.section_numbers[i]} (professor TBA)`)).toBeInTheDocument();
+            })
         });
 
         it("contains correct text when not clicked", () => {
@@ -70,9 +71,10 @@ describe("LabSwapBlock", () => {
             expect(screen.queryByText("Select course to request")).not.toBeInTheDocument();
             expect(screen.queryByText("Request selected section")).not.toBeInTheDocument();
 
-            for (let i = 0; i < data.section_ids.length; i++) {
-                expect(screen.queryByText(`${data.course_number}-${data.section_numbers[i]} with ${data.professors[i]}`)).not.toBeInTheDocument();
-            }
+            data.professors.forEach((p, i) => {
+                if (p !== "TBA") expect(screen.queryByText(`${data.course_number}-${data.section_numbers[i]} with ${p}`)).not.toBeInTheDocument();
+                else expect(screen.queryByText(`${data.course_number}-${data.section_numbers[i]} (professor TBA)`)).not.toBeInTheDocument();
+            })
         })
     });
     
