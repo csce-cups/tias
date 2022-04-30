@@ -1,7 +1,7 @@
 import { screen, render } from '@testing-library/react';
 import contexts, { APIContext } from '../../../Components/APIContext';
 import { ProfileSidebar } from '../../../Components/Profile/ProfileSidebar';
-import { CourseBlock, CourseBlockWeek, Person } from '../../../modules/API';
+import { CourseBlockWeek, Person } from '../../../modules/API';
 import { APINoAsync } from '../../../modules/__mocks__/API';
 import { ContextSetterSpy } from '../../helpers/ContextSetterSpy';
 
