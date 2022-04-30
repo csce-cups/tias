@@ -3,6 +3,5 @@ import React from 'react';
 import { ChangeoverFileUploadButton } from '../../../Components/Misc/ChangeoverFileUploadButton';
 
 describe('ChangeoverFileUploadButton', () => {
-    render(<ChangeoverFileUploadButton/>);
-    //I am terrified to do anything else
+    it.todo("write tests");
 });

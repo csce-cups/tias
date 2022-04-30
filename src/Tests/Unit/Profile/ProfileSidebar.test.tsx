@@ -57,8 +57,6 @@ describe('ProfileSidebar', () => {
       data[day]?.forEach(block => {
         if (block.scheduled?.includes(person.person_id)) {
           expect(screen.getByText(`${block.department}: ${block.course_number}-${block.section_number}`)).toBeInTheDocument();
-        } else {
-          expect(screen.queryByText(`${block.department}: ${block.course_number}-${block.section_number}`)).not.toBeInTheDocument();
         }
       });
     });

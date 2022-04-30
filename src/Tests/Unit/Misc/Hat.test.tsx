@@ -1,47 +1,101 @@
-import React, { FC, useContext, useState } from 'react'
-import { contexts } from '../../../Components/APIContextHelper'
-import { Person } from '../../../modules/API'
-import colorFromId from '../../../modules/color'
-import { render, screen, fireEvent } from "@testing-library/react";
-import { Hat } from '../../../Components/Misc/Hat';
-import { Dot } from '../../../Components/Misc/Dot';
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { APIContext } from "../../../Components/APIContext";
+import { contexts } from "../../../Components/APIContextHelper";
+import { Dot } from "../../../Components/Misc/Dot";
+import { Hat } from "../../../Components/Misc/Hat";
+import { APINoAsync } from "../../../modules/__mocks__/API";
 
-import {APINoAsync} from '../../../modules/__mocks__/API'
-jest.mock('../../../modules/API');
-jest.mock('../../../Components/APIContext');
-// jest.mock('../../../Components/modules/API');
-const people = APINoAsync.fetchPTList()
-describe("Hat",()=>{
-    const generateHats = () => {
-        people.forEach(p => render(
-            <contexts.employees.Provider value={[people, ()=>[]]}>
-                < Hat linkID={p.person_id} />
-            </contexts.employees.Provider>
-            )
-        );
-    }
+jest.mock("../../../modules/API");
+jest.mock("../../../Components/APIContext");
+jest.mock("../../../Components/Misc/Dot");
 
-    describe("Content", ()=>{
-        it("Invalid ID",()=>{
-            render(<Hat linkID={-1}/>)
-            expect(screen.getByText("UNSCHEDULED")).toBeInTheDocument();
-        })
-        it("Has correct name", ()=>{
-            generateHats()
-            people.forEach((p)=>{
-                expect(screen.getByText(`${p?.first_name} ${p?.last_name}`)).toBeInTheDocument();
-            })
-        })
-        it("Clickable",()=>{
-            render(
-                <contexts.employees.Provider value={[people, ()=>[]]}>
-                    <Dot linkID={people[0].person_id} isScheduled={true}/>
-                    <Hat linkID={people[0].person_id}/>
-                </contexts.employees.Provider>)
-            const button = screen.getByTitle(`${people[0]?.first_name} ${people[0]?.last_name}`);
-            fireEvent.click(button);
-            expect(screen.getByText(`${people[0]?.first_name} ${people[0]?.last_name}`)).toBeInTheDocument();
+describe("Hat", () => {
+  const person = APINoAsync.fetchPTList()[0];
 
-        })
-    })
-})
+  describe("Content", () => {
+    it("Invalid ID", () => {
+      render(<Hat linkID={-1} />);
+      expect(screen.getByText("UNSCHEDULED")).toBeInTheDocument();
+    });
+
+    it("displays the correct name", () => {
+      render(
+        < APIContext >
+          <Hat linkID={person.person_id} />
+        </ APIContext >
+      )
+
+      expect(screen.getByText(`${person.first_name} ${person.last_name}`)).toBeInTheDocument();
+    });
+
+    it("is scrolls to it's dot when clicked", () => {
+      let mockScroll = jest.fn();
+      const prevScroll = window.HTMLElement.prototype.scrollIntoView;
+      window.HTMLElement.prototype.scrollIntoView = mockScroll;
+      const r = render(
+        < APIContext >
+          < Dot linkID={person.person_id} isScheduled />
+          < Hat linkID={person.person_id} />
+        </ APIContext >
+      );
+
+      const hat = screen.getByTitle(`${person.first_name} ${person.last_name}`);
+      hat.click();
+      
+      expect(mockScroll).toHaveBeenCalled();
+
+      window.HTMLElement.prototype.scrollIntoView = prevScroll;
+    });
+
+    it("is flashes name when clicked", async () => {
+      let mockScroll = jest.fn();
+      const prevScroll = window.HTMLElement.prototype.scrollIntoView;
+      window.HTMLElement.prototype.scrollIntoView = mockScroll;
+      render(
+        < APIContext >
+          < Dot linkID={person.person_id} isScheduled />
+          < Hat linkID={person.person_id} />
+        </ APIContext >
+      );
+
+      const hat = screen.getByTitle(`${person.first_name} ${person.last_name}`);
+      hat.click();
+
+      for (let t = 0; t < 2000; t += 250) {
+        if (t % 500 !== 0) {
+          await waitFor(() => {
+            expect(screen.getByTestId("Dot").parentElement?.parentElement?.classList).toContain("flash-on"), { timeout: 501 }
+          });
+        } else {
+          await waitFor(() => {
+            expect(screen.getByTestId("Dot").parentElement?.parentElement?.classList).not.toContain("flash-on"), { timeout: 501 }
+          });
+        }
+      }
+
+      await waitFor(() => {
+        expect(screen.getByTestId("Dot").parentElement?.parentElement?.classList).not.toContain("flash-on");
+      });
+
+      window.HTMLElement.prototype.scrollIntoView = prevScroll;
+    });
+  });
+
+  it("doesn't panic if there are no dots", () => {
+    let mockScroll = jest.fn();
+      const prevScroll = window.HTMLElement.prototype.scrollIntoView;
+      window.HTMLElement.prototype.scrollIntoView = mockScroll;
+      render(
+        < APIContext >
+          < Hat linkID={person.person_id} />
+        </ APIContext >
+      );
+
+      const hat = screen.getByTitle(`${person.first_name} ${person.last_name}`);
+      hat.click();
+
+      expect(mockScroll).not.toHaveBeenCalled();
+
+      window.HTMLElement.prototype.scrollIntoView = prevScroll;
+  })
+});
