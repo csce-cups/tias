@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
+import uuid from '../../uuid';
 import contexts from '../APIContext';
 import { GoogleButton } from "./GoogleButton";
 import { TutorialModal } from './TutorialModal';

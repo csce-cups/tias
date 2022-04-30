@@ -8,6 +8,7 @@
 import React, { useContext } from 'react';
 import API, { APIStudentUnavailability } from '../../modules/API';
 import contexts from '../APIContext';
+import { TutorialModal } from '../Misc/TutorialModal';
 
 export const ProfileStatusBar = () => {
   const [userViableCourses, setUserViableCourses] = useContext(contexts.userViableCourses);
@@ -112,6 +113,7 @@ export const ProfileStatusBar = () => {
     <div className="profile-status-bar">
       <input type="file" accept=".ics" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
       <button id="upload-schedule-button" className="blue button" onClick={handleClick}>Upload Schedule</button>
+      < TutorialModal light link="https://www.youtube.com/embed/43pUal6yf34"/>
     </div>
   );
 }
