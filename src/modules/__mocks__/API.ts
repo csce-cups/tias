@@ -37,7 +37,8 @@ class API {
 		return {
 			userQuals: API.fetchUserQualifications(user_id),
 			userPrefs: API.fetchUserPreferences(user_id),
-			userViableCourses: API.fetchUserViableCourses(user_id)
+			userViableCourses: API.fetchUserViableCourses(user_id),
+			userTrades: API.fetchUserTrades(user_id)
 		}
 	}
 
