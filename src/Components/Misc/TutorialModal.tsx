@@ -48,7 +48,7 @@ export const TutorialModal: FC<Props> = ({link: _link, light}) => {
           {rendered && <>
             <button className="red button" onClick={() => setEditing(false)}>Close</button>
             { link?
-              <iframe src={link} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen/>
+              <iframe src={link} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen/>
               : 
               <div className="loading">No tutorial available for this page.</div> 
             }
