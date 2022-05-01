@@ -2011,6 +2011,10 @@ img.background-image {
 		height: 100%;
 		width: 100%;
 	}
+
+	span {
+		margin: 5px;
+	}
 }
 
 .full-modal-container.hidden, .full-modal.hidden {
@@ -2074,4 +2078,10 @@ span.email {
 .tutorial-icon.light:hover {
 	background-color: $render_background;
 	// color: white;
+}
+
+img.half-image {
+	width: calc(50% - 4px - 5px);
+	height: 350px;
+	border: 2px solid black;
 }

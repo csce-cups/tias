@@ -3,9 +3,10 @@ import React, { FC, useEffect, useState } from 'react'
 interface Props {
   link?: string
   light?: boolean
+  children?: React.ReactNode
 }
 
-export const TutorialModal: FC<Props> = ({link: _link, light}) => {
+export const TutorialModal: FC<Props> = ({link: _link, light, children}) => {
 	const [active, setActive] = useState(false);
   const [rendered, setRendered] = useState(false);
 
@@ -47,10 +48,12 @@ export const TutorialModal: FC<Props> = ({link: _link, light}) => {
         <div className={`full-modal ${!active? 'hidden' : ''}`}>
           {rendered && <>
             <button className="red button" onClick={() => setEditing(false)}>Close</button>
-            { link?
-              <iframe src={link}/>
-              : 
-              <div className="loading">No tutorial available for this page.</div> 
+            { children? children
+              :  
+              link?
+                <iframe src={link}/>
+                : 
+                <div className="loading">No tutorial available for this page.</div> 
             }
           </>}
         </div>
