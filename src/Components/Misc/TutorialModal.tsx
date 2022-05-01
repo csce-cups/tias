@@ -24,16 +24,16 @@ export const TutorialModal: FC<Props> = ({link: _link, light}) => {
   if (!_link) {
     switch (window.location.pathname) {
       case '/scheduling': // Scheduling page
-        link = 'https://www.youtube.com/embed/LwN3jm3fxMU';
+        link = 'https://www.youtube.com/embed/UWn3OUdRbYo';
         break;
       case '/profile': // Profile page
-        link = 'https://www.youtube.com/embed/DKgW8UcGMNk';
+        link = 'https://www.youtube.com/embed/zpbWHwiFSZk';
         break;
       case '/labswap': // LabSwap™ page
-        link = 'https://www.youtube.com/embed/ex0URF-hWj4';
+        link = 'https://www.youtube.com/embed/m72nqyLH288';
         break;
       case '/admin': // Admin page
-        link = 'https://www.youtube.com/embed/43pUal6yf34';
+        link = 'https://www.youtube.com/embed/SVS0C_Fqwd4';
         break;
       default:
         link = undefined; // No tutorial
@@ -48,7 +48,7 @@ export const TutorialModal: FC<Props> = ({link: _link, light}) => {
           {rendered && <>
             <button className="red button" onClick={() => setEditing(false)}>Close</button>
             { link?
-              <iframe src={link}/>
+              <iframe src={link} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen/>
               : 
               <div className="loading">No tutorial available for this page.</div> 
             }
