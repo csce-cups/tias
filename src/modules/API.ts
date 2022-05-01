@@ -132,7 +132,7 @@ export interface APIUserQualification {
 	qualified: boolean
 }
 
-export type APIUserPreferenceEnum = "Can't Do" | "Prefer Not To Do" | "Indifferent" | "Prefer To Do"
+export type APIUserPreferenceEnum = "Can't Do" | "Prefer Not To Do" | "Indifferent" | "Prefer To Do" | "ERROR"
 export type APIUserPreferences = Map<number, APIUserPreferenceEnum>
 
 export interface APIAlgoResponse {
@@ -265,8 +265,11 @@ class API {
 	static fetchUserQualifications = async (user_id?: number): Promise<APIUserQualification[]> => {
 		if (user_id === undefined) return new Promise((resolve) => {resolve([] as APIUserQualification[]);});
 		return axios.get(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`)
-			.then(({data}) => data.qualifications)
-			.catch(err => console.log(err));
+			.then(({data}) => (data.qualifications as APIUserQualification[]).sort((a, b) => a.course_number.localeCompare(b.course_number)))
+			.catch(err => {
+				console.log(err)
+				return [];
+			});
 	}
 
 	static sendUserQualifications = async (qualObj: any, user_id?: number): Promise<any> => {
@@ -525,7 +528,7 @@ class API {
 		return fetch('https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses', {
 			method: 'GET'
 		}).then(sessionResponse => sessionResponse.json())
-		  .then(responseData => responseData as Course[]);
+		  .then(responseData => (responseData as Course[]).sort((a, b) => a.course_number.localeCompare(b.course_number)));
 	}
 
 	static addCourse = async (course: Course) => {

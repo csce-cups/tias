@@ -1075,6 +1075,11 @@ img.back-arrow {
 		transition: all 0.2s ease-in-out;
 	}
 
+	.block.error {
+		box-shadow: 0 5px 10px 1px red;
+		transition: all 0.2s ease-in-out;
+	}
+
 	.block.selected {
 		position: absolute;
 		height: 100%;
