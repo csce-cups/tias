@@ -27,13 +27,13 @@ export const TutorialModal: FC<Props> = ({link: _link, light}) => {
         link = 'https://www.youtube.com/embed/UWn3OUdRbYo';
         break;
       case '/profile': // Profile page
-        link = 'https://www.youtube.com/embed/zpbWHwiFSZk';
-        break;
-      case '/labswap': // LabSwap™ page
         link = 'https://www.youtube.com/embed/m72nqyLH288';
         break;
-      case '/admin': // Admin page
+      case '/labswap': // LabSwap™ page
         link = 'https://www.youtube.com/embed/SVS0C_Fqwd4';
+        break;
+      case '/admin': // Admin page
+        link = 'https://www.youtube.com/embed/zpbWHwiFSZk';
         break;
       default:
         link = undefined; // No tutorial
