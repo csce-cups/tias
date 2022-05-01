@@ -1,3 +1,4 @@
+import uuid from '../../uuid';
 import { APIAlgoResponse, APIStudentUnavailability, APIUserPreferenceEnum, APIUserPreferences, APIUserQualification, Course, CourseBlock, CourseBlockWeek, CourseBlockWeekKey, EditableSection, Meeting, Person, Person_INIT, Submission, TradeRequest } from '../API';
 
 export const parseCookie: any = () => ({tias_user_id: '1'});
@@ -14,7 +15,8 @@ const generateBlock = (course: number, section: string, start: Date, end: Date, 
 	scheduled: null,
 	professor: "",
 	capacity_peer_teachers: 1,
-});
+	testid: uuid()
+} as CourseBlock);
 
 class API {
 	private static promiseVoid = (instant?: boolean): Promise<void> => new Promise(res => {
@@ -192,7 +194,7 @@ export class APINoAsync {
 					)
 					if (Math.random() > 0.7) {
 						let newStartTime = new Date(startTime.getTime() + length*60*1000 + 20*60*1000);
-						if (newStartTime.getTime() < 12*60*60*1000) startTime = newStartTime
+						if (newStartTime.getTime() < 12*60*60*1000) startTime = newStartTime;
 					}
 				}
 			})
