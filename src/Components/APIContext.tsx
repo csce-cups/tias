@@ -27,7 +27,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
     userTrades,
   } = _initstates();
 
-  const [all, setAll] = useState([] as Person[]);
+  let [all, setAll] = useState([] as Person[]);
 
   useEffect(() => {
     const dataPromises = API.fetchAllStatic();
@@ -36,8 +36,9 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
 
     Promise.all([
       new Promise<void>(resolve => dataPromises.employees.then((resp) => {
+        all = resp;
         setAll(resp);
-        employees = resp.filter(e => e.peer_teacher);
+        employees = resp?.filter(e => e.peer_teacher);
       }).then(() => resolve())),
       new Promise<void>(resolve => dataPromises.blocks.then((resp) => blocks = resp).then(() => resolve()))
     ]).then(() => {
@@ -64,7 +65,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
   }, []); // Fetch static data right away
 
   useEffect(() => {
-    const user = all.find((e) => e.person_id === googleDataState[0].tias_user_id) || null;
+    const user = all.find((e) => e.person_id === +googleDataState[0].tias_user_id) || null;
     const userPromises = API.fetchAllUser(user?.person_id);
 
     userPromises.userQuals.then((resp) => {
@@ -101,7 +102,7 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
         doShowAdmin: (user && user.administrator)
       })
     }
-  }, [googleDataState[0]]); // Fetch user specific data when user is logged in
+  }, [googleDataState[0], all]); // Fetch user specific data when user is logged in
 
   useEffect(() => {
     allViableCoursesMap[1](reverseViableCourses(allViableCoursesState[0]));

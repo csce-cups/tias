@@ -19,7 +19,6 @@ describe('ProfileSidebar', () => {
   };
 
   const week = APINoAsync.fetchCourseBlocks();
-  const block = week.Wednesday![0];
   const data: CourseBlockWeek = {
     Monday: week.Monday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3),
     Tuesday: week.Tuesday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3),
