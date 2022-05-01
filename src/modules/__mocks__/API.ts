@@ -1,7 +1,21 @@
 import uuid from '../../uuid';
 import { APIAlgoResponse, APIStudentUnavailability, APIUserPreferenceEnum, APIUserPreferences, APIUserQualification, Course, CourseBlock, CourseBlockWeek, CourseBlockWeekKey, EditableSection, Meeting, Person, Person_INIT, Submission, TradeRequest } from '../API';
 
-export const parseCookie: any = () => ({tias_user_id: '1'});
+export const parseCookie: any = () => {
+	try {
+		return (
+			document.cookie
+				.split(';')
+				.map(v => v.split('='))
+				.reduce((acc: any, v) => {
+					acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+					return acc;
+				}, {})
+		)
+	} catch (e) {
+		return ({})
+	}
+}
 
 const generateBlock = (course: number, section: string, start: Date, end: Date, day: string, place: string, id: number): CourseBlock => ({
 	department: "CSCE",

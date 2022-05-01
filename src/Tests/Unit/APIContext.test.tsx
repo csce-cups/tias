@@ -5,8 +5,8 @@ import { APINoAsync } from "../../modules/__mocks__/API";
 
 jest.mock("../../modules/API");
 
-let callback: ((param: any) => void) | "UNINITIALIZED";
-let value: any | "UNINITIALIZED";
+let callback: ((param: any) => void) | "UNINITIALIZED" = "UNINITIALIZED";
+let value: any | "UNINITIALIZED" = "UNINITIALIZED";
 const caller = (what: React.Context<any>) => {
   const { Consumer } = what;
   return (
@@ -58,6 +58,11 @@ describe("APIContext", () => {
       userViableCourses: new Promise<any>((res, rej) => {}),
       userTrades: new Promise<any>((res, rej) => {}),
     }));
+
+    Object.defineProperty(window.document, 'cookie', {
+      writable: true,
+      value: 'tias_user_id=-1',
+    });
   });
 
   afterEach(() => {
@@ -69,15 +74,18 @@ describe("APIContext", () => {
     value = "UNINITIALIZED";
   });
 
-  it("calls fetchAllStatic on load", () => {
-    render(
-      <APIContext>
-        <></>
-      </APIContext>
-    );
+  // it("calls fetchAllStatic on load", async () => {
+  //   render(
+  //     <APIContext>
+  //       <></>
+  //     </APIContext>
+  //   );
 
-    expect(fetchAllStatic).toHaveBeenCalled();
-  });
+  //   expect(fetchAllStatic).toHaveBeenCalled();
+  //   await waitFor(() => {
+  //     expect(fetchAllUser).toHaveBeenCalled();
+  //   });
+  // });
 
   test.each`
     context                       | name
@@ -102,48 +110,15 @@ describe("APIContext", () => {
     expect(value).not.toBe("UNINITIALIZED");
     await waitFor(() => {
       expect(value).not.toBe(prev);
-    })
+    });
+
+    await act(async () => await new Promise(r => setTimeout(r, 101))) // Cleanup
   });
 
   it("calls fetchAllUser on login", () => {
     render(<APIContext>{caller(contexts.googleData)}</APIContext>);
     act(() => (callback as () => void)());
     expect(fetchAllUser).toHaveBeenCalledTimes(2);
-  });
-
-  it("resolves the user on login", async () => {
-    setMocksToResolve();
-    fetchAllStatic = jest
-      .spyOn(API, "fetchAllStatic")
-      .mockImplementation(() => ({
-        employees: new Promise(r => r([...APINoAsync.fetchEveryone(), {
-          person_id: 999_999, 
-          email: "MASTER@tamu.edu",
-          first_name: "MASTER", 
-          last_name: "USER",
-          profile_photo_url: "",
-          peer_teacher: true,
-          teaching_assistant: true,
-          administrator: true,
-          professor: true,
-          isScheduled: null,
-          isChecked: true,
-          desired_number_assignments: 2
-        }])),
-        blocks: new Promise<any>((res, rej) => {}),
-      }));
-
-    render(
-      <APIContext>
-        {caller(contexts.googleData)}
-        {getVal(contexts.user)}
-      </APIContext>
-    );
-    act(() => (callback as (params: any) => void)({tias_user_id: "999999"}));
-    
-    await waitFor(() => {
-      expect(getValValue.user).toBeTruthy();
-    });
   });
 
   it("resolves the user from the cookie", async () => {
@@ -167,10 +142,17 @@ describe("APIContext", () => {
         }])),
         blocks: new Promise<any>((res, rej) => res([])),
       }));
-    Object.defineProperty(window.document, 'cookie', {
-      writable: true,
-      value: 'tias_user_id=999999',
-    });
+    fetchAllUser = jest.spyOn(API, "fetchAllUser").mockImplementation(() => ({
+      userQuals: new Promise<any>((res, rej) => {}),
+      userPrefs: new Promise<any>((res, rej) => {}),
+      userViableCourses: new Promise<any>((res, rej) => {}),
+      userTrades: new Promise<any>((res, rej) => {}),
+    }));
+
+      Object.defineProperty(window.document, 'cookie', {
+        writable: true,
+        value: 'tias_user_id=999999',
+      });
 
     render(
       <APIContext>
@@ -179,9 +161,62 @@ describe("APIContext", () => {
     );
     
     await waitFor(() => {
-      expect(getValValue.user).toBeTruthy();
+      expect(getValValue.user.person_id).toBe(999_999);
     });
-  })
+
+    await waitFor(() => {
+      expect(fetchAllUser).toHaveBeenCalledTimes(2);
+    })
+  });
+
+  it("resolves the user on login", async () => {
+    setMocksToResolve();
+    fetchAllStatic = jest
+      .spyOn(API, "fetchAllStatic")
+      .mockImplementation(() => ({
+        employees: new Promise(r => r([...APINoAsync.fetchEveryone(), {
+          person_id: 999_999, 
+          email: "MASTER@tamu.edu",
+          first_name: "MASTER", 
+          last_name: "USER",
+          profile_photo_url: "",
+          peer_teacher: true,
+          teaching_assistant: true,
+          administrator: true,
+          professor: true,
+          isScheduled: null,
+          isChecked: true,
+          desired_number_assignments: 2
+        }])),
+        blocks: new Promise<any>((res, rej) => {}),
+      }));
+    fetchAllUser = jest.spyOn(API, "fetchAllUser").mockImplementation(() => ({
+      userQuals: new Promise<any>((res, rej) => {}),
+      userPrefs: new Promise<any>((res, rej) => {}),
+      userViableCourses: new Promise<any>((res, rej) => {}),
+      userTrades: new Promise<any>((res, rej) => {}),
+    }));
+
+    render(
+      <APIContext>
+        {caller(contexts.googleData)}
+        {getVal(contexts.user)}
+      </APIContext>
+    );
+    act(() => (callback as (params: any) => void)({tias_user_id: "999999"}));
+    
+    await waitFor(() => {
+      expect(fetchAllUser).toHaveBeenCalledTimes(2);
+    });
+    
+    await waitFor(() => {
+      expect(getValValue.user.person_id).toBe(999_999);
+    });
+
+    await waitFor(() => {
+      expect(fetchAllUser).toHaveBeenCalledTimes(3);
+    });
+  });
 
   test.each`
     context                       | name

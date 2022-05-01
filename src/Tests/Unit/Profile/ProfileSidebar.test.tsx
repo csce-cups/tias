@@ -27,6 +27,12 @@ describe('ProfileSidebar', () => {
     Friday: week.Friday!.map((b, i) => ({...b, scheduled: [i%3? person.person_id : -1]})).sort((a, b) => a.section_id % 3 - 1 + b.section_id % 3)
   };
 
+  const schedule = new Map((
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] as CourseBlockWeekKey[])
+      .map(day => data[day]?.map(b => [b.section_id.toString(), b.scheduled]) as [string, number[]][] || [])
+      .flat()
+  );
+
   it('displays when scheduling hasn\'t happened', () => {
     render(<ProfileSidebar />);
     expect(screen.getByText("Scheduling hasn't happened.")).toBeInTheDocument();
@@ -42,12 +48,18 @@ describe('ProfileSidebar', () => {
   });
   
   it('displays scheduled blocks', () => {
+    Object.defineProperty(window.document, 'cookie', {
+      writable: true,
+      value: `tias_user_id=${person.person_id}`,
+    });
     render(
       <APIContext>
         < ContextSetterSpy what={contexts.blocks} value={data} >
-          < contexts.user.Provider value={{user: person, doShowAdmin: true, doShowLabSwap: true, doShowProfile: true, doShowScheduling: true}} >
-            <ProfileSidebar />
-          </contexts.user.Provider>
+          < ContextSetterSpy what={contexts.loadedSchedule} value={schedule} >
+            < contexts.user.Provider value={{user: person, doShowAdmin: true, doShowLabSwap: true, doShowProfile: true, doShowScheduling: true}} >
+              <ProfileSidebar />
+            </contexts.user.Provider>
+          </ContextSetterSpy>
         </ContextSetterSpy>
       </APIContext>
     );
