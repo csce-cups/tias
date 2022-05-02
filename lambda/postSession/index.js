@@ -5,7 +5,7 @@ const axios = require('axios');
 const cryptoLib = require('crypto');
 awsSDK.config.update({ region: 'us-east-1' });
 
-async function getExistingUserID(userTokenHash, userEmail) {
+async function getExistingUserID(userTokenHash, userEmail, response) {
     let dbQuery = `SELECT *
                    FROM person
                    WHERE `;
@@ -16,13 +16,15 @@ async function getExistingUserID(userTokenHash, userEmail) {
         params.push(userTokenHash);
     }
     else if (userEmail !== null) {
-        dbQuery += 'email = $1';
+        dbQuery += 'email ILIKE $1';
         params.push(userEmail);
     }
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
+    let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 500, 'Failure in query for existing user.');
+    });
     
-    if (dbRows.length == 0) {
+    if (dbRows === undefined || dbRows.length == 0) {
         return null;
     }
     else {
@@ -59,6 +61,8 @@ function updateUser(userID, requestBody) {
 exports.handler = async (event) => {
     let accessHeader = null;
     
+    // Appease CORS for the requesting domain, if the domain
+    // is one that we expect.
     if (event.headers.origin === 'https://www.csce-scheduler.com') {
         accessHeader = 'https://www.csce-scheduler.com';
     }
@@ -68,12 +72,36 @@ exports.handler = async (event) => {
     
     let response = {
         statusCode: 200,
-        headers: { "Content-Type": "application/json", 
-                   "Access-Control-Allow-Origin": accessHeader }
+        headers: { "Content-Type": "application/json" }
     };
+    
+    // Set the access header only upon an expected domain;
+    // setting the access header to null in the response isn't
+    // necessarily safe.
+    if (accessHeader !== null) {
+        response.headers['Access-Control-Allow-Origin'] = accessHeader;
+        response.headers['Vary'] = 'Origin';
+    }
+    
+    // If the event body was not specified, then necessary information
+    // to establish a session is missing; return an error.
+    if (event.body == null) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing Request Body.');
+        return response;
+    }
     
     let requestBody = JSON.parse(event.body);
     let token = requestBody.token;
+    
+    if (token == null || token == '') {
+       helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing Google Auth Token.');
+       return response; 
+    }
+    if (requestBody.email == null || requestBody.email == '') {
+      helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing User Email Address.');
+      return response; 
+    }
+    
     let dbID = null;
 
     let paramResponse = null;
@@ -91,15 +119,25 @@ exports.handler = async (event) => {
     const userToken = payload['sub'];
     let userTokenHash = cryptoLib.createHash('md5').update(userToken).digest('hex');
     
-    let userID = await getExistingUserID(userTokenHash, null);
+    let userID = await getExistingUserID(userTokenHash, null, response);
+    
+    if (response.statusCode === 500) {
+        return response;
+    }
+    
     if (userID != null) {
         dbID = userID;
     }
     else {
-        userID = await getExistingUserID(null, requestBody.email);
+        userID = await getExistingUserID(null, requestBody.email, response);
+        
+        if (response.statusCode === 500) {
+            return response;
+        }
+        
         if (userID != null) {
             dbID = userID;
-            await updateUser(dbID, {'google_token_sub': userTokenHash, 'profile_photo_url': requestBody.profilePhoto});
+            await updateUser(dbID, {'google_token_sub': userTokenHash, 'first_name': requestBody.firstName, 'last_name': requestBody.lastName, 'profile_photo_url': requestBody.profilePhoto});
         }
         else {
             requestBody.token = userTokenHash;

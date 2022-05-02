@@ -80,4 +80,13 @@ const queryDB = async (dbQuery, params) => {
     .catch((error) => console.error(error));
 };
 
-module.exports = { getStoredParameter, prefetchDBInfo, queryDB };
+const GenerateErrorResponseAndLog = (err, response, code, msg) => {
+    if (err !== null) {
+        console.error('error: ', err);
+        console.error('trace: ', err.stack);
+    }
+    response.statusCode = code;
+    response.body = JSON.stringify({err: msg});
+};
+
+module.exports = { getStoredParameter, prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };

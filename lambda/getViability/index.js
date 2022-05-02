@@ -10,21 +10,29 @@ exports.handler = async (event) => {
         accessHeader = 'http://localhost:3000';
     }
     
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json", 
+                     "Access-Control-Allow-Origin": accessHeader }
+    };
+    
     let dbQuery = `SELECT * FROM "Viability"`;
     let params = [];
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
+    let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 'Unable to retrieve viability data.');
+    });
+    
+    if (response.statusCode === 500) {
+        return response;
+    }
     
     const responseBody = {
         "viability": dbRows
     };
 
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
-        "body": JSON.stringify(responseBody)
-    };
+    response.body = JSON.stringify(responseBody);
 
     return response;
 };

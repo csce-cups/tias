@@ -17,6 +17,13 @@ exports.handler = async (event) => {
         accessHeader = event.headers.origin;
     }
     
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
+        "body": JSON.stringify({})
+    };
+    
     let dbQuery = `
     SELECT person.*, course_section.*, course.department, course.course_number, course_name, section_meeting.weekday, section_meeting.start_time, section_meeting.end_time, (section_meeting.end_time - section_meeting.start_time) AS duration, section_meeting.place
     FROM section_assignment
@@ -24,12 +31,16 @@ exports.handler = async (event) => {
     JOIN course_section ON section_assignment.section_id = course_section.section_id
     JOIN course ON course_section.course_id = course.course_id
     JOIN section_meeting ON course_section.section_id = section_meeting.section_id AND section_meeting.meeting_type = 'Laboratory'
-    ORDER BY person.last_name, person.first_name, course.department, course_section.section_number, course.course_number`;
+    ORDER BY person.last_name, person.first_name, course.department, course_section.section_number, course.course_number, section_meeting.weekday`;
     let params = [];
     
     let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
         helper_functions.GenerateErrorResponseAndLog(err, response, 'Failed to export schedule data.');
     });
+
+    if (response.statusCode === 500) {
+        return response;
+    }
     
     const courseObj = {};
     const peopleObj = {};
@@ -80,13 +91,8 @@ exports.handler = async (event) => {
         people: Object.values(peopleObj),
         courses: Object.values(courseObj)
     }
-
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
-        "body": JSON.stringify(responseBody)
-    };
+    
+    response.body = JSON.stringify(responseBody)
 
     return response;
 };

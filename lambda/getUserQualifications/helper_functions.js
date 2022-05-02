@@ -8,7 +8,7 @@
 const awsSDK = require('aws-sdk');
 awsSDK.config.update({ region: 'us-east-1' });
 
-const { Client } = require('pg')
+const { Client } = require('pg');
 
 const sysManagerClient = new awsSDK.SSM();
 
@@ -34,23 +34,29 @@ const getStoredParameter = (parameterName) => {
 };
 
 const prefetchDBInfo = async () => {
-    let paramResponse = null;
-
-    paramResponse = await getStoredParameter('/tias/prod/db-endpoint');
-    dbEndpoint = paramResponse.Parameter.Value;
-
-    paramResponse = await getStoredParameter('/tias/prod/db-name');
-    dbName = paramResponse.Parameter.Value;
-
-    paramResponse = await getStoredParameter('/tias/prod/db-username');
-    dbUsername = paramResponse.Parameter.Value;
-
-    paramResponse = await getStoredParameter('/tias/prod/db-password');
-    dbPass = paramResponse.Parameter.Value;
+    await Promise.all([
+    getStoredParameter('/tias/prod/db-endpoint').then(paramResponse => {
+      dbEndpoint = paramResponse.Parameter.Value;
+    }),
+    
+    getStoredParameter('/tias/prod/db-name').then(paramResponse => {
+      dbName = paramResponse.Parameter.Value;
+    }),
+    
+    getStoredParameter('/tias/prod/db-username').then(paramResponse => {
+      dbUsername = paramResponse.Parameter.Value;
+    }),
+    
+    getStoredParameter('/tias/prod/db-password').then(paramResponse => {
+      dbPass = paramResponse.Parameter.Value;
+    }),
+  ]);
 };
 
 const queryDB = async (dbQuery, params) => {
-  await prefetchDBInfo(dbQuery, params);
+  if (!dbEndpoint || !dbName || !dbUsername || !dbPass) {
+    await prefetchDBInfo();
+  }
   
   const client = new Client({
     user: dbUsername,
@@ -65,10 +71,19 @@ const queryDB = async (dbQuery, params) => {
   return await client
     .query(dbQuery, params)
     .then((dbResponse) => {
-		client.end();
+        client.end();
         return dbResponse.rows;
     })
     .catch((error) => console.error(error));
 };
 
-module.exports = { prefetchDBInfo, queryDB };
+const GenerateErrorResponseAndLog = (err, response, code, msg) => {
+    if (err !== null) {
+        console.error('error: ', err);
+        console.error('trace: ', err.stack);
+    }
+    response.statusCode = code;
+    response.body = JSON.stringify({err: msg});
+};
+
+module.exports = { prefetchDBInfo, queryDB, GenerateErrorResponseAndLog };
