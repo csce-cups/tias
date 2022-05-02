@@ -276,7 +276,7 @@ class API {
 		return fetch(`https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/${user_id}/qualifications`, {
 			method: 'PUT',
 			body: JSON.stringify(qualObj)
-		}).then(response => response.json());
+		});
 	};
 
 	// https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/users/{userId}/preferences

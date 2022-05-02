@@ -50,14 +50,14 @@ export const APIContext: FC<Props> = ({ children, args, test }) => {
         setLoadedSchedule: loadedScheduleState[1]
       });
 
-      const user = all.find((e) => e.person_id === parseInt(parseCookie().tias_user_id)) || null;
-      setUser({
-        user: user,
-        doShowProfile: (user && user.peer_teacher),
-        doShowScheduling: (user && user.administrator),
-        doShowLabSwap: (user && user.peer_teacher),
-        doShowAdmin: (user && user.administrator)
-      })
+      // const user = all.find((e) => e.person_id === parseInt(parseCookie().tias_user_id)) || null;
+      // setUser({
+      //   user: user,
+      //   doShowProfile: (user && user.peer_teacher),
+      //   doShowScheduling: (user && user.administrator),
+      //   doShowLabSwap: (user && user.peer_teacher),
+      //   doShowAdmin: (user && user.administrator)
+      // })
     })
 
 

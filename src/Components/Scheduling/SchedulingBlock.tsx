@@ -122,6 +122,11 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
       if (course_instance.forbidden?.includes(employee.person_id)) {
         text = "(TIME CONFLICT)";
         color = "red";
+        if (course_instance.scheduled?.includes(employee.person_id)) {
+          // The current schedule is invalid, so we should remove the employee from the section
+          // setLinkIDs(linkIDs?.filter(e => e !== employee.person_id) || null);
+          course_instance.scheduled.filter(e => e !== employee.person_id);
+        }
       }
       elements.push(
         <option value={employee.person_id} key={`${employee?.person_id}-${course_instance.section_id}`} style={{color, ...bgcolor}}>
@@ -253,6 +258,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
       
       if (newLinkIDs?.some(id => course_instance.forbidden?.includes(id))) {
         const conflict = employees.find(e => e.person_id === newLinkIDs?.find(id => course_instance.forbidden?.includes(id)))!;
+        alert(`TIME CONFLICT: An edited section prevents ${conflict.first_name} ${conflict.last_name} from being reset to this block. Remove them from the conflicting section first and then try again.`);
         return;
       }
 

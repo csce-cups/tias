@@ -47,7 +47,7 @@ export const TutorialModal: FC<Props> = ({link: _link, light, children}) => {
       <div className={`full-modal-container ${!active? 'hidden' : ''}`}>
         <div className={`full-modal ${!active? 'hidden' : ''}`}>
           {rendered && <>
-            <button className="red button" style={{margin: '5px'}} onClick={() => setEditing(false)}>Close</button>
+            <button className="red button" style={{margin: '5px', width: '7em'}} onClick={() => setEditing(false)}>Close</button>
             { children? children
               :  
               link?

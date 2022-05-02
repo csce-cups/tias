@@ -2004,7 +2004,7 @@ img.background-image {
 	transition: all 0.2s ease-in-out, height 0.2s ease-in-out 0.2s;
 
 	button {
-		width: 7em;
+		min-width: 7em;
 	}
 
 	iframe {
@@ -2012,7 +2012,7 @@ img.background-image {
 		width: 100%;
 	}
 
-	span {
+	span.title {
 		margin: 5px;
 	}
 }
@@ -2082,6 +2082,5 @@ span.email {
 
 img.half-image {
 	width: calc(50% - 4px - 5px);
-	height: 350px;
 	border: 2px solid black;
 }

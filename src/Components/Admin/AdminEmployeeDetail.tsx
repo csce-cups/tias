@@ -68,7 +68,7 @@ export const AdminEmployeeDetail: FC<Props> = ({employee}) => {
       <div className={`full-modal-container interact-blocks ${editing? '' : 'hidden'}`}>
         <div className={`full-modal ${editing? '' : 'hidden'}`}>
           { showRender?
-            <>
+            <div className="hstack fill">
               <div className="vstack bside">
                 <button className="red button" style={{padding: '0 5em', marginBottom: '10px'}} onClick={() => setEditing(false)}>Exit</button>
                 <div className="title">{employee.first_name} {employee.last_name}</div>
@@ -99,7 +99,7 @@ export const AdminEmployeeDetail: FC<Props> = ({employee}) => {
                   selectable: false
                 }}/>
               </ contexts.blocks.Provider >
-            </>
+            </div>
             : <></>
           }
         </div>
