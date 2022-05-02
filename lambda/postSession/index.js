@@ -21,7 +21,7 @@ async function getExistingUserID(userTokenHash, userEmail, response) {
     }
     
     let dbRows = await helper_functions.queryDB(dbQuery, params).catch((err) => {
-        helper_functions.GenerateErrorResponseAndLog(err, response, 'Failure in query for existing user.');
+        helper_functions.GenerateErrorResponseAndLog(err, response, 500, 'Failure in query for existing user.');
     });
     
     if (dbRows === undefined || dbRows.length == 0) {
@@ -61,6 +61,8 @@ function updateUser(userID, requestBody) {
 exports.handler = async (event) => {
     let accessHeader = null;
     
+    // Appease CORS for the requesting domain, if the domain
+    // is one that we expect.
     if (event.headers.origin === 'https://www.csce-scheduler.com') {
         accessHeader = 'https://www.csce-scheduler.com';
     }
@@ -70,12 +72,36 @@ exports.handler = async (event) => {
     
     let response = {
         statusCode: 200,
-        headers: { "Content-Type": "application/json", 
-                   "Access-Control-Allow-Origin": accessHeader }
+        headers: { "Content-Type": "application/json" }
     };
+    
+    // Set the access header only upon an expected domain;
+    // setting the access header to null in the response isn't
+    // necessarily safe.
+    if (accessHeader !== null) {
+        response.headers['Access-Control-Allow-Origin'] = accessHeader;
+        response.headers['Vary'] = 'Origin';
+    }
+    
+    // If the event body was not specified, then necessary information
+    // to establish a session is missing; return an error.
+    if (event.body == null) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing Request Body.');
+        return response;
+    }
     
     let requestBody = JSON.parse(event.body);
     let token = requestBody.token;
+    
+    if (token == null || token == '') {
+       helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing Google Auth Token.');
+       return response; 
+    }
+    if (requestBody.email == null || requestBody.email == '') {
+      helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing User Email Address.');
+      return response; 
+    }
+    
     let dbID = null;
 
     let paramResponse = null;

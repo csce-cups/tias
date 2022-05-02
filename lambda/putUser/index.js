@@ -1,7 +1,6 @@
 const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
-    let updateData = JSON.parse(event.body);
     const params = [];
     let updates = [];
     
@@ -14,7 +13,37 @@ exports.handler = async (event) => {
         accessHeader = 'http://localhost:3000';
     }
     
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json" }
+    };
+    
+    // Set the access header only upon an expected domain;
+    // setting the access header to null in the response isn't
+    // necessarily safe.
+    if (accessHeader !== null) {
+        response.headers['Access-Control-Allow-Origin'] = accessHeader;
+        response.headers['Vary'] = 'Origin';
+    }
+    
     let id = event?.pathParameters?.userId;
+    
+    // If the API was called without specifying a user ID,
+    // or if the user ID is malformed, then return an error.
+    if (id == null || id == '' || isNaN(+id)) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'User ID must be specified and must be numeric.');
+        return response;
+    }
+    
+    // If the event body was not specified, then necessary information
+    // to update a user is missing; return an error.
+    if (event.body == null) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing Request Body.');
+        return response;
+    }
+    
+    let updateData = JSON.parse(event.body);
     
     let paramIndex = 1;
     for(let fieldToUpdate of Object.keys(updateData)) {
@@ -92,19 +121,10 @@ exports.handler = async (event) => {
         ${setClause}
         WHERE person_id = $${paramIndex}
     `;
-    console.log(dbQuery);
-    console.log('id is:', id);
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
-    
-    console.log(dbRows);
-    
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": accessHeader },
-        "body": JSON.stringify({})
-    };
+    await helper_functions.queryDB(dbQuery, params).catch((err) => {
+        helper_functions.GenerateErrorResponseAndLog(err, response, 500, 'Unable to update user.');
+    });
 
     return response;
 };

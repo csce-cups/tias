@@ -5,7 +5,7 @@ exports.handler = async (event) => {
     
     let accessHeader = null;
     
-    // Enable CORS for the requesting domain, if the domain
+    // Appease CORS for the requesting domain, if the domain
     // is one that we expect.
     if (event.headers.origin === 'https://www.csce-scheduler.com') {
         accessHeader = 'https://www.csce-scheduler.com';

@@ -30,8 +30,8 @@ exports.handler = async (event) => {
     
     // If the API was called without specifying a user ID,
     // then return an error.
-    if (userId == null || userId == '') {
-        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'User ID must be specified.');
+    if (userId == null || userId == '' || isNaN(+userId)) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'User ID must be specified and must be numeric.');
         return response;
     }
     

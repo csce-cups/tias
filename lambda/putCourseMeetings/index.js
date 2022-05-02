@@ -16,8 +16,8 @@ exports.handler = async (event) => {
     
     for (const updatedSection of updatedSections) {
         let dbQuery = `UPDATE course_section 
-                       SET placeholder_professor_name = $1, capacity_peer_teachers = $2 
-                       WHERE section_id = $3`;
+                      SET placeholder_professor_name = $1, capacity_peer_teachers = $2 
+                      WHERE section_id = $3`;
         let params = [updatedSection.placeholder_professor_name, updatedSection.capacity_peer_teachers, updatedSection.section_id];
         await helper_functions.queryDB(dbQuery, params);
     }

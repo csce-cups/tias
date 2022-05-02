@@ -1,8 +1,46 @@
 const helper_functions = require("./helper_functions");
 
 exports.handler = async (event) => {
-    let updateData = JSON.parse(event.body);
+    let accessHeader = null;
+    
+    if (event.headers.origin == 'https://www.csce-scheduler.com') {
+        accessHeader = 'https://www.csce-scheduler.com';
+    }
+    else if (event.headers.origin == 'http://localhost:3000') {
+        accessHeader = 'http://localhost:3000';
+    }
+    
+    const response = {
+        "isBase64Encoded": false,
+        "statusCode": 200,
+        "headers": { "Content-Type": "application/json" }
+    };
+    
+    // Set the access header only upon an expected domain;
+    // setting the access header to null in the response isn't
+    // necessarily safe.
+    if (accessHeader !== null) {
+        response.headers['Access-Control-Allow-Origin'] = accessHeader;
+        response.headers['Vary'] = 'Origin';
+    }
+    
     let id = event?.pathParameters?.userId;
+    
+    // If the API was called without specifying a user ID,
+    // or if the user ID is malformed, then return an error.
+    if (id == null || id == '' || isNaN(+id)) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'User ID must be specified and must be numeric.');
+        return response;
+    }
+    
+    // If the event body was not specified, then necessary information
+    // to update a user preferences is missing; return an error.
+    if (event.body == null) {
+        helper_functions.GenerateErrorResponseAndLog(null, response, 400, 'Missing Request Body.');
+        return response;
+    }
+    
+    let updateData = JSON.parse(event.body);
     
     let dbQuery = `INSERT INTO section_assignment_preference
                      VALUES
@@ -43,18 +81,9 @@ exports.handler = async (event) => {
     }
     
     dbQuery += `ON CONFLICT(person_id, section_id)
-                DO UPDATE SET preference = EXCLUDED.preference`
+                DO UPDATE SET preference = EXCLUDED.preference`;
     
-    let dbRows = await helper_functions.queryDB(dbQuery, params);
-    
-    console.log(dbRows);
-    
-    const response = {
-        "isBase64Encoded": false,
-        "statusCode": 200,
-        "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": "http://localhost:3000" },
-        "body": JSON.stringify({})
-    };
+    await helper_functions.queryDB(dbQuery, params);
 
     return response;
 };
