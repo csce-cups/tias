@@ -124,7 +124,7 @@ export const SchedulingBlock: FC<Props> = (({visible, size, inline, options, dat
         color = "red";
       }
       elements.push(
-        <option value={employee.person_id} key={employee?.person_id} style={{color, ...bgcolor}}>
+        <option value={employee.person_id} key={`${employee?.person_id}-${course_instance.section_id}`} style={{color, ...bgcolor}}>
           {linkIDs?.includes(employee.person_id)? '> ' : ''} { employee?.first_name } { employee?.last_name } { text }
         </option>  
       )

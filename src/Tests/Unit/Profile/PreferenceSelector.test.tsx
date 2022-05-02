@@ -1,10 +1,12 @@
-import React, {useContext} from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import contexts, { APIContext } from '../../../Components/APIContext';
 import { PreferenceSelector } from '../../../Components/Profile/PreferenceSelector';
-import contexts from '../../../Components/APIContext';
 import API from '../../../modules/API';
+import { ContextSetterSpy } from '../../helpers/ContextSetterSpy';
+
 jest.mock('../../../modules/API');
 jest.mock('../../../Components/APIContext');
+jest.mock('../../../Components/Scheduling/SchedulingWindow');
 
 
 describe('PreferenceSelector', () => {
@@ -14,23 +16,64 @@ describe('PreferenceSelector', () => {
        expect(screen.getByText('Preferred Number of lab hours:')).toBeInTheDocument();
     });
 
-    it('should update the desired number of labs', () => {
-        const spy = jest.spyOn(API, 'sendUserPreferences');
-        render(<PreferenceSelector/>);
-        const button = screen.getByRole('button');
-        button.click();
-        expect(spy).toHaveBeenCalled();
-        spy.mockReset();
-        spy.mockRestore();
-    });
+    describe("functionality", () => {
+        it('uncollapses when clicked', () => {
+            render(<PreferenceSelector/>);
+            const titleBar = screen.getByText("Section Preferences");
+            expect(titleBar.parentElement?.classList).toContain('collapsed');
+            
+            titleBar.click();
+            expect(titleBar.parentElement?.classList).not.toContain('collapsed');
+        });
 
-    it('should update preferences', () => { //this doesn't seem to catch the lines I meant it to? targeting line 34
-        const spy = jest.spyOn(API, 'sendUserPreferences');
-        render(<PreferenceSelector/>);
-        const button = screen.getByRole('submit-prefs');
-        button.setAttribute('value', 'Saved!');
-        expect(spy).toHaveBeenCalled();
-        spy.mockReset();
-        spy.mockRestore();
-    });
+        it('should update preferences', async () => {
+            const spy = jest.spyOn(API, 'sendUserPreferences').mockImplementation(() => new Promise<void>(r => setTimeout(() => r(), 100)));
+            const fn = jest.fn();
+            render(
+                <APIContext>
+                    <ContextSetterSpy what={contexts.employees} spy={fn}>
+                        <PreferenceSelector/>
+                    </ContextSetterSpy>
+                </APIContext>
+            );
+            
+            const button = screen.getByRole('button', {name: 'Save Preferences'});
+            button.click();
+    
+            expect(screen.getByText('Saving...')).toBeInTheDocument();
+            expect(spy).toHaveBeenCalled();
+
+            await waitFor(() => {
+                expect(screen.getByText('Saved!')).toBeInTheDocument();
+            })
+
+            spy.mockReset();
+            spy.mockRestore();
+        });
+
+        it('should say when there is an error', async () => {
+            const spy = jest.spyOn(API, 'sendUserPreferences').mockImplementation(() => new Promise<void>((res, rej) => setTimeout(() => rej(), 100)));
+            const fn = jest.fn();
+            render(
+                <APIContext>
+                    <ContextSetterSpy what={contexts.employees} spy={fn}>
+                        <PreferenceSelector/>
+                    </ContextSetterSpy>
+                </APIContext>
+            );
+            
+            const button = screen.getByRole('button', {name: 'Save Preferences'});
+            button.click();
+    
+            expect(screen.getByText('Saving...')).toBeInTheDocument();
+            expect(spy).toHaveBeenCalled();
+
+            await waitFor(() => {
+                expect(screen.getByText('Preferences could not be saved.')).toBeInTheDocument();
+            })
+
+            spy.mockReset();
+            spy.mockRestore();
+        });
+    })
 }); 

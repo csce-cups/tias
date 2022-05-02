@@ -1996,7 +1996,25 @@ img.background-image {
 	z-index: 100;
 	overflow: hidden;
 
+	display: flex;
+	flex-direction: column;
+
+	position: relative;
+
 	transition: all 0.2s ease-in-out, height 0.2s ease-in-out 0.2s;
+
+	button {
+		width: 7em;
+	}
+
+	iframe {
+		height: 100%;
+		width: 100%;
+	}
+
+	span {
+		margin: 5px;
+	}
 }
 
 .full-modal-container.hidden, .full-modal.hidden {
@@ -2027,4 +2045,43 @@ span.email {
 	position: relative;
 	border-radius: 3px;
 	filter: brightness(90%);
+}
+
+.tutorial-icon {
+	height: 80%;
+	aspect-ratio: 1 / 1;
+	display: flex;
+	margin: 3px 15px 3px 5px;
+	align-items: center;
+	color: $light;
+	font-size: 1.4em;
+	border-radius: 50%;
+	outline: 2px solid white;
+	outline-offset: -2px;
+	justify-content: center;
+
+	transition: all 0.5s ease-in-out;
+}
+
+.tutorial-icon.light {
+	color: $render_divider;
+	outline: 2px solid $render_divider;
+}
+
+.tutorial-icon:hover {
+	background-color: $light;
+	color: $render_divider;
+	transform: rotate(360deg) scale(1.1);
+	cursor: pointer;
+}
+
+.tutorial-icon.light:hover {
+	background-color: $render_background;
+	// color: white;
+}
+
+img.half-image {
+	width: calc(50% - 4px - 5px);
+	height: 350px;
+	border: 2px solid black;
 }

@@ -1,23 +1,20 @@
-import React, { FC, useContext, useState } from 'react'
-import { contexts } from '../../../Components/APIContextHelper'
-import { Person } from '../../../modules/API'
-import colorFromId from '../../../modules/color'
-import { render, screen, fireEvent } from "@testing-library/react";
-import { Hat } from '../../../Components/Misc/Hat';
-import {APINoAsync} from '../../../modules/__mocks__/API'
-import { ExportFileButton } from '../../../Components/Misc/ExportFileButton';
-jest.mock('../../../modules/API');
-jest.mock('../../../Components/APIContext');
+import { render, screen } from "@testing-library/react";
+import React from "react";
+import { ExportFileButton } from "../../../Components/Misc/ExportFileButton";
+import API from "../../../modules/API";
+import { APINoAsync } from "../../../modules/__mocks__/API";
 
-describe("ExportFileButton", ()=>{
-    describe("Interaction", ()=>{
-        it("Click",()=>{
-            render(<ExportFileButton/>)
-            // const button = screen.getByTestId("export-courses-button");
-            const button = screen.getByText("Export Schedule as TSV files") // in case the above does not work
-            // button.click();
+jest.mock("../../../modules/API");
+jest.mock("../../../Components/APIContext");
 
-            //what to check??????
-        })
-    })
-})
+describe("ExportFileButton", () => {
+  it("does the thing", () => {
+    const spy = jest.spyOn(API, 'fetchExportedSchedule').mockImplementation(() => new Promise(r => r(APINoAsync.fetchExportedSchedule() as any)));
+    render(<ExportFileButton />);
+
+    const button = screen.getByText("Export Schedule as TSV files");
+    button.click();
+
+    expect(spy).toHaveBeenCalled();
+  });
+});

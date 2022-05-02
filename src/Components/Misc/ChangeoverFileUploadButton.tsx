@@ -7,7 +7,8 @@
 
 import axios from 'axios';
 import React, { useEffect } from 'react';
-import API, { Meeting, Weekday } from '../../modules/API';
+import API, { Meeting, Person, Weekday } from '../../modules/API';
+import { contexts } from '../APIContextHelper';
 
 interface Course {
   course_id: number
@@ -273,7 +274,7 @@ const parseCSVFile = (csvFileAsText: string, courses: Course[]): Meeting[] => {
 
 const DEFAULT_BUTTON_TEXT: string = 'Upload New Semester'
 
-const readInputFile = (file: File) => {
+export const readInputFile = (file: File, user: Person | null) => {
   const fileReader = new FileReader();
 
   fileReader.onload = async () => {
@@ -282,7 +283,7 @@ const readInputFile = (file: File) => {
     let btn = document.getElementById('upload-semester-button') as HTMLDivElement;
     if (btn !== null) btn.textContent = 'Reading File...';
 
-    const courses: Course[] = (await axios.get("https://y7nswk9jq5.execute-api.us-east-1.amazonaws.com/prod/courses")).data
+    const courses: Course[] = await API.getCourses();
 
     let meetings: Meeting[]
     if (['csv', 'application/csv', 'text/csv'].includes(file.type))
@@ -295,7 +296,7 @@ const readInputFile = (file: File) => {
     if (window.confirm('If you upload this schedule, all of the data related to the current semester will be irrevocably destroyed.\n\nDo you wish to continue?')) {
       btn = document.getElementById('upload-semester-button') as HTMLDivElement;
       if (btn !== null) btn.textContent = 'Sending Courses...'
-      API.sendNewMeetings(meetings).then((_response) => {
+      API.sendNewMeetings(meetings, user).then((_response) => {
         btn = document.getElementById('upload-semester-button') as HTMLDivElement;
         if (btn !== null) btn.textContent = 'Upload Successful'
         setTimeout(() => { if (btn !== null) btn.textContent = DEFAULT_BUTTON_TEXT }, 10000)
@@ -320,6 +321,7 @@ export const ChangeoverFileUploadButton = () => {
   const [prompt, setPrompt] = React.useState(false);
   const [input, setInput] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const user = React.useContext(contexts.user);
   const clickRef: any = React.useRef(null);
 
   // https://blog.logrocket.com/detect-click-outside-react-component-how-to/
@@ -352,7 +354,7 @@ export const ChangeoverFileUploadButton = () => {
     if (event.currentTarget.files === null) return;
 
     setPrompt(false);
-    readInputFile(event.currentTarget.files[0]);
+    readInputFile(event.currentTarget.files[0], user.user);
 
     // Reset target.value to allow user
     // to upload a new file if desired. 

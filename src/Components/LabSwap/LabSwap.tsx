@@ -161,51 +161,28 @@ export const LabSwap = () => {
     return retFormat;
   };
 
-  const reject = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, trade: TradeRequest) => {
-    const target = event.currentTarget;
-    trade.request_status = "Rejected";
-    target.parentElement?.classList.add('working')
-    target.innerHTML = "Working...";
-    API.updateTrade(trade, user.user?.person_id).then(resp => {
-      target.innerHTML = "Rejected!";
-    }).catch((err) => {
-      target.innerHTML = "Error.";
-    }).finally(() => {
-      setTimeout(() => {
-        target.parentElement?.classList.remove('working');
-        API.fetchUserTrades(user.user?.person_id).then(resp => {
-          setUserTrades(resp);
-        });
-      }, 2000);
-    })
+  const interactionParams = {
+    reject: {
+      request_status: "Rejected" as "Rejected",
+      innerHTML: "Rejected!"
+    },
+    cancel: {
+      request_status: "Cancelled" as "Cancelled",
+      innerHTML: "Cancelled!"
+    },
+    accept: {
+      request_status: "Accepted" as "Accepted",
+      innerHTML: "Accepted!"
+    }
   }
 
-  const cancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, trade: TradeRequest) => {
+  const tradeAction = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, trade: TradeRequest, action: "reject" | "cancel" | "accept") => {
     const target = event.currentTarget;
-    trade.request_status = "Cancelled";
+    trade.request_status = interactionParams[action].request_status;
     target.parentElement?.classList.add('working')
     target.innerHTML = "Working...";
     API.updateTrade(trade, user.user?.person_id).then(resp => {
-      target.innerHTML = "Canceled!";
-    }).catch((err) => {
-      target.innerHTML = "Error.";
-    }).finally(() => {
-      setTimeout(() => {
-        target.parentElement?.classList.remove('working');
-        API.fetchUserTrades(user.user?.person_id).then(resp => {
-          setUserTrades(resp);
-        });
-      }, 2000);
-    })
-  }
-
-  const accept = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, trade: TradeRequest) => {
-    const target = event.currentTarget;
-    trade.request_status = "Accepted";
-    target.parentElement?.classList.add('working')
-    target.innerHTML = "Working...";
-    API.updateTrade(trade, user.user?.person_id).then(resp => {
-      target.innerHTML = "Accepted!";
+      target.innerHTML = interactionParams[action].innerHTML;
     }).catch((err) => {
       target.innerHTML = "Error.";
     }).finally(() => {
@@ -241,23 +218,21 @@ export const LabSwap = () => {
 
       let actions: ReactElement<any, any>[] = [];
       if (action !== null){
-        if (action === 'Pending') { //we sent this out, action is cancel
+        if (action === 'Pending') {
           actions = [
-            <button className="short green button fill button-dot" onClick={e => accept(e, request)} >Accept</button>,
-            <button className="short red button fill button-dot" onClick={e => reject(e, request)}>Reject</button>
+            <button key="rej-btn" className="short green button fill button-dot" onClick={e => tradeAction(e, request, "accept")} >Accept</button>,
+            <button key="acc-btn" className="short red button fill button-dot" onClick={e => tradeAction(e, request, "reject")}>Reject</button>
           ];
-        } else if (action === 'Outstanding'){ //incoming requests, so actions are accept and reject
+        } else if (action === 'Outstanding') {
           actions = [
-            <button className="short purple button fill button-dot" onClick={e => cancel(e, request)}>Cancel</button>
+            <button key="cancel-btn" className="short purple button fill button-dot" onClick={e => tradeAction(e, request, "cancel")}>Cancel</button>
           ];
         }
       }
       return (
-        <>
-          < SwapSet key={`swapset-for-${JSON.stringify(request)}`} selected={[sent, received]} >
-            {(actions.length !== 0) ? actions : undefined}
-          </ SwapSet >
-        </>
+        < SwapSet key={`swapset-for-${JSON.stringify(request)}`} selected={[sent, received]} >
+          {(actions.length !== 0) ? actions : undefined}
+        </ SwapSet >
       )
     })
   }

@@ -14,7 +14,7 @@ export const App = () => {
     <div className="App">
       < APIContext test={false}>
         <Router>
-          < NavBar />
+          < NavBar key={window.location.href}/>
           <Routes>
             <Route path='/' element={<Landing/>} />
             <Route path='/scheduling' element={<Scheduling/>} />

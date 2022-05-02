@@ -339,8 +339,15 @@ describe('SchedulingBlock', () => {
             });
 
             describe("buttons", () => {
-                const dropdownPeople = cmap.get(renderData.section_id)!.filter(l => l.pref !== "Can't Do")!
-                const target = employees.find(e => e.person_id === dropdownPeople[0].person_id)!;
+                let dropdownPeople = cmap.get(renderData.section_id)!.filter(l => l.pref !== "Can't Do")!
+                let target = employees.find(e => e.person_id === dropdownPeople[0].person_id)!;
+                let target2 = employees.find(e => e.person_id === dropdownPeople[1].person_id)!;
+
+                beforeEach(() => {
+                    dropdownPeople = cmap.get(renderData.section_id)!.filter(l => l.pref !== "Can't Do")!
+                    target = employees.find(e => e.person_id === dropdownPeople[0].person_id)!;
+                    target2 = employees.find(e => e.person_id === dropdownPeople[1].person_id)!;
+                });
 
                 describe("view", () => {
                     it('the reset and submit buttons are disabled by default', () => {
@@ -456,7 +463,7 @@ describe('SchedulingBlock', () => {
                     });
 
                     it("selecting a peer teacher that is scheduled for the section and clicking the button removes the peer teacher from the section", () => {
-                        renderSubject("editing", [target.person_id, 0]);
+                        renderSubject("editing", [target.person_id, target2.person_id]);
                         const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
                         subject.click();
 
@@ -473,8 +480,8 @@ describe('SchedulingBlock', () => {
                     });
 
                     it("clicking the reset button after an edit restores the section to before the edit (depends on add and remove functionality)", () => {
-                        renderData.ronly_scheduled = [target.person_id, 0];
-                        renderSubject("editing", [target.person_id, 0]);
+                        renderData.ronly_scheduled = [target.person_id, target2.person_id];
+                        renderSubject("editing", [target.person_id, target2.person_id]);
                         const expectedHats = screen.getAllByTestId("hat");
 
                         const subject = screen.getByTitle(`${renderData.course_number}-${renderData.section_number}`);
