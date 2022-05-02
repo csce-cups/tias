@@ -116,7 +116,7 @@ export const ProfileStatusBar = () => {
       <input type="file" accept=".ics" ref={fileInputRef} onChange={handleChange} style={{ display: "none" }}/>
       <button id="upload-schedule-button" className="blue button" onClick={handleClick}>Upload Schedule</button>
       < TutorialModal light>
-        <span>To download your schedule, navigate to howdy, click the "My Schedule" icon, then click the calender icon. Then upload the .ics file you downloaded by clicking the blue "Upload Schedule" button (you will need to exit this tutorial page).</span>
+        <span className="title">To download your schedule, navigate to howdy, click the "My Schedule" icon, then click the calender icon. Then upload the .ics file you downloaded by clicking the blue "Upload Schedule" button (you will need to exit this tutorial page).</span>
         <div className="hstack" style={{justifyContent: 'space-around'}}>
           <img src={s1} alt="schedule1" className="half-image"/>
           <img src={s2} alt="schedule2" className="half-image"/>
