@@ -26,7 +26,7 @@ export const ProfileForm = () => {
     document.getElementById("submit-button")?.setAttribute('value', 'Saving...');
     API.sendUserQualifications(requestBody, user.user?.person_id).then(responseJSON => {
       if (responseJSON.message !== undefined && responseJSON.message.contains('error')) {
-        document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.')
+        document.getElementById("submit-button")?.setAttribute('value', 'Qualifications could not be saved.')
       } else {
         document.getElementById("submit-button")?.setAttribute('value', 'Updating Preferences...');
         API.fetchUserViableCourses(user.user?.person_id).then((resp) => {
@@ -35,7 +35,7 @@ export const ProfileForm = () => {
           document.getElementById("submit-button")?.setAttribute('value', 'Qualifications Saved!');
         })
       }
-    }).catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifiactions could not be saved.'));
+    }).catch(() => document.getElementById("submit-button")?.setAttribute('value', 'Qualifications could not be saved.'));
 
     event.preventDefault();
   }
